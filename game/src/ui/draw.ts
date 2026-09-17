@@ -1,8 +1,9 @@
 import Phaser from 'phaser';
 import type { PieceDefinition } from '../domain/types';
 import { GRID_HEIGHT, GRID_WIDTH } from '../domain/types';
+import { THEME } from './theme';
 
-export const COLORS = [0x000000, 0xffc857];
+export const COLORS = [0x000000, THEME.gold];
 
 export function drawMask(graphics: Phaser.GameObjects.Graphics, mask: Uint8Array, cellSize: number, offsetX = 0, offsetY = 0, ghost = false): void {
   graphics.clear();
@@ -13,7 +14,7 @@ export function drawMask(graphics: Phaser.GameObjects.Graphics, mask: Uint8Array
       if (!color) { x += 1; continue; }
       const start = x;
       while (x < GRID_WIDTH && mask[y * GRID_WIDTH + x] === color) x += 1;
-      graphics.fillStyle(COLORS[color], ghost ? 0.15 : 0.9);
+      graphics.fillStyle(COLORS[color], ghost ? THEME.ghostAlpha : 0.9);
       graphics.fillRect(offsetX + start * cellSize, offsetY + y * cellSize, (x - start) * cellSize, cellSize);
     }
   }
@@ -33,7 +34,7 @@ export function drawPiece(graphics: Phaser.GameObjects.Graphics, piece: PieceDef
   graphics.clear();
   const cells = new Set(piece.cells.map(([x, y]) => `${x},${y}`));
   if (filled) {
-    graphics.fillStyle(COLORS[piece.color], 0.35);
+    graphics.fillStyle(COLORS[piece.color], 0.68);
     const { width, height } = pieceSize(piece);
     for (let y = 0; y < height; y += 1) {
       let x = 0;
@@ -45,7 +46,7 @@ export function drawPiece(graphics: Phaser.GameObjects.Graphics, piece: PieceDef
       }
     }
   }
-  graphics.lineStyle(2, COLORS[piece.color], 0.95);
+  graphics.lineStyle(2, COLORS[piece.color], 1);
   for (const [x, y] of piece.cells) {
     const left = x * cellSize;
     const top = y * cellSize;

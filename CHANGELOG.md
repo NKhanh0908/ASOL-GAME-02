@@ -4,6 +4,13 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-09-17 - Cosmic board and large-piece layout
+
+- Added a shared 720 × 1280 layout, cosmic backdrop, subtle board grid, target card and responsive tray for the large authored pieces.
+- Updated the canvas and page backgrounds to match the new theme; piece and target drawing use the shared gold color with the target held at 15% opacity.
+- Captured and visually inspected the level 1-1 canvas at 360 × 640, 390 × 844 and desktop; screenshots are in `docs/testing/mirror-redesign/task-3-*.png`.
+- Verification: 15 tests pass and the web build passes (existing Vite large-chunk warning remains).
+
 ### 2026-09-17 - Six authored overlapping silhouettes
 
 - Replaced tiny introductory shapes with six manually composed XOR puzzles, 36–48-cell pieces and two to four separated trial anchors.
