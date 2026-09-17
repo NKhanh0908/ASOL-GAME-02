@@ -1,34 +1,74 @@
-import { describe, expect, it } from 'vitest';
+import { expect, it } from 'vitest';
 import { levels } from './levels';
-import { evaluate } from './mask';
+import { evaluate, matchesTarget } from './mask';
+import { GRID_WIDTH, GRID_HEIGHT } from './types';
 
-describe('authored level progression', () => {
-  it('contains six levels in chapter order', () => {
-    expect(levels.map((level) => level.id)).toEqual(['1-1', '1-2', '1-3', '2-1', '2-2', '2-3']);
-  });
+it('contains six intended piece combinations', () => {
+  expect(levels.map(l => l.id)).toEqual(['1-1', '1-2', '1-3', '2-1', '2-2', '2-3']);
+  expect(levels.map(l => l.pieces.map(p => p.id))).toEqual([
+    ['square', 'triangle'], ['square', 'diamond'],
+    ...Array.from({ length: 4 }, () => ['square', 'triangle', 'diamond']),
+  ]);
+});
 
-  it('teaches no overlap in chapter one', () => {
-    for (const level of levels.slice(0, 3)) {
-      const sum = level.solution.reduce((count, placement) => count + level.pieces.find((piece) => piece.id === placement.pieceId)!.cells.length, 0);
-      const visible = evaluate(level, level.solution).filter(Boolean).length;
-      expect(visible).toBe(sum);
+it('authors essential overlapping pieces within the board', () => {
+  levels.forEach((level, index) => {
+    const target = evaluate(level, level.solution);
+    const coverage = new Uint8Array(GRID_WIDTH * GRID_HEIGHT);
+    expect(new Set(level.pieces.map(p => p.color))).toEqual(new Set([1]));
+    for (const p of level.pieces) {
+      const width = Math.max(...p.cells.map(([x]) => x)) + 1;
+      expect(width).toBeGreaterThanOrEqual(36);
+      expect(width).toBeLessThanOrEqual(48);
+      expect(p.anchors).toHaveLength([2, 2, 3, 3, 3, 4][index]);
+      for (const [ax, ay] of p.anchors) for (const [x, y] of p.cells) {
+        expect(ax + x >= 0 && ax + x < GRID_WIDTH).toBe(true);
+        expect(ay + y >= 0 && ay + y < GRID_HEIGHT).toBe(true);
+      }
+      for (let a = 0; a < p.anchors.length; a++) for (let b = a + 1; b < p.anchors.length; b++) {
+        expect(Math.hypot(p.anchors[a][0] - p.anchors[b][0], p.anchors[a][1] - p.anchors[b][1])).toBeGreaterThan(12);
+      }
+      const goal = level.solution.find(s => s.pieceId === p.id)!;
+      expect(p.anchors).toContainEqual([goal.x, goal.y]);
+      for (const [x, y] of p.cells) coverage[(goal.y + y) * GRID_WIDTH + goal.x + x]++;
+      expect(matchesTarget(evaluate(level, level.solution.filter(s => s.pieceId !== p.id)), target)).toBe(false);
+      for (const [x, y] of p.anchors.filter(([x, y]) => x !== goal.x || y !== goal.y)) {
+        expect(matchesTarget(evaluate(level, level.solution.map(s => s.pieceId === p.id ? { ...s, x, y } : s)), target)).toBe(false);
+      }
     }
+    expect(target.some(Boolean)).toBe(true);
+    expect(coverage.includes(2)).toBe(true);
+    if (index >= 3) expect(coverage.includes(3)).toBe(true);
+    expect(matchesTarget(evaluate(level, [...level.solution].reverse()), target)).toBe(true);
   });
+});
 
-  it('uses square, triangle, and diamond pieces', () => {
-    for (const level of levels) {
-      expect(level.pieces.map((piece) => piece.id)).toEqual(
-        expect.arrayContaining(level.pieces.length === 1 ? ['square'] : level.pieces.length === 2 ? ['square', 'triangle'] : ['square', 'triangle', 'diamond']),
-      );
-      expect(new Set(level.pieces.map((piece) => piece.color)).size).toBe(1);
+it('keeps large centered targets and meaningful detached regions', () => {
+  for (const level of levels) {
+    const mask = evaluate(level, level.solution);
+    const occupied = Array.from(mask.keys()).filter(i => mask[i]);
+    const xs = occupied.map(i => i % GRID_WIDTH), ys = occupied.map(i => Math.floor(i / GRID_WIDTH));
+    const minX = Math.min(...xs), maxX = Math.max(...xs), minY = Math.min(...ys), maxY = Math.max(...ys);
+    // Approved exception: the introductory V needs room for both diagonal edges.
+    expect(maxX - minX + 1).toBeGreaterThanOrEqual(level.id === '1-1' ? 60 : 70);
+    expect(maxX - minX + 1).toBeLessThanOrEqual(level.id === '1-1' ? 64 : 96);
+    expect(Math.abs((minX + maxX + 1) / 2 - 64)).toBeLessThanOrEqual(12);
+    expect(Math.abs((minY + maxY + 1) / 2 - 96)).toBeLessThanOrEqual(12);
+    if (['1-3', '2-2'].includes(level.id)) {
+      const unseen = new Set(occupied);
+      const sizes: number[] = [];
+      while (unseen.size) {
+        const queue = [unseen.values().next().value!];
+        unseen.delete(queue[0]);
+        for (let i = 0; i < queue.length; i++) {
+          const cell = queue[i], x = cell % GRID_WIDTH, y = Math.floor(cell / GRID_WIDTH);
+          for (const [nx, ny] of [[x - 1, y], [x + 1, y], [x, y - 1], [x, y + 1]]) {
+            if (nx >= 0 && nx < GRID_WIDTH && ny >= 0 && ny < GRID_HEIGHT && unseen.delete(ny * GRID_WIDTH + nx)) queue.push(ny * GRID_WIDTH + nx);
+          }
+        }
+        sizes.push(queue.length);
+      }
+      expect(sizes.filter(size => size >= 64).length).toBeGreaterThanOrEqual(2);
     }
-  });
-
-  it('makes chapter two visibly harder through overlapping coverage', () => {
-    for (const level of levels.slice(3)) {
-      const totalCells = level.solution.reduce((count, placement) => count + level.pieces.find((piece) => piece.id === placement.pieceId)!.cells.length, 0);
-      const visibleCells = evaluate(level, level.solution).filter(Boolean).length;
-      expect(visibleCells).toBeLessThan(totalCells);
-    }
-  });
+  }
 });

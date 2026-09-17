@@ -25,7 +25,7 @@ Bản hiện tại dùng mảnh rộng khoảng 32–68 đơn vị trên canvas 
 
 Giữ canvas thiết kế 720 × 1280 và lưới logic 128 × 192. Các mảnh có chiều rộng bao khoảng 36–48 ô, tương đương 144–192 đơn vị canvas: lớn khoảng 3–5 lần mảnh đầu bản cũ. Kích thước được chọn theo câu đố, không tăng kích thước để thay cho tăng độ khó.
 
-Hình đích chiếm khoảng 55–75% chiều ngang bàn, đặt gần tâm vùng chơi. Cùng một mảnh giữ đúng tỷ lệ ở khay, khi kéo và trên bàn. Tam giác có đỉnh hướng lên để tạo các vết cắt chữ V; hình thoi có trục dọc/ngang cố định. Cả ba được raster hóa về cùng lưới cho vẽ và so khớp.
+Hình đích chiếm khoảng 55–75% chiều ngang bàn, đặt gần tâm vùng chơi. Ngoại lệ được duyệt khi tác giả màn: riêng 1-1 rộng 60–64 ô (47–50%) để cả hai cạnh chéo của vết khuyết đọc rõ; mảnh vẫn rộng 36–48 ô. Với chỉ vuông và tam giác rộng tối đa 48 ô, bbox từ 70 ô buộc đỉnh tam giác sát cạnh vuông, làm mất một cạnh của V. Cùng một mảnh giữ đúng tỷ lệ ở khay, khi kéo và trên bàn. Tam giác có đỉnh hướng lên để tạo các vết cắt chữ V; hình thoi có trục dọc/ngang cố định. Cả ba được raster hóa về cùng lưới cho vẽ và so khớp.
 
 Mỗi màn định nghĩa hình, neo hợp lệ và một lời giải dùng để sinh mặt nạ đích. Neo thử sai phải nằm trong vùng chơi, tạo kết quả khác mục tiêu và hợp lý để thử chồng; không đặt rải rác vô nghĩa. Mỗi mảnh có 2–4 neo, với khoảng cách đủ để tránh hai vùng snap trùng nhau.
 

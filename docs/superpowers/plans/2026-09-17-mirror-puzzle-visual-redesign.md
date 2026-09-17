@@ -17,7 +17,7 @@
 - Thứ tự đặt không thay đổi silhouette khi các mảnh cùng màu. Không dùng thứ tự làm điều kiện thắng hoặc lời hướng dẫn độ khó.
 - Giữ canvas thiết kế 720 × 1280 và lưới logic 128 × 192.
 - Các mảnh có chiều rộng bao khoảng 36–48 ô, tương đương 144–192 đơn vị canvas.
-- Hình đích chiếm khoảng 55–75% chiều ngang bàn, đặt gần tâm vùng chơi.
+- Hình đích chiếm khoảng 55–75% chiều ngang bàn, đặt gần tâm vùng chơi. Ngoại lệ tác giả đã duyệt: 1-1 rộng 60–64 ô để đọc rõ hai cạnh vết V; các màn khác giữ 70–96 ô. Áp dụng ngoại lệ này cho kiểm tra bbox ở Task 2 Step 4.
 - Bán kính snap giữ ở 6 ô logic, tương đương 24 đơn vị canvas với tỷ lệ hiện tại.
 - Mỗi mảnh có 2–4 neo, với khoảng cách đủ để tránh hai vùng snap trùng nhau.
 - Chỉ so mặt nạ kết quả với mục tiêu, yêu cầu khớp 100%; không bắt buộc một danh sách đáp án duy nhất.

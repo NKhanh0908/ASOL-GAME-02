@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { Session } from './session';
+import { levels } from './levels';
 
 describe('play session', () => {
   it('snaps near an anchor and rejects distant drops without losing the piece', () => {
@@ -14,14 +15,13 @@ describe('play session', () => {
   it('locks after victory, allows reset, then advances after another victory', () => {
     const game = new Session();
     const piece = game.level.pieces[0];
-    const solution = game.level.solution[0];
-    expect(game.drop(piece.id, solution.x, solution.y)).toBe(true);
+    for (const goal of game.level.solution) expect(game.drop(goal.pieceId, goal.x, goal.y)).toBe(true);
     expect(game.won).toBe(true);
     expect(game.drop(piece.id, 0, 0)).toBe(false);
     game.reset();
     expect(game.won).toBe(false);
     expect(game.placements).toHaveLength(0);
-    game.drop(piece.id, solution.x, solution.y);
+    for (const goal of game.level.solution) game.drop(goal.pieceId, goal.x, goal.y);
     expect(game.next()).toBe(true);
     expect(game.level.id).toBe('1-2');
   });
@@ -58,12 +58,22 @@ describe('play session', () => {
   });
 
   it('accepts the authored solution for every level', () => {
-    for (let levelIndex = 0; levelIndex < 6; levelIndex += 1) {
+    for (let levelIndex = 0; levelIndex < levels.length; levelIndex += 1) {
       const game = new Session(levelIndex);
       for (const placement of game.level.solution) {
         expect(game.drop(placement.pieceId, placement.x, placement.y)).toBe(true);
       }
       expect(game.won).toBe(true);
     }
+  });
+
+  it('cannot win any level with an essential piece missing', () => {
+    levels.forEach((level, index) => {
+      for (const missing of level.pieces) {
+        const game = new Session(index);
+        for (const goal of level.solution.filter(p => p.pieceId !== missing.id)) game.drop(goal.pieceId, goal.x, goal.y);
+        expect(game.won).toBe(false);
+      }
+    });
   });
 });

@@ -4,6 +4,14 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-09-17 - Six authored overlapping silhouettes
+
+- Replaced tiny introductory shapes with six manually composed XOR puzzles, 36–48-cell pieces and two to four separated trial anchors.
+- Added coverage, essential-piece, bounds, target size, detached-component and session victory checks; kept parity rules unchanged.
+- Approved authoring exception: level 1-1 target is 60 cells wide so both V edges remain readable; the other five targets are 72 cells wide.
+- Captured and visually reviewed all six targets in Chrome at 390 × 844 using the existing canvas renderer; coordinates and observations are in `docs/testing/2026-09-17-mirror-redesign.md`.
+- Verification: 14 tests pass; TypeScript and web build pass (existing large bundle warning). Android playtest and difficulty evaluation remain pending.
+
 ### 2026-09-17 - Fixed large puzzle shape geometry
 
 - Added deterministic square, upward triangle, and diamond raster shapes with a shared bounding-box size.
