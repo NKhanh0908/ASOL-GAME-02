@@ -48,6 +48,16 @@ describe('play session', () => {
     expect(game.remove(piece.id)).toBe(false);
   });
 
+  it('does not count a piece removed from its anchor', () => {
+    const game = new Session(0);
+    const first = game.level.solution[0];
+    game.drop(first.pieceId, first.x, first.y);
+    expect(game.remove(first.pieceId)).toBe(true);
+    expect(game.placements).toHaveLength(0);
+    expect(game.result.some(Boolean)).toBe(false);
+    expect(game.won).toBe(false);
+  });
+
   it('uses a smaller snap radius', () => {
     const game = new Session();
     const piece = game.level.pieces[0];

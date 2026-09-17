@@ -5,6 +5,20 @@ import { THEME } from './theme';
 
 export const COLORS = [0x000000, THEME.gold];
 
+export function overlappingCells(
+  cells: ReadonlyArray<readonly [number, number]>,
+  originX: number,
+  originY: number,
+  otherCells: ReadonlyArray<readonly [number, number]>,
+  otherOriginX: number,
+  otherOriginY: number,
+): Set<string> {
+  const occupied = new Set(otherCells.map(([x, y]) => `${x + otherOriginX},${y + otherOriginY}`));
+  return new Set(cells
+    .filter(([x, y]) => occupied.has(`${x + originX},${y + originY}`))
+    .map(([x, y]) => `${x},${y}`));
+}
+
 export function drawMask(graphics: Phaser.GameObjects.Graphics, mask: Uint8Array, cellSize: number, offsetX = 0, offsetY = 0, ghost = false): void {
   graphics.clear();
   for (let y = 0; y < GRID_HEIGHT; y += 1) {
@@ -30,11 +44,17 @@ export function pieceSize(piece: PieceDefinition): { width: number; height: numb
   return { width, height };
 }
 
-export function drawPiece(graphics: Phaser.GameObjects.Graphics, piece: PieceDefinition, cellSize: number, filled: boolean): void {
+export function drawPiece(
+  graphics: Phaser.GameObjects.Graphics,
+  piece: PieceDefinition,
+  cellSize: number,
+  state: 'loose' | 'dragging' | 'placed',
+  transparentCells: ReadonlySet<string> = new Set(),
+): void {
   graphics.clear();
   const cells = new Set(piece.cells.map(([x, y]) => `${x},${y}`));
-  if (filled) {
-    graphics.fillStyle(COLORS[piece.color], 0.68);
+  if (state !== 'placed') {
+    graphics.fillStyle(COLORS[piece.color], state === 'dragging' ? 0.55 : 0.35);
     const { width, height } = pieceSize(piece);
     for (let y = 0; y < height; y += 1) {
       let x = 0;
@@ -42,16 +62,19 @@ export function drawPiece(graphics: Phaser.GameObjects.Graphics, piece: PieceDef
         if (!cells.has(`${x},${y}`)) { x += 1; continue; }
         const start = x;
         while (x < width && cells.has(`${x},${y}`)) x += 1;
-        graphics.fillRect(start * cellSize, y * cellSize, (x - start) * cellSize, cellSize);
+        for (let fillX = start; fillX < x; fillX += 1) {
+          if (!transparentCells.has(`${fillX},${y}`)) graphics.fillRect(fillX * cellSize, y * cellSize, cellSize, cellSize);
+        }
       }
     }
   }
-  graphics.lineStyle(2, COLORS[piece.color], 1);
+  graphics.lineStyle(state === 'dragging' ? 3 : 1.5, COLORS[piece.color], state === 'placed' ? 0.7 : 1);
   for (const [x, y] of piece.cells) {
     const left = x * cellSize;
     const top = y * cellSize;
     const right = left + cellSize;
     const bottom = top + cellSize;
+    if (transparentCells.has(`${x},${y}`)) continue;
     if (!cells.has(`${x},${y - 1}`)) graphics.lineBetween(left, top, right, top);
     if (!cells.has(`${x + 1},${y}`)) graphics.lineBetween(right, top, right, bottom);
     if (!cells.has(`${x},${y + 1}`)) graphics.lineBetween(left, bottom, right, bottom);

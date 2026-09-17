@@ -4,6 +4,18 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-09-17 - Live overlap preview
+
+- While dragging, cells that overlap another piece become transparent immediately so the player can align the silhouettes before releasing.
+- Verification: 18 tests pass and the web build passes; the existing Vite large-chunk warning remains.
+
+### 2026-09-17 - Shape-aware dragging and placement feedback
+
+- Matched pointer hit areas to filled shape cells, retained the latest selected piece above other pieces, and limited tray returns to the visible tray rectangle.
+- Distinguished loose, dragging, and placed piece drawing while preserving the shared gold composite and the exact dropped loose position.
+- Kept controls above selected pieces, removed scene input listeners on restart, and added a session regression for removing a piece from its anchor.
+- Verification: 16 tests pass and the web build passes; the existing large Phaser bundle warning remains.
+
 ### 2026-09-17 - Cosmic board and large-piece layout
 
 - Added a shared 720 × 1280 layout, cosmic backdrop, subtle board grid, target card and responsive tray for the large authored pieces.
