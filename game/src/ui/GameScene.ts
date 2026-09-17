@@ -201,7 +201,28 @@ export class GameScene extends Phaser.Scene {
       const x = placed ? LAYOUT.boardX + placed.x * LAYOUT.cell : free?.x ?? home.x;
       const y = placed ? LAYOUT.boardY + placed.y * LAYOUT.cell : free?.y ?? home.y;
       this.views.get(piece.id)!.setPosition(x, y).setDepth(this.pieceDepth.get(piece.id)!);
-      this.redrawPiece(piece.id);
+    }
+    const transparentByPiece = new Map<string, Set<string>>();
+    for (const piece of this.session.level.pieces) transparentByPiece.set(piece.id, new Set<string>());
+    for (let index = 0; index < this.session.level.pieces.length; index += 1) {
+      const first = this.session.level.pieces[index];
+      const firstView = this.views.get(first.id)!;
+      const firstX = (firstView.x - LAYOUT.boardX) / LAYOUT.cell;
+      const firstY = (firstView.y - LAYOUT.boardY) / LAYOUT.cell;
+      for (let otherIndex = index + 1; otherIndex < this.session.level.pieces.length; otherIndex += 1) {
+        const second = this.session.level.pieces[otherIndex];
+        const secondView = this.views.get(second.id)!;
+        const secondX = (secondView.x - LAYOUT.boardX) / LAYOUT.cell;
+        const secondY = (secondView.y - LAYOUT.boardY) / LAYOUT.cell;
+        const overlap = overlapPreviewCells(first.cells, firstX, firstY, second.cells, secondX, secondY);
+        for (const cell of overlap.dragged) transparentByPiece.get(first.id)!.add(cell);
+        for (const cell of overlap.underneath) transparentByPiece.get(second.id)!.add(cell);
+      }
+    }
+    for (const piece of this.session.level.pieces) {
+      const placed = this.session.placements.find((item) => item.pieceId === piece.id);
+      const view = this.views.get(piece.id)!;
+      drawPiece(view, piece, LAYOUT.cell, placed ? 'placed' : 'loose', transparentByPiece.get(piece.id));
     }
     this.status.setText(this.session.won ? (this.session.isFinalLevel ? 'Hoàn thành bản thử!' : 'Khớp hình!') : '');
     this.nextButton.setVisible(this.session.won);

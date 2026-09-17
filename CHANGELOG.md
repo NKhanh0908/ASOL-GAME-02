@@ -8,6 +8,7 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 - While dragging, cells that overlap another piece become transparent immediately so the player can align the silhouettes before releasing.
 - Preview overlap uses continuous piece positions and clears the intersecting cells on both pieces, so partial intersections reveal the board before grid alignment. Verification: 20 tests pass, browser drag checks pass, and the web build passes; the existing Vite large-chunk warning remains.
+- The same overlap transparency is now recomputed after drop, so a loose placement keeps the clear intersection until the pieces separate.
 
 ### 2026-09-17 - Shape-aware dragging and placement feedback
 
