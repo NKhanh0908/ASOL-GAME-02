@@ -4,6 +4,11 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-09-17 - UI interaction cleanup
+
+- Consolidated piece lookup, placement state, grid origins, overlap collection and composite preview rendering into focused `GameScene` helpers without changing gameplay behavior.
+- Verification: 21 tests pass, browser drag checks pass, and the web build passes.
+
 ### 2026-09-17 - Live overlap preview
 
 - While dragging, cells that overlap another piece become transparent immediately so the player can align the silhouettes before releasing.

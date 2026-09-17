@@ -17,6 +17,8 @@ type Drag = {
   oldY: number;
 };
 
+type GridOrigin = { x: number; y: number };
+
 export class GameScene extends Phaser.Scene {
   private session = new Session();
   private views = new Map<string, Phaser.GameObjects.Graphics>();
@@ -162,38 +164,20 @@ export class GameScene extends Phaser.Scene {
   }
 
   private redrawPiece(id: string): void {
-    const piece = this.session.level.pieces.find((item) => item.id === id)!;
-    drawPiece(this.views.get(id)!, piece, LAYOUT.cell, this.session.placements.some((item) => item.pieceId === id) ? 'placed' : 'loose');
+    this.drawPieceView(id);
   }
 
   private redrawDraggingPiece(id: string): void {
-    const piece = this.session.level.pieces.find((item) => item.id === id)!;
-    const view = this.views.get(id)!;
-    const originX = (view.x - LAYOUT.boardX) / LAYOUT.cell;
-    const originY = (view.y - LAYOUT.boardY) / LAYOUT.cell;
-    const transparentByPiece = new Map<string, Set<string>>([[id, new Set<string>()]]);
     for (const other of this.session.level.pieces) {
-      if (other.id !== id) this.redrawPiece(other.id);
+      if (other.id !== id) this.drawPieceView(other.id);
     }
-    for (const other of this.session.level.pieces) {
-      if (other.id === id) continue;
-      const otherView = this.views.get(other.id)!;
-      const otherX = (otherView.x - LAYOUT.boardX) / LAYOUT.cell;
-      const otherY = (otherView.y - LAYOUT.boardY) / LAYOUT.cell;
-      const overlap = overlapPreviewCells(piece.cells, originX, originY, other.cells, otherX, otherY);
-      for (const cell of overlap.dragged) transparentByPiece.get(id)!.add(cell);
-      if (overlap.underneath.size) transparentByPiece.set(other.id, overlap.underneath);
-    }
-    let previewResult = this.session.result;
-    if (transparentByPiece.get(id)!.size) {
-      previewResult = clearMaskCells(previewResult, transparentByPiece.get(id)!, originX, originY, GRID_WIDTH);
-    }
-    drawMask(this.composite, previewResult, LAYOUT.cell);
-    drawPiece(view, piece, LAYOUT.cell, 'dragging', transparentByPiece.get(id));
+    const transparentByPiece = this.collectTransparency();
+    drawMask(this.composite, this.compositePreview(transparentByPiece), LAYOUT.cell);
+    const piece = this.pieceById(id);
+    drawPiece(this.views.get(id)!, piece, LAYOUT.cell, 'dragging', transparentByPiece.get(id));
     for (const [otherId, transparent] of transparentByPiece) {
       if (otherId === id) continue;
-      const other = this.session.level.pieces.find((item) => item.id === otherId)!;
-      drawPiece(this.views.get(otherId)!, other, LAYOUT.cell, this.session.placements.some((item) => item.pieceId === otherId) ? 'placed' : 'loose', transparent);
+      if (transparent.size) this.drawPieceView(otherId, transparent);
     }
   }
 
@@ -206,45 +190,59 @@ export class GameScene extends Phaser.Scene {
       const y = placed ? LAYOUT.boardY + placed.y * LAYOUT.cell : free?.y ?? home.y;
       this.views.get(piece.id)!.setPosition(x, y).setDepth(this.pieceDepth.get(piece.id)!);
     }
-    const transparentByPiece = new Map<string, Set<string>>();
-    for (const piece of this.session.level.pieces) transparentByPiece.set(piece.id, new Set<string>());
+    const transparentByPiece = this.collectTransparency();
+    drawMask(this.composite, this.compositePreview(transparentByPiece), LAYOUT.cell);
+    for (const piece of this.session.level.pieces) {
+      this.drawPieceView(piece.id, transparentByPiece.get(piece.id));
+    }
+    this.status.setText(this.session.won ? (this.session.isFinalLevel ? 'Hoàn thành bản thử!' : 'Khớp hình!') : '');
+    this.nextButton.setVisible(this.session.won);
+  }
+
+  private pieceById(id: string): PieceDefinition {
+    return this.session.level.pieces.find((piece) => piece.id === id)!;
+  }
+
+  private isPlaced(id: string): boolean {
+    return this.session.placements.some((placement) => placement.pieceId === id);
+  }
+
+  private pieceOrigin(id: string): GridOrigin {
+    const view = this.views.get(id)!;
+    return { x: (view.x - LAYOUT.boardX) / LAYOUT.cell, y: (view.y - LAYOUT.boardY) / LAYOUT.cell };
+  }
+
+  private drawPieceView(id: string, transparentCells: ReadonlySet<string> = new Set()): void {
+    const piece = this.pieceById(id);
+    drawPiece(this.views.get(id)!, piece, LAYOUT.cell, this.isPlaced(id) ? 'placed' : 'loose', transparentCells);
+  }
+
+  private collectTransparency(): Map<string, Set<string>> {
+    const transparentByPiece = new Map(this.session.level.pieces.map((piece) => [piece.id, new Set<string>()]));
     for (let index = 0; index < this.session.level.pieces.length; index += 1) {
       const first = this.session.level.pieces[index];
-      const firstView = this.views.get(first.id)!;
-      const firstX = (firstView.x - LAYOUT.boardX) / LAYOUT.cell;
-      const firstY = (firstView.y - LAYOUT.boardY) / LAYOUT.cell;
+      const firstOrigin = this.pieceOrigin(first.id);
       for (let otherIndex = index + 1; otherIndex < this.session.level.pieces.length; otherIndex += 1) {
         const second = this.session.level.pieces[otherIndex];
-        const secondView = this.views.get(second.id)!;
-        const secondX = (secondView.x - LAYOUT.boardX) / LAYOUT.cell;
-        const secondY = (secondView.y - LAYOUT.boardY) / LAYOUT.cell;
-        const overlap = overlapPreviewCells(first.cells, firstX, firstY, second.cells, secondX, secondY);
+        const secondOrigin = this.pieceOrigin(second.id);
+        const overlap = overlapPreviewCells(first.cells, firstOrigin.x, firstOrigin.y, second.cells, secondOrigin.x, secondOrigin.y);
         for (const cell of overlap.dragged) transparentByPiece.get(first.id)!.add(cell);
         for (const cell of overlap.underneath) transparentByPiece.get(second.id)!.add(cell);
       }
     }
-    let previewResult = this.session.result;
+    return transparentByPiece;
+  }
+
+  private compositePreview(transparentByPiece: Map<string, Set<string>>): Uint8Array {
+    let preview = this.session.result;
     for (const piece of this.session.level.pieces) {
-      const placed = this.session.placements.some((item) => item.pieceId === piece.id);
+      if (this.isPlaced(piece.id)) continue;
       const transparent = transparentByPiece.get(piece.id)!;
-      if (placed || !transparent.size) continue;
-      const view = this.views.get(piece.id)!;
-      previewResult = clearMaskCells(
-        previewResult,
-        transparent,
-        (view.x - LAYOUT.boardX) / LAYOUT.cell,
-        (view.y - LAYOUT.boardY) / LAYOUT.cell,
-        GRID_WIDTH,
-      );
+      if (!transparent.size) continue;
+      const origin = this.pieceOrigin(piece.id);
+      preview = clearMaskCells(preview, transparent, origin.x, origin.y, GRID_WIDTH);
     }
-    drawMask(this.composite, previewResult, LAYOUT.cell);
-    for (const piece of this.session.level.pieces) {
-      const placed = this.session.placements.find((item) => item.pieceId === piece.id);
-      const view = this.views.get(piece.id)!;
-      drawPiece(view, piece, LAYOUT.cell, placed ? 'placed' : 'loose', transparentByPiece.get(piece.id));
-    }
-    this.status.setText(this.session.won ? (this.session.isFinalLevel ? 'Hoàn thành bản thử!' : 'Khớp hình!') : '');
-    this.nextButton.setVisible(this.session.won);
+    return preview;
   }
 
   private flashChanged(before: Uint8Array, after: Uint8Array): void {
