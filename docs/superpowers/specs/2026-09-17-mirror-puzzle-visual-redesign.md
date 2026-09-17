@@ -1,6 +1,6 @@
 # Mirror — Mảnh lớn, hình đích suy luận và giao diện vũ trụ
 
-Ngày: 2026-09-17. Trạng thái: hướng thiết kế đã duyệt; bản ghi chờ người dùng đọc trước khi lập kế hoạch triển khai.
+Ngày: 2026-09-17. Trạng thái: người dùng đã duyệt bản ghi; kế hoạch triển khai ở [plan redesign](../plans/2026-09-17-mirror-puzzle-visual-redesign.md).
 
 Tài liệu này thay thế các quyết định về kích thước mảnh, nhịp level và giao diện trong [spec ban đầu](2026-09-17-mirror-android-prototype-design.md). Những luật tương tác không được thay thế ở đây vẫn giữ nguyên.
 
