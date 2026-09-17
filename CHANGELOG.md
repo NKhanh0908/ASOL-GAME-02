@@ -10,6 +10,7 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 - Preview overlap uses continuous piece positions and clears the intersecting cells on both pieces, so partial intersections reveal the board before grid alignment. Verification: 20 tests pass, browser drag checks pass, and the web build passes; the existing Vite large-chunk warning remains.
 - The same overlap transparency is now recomputed after drop, so a loose placement keeps the clear intersection until the pieces separate.
 - While a loose piece overlaps a correctly placed piece, the temporary composite also clears that intersection, preventing the placed XOR layer from covering the preview.
+- Refresh now applies the same composite clearing after a loose drop; only loose overlap cells are cleared, while fully placed pieces retain their normal XOR result.
 
 ### 2026-09-17 - Shape-aware dragging and placement feedback
 

@@ -198,7 +198,6 @@ export class GameScene extends Phaser.Scene {
   }
 
   private refresh(): void {
-    drawMask(this.composite, this.session.result, LAYOUT.cell);
     for (const piece of this.session.level.pieces) {
       const placed = this.session.placements.find((item) => item.pieceId === piece.id);
       const home = this.homes.get(piece.id)!;
@@ -224,6 +223,21 @@ export class GameScene extends Phaser.Scene {
         for (const cell of overlap.underneath) transparentByPiece.get(second.id)!.add(cell);
       }
     }
+    let previewResult = this.session.result;
+    for (const piece of this.session.level.pieces) {
+      const placed = this.session.placements.some((item) => item.pieceId === piece.id);
+      const transparent = transparentByPiece.get(piece.id)!;
+      if (placed || !transparent.size) continue;
+      const view = this.views.get(piece.id)!;
+      previewResult = clearMaskCells(
+        previewResult,
+        transparent,
+        (view.x - LAYOUT.boardX) / LAYOUT.cell,
+        (view.y - LAYOUT.boardY) / LAYOUT.cell,
+        GRID_WIDTH,
+      );
+    }
+    drawMask(this.composite, previewResult, LAYOUT.cell);
     for (const piece of this.session.level.pieces) {
       const placed = this.session.placements.find((item) => item.pieceId === piece.id);
       const view = this.views.get(piece.id)!;
