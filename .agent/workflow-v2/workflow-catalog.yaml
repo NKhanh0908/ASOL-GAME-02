@@ -1,0 +1,125 @@
+# 🗺️ ASOL Game OS Ver 2.0 — Workflow Catalog
+# Bản đồ vệ tinh điều hướng toàn bộ 6 Phase phát triển Game Casual / Hybrid-Casual
+# Single Source of Truth cho lệnh /help và /start
+
+version: "2.0.0"
+studio: "Alpaca Solutions (ASOL)"
+target_genres: ["Casual", "Hybrid-Casual", "Puzzle", "Idle", "Merge", "Hyper-Casual"]
+supported_platforms: ["Phaser.js", "Godot 4", "Unity 6"]
+
+phases:
+  - id: "phase-01"
+    name: "Phase 1: Concept & Market Discovery"
+    description: "Khám phá ý tưởng, quét thị trường casual, chốt Game Concept Brief và lựa chọn Tech Stack phù hợp."
+    steps:
+      - command: "/idea"
+        agent: "phase-01-concept-discovery/01-idea-agent.vi.md"
+        artifact: "docs/concept/idea-sheet.md"
+        gate_signoff: "docs/concept/idea-gate.md"
+        required: true
+      - command: "/research"
+        agent: "phase-01-concept-discovery/02-research-agent.vi.md"
+        artifact: "docs/concept/research-pack.md"
+        gate_signoff: "docs/concept/market-validation-gate.md"
+        required: true
+      - command: "/concept-brief"
+        agent: "phase-01-concept-discovery/03-concept-brief-agent.vi.md"
+        artifact: "docs/concept/brief.md"
+        gate_signoff: "docs/concept/g1-validation-signoff.md"
+        required: true
+
+  - id: "phase-02"
+    name: "Phase 2: Gameplay & Systems Design"
+    description: "Soạn thảo Master GDD 5 chương hợp nhất duy nhất, UX Flow, Art/Audio Specs, Ads/IAP và Save JSON Schema."
+    steps:
+      - command: "/master-gdd"
+        agent: "phase-02-gameplay-systems/01-master-gdd-agent.vi.md"
+        artifact: "docs/gdd/master-gdd.md"
+        required: true
+      - command: "/design-review"
+        agent: "phase-02-gameplay-systems/02-gdd-review-agent.vi.md"
+        gate_signoff: "docs/gdd/g2-validation-signoff.md"
+        required: true
+
+  - id: "phase-03"
+    name: "Phase 3: Technical Setup & Architecture"
+    description: "Thiết lập kiến trúc phân tầng 4 lớp, kết nối Platform Engine (Phaser/Godot/Unity) với Gameplay Micro-Engines, ghi nhận 3 ADRs và lập Hiến pháp Coder 1 trang."
+    steps:
+      - command: "/technical-setup"
+        agent: "phase-03-technical-setup/01-technical-setup-agent.vi.md"
+        artifact: "docs/architecture/architecture.md"
+        required: true
+      - command: "/adr"
+        agent: "phase-03-technical-setup/02-adr-agent.vi.md"
+        artifact: "docs/architecture/decisions/ADR-001-state-management.md"
+        required: true
+      - command: "/control-manifest"
+        agent: "phase-03-technical-setup/03-control-manifest-agent.vi.md"
+        artifact: "docs/architecture/control-manifest.md"
+        gate_signoff: "docs/architecture/g3-validation-signoff.md"
+        required: true
+
+  - id: "phase-04"
+    name: "Phase 4: Pre-Production & Sprint Planning"
+    description: "Lọc Scope dựng bản Greybox Prototype kiểm chứng Fun Gate, bóc tách 4 Epics lớn thành Stories 15-45 phút, thiết lập Unit Test Runner và lên lịch Sprint 1."
+    steps:
+      - command: "/prototype"
+        agent: "phase-04-pre-production/01-prototype-agent.vi.md"
+        artifact: "docs/prototype/playtest-report.md"
+        required: true
+      - command: "/create-epics"
+        agent: "phase-04-pre-production/02-epic-decomposition-agent.vi.md"
+        artifact: "docs/plan/overview.md"
+        required: true
+      - command: "/create-stories"
+        agent: "phase-04-pre-production/03-story-planning-agent.vi.md"
+        artifact: "docs/plan/stories/STORY-*.md"
+        required: true
+      - command: "/sprint-plan"
+        agent: "phase-04-pre-production/04-sprint-setup-agent.vi.md"
+        artifact: "docs/plan/sprints/sprint-01.md"
+        gate_signoff: "docs/plan/g4-validation-signoff.md"
+        required: true
+
+  - id: "phase-05"
+    name: "Phase 5: Sprint Execution & Hardening"
+    description: "Vòng lặp code TDD /dev-story, bám sát AC, cảnh báo lệch pha, tự động đồng bộ Live Dashboard, tối ưu 60 FPS di động, cân bằng kinh tế và khóa bản build RC."
+    steps:
+      - command: "/dev-story"
+        agent: "phase-05-sprint-execution/01-dev-story-agent.vi.md"
+        artifact: "docs/plan/sprints/sprint-status.md"
+        required: true
+      - command: "/perf-profile"
+        agent: "phase-05-sprint-execution/02-perf-profile-agent.vi.md"
+        artifact: "docs/qa/perf-profile-report.md"
+        required: true
+      - command: "/balance-economy"
+        agent: "phase-05-sprint-execution/03-balance-economy-agent.vi.md"
+        artifact: "docs/qa/balance-report.md"
+        required: true
+      - command: "/rc-signoff"
+        agent: "phase-05-sprint-execution/04-rc-signoff-agent.vi.md"
+        gate_signoff: "docs/qa/g5-rc-validation-signoff.md"
+        required: true
+
+  - id: "phase-06"
+    name: "Phase 6: Release & LiveOps Loop"
+    description: "Bộ 7 tiêu chuẩn xuất bản Store/Web, hồ sơ ASO, quy trình vá lỗi khẩn cấp Day-1, vòng lặp A/B Test LiveOps O-A-H-D-I-T-R-O và đóng gói tài sản ngược về Studio OS."
+    steps:
+      - command: "/release-checklist"
+        agent: "phase-06-release-liveops/01-release-checklist-agent.vi.md"
+        artifact: "docs/release/release-checklist.md"
+        required: true
+      - command: "/publish-store"
+        agent: "phase-06-release-liveops/02-publish-store-agent.vi.md"
+        artifact: "docs/release/patch-notes-v1.0.0.md"
+        gate_signoff: "docs/release/g6-release-signoff.md"
+        required: true
+      - command: "/hotfix"
+        agent: "phase-06-release-liveops/03-hotfix-patch-agent.vi.md"
+        artifact: "docs/release/patch-notes-v1.0.1-hotfix.md"
+        required: false
+      - command: "/liveops-loop"
+        agent: "phase-06-release-liveops/04-liveops-retrospective-agent.vi.md"
+        artifact: "docs/retrospective/retrospective-report.md"
+        required: true
