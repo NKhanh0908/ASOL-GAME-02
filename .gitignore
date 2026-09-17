@@ -1,0 +1,8 @@
+game/node_modules/
+game/dist/
+game/.vite/
+game/android/.gradle/
+game/android/build/
+game/android/app/build/
+game/android/local.properties
+*.log

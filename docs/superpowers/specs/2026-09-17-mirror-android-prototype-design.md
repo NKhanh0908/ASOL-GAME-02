@@ -25,7 +25,7 @@ Mảnh kính của prototype là tập ô trên cùng một lưới logic của 
 
 Sau mỗi lần đặt hoặc kéo lại, bộ tính hình dựng mặt nạ kết quả: tại mỗi ô đếm số mảnh phủ; số chẵn, kể cả 0, là ô rỗng; số lẻ là ô hiện, với màu mảnh ở trên cùng. Màu chỉ phục vụ hiển thị trong sáu màn đầu. Thắng khi toàn bộ mặt nạ ô hiện bằng mặt nạ silhouette mẫu, không có ô thiếu hay thừa. Không chấm thắng bằng cách so danh sách điểm neo với một đáp án duy nhất; các cách xếp khác nhau tạo cùng hình đều được chấp nhận.
 
-Phaser hiển thị từ cùng mặt nạ kết quả và cùng hệ tọa độ bàn mà bộ tính hình dùng. Mảnh vẫn có viền riêng để người chơi thấy các mảnh đã đặt, kể cả khi vùng giao của chúng đang rỗng. Khi thả mảnh, vùng đổi trạng thái có phản hồi thị giác ngắn, đủ để nhận ra vùng giao 2 lớp mất và vùng 3 lớp hiện lại. Bóng silhouette mẫu bật/tắt được; thumbnail mẫu luôn hiện. Cỡ lưới và cách vẽ viền được chốt bằng thử trên điện thoại để hình nhìn thấy khớp các ô được chấm.
+Phaser hiển thị từ cùng mặt nạ kết quả và cùng hệ tọa độ bàn mà bộ tính hình dùng. Mảnh vẫn có viền riêng để người chơi thấy các mảnh đã đặt, kể cả khi vùng giao của chúng đang rỗng. Khi thả mảnh, vùng đổi trạng thái có phản hồi thị giác ngắn, đủ để nhận ra vùng giao 2 lớp mất và vùng 3 lớp hiện lại. Bóng silhouette mẫu bật/tắt được; mặc định bật ở Chương 1 và tắt ở Chương 2 để vùng chồng chẵn nhìn rõ là rỗng. Thumbnail mẫu luôn hiện. Cỡ lưới và cách vẽ viền được chốt bằng thử trên điện thoại để hình nhìn thấy khớp các ô được chấm.
 
 ## 4. Luồng người chơi và nội dung sáu màn
 
