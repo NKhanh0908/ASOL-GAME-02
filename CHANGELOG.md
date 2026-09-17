@@ -4,6 +4,12 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-09-17 - Fixed large puzzle shape geometry
+
+- Added deterministic square, upward triangle, and diamond raster shapes with a shared bounding-box size.
+- Added cell containment checks and coverage tests for large puzzle pieces.
+- Verification: focused shape tests and `npm run build` pass.
+
 ### 2026-09-17 — Kế hoạch triển khai puzzle redesign
 
 - Ghi nhận người dùng duyệt spec thiết kế mảnh lớn và giao diện vũ trụ.
