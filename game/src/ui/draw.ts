@@ -29,6 +29,20 @@ export function overlappingCells(
   return result;
 }
 
+export function overlapPreviewCells(
+  draggedCells: ReadonlyArray<readonly [number, number]>,
+  draggedOriginX: number,
+  draggedOriginY: number,
+  underneathCells: ReadonlyArray<readonly [number, number]>,
+  underneathOriginX: number,
+  underneathOriginY: number,
+): { dragged: Set<string>; underneath: Set<string> } {
+  return {
+    dragged: overlappingCells(draggedCells, draggedOriginX, draggedOriginY, underneathCells, underneathOriginX, underneathOriginY),
+    underneath: overlappingCells(underneathCells, underneathOriginX, underneathOriginY, draggedCells, draggedOriginX, draggedOriginY),
+  };
+}
+
 export function drawMask(graphics: Phaser.GameObjects.Graphics, mask: Uint8Array, cellSize: number, offsetX = 0, offsetY = 0, ghost = false): void {
   graphics.clear();
   for (let y = 0; y < GRID_HEIGHT; y += 1) {

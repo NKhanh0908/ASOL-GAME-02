@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { Session } from '../domain/session';
 import { GRID_HEIGHT, GRID_WIDTH, type PieceDefinition } from '../domain/types';
-import { drawMask, drawPiece, overlappingCells, pieceSize } from './draw';
+import { drawMask, drawPiece, overlapPreviewCells, pieceSize } from './draw';
 import { drawBackdrop } from './backdrop';
 import { LAYOUT, toGrid, trayHome } from './layout';
 import { THEME } from './theme';
@@ -171,15 +171,25 @@ export class GameScene extends Phaser.Scene {
     const view = this.views.get(id)!;
     const originX = (view.x - LAYOUT.boardX) / LAYOUT.cell;
     const originY = (view.y - LAYOUT.boardY) / LAYOUT.cell;
-    const transparent = new Set<string>();
+    const transparentByPiece = new Map<string, Set<string>>([[id, new Set<string>()]]);
+    for (const other of this.session.level.pieces) {
+      if (other.id !== id) this.redrawPiece(other.id);
+    }
     for (const other of this.session.level.pieces) {
       if (other.id === id) continue;
       const otherView = this.views.get(other.id)!;
       const otherX = (otherView.x - LAYOUT.boardX) / LAYOUT.cell;
       const otherY = (otherView.y - LAYOUT.boardY) / LAYOUT.cell;
-      for (const cell of overlappingCells(piece.cells, originX, originY, other.cells, otherX, otherY)) transparent.add(cell);
+      const overlap = overlapPreviewCells(piece.cells, originX, originY, other.cells, otherX, otherY);
+      for (const cell of overlap.dragged) transparentByPiece.get(id)!.add(cell);
+      if (overlap.underneath.size) transparentByPiece.set(other.id, overlap.underneath);
     }
-    drawPiece(view, piece, LAYOUT.cell, 'dragging', transparent);
+    drawPiece(view, piece, LAYOUT.cell, 'dragging', transparentByPiece.get(id));
+    for (const [otherId, transparent] of transparentByPiece) {
+      if (otherId === id) continue;
+      const other = this.session.level.pieces.find((item) => item.id === otherId)!;
+      drawPiece(this.views.get(otherId)!, other, LAYOUT.cell, this.session.placements.some((item) => item.pieceId === otherId) ? 'placed' : 'loose', transparent);
+    }
   }
 
   private refresh(): void {
