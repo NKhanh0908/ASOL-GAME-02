@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { overlapPreviewCells, overlappingCells } from './draw';
+import { clearMaskCells, overlapPreviewCells, overlappingCells } from './draw';
 
 describe('drag overlap preview', () => {
   it('identifies cells hidden by the piece underneath at live positions', () => {
@@ -20,5 +20,10 @@ describe('drag overlap preview', () => {
       dragged: new Set(['0,0']),
       underneath: new Set(['0,0']),
     });
+  });
+
+  it('clears the placed composite cells under a dragged overlap', () => {
+    const mask = new Uint8Array([1, 1, 1]);
+    expect(clearMaskCells(mask, new Set(['0,0']), 1, 0, 3)).toEqual(new Uint8Array([1, 0, 1]));
   });
 });

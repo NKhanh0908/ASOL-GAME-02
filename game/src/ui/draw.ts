@@ -43,6 +43,17 @@ export function overlapPreviewCells(
   };
 }
 
+export function clearMaskCells(mask: Uint8Array, cells: ReadonlySet<string>, originX: number, originY: number, width: number): Uint8Array {
+  const cleared = mask.slice();
+  for (const key of cells) {
+    const [localX, localY] = key.split(',').map(Number);
+    const x = Math.floor(originX + localX);
+    const y = Math.floor(originY + localY);
+    if (x >= 0 && x < width && y >= 0 && y * width + x < cleared.length) cleared[y * width + x] = 0;
+  }
+  return cleared;
+}
+
 export function drawMask(graphics: Phaser.GameObjects.Graphics, mask: Uint8Array, cellSize: number, offsetX = 0, offsetY = 0, ghost = false): void {
   graphics.clear();
   for (let y = 0; y < GRID_HEIGHT; y += 1) {
