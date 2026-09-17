@@ -10,4 +10,8 @@ describe('drag overlap preview', () => {
   it('does not mark cells when pieces are adjacent', () => {
     expect(overlappingCells([[0, 0]], 4, 6, [[0, 0]], 5, 6)).toEqual(new Set());
   });
+
+  it('marks partial cell intersections before grid alignment', () => {
+    expect(overlappingCells([[0, 0]], 4.25, 6, [[0, 0]], 4, 6)).toEqual(new Set(['0,0']));
+  });
 });

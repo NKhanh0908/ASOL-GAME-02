@@ -169,14 +169,14 @@ export class GameScene extends Phaser.Scene {
   private redrawDraggingPiece(id: string): void {
     const piece = this.session.level.pieces.find((item) => item.id === id)!;
     const view = this.views.get(id)!;
-    const originX = Math.round((view.x - LAYOUT.boardX) / LAYOUT.cell);
-    const originY = Math.round((view.y - LAYOUT.boardY) / LAYOUT.cell);
+    const originX = (view.x - LAYOUT.boardX) / LAYOUT.cell;
+    const originY = (view.y - LAYOUT.boardY) / LAYOUT.cell;
     const transparent = new Set<string>();
     for (const other of this.session.level.pieces) {
       if (other.id === id) continue;
       const otherView = this.views.get(other.id)!;
-      const otherX = Math.round((otherView.x - LAYOUT.boardX) / LAYOUT.cell);
-      const otherY = Math.round((otherView.y - LAYOUT.boardY) / LAYOUT.cell);
+      const otherX = (otherView.x - LAYOUT.boardX) / LAYOUT.cell;
+      const otherY = (otherView.y - LAYOUT.boardY) / LAYOUT.cell;
       for (const cell of overlappingCells(piece.cells, originX, originY, other.cells, otherX, otherY)) transparent.add(cell);
     }
     drawPiece(view, piece, LAYOUT.cell, 'dragging', transparent);

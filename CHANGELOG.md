@@ -7,7 +7,7 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 ### 2026-09-17 - Live overlap preview
 
 - While dragging, cells that overlap another piece become transparent immediately so the player can align the silhouettes before releasing.
-- Verification: 18 tests pass and the web build passes; the existing Vite large-chunk warning remains.
+- Preview overlap uses continuous piece positions, so partial intersections are visible before grid alignment. Verification: 19 tests pass and the web build passes; the existing Vite large-chunk warning remains.
 
 ### 2026-09-17 - Shape-aware dragging and placement feedback
 

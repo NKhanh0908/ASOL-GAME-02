@@ -13,10 +13,20 @@ export function overlappingCells(
   otherOriginX: number,
   otherOriginY: number,
 ): Set<string> {
-  const occupied = new Set(otherCells.map(([x, y]) => `${x + otherOriginX},${y + otherOriginY}`));
-  return new Set(cells
-    .filter(([x, y]) => occupied.has(`${x + originX},${y + originY}`))
-    .map(([x, y]) => `${x},${y}`));
+  const result = new Set<string>();
+  for (const [x, y] of cells) {
+    const left = x + originX;
+    const top = y + originY;
+    for (const [otherX, otherY] of otherCells) {
+      const otherLeft = otherX + otherOriginX;
+      const otherTop = otherY + otherOriginY;
+      if (left < otherLeft + 1 && left + 1 > otherLeft && top < otherTop + 1 && top + 1 > otherTop) {
+        result.add(`${x},${y}`);
+        break;
+      }
+    }
+  }
+  return result;
 }
 
 export function drawMask(graphics: Phaser.GameObjects.Graphics, mask: Uint8Array, cellSize: number, offsetX = 0, offsetY = 0, ghost = false): void {
