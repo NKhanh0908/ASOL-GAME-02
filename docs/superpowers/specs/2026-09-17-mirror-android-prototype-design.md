@@ -1,6 +1,6 @@
 # Mirror — Thiết kế prototype Android sáu màn
 
-*Ngày: 2026-09-17 | Trạng thái: Thiết kế đã được thống nhất trong cuộc trò chuyện; chờ duyệt bản ghi trước khi lập kế hoạch triển khai*
+*Ngày: 2026-09-17 | Trạng thái: Prototype đang được tinh chỉnh theo tham chiếu hình đơn sắc*
 
 ## 1. Mục tiêu và giới hạn
 
@@ -12,7 +12,7 @@ Chưa làm Chương 3–5, xoay mảnh, tia sáng, hệ sao, gợi ý, lưu ti�
 
 | Thành phần | Trách nhiệm | Phụ thuộc |
 |---|---|---|
-| Phaser Scene | Nhận chạm/kéo, hiển thị bàn/khay/mảnh, nút mẫu/đặt lại, phản hồi và chuyển màn | Dữ liệu màn, trạng thái chơi, bộ tính hình |
+| Phaser Scene | Nhận chạm/kéo, hiển thị bàn/khay/mảnh, bóng mẫu, đặt lại, gỡ mảnh và chuyển màn | Dữ liệu màn, trạng thái chơi, bộ tính hình |
 | Dữ liệu màn TypeScript | Sáu màn với kích thước bàn, mặt nạ mảnh, màu, vị trí khởi đầu, điểm neo hợp lệ và mặt nạ mẫu | Không phụ thuộc Phaser |
 | Bộ tính hình TypeScript | Đếm lớp phủ và so silhouette trên lưới logic | Dữ liệu màn và vị trí mảnh, không phụ thuộc Phaser |
 | Capacitor Android | Đóng gói web bundle thành ứng dụng thử trên Android | Bản build Vite/Phaser |
@@ -21,27 +21,27 @@ Chọn Phaser + TypeScript + Vite, dùng Phaser Graphics cho hình đơn giản,
 
 ## 3. Hình, dữ liệu và luật thắng
 
-Mảnh kính của prototype là tập ô trên cùng một lưới logic của bàn, với cạnh theo lưới. Bắt đầu với lưới 128 × 192 ô; chỉ đổi độ phân giải nếu thử trên điện thoại cho thấy viền quá thô hoặc chi phí tính hình quá cao. Mỗi mảnh giữ nguyên kích thước và hướng. Mỗi màn định nghĩa sẵn các điểm neo hợp lệ cho từng mảnh. Người chơi kéo tự do trong lúc tương tác; khi thả, chọn neo hợp lệ gần điểm gốc mảnh nhất trong bán kính hút 48 đơn vị trên mặt phẳng game thiết kế rộng 720 đơn vị. Nếu không có neo trong bán kính này, mảnh trở về vị trí trước khi kéo (hoặc khay nếu chưa đặt). Mảnh đã đặt có thể kéo lại. Bán kính hút được hiệu chỉnh qua thử máy; nó không làm đổi ô logic của một vị trí đã hút.
+Mảnh kính của prototype là tập ô trên cùng một lưới logic của bàn, với cạnh theo lưới. Bắt đầu với lưới 128 × 192 ô; chỉ đổi độ phân giải nếu thử trên điện thoại cho thấy viền quá thô hoặc chi phí tính hình quá cao. Sáu màn dùng ba hình đơn sắc: vuông, tam giác và hình thoi. Mỗi mảnh giữ nguyên kích thước và hướng. Mỗi màn định nghĩa sẵn các điểm neo hợp lệ cho từng mảnh. Người chơi kéo tự do trong lúc tương tác; khi thả, chọn neo hợp lệ gần điểm gốc mảnh nhất trong bán kính hút 6 ô lưới. Nếu không có neo trong bán kính này, mảnh giữ nguyên vị trí tạm thời và chưa tham gia mặt nạ kết quả. Kéo mảnh xuống khay bên dưới là thao tác chủ động để gỡ mảnh khỏi bàn. Mảnh đã snap có thể kéo lại.
 
 Sau mỗi lần đặt hoặc kéo lại, bộ tính hình dựng mặt nạ kết quả: tại mỗi ô đếm số mảnh phủ; số chẵn, kể cả 0, là ô rỗng; số lẻ là ô hiện, với màu mảnh ở trên cùng. Màu chỉ phục vụ hiển thị trong sáu màn đầu. Thắng khi toàn bộ mặt nạ ô hiện bằng mặt nạ silhouette mẫu, không có ô thiếu hay thừa. Không chấm thắng bằng cách so danh sách điểm neo với một đáp án duy nhất; các cách xếp khác nhau tạo cùng hình đều được chấp nhận.
 
-Phaser hiển thị từ cùng mặt nạ kết quả và cùng hệ tọa độ bàn mà bộ tính hình dùng. Mảnh vẫn có viền riêng để người chơi thấy các mảnh đã đặt, kể cả khi vùng giao của chúng đang rỗng. Khi thả mảnh, vùng đổi trạng thái có phản hồi thị giác ngắn, đủ để nhận ra vùng giao 2 lớp mất và vùng 3 lớp hiện lại. Bóng silhouette mẫu bật/tắt được; mặc định bật ở Chương 1 và tắt ở Chương 2 để vùng chồng chẵn nhìn rõ là rỗng. Thumbnail mẫu luôn hiện. Cỡ lưới và cách vẽ viền được chốt bằng thử trên điện thoại để hình nhìn thấy khớp các ô được chấm.
+Phaser hiển thị từ cùng mặt nạ logic và cùng hệ tọa độ bàn mà bộ tính hình dùng. Mảnh và bóng mẫu dùng cùng một màu vàng cam; bóng mẫu nằm dưới mảnh với độ mờ khoảng 15%. Mảnh đang kéo sáng hơn, còn mảnh đã snap dùng viền để người chơi thấy các lớp. Bóng mẫu luôn hiện để người chơi nhận diện phạm vi. Khi thả mảnh, vùng đổi trạng thái có phản hồi thị giác ngắn, đủ để nhận ra vùng giao 2 lớp mất và vùng 3 lớp hiện lại. Cỡ lưới và cách vẽ viền được chốt bằng thử trên điện thoại để hình nhìn thấy khớp các ô được chấm.
 
 ## 4. Luồng người chơi và nội dung sáu màn
 
 1. **1-1:** Một mảnh, một neo. Người chơi khám phá kéo–thả và điểm hút.
 2. **1-2:** Hai mảnh không chồng. Người chơi ghép đủ silhouette, không tạo vùng thừa.
-3. **1-3:** Hai hoặc ba mảnh không chồng. Người chơi tự làm lại thao tác không có luật mới.
-4. **2-1:** Hai mảnh có vùng giao bắt buộc; vùng 2 lớp biến mất để tạo hình mẫu.
+3. **1-3:** Vuông, tam giác và hình thoi ghép thành hình rõ ràng, chưa có chồng khó.
+4. **2-1:** Hai mảnh bắt đầu chồng sâu; vùng 2 lớp biến mất để tạo hình mẫu.
 5. **2-2:** Ba mảnh có vùng giao 3 lớp; vùng đó hiện lại.
-6. **2-3:** Hình mẫu buộc dùng cả vùng chồng chẵn và lẻ. Không nhắc lại lời giải trước khi người chơi thử.
+6. **2-3:** Ba mảnh tạo hình phức tạp, buộc người chơi thử vị trí và thứ tự đặt.
 
-Game mở vào 1-1. Trong mỗi màn, người chơi xem thumbnail, kéo mảnh từ khay hoặc trên bàn, có thể bật/tắt bóng mẫu và đặt lại. Thả xa neo không làm mất mảnh hoặc làm thay đổi kết quả. Sau khi thắng, khóa kéo mảnh, giữ kết quả trên bàn và hiện nút **Màn tiếp** để người chơi xem điều vừa xảy ra. Không có giới hạn thời gian hay lượt.
+Game mở vào 1-1. Trong mỗi màn, người chơi xem bóng mẫu, kéo mảnh từ khay hoặc trên bàn, kéo xuống khay để gỡ mảnh và đặt lại. Thả xa neo giữ mảnh ở vị trí tạm nhưng không làm thay đổi mặt nạ kết quả. Sau khi thắng, khóa kéo mảnh, giữ kết quả trên bàn và hiện nút **Màn tiếp** để người chơi xem điều vừa xảy ra. Không có giới hạn thời gian hay lượt.
 
 ## 5. Xử lý tình huống và kiểm chứng
 
 - **Chạm bị hủy hoặc mất focus:** Trả mảnh đang kéo về vị trí trước khi kéo; không cập nhật mặt nạ.
-- **Thả ngoài vùng hút:** Trả về vị trí cũ/khay, giữ trạng thái thắng hiện có.
+- **Thả ngoài vùng hút:** Giữ mảnh ở vị trí tạm, không đưa vào mặt nạ; chỉ kéo xuống khay mới gỡ mảnh.
 - **Đặt lại:** Đưa mọi mảnh về trạng thái đầu của màn, xóa trạng thái thắng và dựng lại mặt nạ; không chuyển màn.
 - **Màn hình khác tỷ lệ:** Bàn và khay co theo chiều dọc, vẫn giữ hệ tọa độ lưới riêng; kiểm tra vùng chạm trên ít nhất một điện thoại Android thật. Khóa giao diện ở chiều dọc trong bản thử.
 - **Không khớp hình:** Không báo thắng; người chơi vẫn có thể di chuyển mọi mảnh và dùng Đặt lại. Không thêm gợi ý tự động trong lần playtest đầu.

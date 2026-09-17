@@ -2,7 +2,7 @@ import { levels } from './levels';
 import { evaluate, matchesTarget } from './mask';
 import type { Level, Placement } from './types';
 
-const SNAP_RADIUS_CELLS = 12;
+export const SNAP_RADIUS_CELLS = 6;
 
 export class Session {
   private currentIndex: number;
@@ -41,6 +41,14 @@ export class Session {
     this.placed = this.placed.filter((placement) => placement.pieceId !== pieceId);
     this.placed.push({ pieceId, x: nearest[0], y: nearest[1] });
     this.victory = matchesTarget(this.result, this.targetMask);
+    return true;
+  }
+
+  remove(pieceId: string): boolean {
+    const hadPlacement = this.placed.some((placement) => placement.pieceId === pieceId);
+    if (!hadPlacement) return false;
+    this.placed = this.placed.filter((placement) => placement.pieceId !== pieceId);
+    this.victory = false;
     return true;
   }
 

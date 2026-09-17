@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import type { PieceDefinition } from '../domain/types';
 import { GRID_HEIGHT, GRID_WIDTH } from '../domain/types';
 
-export const COLORS = [0x000000, 0xff7292, 0xffcf73, 0x78d9ee];
+export const COLORS = [0x000000, 0xffc857];
 
 export function drawMask(graphics: Phaser.GameObjects.Graphics, mask: Uint8Array, cellSize: number, offsetX = 0, offsetY = 0, ghost = false): void {
   graphics.clear();
@@ -13,7 +13,7 @@ export function drawMask(graphics: Phaser.GameObjects.Graphics, mask: Uint8Array
       if (!color) { x += 1; continue; }
       const start = x;
       while (x < GRID_WIDTH && mask[y * GRID_WIDTH + x] === color) x += 1;
-      graphics.fillStyle(ghost ? 0xb3c4dc : COLORS[color], ghost ? 0.18 : 0.9);
+      graphics.fillStyle(COLORS[color], ghost ? 0.15 : 0.9);
       graphics.fillRect(offsetX + start * cellSize, offsetY + y * cellSize, (x - start) * cellSize, cellSize);
     }
   }

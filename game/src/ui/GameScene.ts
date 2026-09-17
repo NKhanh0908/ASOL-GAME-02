@@ -6,6 +6,7 @@ import { drawMask, drawPiece, pieceSize } from './draw';
 const BOARD_X = 104;
 const BOARD_Y = 120;
 const CELL = 4;
+const TRAY_DROP_TOP = 960;
 
 type Drag = {
   id: string;
@@ -21,11 +22,11 @@ export class GameScene extends Phaser.Scene {
   private session = new Session();
   private views = new Map<string, Phaser.GameObjects.Graphics>();
   private homes = new Map<string, { x: number; y: number }>();
+  private freePositions = new Map<string, { x: number; y: number }>();
   private dragging: Drag | undefined;
   private ghostVisible = true;
   private ghost!: Phaser.GameObjects.Graphics;
   private composite!: Phaser.GameObjects.Graphics;
-  private ghostLabel!: Phaser.GameObjects.Text;
   private status!: Phaser.GameObjects.Text;
   private nextButton!: Phaser.GameObjects.Container;
 
@@ -35,8 +36,9 @@ export class GameScene extends Phaser.Scene {
     this.cameras.main.setBackgroundColor('#0b1322');
     this.views.clear();
     this.homes.clear();
+    this.freePositions.clear();
     this.dragging = undefined;
-    this.ghostVisible = this.session.levelIndex < 3;
+    this.ghostVisible = true;
 
     this.add.text(28, 24, 'MIRROR', { fontFamily: 'Arial', fontSize: '32px', fontStyle: 'bold', color: '#f4f8ff' });
     this.add.text(30, 70, `${this.session.level.id}  ·  ${this.session.level.title}`, { fontFamily: 'Arial', fontSize: '23px', color: '#aabdd3' });
@@ -56,13 +58,10 @@ export class GameScene extends Phaser.Scene {
     this.button(113, 1216, 170, 'Đặt lại', () => {
       this.cancelDrag();
       this.session.reset();
+      this.freePositions.clear();
       this.refresh();
     });
-    this.button(335, 1216, 215, `Bóng mẫu: ${this.ghostVisible ? 'Bật' : 'Tắt'}`, () => {
-      this.ghostVisible = !this.ghostVisible;
-      this.ghost.setVisible(this.ghostVisible);
-      this.ghostLabel.setText(`Bóng mẫu: ${this.ghostVisible ? 'Bật' : 'Tắt'}`);
-    }, (label) => { this.ghostLabel = label; });
+    this.add.text(375, 1218, 'Kéo xuống đây để gỡ mảnh', { fontFamily: 'Arial', fontSize: '18px', color: '#aabdd3' }).setOrigin(0.5);
     this.status = this.add.text(360, 894, '', { fontFamily: 'Arial', fontSize: '25px', fontStyle: 'bold', color: '#e9f9e9' }).setOrigin(0.5, 0).setDepth(8);
     this.nextButton = this.button(574, 1216, 247, this.session.isFinalLevel ? 'Chơi lại' : 'Màn tiếp', () => {
       if (this.session.next()) this.scene.restart();
@@ -142,12 +141,25 @@ export class GameScene extends Phaser.Scene {
     drag.view.setPosition(pointer.x - drag.offsetX, pointer.y - drag.offsetY);
     this.dragging = undefined;
     const before = this.session.result;
+    if (pointer.y >= TRAY_DROP_TOP) {
+      this.session.remove(drag.id);
+      this.freePositions.delete(drag.id);
+      drag.view.setDepth(5);
+      this.refresh();
+      this.flashChanged(before, this.session.result);
+      return;
+    }
     if (this.session.drop(drag.id, (drag.view.x - BOARD_X) / CELL, (drag.view.y - BOARD_Y) / CELL)) {
+      this.freePositions.delete(drag.id);
       this.refresh();
       this.flashChanged(before, this.session.result);
     } else {
-      drag.view.setPosition(drag.oldX, drag.oldY).setDepth(5);
+      this.session.remove(drag.id);
+      this.freePositions.set(drag.id, { x: drag.view.x, y: drag.view.y });
+      drag.view.setDepth(5);
       this.redrawPiece(drag.id);
+      this.refresh();
+      this.flashChanged(before, this.session.result);
     }
   }
 
@@ -169,7 +181,10 @@ export class GameScene extends Phaser.Scene {
     for (const piece of this.session.level.pieces) {
       const placed = this.session.placements.find((item) => item.pieceId === piece.id);
       const home = this.homes.get(piece.id)!;
-      this.views.get(piece.id)!.setPosition(placed ? BOARD_X + placed.x * CELL : home.x, placed ? BOARD_Y + placed.y * CELL : home.y).setDepth(5);
+      const free = this.freePositions.get(piece.id);
+      const x = placed ? BOARD_X + placed.x * CELL : free?.x ?? home.x;
+      const y = placed ? BOARD_Y + placed.y * CELL : free?.y ?? home.y;
+      this.views.get(piece.id)!.setPosition(x, y).setDepth(5);
       this.redrawPiece(piece.id);
     }
     this.status.setText(this.session.won ? (this.session.isFinalLevel ? 'Hoàn thành bản thử!' : 'Khớp hình!') : '');

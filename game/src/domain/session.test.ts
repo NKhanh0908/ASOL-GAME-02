@@ -36,4 +36,34 @@ describe('play session', () => {
     game.drop(first.id, first.anchors[1][0], first.anchors[1][1]);
     expect(game.placements.at(-1)?.pieceId).toBe(first.id);
   });
+
+  it('removes a snapped piece without changing the level', () => {
+    const game = new Session();
+    const piece = game.level.pieces[0];
+    const solution = game.level.solution[0];
+    expect(game.drop(piece.id, solution.x, solution.y)).toBe(true);
+    expect(game.remove(piece.id)).toBe(true);
+    expect(game.placements).toHaveLength(0);
+    expect(game.won).toBe(false);
+    expect(game.remove(piece.id)).toBe(false);
+  });
+
+  it('uses a smaller snap radius', () => {
+    const game = new Session();
+    const piece = game.level.pieces[0];
+    const solution = game.level.solution[0];
+    expect(game.drop(piece.id, solution.x + 6, solution.y)).toBe(true);
+    game.reset();
+    expect(game.drop(piece.id, solution.x + 7, solution.y)).toBe(false);
+  });
+
+  it('accepts the authored solution for every level', () => {
+    for (let levelIndex = 0; levelIndex < 6; levelIndex += 1) {
+      const game = new Session(levelIndex);
+      for (const placement of game.level.solution) {
+        expect(game.drop(placement.pieceId, placement.x, placement.y)).toBe(true);
+      }
+      expect(game.won).toBe(true);
+    }
+  });
 });
