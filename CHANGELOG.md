@@ -4,6 +4,12 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-09-18 - Level repository override schema
+
+- Migrated persisted custom levels to versioned `mirror.custom-levels.v1` records with `kind`, generated targets, override priority, restore, and new-level deletion operations.
+- Corrupt or unversioned storage is ignored safely; legacy `save`/`remove` aliases remain for current UI callers during migration.
+- Verification: focused repository and shape tests pass (9 tests).
+
 ### 2026-09-18 - Corrected editable-level design
 
 - Clarified that the editor creates the target from the current XOR arrangement, overrides existing levels by id, adds new levels with new ids, and supports restoring built-in defaults.

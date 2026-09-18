@@ -21,12 +21,18 @@ export interface Level {
   title: string;
   pieces: PieceDefinition[];
   solution: Placement[];
+  /** Present on persisted custom records; built-ins derive their target at runtime. */
+  target?: Uint8Array;
 }
 
 export interface CustomLevelRecord extends Level {
-  sourceLevelId: string;
-  custom: true;
+  /** Whether this record adds a level or overrides an immutable built-in. */
+  kind?: 'new' | 'override';
+  /** The XOR silhouette saved by the editor. */
+  target?: Uint8Array;
+  sourceLevelId?: string;
   createdAt: number;
   updatedAt: number;
+  /** Legacy UI marker; new records should use `kind`. */
+  custom?: true;
 }
-
