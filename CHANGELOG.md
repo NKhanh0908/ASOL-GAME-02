@@ -4,7 +4,14 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-09-18 - Persistent custom level editor
+
+- Added `CustomLevelScene` and `customLevelEditor` helpers with 4 shape tools (Square, Large Triangle, Small Triangle, Diamond), live overlap transparency, drag snap, rename prompt, and exact XOR validation before saving.
+- Integrated editor into Phaser scene registry with source template selection and edit mode support.
+- Verification: 40 tests pass and TypeScript / Vite build succeeds.
+
 ### 2026-09-18 - Level menu and custom level routing
+
 
 - Added `LevelMenuScene` with responsive selection for built-in levels and custom level management (Play, Edit, Delete with in-scene confirmation).
 - Connected main game entry point to the level select menu and allowed `GameScene` to play specific level IDs and navigate back to the menu.
