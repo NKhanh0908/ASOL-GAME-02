@@ -4,6 +4,12 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-09-18 - Shape catalog and level repository
+
+- Added `smallTriangle` shape generator and `LevelRepository` with local storage persistence, corrupted data recovery, and custom level CRUD support.
+- Verification: 28 tests pass across domain and UI modules.
+
+
 ### 2026-09-18 - Custom level editor design
 
 - Added the reviewed design for selecting a built-in level as a custom template, composing four fixed shapes, validating the XOR solution and persisting custom levels locally.

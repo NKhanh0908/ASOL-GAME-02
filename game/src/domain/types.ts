@@ -22,3 +22,11 @@ export interface Level {
   pieces: PieceDefinition[];
   solution: Placement[];
 }
+
+export interface CustomLevelRecord extends Level {
+  sourceLevelId: string;
+  custom: true;
+  createdAt: number;
+  updatedAt: number;
+}
+

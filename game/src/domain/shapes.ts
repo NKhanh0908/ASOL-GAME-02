@@ -16,7 +16,11 @@ export const square = (size: number): Cell[] => raster(size, () => true);
 export const triangle = (size: number): Cell[] =>
   raster(size, (x, y) => Math.abs(x + 0.5 - size / 2) <= (y + 1) / 2);
 
+export const smallTriangle = (size = 24): Cell[] =>
+  raster(size, (x, y) => Math.abs(x + 0.5 - size / 2) <= (y + 1) / 2);
+
 export const diamond = (size: number): Cell[] =>
+
   raster(size, (x, y) =>
     Math.abs(x + 0.5 - size / 2) + Math.abs(y + 0.5 - size / 2) <= size / 2,
   );
