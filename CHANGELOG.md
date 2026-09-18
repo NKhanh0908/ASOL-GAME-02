@@ -8,6 +8,10 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 - Added the reviewed design for selecting a built-in level as a custom template, composing four fixed shapes, validating the XOR solution and persisting custom levels locally.
 
+### 2026-09-18 - Custom level editor implementation plan
+
+- Added the task-by-task plan covering the shape catalog, persistent repository, explicit-level sessions, menu routing, editor validation and browser/Android verification.
+
 ### 2026-09-17 - UI interaction cleanup
 
 - Consolidated piece lookup, placement state, grid origins, overlap collection and composite preview rendering into focused `GameScene` helpers without changing gameplay behavior.
