@@ -8,10 +8,12 @@ Prototype hiện có sáu màn, chia thành hai chương. Bản chơi mở thẳ
 
 - Công nghệ: Phaser, TypeScript, Vite và Capacitor Android.
 - Nền tảng kiểm chứng: trình duyệt web và Android màn hình dọc.
-- Gameplay: một màu vàng cam, bóng mục tiêu mờ luôn hiển thị, mảnh có thể kéo lại hoặc kéo xuống khay để gỡ.
+- Gameplay: menu chọn màn (6 màn chính + Custom Levels), một màu vàng cam, bóng mục tiêu mờ luôn hiển thị, mảnh có thể kéo lại hoặc kéo xuống khay để gỡ.
+- Custom Level Editor: hỗ trợ 4 loại hình học (vuông, tam giác lớn, tam giác nhỏ, hình thoi), xác thực XOR 100%, lưu trữ cục bộ `localStorage` (`mirror.custom-levels.v1`).
 - Logic: lưới 128 × 192 ô, vùng hít 6 ô, chỉ mảnh đã snap mới được tính vào hình kết quả.
-- Kiểm thử hiện tại: 12 test logic đã đạt; APK debug đã build được.
+- Kiểm thử hiện tại: 40 unit test đã đạt (domain, UI helpers, level editor, repository); web build và sync Android Capacitor đã hoàn tất.
 - Việc còn lại: playtest trên thiết bị Android thật và playtest với người chơi chưa biết luật.
+
 
 ## Cấu trúc repository
 

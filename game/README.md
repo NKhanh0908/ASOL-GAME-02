@@ -1,6 +1,6 @@
 # Mirror prototype
 
-Sáu màn kiểm chứng kéo–thả và vùng chồng chẵn/lẻ. Mở thẳng vào màn 1-1; không có lưu tiến độ. Bản web và bản Android dùng cùng mã gameplay.
+Sáu màn kiểm chứng kéo–thả và vùng chồng chẵn/lẻ, cùng Level Select Menu và Persistent Custom Level Editor (hỗ trợ 4 loại mảnh, lưu cục bộ `localStorage`). Bản web và bản Android dùng cùng mã gameplay.
 
 ## Chạy trên máy tính
 

@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { Session } from './session';
 import { levels } from './levels';
+import type { Level } from './types';
+
 
 describe('play session', () => {
   it('snaps near an anchor and rejects distant drops without losing the piece', () => {

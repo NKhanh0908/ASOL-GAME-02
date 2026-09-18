@@ -4,7 +4,14 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-09-18 - Custom level editor verification and documentation
+
+- Documented custom level storage schema (`mirror.custom-levels.v1`), shape specifications, test matrix, and end-to-end flow.
+- Updated root `README.md` and `game/README.md` with current feature capabilities and 40 unit tests count.
+- Verification: 40 tests pass, web production build succeeds, and Capacitor Android sync completes cleanly.
+
 ### 2026-09-18 - Persistent custom level editor
+
 
 - Added `CustomLevelScene` and `customLevelEditor` helpers with 4 shape tools (Square, Large Triangle, Small Triangle, Diamond), live overlap transparency, drag snap, rename prompt, and exact XOR validation before saving.
 - Integrated editor into Phaser scene registry with source template selection and edit mode support.
