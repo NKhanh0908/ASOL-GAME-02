@@ -281,7 +281,17 @@ export class LevelMenuScene extends Phaser.Scene {
       .rectangle(0, 0, width, height, fillColor, 0.85)
       .setStrokeStyle(2, strokeColor, 0.8)
       .setInteractive({ useHandCursor: true });
-    background.on('pointerdown', action);
+
+    background.on('pointerdown', () => {
+      background.setAlpha(0.6);
+    });
+    background.on('pointerout', () => {
+      background.setAlpha(0.85);
+    });
+    background.on('pointerup', () => {
+      background.setAlpha(0.85);
+      this.time.delayedCall(0, action);
+    });
 
     const label = this.add
       .text(0, 0, text, {
@@ -295,3 +305,4 @@ export class LevelMenuScene extends Phaser.Scene {
     return this.add.container(x, y, [background, label]);
   }
 }
+

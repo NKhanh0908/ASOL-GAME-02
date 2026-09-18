@@ -4,7 +4,14 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-09-18 - Fix scene transition crash on button clicks
+
+- Changed button activation from synchronous `pointerdown` to `pointerup` with deferred scene start (`delayedCall(0)`), preventing Phaser InputManager crashes when tearing down active scenes during event propagation.
+- Added visual pressed feedback states for buttons across Menu, Game, and Custom Level scenes.
+- Verification: 40 tests pass and TypeScript / Vite build succeeds.
+
 ### 2026-09-18 - Custom level editor verification and documentation
+
 
 - Documented custom level storage schema (`mirror.custom-levels.v1`), shape specifications, test matrix, and end-to-end flow.
 - Updated root `README.md` and `game/README.md` with current feature capabilities and 40 unit tests count.

@@ -297,7 +297,13 @@ export class GameScene extends Phaser.Scene {
 
   private button(x: number, y: number, width: number, text: string, action: () => void): Phaser.GameObjects.Container {
     const background = this.add.rectangle(0, 0, width, 64, THEME.blue, 0.2).setStrokeStyle(2, THEME.blue, 0.76).setInteractive({ useHandCursor: true });
-    background.on('pointerdown', action);
+    background.on('pointerdown', () => background.setAlpha(0.5));
+    background.on('pointerout', () => background.setAlpha(1));
+    background.on('pointerup', () => {
+      background.setAlpha(1);
+      this.time.delayedCall(0, action);
+    });
     return this.add.container(x, y, [background, this.add.text(0, 0, text, { fontFamily: 'Arial', fontSize: '19px', fontStyle: 'bold', color: THEME.text }).setOrigin(0.5)]).setDepth(10);
   }
 }
+
