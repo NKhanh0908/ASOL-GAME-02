@@ -4,7 +4,14 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-09-18 - Level menu and custom level routing
+
+- Added `LevelMenuScene` with responsive selection for built-in levels and custom level management (Play, Edit, Delete with in-scene confirmation).
+- Connected main game entry point to the level select menu and allowed `GameScene` to play specific level IDs and navigate back to the menu.
+- Verification: 33 tests pass and TypeScript / Vite production build succeeds.
+
 ### 2026-09-18 - Session custom level support
+
 
 - Allowed `Session` to initialize with either numeric index or explicit `Level` instances.
 - Added `Session.canSaveSolution` helper ensuring bounds and XOR mask match before persistence.

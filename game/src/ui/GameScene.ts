@@ -7,6 +7,8 @@ import { LAYOUT, toGrid, trayHome } from './layout';
 import { THEME } from './theme';
 import { containsCell } from '../domain/shapes';
 
+import { resolveLevel } from './levelMenu';
+
 type Drag = {
   id: string;
   view: Phaser.GameObjects.Graphics;
@@ -20,7 +22,7 @@ type Drag = {
 type GridOrigin = { x: number; y: number };
 
 export class GameScene extends Phaser.Scene {
-  private session = new Session();
+  private session!: Session;
   private views = new Map<string, Phaser.GameObjects.Graphics>();
   private homes = new Map<string, { x: number; y: number }>();
   private freePositions = new Map<string, { x: number; y: number }>();
@@ -33,9 +35,18 @@ export class GameScene extends Phaser.Scene {
   private resetButton!: Phaser.GameObjects.Container;
   private nextButton!: Phaser.GameObjects.Container;
 
+
   constructor() { super('Mirror'); }
 
+  init(data?: { levelId?: string }): void {
+    const level = resolveLevel(data?.levelId);
+    this.session = new Session(level);
+  }
+
   create(): void {
+    if (!this.session) {
+      this.session = new Session();
+    }
     this.views.clear();
     this.homes.clear();
     this.freePositions.clear();
@@ -53,10 +64,38 @@ export class GameScene extends Phaser.Scene {
     this.add.text(30, 942, 'MẢNH KÍNH', { fontFamily: 'Arial', fontSize: '16px', fontStyle: 'bold', color: THEME.muted, letterSpacing: 2 });
     this.createPieces();
     this.add.text(360, 1180, 'Kéo xuống đây để gỡ mảnh', { fontFamily: 'Arial', fontSize: '18px', color: THEME.muted }).setOrigin(0.5);
-    this.resetButton = this.button(118, 1230, 184, 'Đặt lại', () => { this.cancelDrag(); this.session.reset(); this.freePositions.clear(); this.refresh(); });
+
+    this.button(100, 1230, 150, 'Menu', () => {
+      this.cancelDrag();
+      this.scene.start('LevelMenu');
+    });
+
+
+    this.resetButton = this.button(280, 1230, 160, 'Đặt lại', () => {
+      this.cancelDrag();
+      this.session.reset();
+      this.freePositions.clear();
+      this.refresh();
+    });
+
     this.status = this.add.text(360, 950, '', { fontFamily: 'Arial', fontSize: '24px', fontStyle: 'bold', color: THEME.text }).setOrigin(0.5, 1).setDepth(8);
-    this.nextButton = this.button(574, 1230, 248, this.session.isFinalLevel ? 'Chơi lại' : 'Màn tiếp', () => { if (this.session.next()) this.scene.restart(); });
+
+    const isNextAvailable = this.session.levelIndex >= 0 && !this.session.isFinalLevel;
+    this.nextButton = this.button(
+      545,
+      1230,
+      290,
+      isNextAvailable ? 'Màn tiếp' : 'Về Menu',
+      () => {
+        if (isNextAvailable && this.session.next()) {
+          this.scene.restart({ levelId: this.session.level.id });
+        } else {
+          this.scene.start('LevelMenu');
+        }
+      }
+    );
     this.nextButton.setVisible(false);
+
     this.input.on('pointermove', this.onMove, this);
     this.input.on('pointerup', this.onUp, this);
     this.input.on('gameout', this.cancelDrag, this);
