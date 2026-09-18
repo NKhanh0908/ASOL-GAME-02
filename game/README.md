@@ -1,6 +1,6 @@
 # Mirror prototype
 
-Sáu màn kiểm chứng kéo–thả và vùng chồng chẵn/lẻ, cùng Level Select Menu và Persistent Custom Level Editor (hỗ trợ 4 loại mảnh, lưu cục bộ `localStorage`). Bản web và bản Android dùng cùng mã gameplay.
+Sáu màn kiểm chứng kéo–thả và vùng chồng chẵn/lẻ, cùng Level Select Menu và Custom Level Editor. Editor cho phép kéo mảnh lên bàn để tạo bóng mục tiêu, sửa level cũ, tạo level mới và lưu cục bộ bằng `localStorage`. Bản web và bản Android dùng cùng mã gameplay.
 
 ## Chạy trên máy tính
 
@@ -13,6 +13,8 @@ npm run dev
 ```
 
 Mở địa chỉ Vite in ra (thường là `http://localhost:5173`). Kiểm tra logic bằng `npm test` và build web bằng `npm run build`.
+
+Trong menu, `Sửa` mở level hiện có với các mảnh đang tạo hình. `Tạo level mới` mở bàn trống. Hình XOR hiện trên bàn là target sẽ được lưu; khi chơi, các mảnh trở về khay. Level built-in đã sửa có nút `Gốc` để khôi phục dữ liệu mặc định.
 
 ## Build Android debug
 

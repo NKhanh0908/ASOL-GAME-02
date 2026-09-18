@@ -8,10 +8,10 @@ Prototype hiện có sáu màn, chia thành hai chương. Bản chơi mở thẳ
 
 - Công nghệ: Phaser, TypeScript, Vite và Capacitor Android.
 - Nền tảng kiểm chứng: trình duyệt web và Android màn hình dọc.
-- Gameplay: menu chọn màn (6 màn chính + Custom Levels), một màu vàng cam, bóng mục tiêu mờ luôn hiển thị, mảnh có thể kéo lại hoặc kéo xuống khay để gỡ.
-- Custom Level Editor: hỗ trợ 4 loại hình học (vuông, tam giác lớn, tam giác nhỏ, hình thoi), xác thực XOR 100%, lưu trữ cục bộ `localStorage` (`mirror.custom-levels.v1`).
+- Gameplay: menu chọn màn (6 màn chính + level mới), một màu vàng cam, bóng mục tiêu mờ luôn hiển thị, mảnh có thể kéo lại hoặc kéo xuống khay để gỡ.
+- Custom Level Editor: kéo các mảnh lên bàn để XOR hiện tại trở thành bóng mục tiêu; hỗ trợ sửa level cũ, tạo level mới, khôi phục bản gốc và lưu cục bộ bằng `localStorage` (`mirror.custom-levels.v1`).
 - Logic: lưới 128 × 192 ô, vùng hít 6 ô, chỉ mảnh đã snap mới được tính vào hình kết quả.
-- Kiểm thử hiện tại: 40 unit test đã đạt (domain, UI helpers, level editor, repository); web build và sync Android Capacitor đã hoàn tất.
+- Kiểm thử hiện tại: 41 unit test đã đạt (domain, UI helpers, level editor, repository); browser flow tạo/sửa/khôi phục đã kiểm tra; web build đã đạt.
 - Việc còn lại: playtest trên thiết bị Android thật và playtest với người chơi chưa biết luật.
 
 
@@ -95,4 +95,6 @@ Không commit `game/node_modules`, `game/dist`, `game/android/local.properties` 
 - [Đánh giá kỹ thuật](docs/concept/technical-assessment.md)
 - [Spec prototype](docs/superpowers/specs/2026-09-17-mirror-android-prototype-design.md)
 - [Plan triển khai](docs/superpowers/plans/2026-09-17-mirror-android-prototype.md)
+- [Spec editable level](docs/superpowers/specs/2026-09-18-custom-level-editor-design.md)
+- [Plan editable level](docs/superpowers/plans/2026-09-18-custom-level-editor.md)
 - [Nhật ký thay đổi](CHANGELOG.md)

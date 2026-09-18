@@ -1,51 +1,25 @@
-# Custom Level Editor Verification Report
+# Custom level editor verification — 2026-09-18
 
-> Verified: 2026-09-18  
-> Branch: `feat/mirror-prototype`  
-> Suite: 40 Vitest unit tests, TypeScript compiler, Vite web build, Capacitor Android sync.
+## Luồng đã kiểm tra
 
-## 1. Overview & Architecture
+| Luồng | Kết quả |
+| --- | --- |
+| Mở `Tạo level mới` từ menu | Đạt; editor bắt đầu với bàn trống |
+| Thêm mảnh vuông và lưu | Đạt; XOR hiện tại được lưu làm target và chuyển sang gameplay |
+| Mở `Sửa` cho level 1-1 | Đạt; nạp lại các mảnh và vị trí của level |
+| Lưu level cũ | Đạt; giữ nguyên id `1-1` và ghi override |
+| Khôi phục level gốc | Đạt; xóa override và hiển thị lại built-in |
+| Lưu trữ localStorage | Đạt qua repository tests và browser reload setup |
 
-The custom level editor allows players to select any built-in level (1-1 to 2-3) as a base silhouette template, author new puzzles using 4 fixed geometric shapes (Square 48, Large Triangle 48, Small Triangle 24, Diamond 48), validate the XOR composite against the target silhouette, and persist the custom level locally for instant play and editing.
+## Automated evidence
 
-```
-[LevelMenuScene]
-   │
-   ├─► Built-in Levels (1-1 to 2-3) ──► [GameScene (Mirror)]
-   │
-   ├─► Custom Levels List (CRUD) ────► [GameScene (Play)] / [CustomLevelScene (Edit)]
-   │
-   └─► "+ Tạo Custom Level" ────────► Template Picker ──► [CustomLevelScene (New)]
-```
+- `npm test`: 41 tests pass.
+- `npm run build`: pass; Vite vẫn báo cảnh báo bundle Phaser lớn hơn 500 kB.
+- Browser harness: tạo editor trống, thêm mảnh, lưu target, mở sửa level cũ và khôi phục built-in đều pass.
+- `npm run android:sync`: pass.
+- `android/gradlew.bat assembleDebug`: pass; APK ở `game/android/app/build/outputs/apk/debug/app-debug.apk`.
+- Chưa claim playtest trên thiết bị Android thật.
 
-## 2. Tested Workflows & Acceptance Criteria
+## Giới hạn
 
-| Flow / Requirement | Test / Verification | Status |
-|---|---|---|
-| **Shape catalog** | `shapes.test.ts` (Square 48, Large Triangle 48, Small Triangle 24, Diamond 48) | ✅ Passed |
-| **Local persistence** | `levelRepository.test.ts` (CRUD under `mirror.custom-levels.v1`, corrupted JSON safety) | ✅ Passed |
-| **Session integration** | `session.test.ts` (`new Session(customLevel)`, `canSaveSolution` verification) | ✅ Passed |
-| **Menu navigation** | `levelMenu.test.ts`, `LevelMenuScene.ts` (List built-in/custom, play, edit, delete confirmation) | ✅ Passed |
-| **Editor logic & validation** | `customLevelEditor.test.ts` (Piece creation, bounds check, 100% XOR match requirement) | ✅ Passed |
-| **Android packaging** | `npm run android:sync` (Asset copy, config sync to `android/`) | ✅ Passed |
-
-## 3. Storage Specification
-
-- **Storage Key:** `mirror.custom-levels.v1`
-- **Engine:** `globalThis.localStorage` (with automatic in-memory fallback for headless test runners)
-- **Record Schema:**
-  - `id`: Unique string (`custom-<timestamp>-<hash>`)
-  - `title`: User-editable level title
-  - `sourceLevelId`: Identifier of the template built-in level
-  - `pieces`: Array of `PieceDefinition` (with solution anchors assigned)
-  - `solution`: Array of `Placement` (`{ pieceId, x, y }`)
-  - `custom`: `true`
-  - `createdAt`: Unix timestamp
-  - `updatedAt`: Unix timestamp
-
-## 4. Build & Test Summary
-
-- **Vitest:** 9 test files, 40 tests passed (100%).
-- **TypeScript:** Type-checked without errors (`tsc --noEmit`).
-- **Vite:** Production bundle generated under `dist/` (1227 kB JS minified, 328 kB gzip).
-- **Capacitor Android:** Synchronized web build assets to `android/app/src/main/assets/public/`.
+Các ảnh và browser harness là kiểm chứng render thật trong môi trường desktop. Chưa có thiết bị Android thật trong phiên này để xác nhận cảm ứng, bàn phím nhập tên và khôi phục dữ liệu sau khi cài APK.
