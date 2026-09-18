@@ -98,15 +98,17 @@ export class CustomLevelScene extends Phaser.Scene {
     this.pieces = source.pieces.map((p) => {
       const sol = source.solution.find((s) => s.pieceId === p.id);
       const kind = this.inferKind(p);
+      const id = `p-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
       return {
-        id: `p-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+        id,
         kind,
-        piece: createPiece(kind, p.id),
+        piece: createPiece(kind, id),
         x: sol?.x ?? 20,
         y: sol?.y ?? 20,
       };
     });
   }
+
 
   private inferKind(p: PieceDefinition): ShapeKind {
     const maxX = Math.max(...p.cells.map(([x]) => x)) + 1;

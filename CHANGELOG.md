@@ -4,7 +4,13 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-09-18 - Fix custom level editor piece ID sync
+
+- Synchronized generated piece IDs with placed piece records in `CustomLevelScene.init`, ensuring `validateDraft` and live XOR evaluation match correctly when loading a template level.
+- Verification: 40 tests pass and web build succeeds.
+
 ### 2026-09-18 - Fix scene transition crash on button clicks
+
 
 - Changed button activation from synchronous `pointerdown` to `pointerup` with deferred scene start (`delayedCall(0)`), preventing Phaser InputManager crashes when tearing down active scenes during event propagation.
 - Added visual pressed feedback states for buttons across Menu, Game, and Custom Level scenes.
