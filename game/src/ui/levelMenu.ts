@@ -3,12 +3,19 @@ import { levels } from '../domain/levels';
 import type { CustomLevelRecord, Level } from '../domain/types';
 
 export function isCustomLevel(level: Level): level is CustomLevelRecord {
-  return 'custom' in level && (level as CustomLevelRecord).custom === true;
+  return 'kind' in level && (level as CustomLevelRecord).kind === 'new';
+}
+
+export function isOverrideLevel(level: Level): level is CustomLevelRecord {
+  return 'kind' in level && (level as CustomLevelRecord).kind === 'override';
 }
 
 export function formatLevelLabel(level: Level): string {
   if (isCustomLevel(level)) {
-    return `${level.title} (Mẫu: ${level.sourceLevelId})`;
+    return `${level.title} · level mới`;
+  }
+  if (isOverrideLevel(level)) {
+    return `${level.id} · ${level.title} · đã sửa`;
   }
   return `${level.id} · ${level.title}`;
 }

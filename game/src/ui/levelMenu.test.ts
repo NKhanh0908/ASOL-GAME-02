@@ -13,8 +13,8 @@ describe('levelMenu helpers', () => {
   const customSample: CustomLevelRecord = {
     id: 'custom-sample-1',
     title: 'Star Pattern',
-    sourceLevelId: '1-1',
-    custom: true,
+    kind: 'new',
+    target: new Uint8Array(128 * 192),
     createdAt: 1000,
     updatedAt: 1000,
     pieces: [{ id: 'p1', color: 0xffd166, cells: square(48), anchors: [] }],
@@ -23,7 +23,7 @@ describe('levelMenu helpers', () => {
 
   it('formats built-in and custom level labels clearly', () => {
     expect(formatLevelLabel(levels[0])).toBe(`${levels[0].id} · ${levels[0].title}`);
-    expect(formatLevelLabel(customSample)).toBe('Star Pattern (Mẫu: 1-1)');
+    expect(formatLevelLabel(customSample)).toBe('Star Pattern · level mới');
   });
 
 

@@ -1,9 +1,8 @@
 import Phaser from 'phaser';
 import { LevelRepository } from '../domain/levelRepository';
-import { levels } from '../domain/levels';
 import { evaluate } from '../domain/mask';
 import { containsCell } from '../domain/shapes';
-import { GRID_HEIGHT, GRID_WIDTH, type PieceDefinition, type Placement } from '../domain/types';
+import { GRID_HEIGHT, GRID_WIDTH, type CustomLevelRecord, type PieceDefinition, type Placement } from '../domain/types';
 import { drawBackdrop } from './backdrop';
 import {
   createPiece,
@@ -12,7 +11,7 @@ import {
   type CustomLevelDraft,
   type ShapeKind,
 } from './customLevelEditor';
-import { clearMaskCells, drawMask, drawPiece, overlapPreviewCells, pieceSize } from './draw';
+import { drawMask, drawPiece, overlapPreviewCells, pieceSize } from './draw';
 import { LAYOUT } from './layout';
 import { THEME } from './theme';
 
@@ -33,11 +32,10 @@ type DragState = {
 };
 
 export class CustomLevelScene extends Phaser.Scene {
-  private sourceLevelId = '1-1';
   private editId: string | undefined;
+  private editKind: 'new' | 'override' = 'new';
   private levelTitle = 'Màn tự tạo';
   private createdAt: number | undefined;
-  private targetMask!: Uint8Array;
 
   private pieces: PlacedPiece[] = [];
   private selectedPieceId: string | undefined;
@@ -46,7 +44,6 @@ export class CustomLevelScene extends Phaser.Scene {
   private nextDepth = 10;
   private dragging: DragState | undefined;
 
-  private ghost!: Phaser.GameObjects.Graphics;
   private composite!: Phaser.GameObjects.Graphics;
   private statusText!: Phaser.GameObjects.Text;
   private titleLabel!: Phaser.GameObjects.Text;
@@ -58,9 +55,11 @@ export class CustomLevelScene extends Phaser.Scene {
     super('CustomLevel');
   }
 
-  init(data: { sourceLevelId: string; editId?: string }): void {
-    this.sourceLevelId = data?.sourceLevelId ?? '1-1';
+  init(data?: { editId?: string }): void {
     this.editId = data?.editId;
+    this.editKind = 'new';
+    this.createdAt = undefined;
+    this.levelTitle = 'Màn tự tạo';
     this.selectedPieceId = undefined;
     this.dragging = undefined;
     this.pieces = [];
@@ -68,14 +67,13 @@ export class CustomLevelScene extends Phaser.Scene {
     this.pieceDepth.clear();
     this.nextDepth = 10;
 
-    const source = LevelRepository.get(this.sourceLevelId) ?? levels[0];
-    this.targetMask = evaluate(source, source.solution);
-
     if (this.editId) {
       const existing = LevelRepository.get(this.editId);
       if (existing) {
         this.levelTitle = existing.title;
-        this.createdAt = (existing as any).createdAt;
+        const saved = existing as CustomLevelRecord;
+        this.editKind = saved.kind === 'new' ? 'new' : 'override';
+        this.createdAt = saved.createdAt;
         // Reconstruct placed pieces
         this.pieces = existing.pieces.map((p) => {
           const sol = existing.solution.find((s) => s.pieceId === p.id);
@@ -91,22 +89,7 @@ export class CustomLevelScene extends Phaser.Scene {
         return;
       }
     }
-
-    // New custom level starting from source template
-    this.levelTitle = `Custom · ${source.id}`;
-    this.createdAt = Date.now();
-    this.pieces = source.pieces.map((p) => {
-      const sol = source.solution.find((s) => s.pieceId === p.id);
-      const kind = this.inferKind(p);
-      const id = `p-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
-      return {
-        id,
-        kind,
-        piece: createPiece(kind, id),
-        x: sol?.x ?? 20,
-        y: sol?.y ?? 20,
-      };
-    });
+    this.editId = undefined;
   }
 
 
@@ -137,16 +120,14 @@ export class CustomLevelScene extends Phaser.Scene {
       this.promptRename();
     }, 15);
 
-    this.add.text(360, 96, `Mẫu bóng mục tiêu: ${this.sourceLevelId}  ·  Kéo để đặt vị trí lời giải`, {
+    this.add.text(360, 96, 'Bóng mục tiêu là hình XOR hiện tại trên bàn', {
       fontFamily: 'Arial',
       fontSize: '15px',
       color: THEME.muted,
     }).setOrigin(0.5, 0);
 
     // Board Graphics
-    this.ghost = this.add.graphics().setDepth(1).setPosition(LAYOUT.boardX, LAYOUT.boardY);
-    this.composite = this.add.graphics().setDepth(2).setPosition(LAYOUT.boardX, LAYOUT.boardY);
-    drawMask(this.ghost, this.targetMask, LAYOUT.cell, 0, 0, true);
+    this.composite = this.add.graphics().setDepth(1).setPosition(LAYOUT.boardX, LAYOUT.boardY);
 
     // Setup pieces
     this.pieces.forEach((p) => this.spawnPieceView(p));
@@ -324,7 +305,8 @@ export class CustomLevelScene extends Phaser.Scene {
     }));
     return {
       id: this.editId,
-      sourceLevelId: this.sourceLevelId,
+      kind: this.editKind,
+      sourceLevelId: this.editKind === 'override' ? this.editId : undefined,
       title: this.levelTitle,
       pieces: this.pieces.map((p) => p.piece),
       solution,
@@ -347,15 +329,15 @@ export class CustomLevelScene extends Phaser.Scene {
     }
 
     // Composite preview
-    const compositeMask = this.compositePreview(transparentByPiece);
-    drawMask(this.composite, compositeMask, LAYOUT.cell);
+    const draft = this.getDraft();
+    const preview = evaluate({ id: 'draft', title: draft.title, pieces: draft.pieces, solution: draft.solution }, draft.solution);
+    drawMask(this.composite, preview, LAYOUT.cell, 0, 0, true);
 
     // Validation
-    const draft = this.getDraft();
-    const validation = validateDraft(draft, this.targetMask);
+    const validation = validateDraft(draft);
 
     if (validation.ok) {
-      this.statusText.setText('✓ Hợp lệ! Khớp 100% bóng mục tiêu');
+      this.statusText.setText('✓ Sẵn sàng lưu bóng mục tiêu hiện tại');
       this.statusText.setColor(THEME.goldText);
       this.saveButton.setAlpha(1);
     } else {
@@ -389,37 +371,18 @@ export class CustomLevelScene extends Phaser.Scene {
     return transparentByPiece;
   }
 
-  private compositePreview(transparentByPiece: Map<string, Set<string>>): Uint8Array {
-    const draft = this.getDraft();
-    let preview = evaluate(
-      {
-        id: 'draft',
-        title: draft.title,
-        pieces: draft.pieces,
-        solution: draft.solution,
-      },
-      draft.solution
-    );
-
-    for (const p of this.pieces) {
-      const transparent = transparentByPiece.get(p.id)!;
-      if (!transparent || !transparent.size) continue;
-      preview = clearMaskCells(preview, transparent, p.x, p.y, GRID_WIDTH);
-    }
-    return preview;
-  }
-
   private saveAndPlay(): void {
     const draft = this.getDraft();
-    const validation = validateDraft(draft, this.targetMask);
+    const validation = validateDraft(draft);
     if (!validation.ok) {
       this.statusText.setText(`Không thể lưu: ${validation.reason}`);
       this.statusText.setColor(THEME.dangerText);
       return;
     }
 
-    const record = draftToRecord(draft, this.editId, this.createdAt);
-    LevelRepository.save(record);
+    const record = draftToRecord(draft);
+    if (record.kind === 'override') LevelRepository.saveOverride(record.id, record);
+    else LevelRepository.create(record);
     this.scene.start('Mirror', { levelId: record.id });
   }
 
@@ -458,4 +421,3 @@ export class CustomLevelScene extends Phaser.Scene {
     return this.add.container(x, y, [background, label]).setDepth(20);
   }
 }
-

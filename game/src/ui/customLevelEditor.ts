@@ -1,4 +1,4 @@
-import { evaluate, matchesTarget } from '../domain/mask';
+import { evaluate } from '../domain/mask';
 import { diamond, smallTriangle, square, triangle } from '../domain/shapes';
 import {
   GRID_HEIGHT,
@@ -7,13 +7,13 @@ import {
   type PieceDefinition,
   type Placement,
 } from '../domain/types';
-import { THEME } from './theme';
 
 export type ShapeKind = 'square' | 'triangle' | 'smallTriangle' | 'diamond';
 
 export interface CustomLevelDraft {
   id?: string;
-  sourceLevelId: string;
+  kind?: 'new' | 'override';
+  sourceLevelId?: string;
   title: string;
   pieces: PieceDefinition[];
   solution: Placement[];
@@ -39,16 +39,15 @@ export function createPiece(kind: ShapeKind, id: string): PieceDefinition {
 
   return {
     id,
-    color: THEME.gold,
+    color: 1,
     cells,
     anchors: [],
   };
 }
 
 export function validateDraft(
-  draft: CustomLevelDraft,
-  target: Uint8Array
-): { ok: true } | { ok: false; reason: string } {
+  draft: CustomLevelDraft
+): { ok: true; target: Uint8Array } | { ok: false; reason: string } {
   if (!draft.title || draft.title.trim().length === 0) {
     return { ok: false, reason: 'Tiêu đề không được để trống' };
   }
@@ -69,12 +68,16 @@ export function validateDraft(
     pieceIds.add(p.id);
   }
 
-  // Bounds checking
+  const placementIds = new Set<string>();
   for (const placement of draft.solution) {
     const piece = draft.pieces.find((p) => p.id === placement.pieceId);
     if (!piece) {
       return { ok: false, reason: 'Không tìm thấy mảnh ghép tương ứng' };
     }
+    if (placementIds.has(placement.pieceId) || !Number.isInteger(placement.x) || !Number.isInteger(placement.y)) {
+      return { ok: false, reason: 'Vị trí mảnh không hợp lệ' };
+    }
+    placementIds.add(placement.pieceId);
     for (const [cx, cy] of piece.cells) {
       const gx = placement.x + cx;
       const gy = placement.y + cy;
@@ -84,8 +87,7 @@ export function validateDraft(
     }
   }
 
-  // Exact XOR match
-  const candidateMask = evaluate(
+  const target = evaluate(
     {
       id: draft.id ?? 'draft',
       title: draft.title,
@@ -95,42 +97,41 @@ export function validateDraft(
     draft.solution
   );
 
-  if (!matchesTarget(candidateMask, target)) {
+  if (!target.some((cell) => cell !== 0)) {
     return {
       ok: false,
-      reason: 'Hình ghép chưa khớp 100% với bóng mục tiêu',
+      reason: 'Bóng mục tiêu không được để trống',
     };
   }
 
-  return { ok: true };
+  return { ok: true, target };
 }
 
-export function draftToRecord(
-  draft: CustomLevelDraft,
-  editId?: string,
-  createdAt?: number
-): CustomLevelRecord {
-  const id = editId ?? draft.id ?? `custom-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+export function draftToRecord(draft: CustomLevelDraft): CustomLevelRecord {
+  const validation = validateDraft(draft);
+  if (!validation.ok) throw new Error(validation.reason);
+  const id = draft.id ?? `custom-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
   const now = Date.now();
 
   // Populate anchors with each piece's solution placement
   const piecesWithAnchors: PieceDefinition[] = draft.pieces.map((p) => {
     const placement = draft.solution.find((s) => s.pieceId === p.id);
-    const anchors: readonly [number, number][] = placement ? [[placement.x, placement.y]] : [];
+    const anchors: [number, number][] = placement ? [[placement.x, placement.y]] : [];
     return {
       ...p,
-      anchors: anchors as any,
+      anchors,
     };
   });
 
   return {
     id,
     title: draft.title.trim(),
-    sourceLevelId: draft.sourceLevelId,
+    kind: draft.kind ?? 'new',
+    ...(draft.kind === 'override' ? { sourceLevelId: draft.sourceLevelId ?? id } : {}),
     pieces: piecesWithAnchors,
     solution: draft.solution,
-    custom: true,
-    createdAt: createdAt ?? draft.createdAt ?? now,
+    target: validation.target,
+    createdAt: draft.createdAt ?? now,
     updatedAt: now,
   };
 }
