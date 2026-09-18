@@ -86,4 +86,36 @@ describe('play session', () => {
       }
     });
   });
+
+  it('supports playing an explicit custom Level instance', () => {
+    const customLevel: Level = {
+      id: 'custom-test-1',
+      title: 'Custom Puzzle',
+      pieces: [
+        {
+          id: 'cp1',
+          color: 0xffd166,
+          cells: [[0, 0], [1, 0], [0, 1], [1, 1]],
+          anchors: [[20, 30]],
+        },
+      ],
+      solution: [{ pieceId: 'cp1', x: 20, y: 30 }],
+    };
+
+    const game = new Session(customLevel);
+    expect(game.levelId).toBe('custom-test-1');
+    expect(game.level.title).toBe('Custom Puzzle');
+    expect(game.drop('cp1', 21, 30)).toBe(true);
+    expect(game.won).toBe(true);
+    expect(game.remove('cp1')).toBe(true);
+    expect(game.won).toBe(false);
+  });
+
+  it('validates candidate solutions with canSaveSolution', () => {
+    const level = levels[0];
+    expect(Session.canSaveSolution(level, level.solution)).toBe(true);
+    expect(Session.canSaveSolution(level, [])).toBe(false);
+    expect(Session.canSaveSolution(level, [{ pieceId: level.pieces[0].id, x: 999, y: 999 }])).toBe(false);
+  });
 });
+

@@ -4,7 +4,14 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-09-18 - Session custom level support
+
+- Allowed `Session` to initialize with either numeric index or explicit `Level` instances.
+- Added `Session.canSaveSolution` helper ensuring bounds and XOR mask match before persistence.
+- Verification: 30 tests pass.
+
 ### 2026-09-18 - Shape catalog and level repository
+
 
 - Added `smallTriangle` shape generator and `LevelRepository` with local storage persistence, corrupted data recovery, and custom level CRUD support.
 - Verification: 28 tests pass across domain and UI modules.
