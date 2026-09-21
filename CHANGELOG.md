@@ -4,6 +4,13 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-09-21 - Approved Mirror MVP GDD
+
+- Recorded the approved 18-level Android MVP: three six-level chapters for drag/drop, parity overlap and 90-degree rotation.
+- Set the release model to free, offline and without ads/IAP; campaign progress is local only.
+- Deferred Custom Level to the final milestone and made it removable from release scope if campaign delivery is at risk.
+- Verification: reconciled the approved product decisions with existing concept, prototype, testing and implementation documentation; no code or runtime verification was performed.
+
 ### 2026-09-18 - Generated target editor flow
 
 - Corrected Custom Level so the XOR arrangement on the editor board becomes the saved target; new levels start empty, existing levels save by id, and built-in levels can be restored.
