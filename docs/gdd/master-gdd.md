@@ -1,6 +1,6 @@
 # Mirror — Master Game Design Document
 
-*Bản thiết kế trải nghiệm cho Android MVP · 30/09/2026 · phiên bản 0.2*
+*Bản thiết kế trải nghiệm cho Android MVP · 30/09/2026 · phiên bản 0.2.1*
 
 ## Tổng quan trong 30 giây
 
@@ -103,6 +103,8 @@ MVP **không có hint và không có skip**; người chơi có thể kéo lại
 ## Chương 3 — Mỹ thuật và âm thanh
 
 Mỹ thuật dùng nền tối, bóng mục tiêu mờ và một màu kính vàng cam có viền rõ. Bảng màu đang dùng để truyền đạt: nền ngoài `#080E24`, bàn `#101B32`, mảnh `#FFC857`, điểm nhấn `#68B8DC`, chữ chính `#EEF4FA`, chữ phụ `#9DAFC7`. Giá trị hex có thể đổi ở art pass nếu tương phản và trạng thái vẫn rõ trên điện thoại nhỏ. Hình khối MVP gồm vuông, tam giác và thoi; không dùng hiệu ứng khúc xạ, tia sáng hay pha màu. Vùng giao trong suốt phải nhìn như một quy luật có chủ đích qua viền/nhịp chuyển, không như lỗi mất hình.
+
+[Bàn luận style Galaxy](../testing/mirror-play-screen-style.md) và [hình tham khảo play screen](assets/galaxy_glass_layered_landscape_play_screen.svg) chỉ là **tham khảo mỹ thuật** cho không khí, chất liệu kính, bảng màu và lớp phong cảnh. GDD này là chuẩn cho luật chơi, bố cục, trạng thái nút và phản hồi tương tác. Chi tiết trong hai file tham khảo khác GDD không tự trở thành quyết định thiết kế; việc áp dụng một hướng art cụ thể cần review và kiểm tra khả năng đọc trên điện thoại.
 
 Danh mục tài sản tối thiểu: bộ mảnh ba hình, bóng mục tiêu/thumbnail, viền trạng thái kéo–snap–tạm, xung vùng giao, nút/menu/tạm dừng, hình minh họa FTUE 1-1/2-1/2-2 và xác nhận thắng. Mockup tại Chương 2 là hướng bố cục; asset sản xuất phải được kiểm trên máy Android nhỏ.
 
