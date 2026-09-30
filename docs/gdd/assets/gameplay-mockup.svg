@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 700" role="img" aria-labelledby="title desc">
+  <title id="title">Mockup màn chơi Mirror và phản hồi vùng giao</title>
+  <desc id="desc">Điện thoại dọc với header, bóng mục tiêu, bàn, mảnh, khay và nút; bên cạnh có ba trạng thái một, hai và ba mảnh cùng màu chồng lên nhau.</desc>
+  <rect width="980" height="700" rx="24" fill="#080E24"/>
+  <text x="42" y="48" fill="#EEF4FA" font-family="Arial, sans-serif" font-size="26" font-weight="bold">Mirror · gameplay mockup</text>
+  <rect x="55" y="72" width="354" height="596" rx="30" fill="#050A18" stroke="#53708D" stroke-width="3"/>
+  <rect x="68" y="85" width="328" height="570" rx="18" fill="#080E24"/>
+  <text x="87" y="120" fill="#EEF4FA" font-family="Arial, sans-serif" font-size="22" font-weight="bold">MIRROR</text>
+  <text x="87" y="146" fill="#9DAFC7" font-family="Arial, sans-serif" font-size="13">2-1 · Lõi sáng</text>
+  <rect x="285" y="102" width="86" height="62" rx="8" fill="#101B32" stroke="#68B8DC"/>
+  <text x="295" y="119" fill="#9DAFC7" font-family="Arial, sans-serif" font-size="10">MẪU</text>
+  <path d="M305 128h32v23h-32z M332 131L320 154H344z" fill="#FFC857" fill-rule="evenodd"/>
+  <rect x="90" y="174" width="284" height="356" rx="11" fill="#101B32" stroke="#29415C" stroke-width="2"/>
+  <path d="M146 264h143v143H146z M252 232L194 348H310z M276 300L321 345 276 390 231 345z" fill="#68B8DC" fill-opacity="0.13" fill-rule="evenodd" stroke="#68B8DC" stroke-opacity="0.38" stroke-width="2"/>
+  <path d="M151 266h130v130H151z M242 240L187 350H297z" fill="#FFC857" fill-rule="evenodd" stroke="#FFE1A2" stroke-width="2"/>
+  <path d="M300 404L331 435 300 466 269 435z" fill="#FFC857" fill-opacity="0.35" stroke="#FFC857" stroke-width="2" stroke-dasharray="5 5"/>
+  <rect x="106" y="482" width="250" height="34" rx="7" fill="#243D54"/>
+  <text x="231" y="504" fill="#EEF4FA" text-anchor="middle" font-family="Arial, sans-serif" font-size="13">Chưa đặt — chưa tính vào hình</text>
+  <rect x="84" y="546" width="296" height="55" rx="10" fill="#101B32" stroke="#29415C"/>
+  <path d="M123 558h36v36h-36z" fill="#FFC857"/><path d="M234 558L213 594H255z" fill="#FFC857"/><path d="M324 558L342 576 324 594 306 576z" fill="#FFC857"/>
+  <g fill="#16334A" stroke="#68B8DC"><rect x="83" y="615" width="86" height="30" rx="8"/><rect x="185" y="615" width="86" height="30" rx="8"/><rect x="287" y="615" width="86" height="30" rx="8"/></g>
+  <g fill="#EEF4FA" font-family="Arial, sans-serif" font-size="13" text-anchor="middle"><text x="126" y="635">Menu</text><text x="228" y="635">Đặt lại</text><text x="330" y="635">Xoay*</text></g>
+  <text x="450" y="116" fill="#EEF4FA" font-family="Arial, sans-serif" font-size="21" font-weight="bold">Cùng một ô trên bàn</text>
+  <g font-family="Arial, sans-serif" font-size="18" fill="#EEF4FA"><text x="450" y="182">1 mảnh</text><text x="450" y="302">2 mảnh</text><text x="450" y="422">3 mảnh</text></g>
+  <g stroke="#68B8DC" stroke-width="2" fill="#101B32"><rect x="585" y="140" width="300" height="82" rx="10"/><rect x="585" y="260" width="300" height="82" rx="10"/><rect x="585" y="380" width="300" height="82" rx="10"/></g>
+  <g fill="#FFC857" fill-rule="evenodd"><path d="M695 158h48v48h-48z"/><path d="M670 278h48v48h-48z M694 278h48v48h-48z"/><path d="M646 398h48v48h-48z M662 398h48v48h-48z M678 398h48v48h-48z"/></g>
+  <g font-family="Arial, sans-serif" font-size="14" fill="#9DAFC7"><text x="606" y="246">Hiện màu</text><text x="606" y="366">Giao rỗng</text><text x="606" y="486">Giao hiện lại</text></g>
+  <text x="450" y="557" fill="#EEF4FA" font-family="Arial, sans-serif" font-size="17" font-weight="bold">Trạng thái mảnh</text>
+  <text x="450" y="588" fill="#9DAFC7" font-family="Arial, sans-serif" font-size="15">Viền liền: đã snap và được chấm.</text>
+  <text x="450" y="614" fill="#9DAFC7" font-family="Arial, sans-serif" font-size="15">Viền đứt: vị trí tạm, chưa được chấm.</text>
+  <text x="450" y="654" fill="#9DAFC7" font-family="Arial, sans-serif" font-size="13">* Nút Xoay chỉ xuất hiện từ Chương 3.</text>
+</svg>

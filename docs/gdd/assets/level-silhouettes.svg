@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 590" role="img" aria-labelledby="title desc">
+  <title id="title">Sáu bóng mục tiêu mẫu của Mirror</title>
+  <desc id="desc">Sáu hình minh họa theo lời giải các màn 1-1, 1-2, 1-3, 2-1, 2-2, 2-3. Vùng chồng hai mảnh rỗng, ba mảnh hiện lại.</desc>
+  <rect width="900" height="590" rx="22" fill="#080E24"/>
+  <g fill="#EEF4FA" font-family="Arial, sans-serif" font-size="18" font-weight="bold">
+    <text x="38" y="38">1-1 · Vết khuyết</text><text x="338" y="38">1-2 · Cạnh vỡ</text><text x="638" y="38">1-3 · Hai nhánh</text>
+    <text x="38" y="331">2-1 · Lõi sáng</text><text x="338" y="331">2-2 · Mảnh dấu</text><text x="638" y="331">2-3 · Ấn lệch</text>
+  </g>
+  <g fill="#101B32" stroke="#29415C" stroke-width="2">
+    <rect x="24" y="54" width="252" height="238" rx="12"/><rect x="324" y="54" width="252" height="238" rx="12"/><rect x="624" y="54" width="252" height="238" rx="12"/>
+    <rect x="24" y="347" width="252" height="219" rx="12"/><rect x="324" y="347" width="252" height="219" rx="12"/><rect x="624" y="347" width="252" height="219" rx="12"/>
+  </g>
+  <g fill="#FFC857" fill-rule="evenodd" stroke="#FFD98A" stroke-width="0.5">
+    <svg x="24" y="54" width="252" height="238" viewBox="10 42 108 112"><path d="M32 66h48v48H32z M68 78L44 126H92z"/></svg>
+    <svg x="324" y="54" width="252" height="238" viewBox="10 42 108 112"><path d="M28 66h48v48H28z M76 78L100 102 76 126 52 102z"/></svg>
+    <svg x="624" y="54" width="252" height="238" viewBox="10 42 108 112"><path d="M26 68h44v44H26z M74 58L50 106H98z M60 100L80 120 60 140 40 120z"/></svg>
+    <svg x="24" y="347" width="252" height="219" viewBox="10 42 108 112"><path d="M24 68h48v48H24z M72 52L48 100H96z M76 80L96 100 76 120 56 100z"/></svg>
+    <svg x="324" y="347" width="252" height="219" viewBox="10 42 108 112"><path d="M28 72h44v44H28z M56 56L32 104H80z M78 82L100 104 78 126 56 104z"/></svg>
+    <svg x="624" y="347" width="252" height="219" viewBox="10 42 108 112"><path d="M24 64h48v48H24z M72 76L48 124H96z M64 62L86 84 64 106 42 84z"/></svg>
+  </g>
+  <text x="450" y="584" fill="#9DAFC7" text-anchor="middle" font-family="Arial, sans-serif" font-size="12">Hình vector để review bố cục · mask chấm thắng dùng ô raster 128 × 192</text>
+</svg>
