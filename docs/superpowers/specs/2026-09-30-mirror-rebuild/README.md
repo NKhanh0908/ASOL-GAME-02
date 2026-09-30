@@ -1,8 +1,8 @@
 # Mirror — Bộ spec khởi tạo bản game mới
 
-Ngày: 2026-09-30 · Trạng thái: tài liệu đã soạn, chờ review nội dung trước khi lập kế hoạch triển khai.
+Ngày: 2026-09-30 · Trạng thái: người dùng đã duyệt nội dung bộ spec ngày 2026-09-30; đã lập kế hoạch M0–M1.
 
-Người dùng đã chọn **khởi tạo bản game mới từ đầu** và duyệt cách chia sáu spec. Prototype trong `game/` chỉ cung cấp tham khảo hành vi, công nghệ và bài học kỹ thuật. Điểm bắt đầu sản phẩm là [Master GDD](../../../gdd/master-gdd.md) hiện tại: Chương 1 ghép tiếp giáp, Chương 2 giao hai/ba lớp, Chương 3 xoay; Android dọc, offline. Hai tài liệu Galaxy vẫn chỉ là tham khảo mỹ thuật theo quyết định trong GDD.
+Người dùng đã chọn **khởi tạo bản game mới từ đầu** và duyệt nội dung sáu spec. Prototype trong `game/` chỉ cung cấp tham khảo hành vi, công nghệ và bài học kỹ thuật. Điểm bắt đầu sản phẩm là [Master GDD](../../../gdd/master-gdd.md) hiện tại: Chương 1 ghép tiếp giáp, Chương 2 giao hai/ba lớp, Chương 3 xoay; Android dọc, offline. Hai tài liệu Galaxy vẫn chỉ là tham khảo mỹ thuật theo quyết định trong GDD.
 
 ## 1. Đọc và triển khai theo thứ tự nào
 
@@ -59,4 +59,4 @@ M2 không được phát hành như một campaign liền mạch bằng cách b�
 
 ## 5. Cách dùng bộ spec
 
-Review hợp đồng và các lựa chọn kỹ thuật trong sáu file, sau đó dùng `superpowers:writing-plans` để viết kế hoạch triển khai M0–M1 có đường dẫn file, nhiệm vụ và lệnh kiểm tra. Việc duyệt bộ spec không tự xác nhận code hoặc nội dung 18 màn đã hoàn thành. Bước hiện tại chỉ tạo tài liệu.
+Triển khai theo [kế hoạch M0 — nền tảng và core](../../plans/2026-09-30-mirror-rebuild-m0.md), sau đó [M1 — một màn chơi hoàn chỉnh](../../plans/2026-09-30-mirror-rebuild-m1.md). Hai kế hoạch có đường dẫn file, hợp đồng API, nhiệm vụ và lệnh kiểm tra. Việc duyệt bộ spec không tự xác nhận code hoặc nội dung 18 màn đã hoàn thành. Bước hiện tại chỉ tạo tài liệu.

@@ -1,6 +1,6 @@
 # 01 — Khởi tạo và kiến trúc
 
-Nguồn: GDD §1, §4–5. Phụ thuộc: [phạm vi và quyết định nguồn](README.md). Trạng thái: đề xuất kỹ thuật chờ review cùng bộ spec.
+Nguồn: GDD §1, §4–5. Phụ thuộc: [phạm vi và quyết định nguồn](README.md). Trạng thái: quyết định kỹ thuật đã được người dùng duyệt cùng bộ spec ngày 2026-09-30.
 
 ## 1. Kết quả cần đạt
 
