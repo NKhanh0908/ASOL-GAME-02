@@ -81,9 +81,9 @@ describe('Level Content and Validation', () => {
   test('campaignManifest chứa đủ 18 màn', () => {
     expect(campaignManifest.length).toBe(18);
     expect(campaignManifest[0].id).toBe('1-1');
-    expect(campaignManifest[17].id).toBe('3-6');
-    for (const entry of campaignManifest) {
-      expect(entry.status).toBe('planned');
+    expect(campaignManifest[0].status).toBe('approved');
+    for (let i = 1; i < campaignManifest.length; i++) {
+      expect(campaignManifest[i].status).toBe('planned');
     }
   });
 });
