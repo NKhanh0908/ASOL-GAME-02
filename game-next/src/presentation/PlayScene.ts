@@ -10,6 +10,8 @@ import { Hud } from './Hud.ts';
 import { computeLayout, gridToCanvas } from './layout.ts';
 import type { LayoutMetrics } from './layout.ts';
 
+import { TextureFactory } from './TextureFactory.ts';
+
 type StarParticle = {
   x: number;
   y: number;
@@ -40,12 +42,13 @@ export class PlayScene extends Phaser.Scene {
   }
 
   create(): void {
+    TextureFactory.generateAll(this);
     const layout = computeLayout(this.scale.width, this.scale.height);
 
     // 1. Sao li ti nền galaxy
     this.starGraphics = this.add.graphics();
     this.stars = [];
-    for (let i = 0; i < 40; i++) {
+    for (let i = 0; i < 30; i++) {
       this.stars.push({
         x: Phaser.Math.Between(10, 710),
         y: Phaser.Math.Between(10, 1270),
@@ -72,10 +75,13 @@ export class PlayScene extends Phaser.Scene {
 
     this.boardRenderer = new BoardRenderer(this, layout);
 
-    this.hud = new Hud(this, `${this.level.id} · ${this.level.title}`, {
-      onMenu: () => {
-        this.scene.start('MenuScene');
-      },
+    this.hud = new Hud(
+      this,
+      `${this.level.id} · ${this.level.title}`,
+      {
+        onMenu: () => {
+          this.scene.start('MenuScene');
+        },
       onReset: () => {
         this.controller.onReset();
         this.cleanupCelebration();
@@ -105,7 +111,7 @@ export class PlayScene extends Phaser.Scene {
           this.scene.start('MenuScene');
         }
       },
-    });
+    }, this.level.id);
 
     // Pointer events
     this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {

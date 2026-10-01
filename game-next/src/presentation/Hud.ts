@@ -1,5 +1,7 @@
 import Phaser from 'phaser';
 import type { PlayViewSnapshot } from '../application/playController.ts';
+import { COLOR_NUMBERS, COLOR_TOKENS, TYPO_TOKENS } from './designTokens.ts';
+import { TEXTURE_KEYS } from './TextureFactory.ts';
 
 export type HudCallbacks = {
   onMenu: () => void;
@@ -12,114 +14,153 @@ export type HudCallbacks = {
 export class Hud {
   private scene: Phaser.Scene;
   private callbacks: HudCallbacks;
+  private levelId: string;
+
   private titleText: Phaser.GameObjects.Text;
-  private targetButton: Phaser.GameObjects.Text;
-  private rotateButton: Phaser.GameObjects.Text;
+  private targetButton: Phaser.GameObjects.Container;
+  private targetBtnText: Phaser.GameObjects.Text;
+
+  private resetContainer: Phaser.GameObjects.Container;
+  private rotateContainer: Phaser.GameObjects.Container;
+  private rotateBtnBase: Phaser.GameObjects.Image;
+  private rotateIcon: Phaser.GameObjects.Image;
+  private rotateLabel: Phaser.GameObjects.Text;
+
   private winContainer: Phaser.GameObjects.Container;
 
-  constructor(scene: Phaser.Scene, title: string, callbacks: HudCallbacks) {
+  constructor(scene: Phaser.Scene, title: string, callbacks: HudCallbacks, levelId: string = '1-1') {
     this.scene = scene;
     this.callbacks = callbacks;
+    this.levelId = levelId;
 
-    // 1. Nút Menu (góc trên trái)
+    // 1. Nút Menu tròn 56px (Góc trên trái: x=56, y=48)
     const menuBtn = this.scene.add
-      .text(24, 40, '← MENU', {
-        fontFamily: 'system-ui, -apple-system, sans-serif',
-        fontSize: '15px',
-        color: '#EEF4FA',
-        backgroundColor: '#0c1730',
-        padding: { x: 14, y: 10 },
-      })
+      .image(56, 48, TEXTURE_KEYS.btnCircle56)
       .setInteractive({ useHandCursor: true });
-    menuBtn.on('pointerdown', () => this.callbacks.onMenu());
+    const menuIcon = this.scene.add.image(56, 48, TEXTURE_KEYS.iconMenuBack);
+    menuBtn.on('pointerdown', () => {
+      this.animateButtonTap(menuBtn, () => this.callbacks.onMenu());
+    });
 
-    // 2. Tiêu đề màn chơi (giữa header)
+    // 2. Tiêu đề màn chơi (Giữa header: x=360, y=48)
     this.titleText = this.scene.add
-      .text(360, 52, title, {
-        fontFamily: 'system-ui, -apple-system, sans-serif',
-        fontSize: '20px',
-        color: '#FFD166',
-        fontStyle: 'bold',
+      .text(360, 48, title, {
+        fontFamily: TYPO_TOKENS.fontFamily.serif,
+        fontSize: '22px',
+        color: COLOR_TOKENS.amberGold.solidPrimary,
       })
       .setOrigin(0.5);
 
-    // 3. Nút Toggle bóng mục tiêu (góc trên phải)
-    this.targetButton = this.scene.add
-      .text(696, 40, 'BÓNG MẪU: BẬT', {
-        fontFamily: 'system-ui, -apple-system, sans-serif',
-        fontSize: '14px',
-        color: '#4ECDC4',
-        backgroundColor: '#0c1730',
-        padding: { x: 12, y: 10 },
+    // 3. Nút Toggle bóng mục tiêu (Góc trên phải: x=630, y=48)
+    this.targetButton = this.scene.add.container(630, 48);
+    const targetBg = this.scene.add.graphics();
+    targetBg.fillStyle(COLOR_NUMBERS.navyStele, 0.95);
+    targetBg.fillRoundedRect(-60, -20, 120, 40, 20);
+    targetBg.lineStyle(1.5, COLOR_NUMBERS.icePrimary, 0.7);
+    targetBg.strokeRoundedRect(-60, -20, 120, 40, 20);
+
+    this.targetBtnText = this.scene.add
+      .text(0, 0, 'Bóng mẫu: Bật', {
+        fontFamily: TYPO_TOKENS.fontFamily.sans,
+        fontSize: '12px',
+        color: COLOR_TOKENS.iceGlass.bevelHighlight,
       })
-      .setOrigin(1, 0)
-      .setInteractive({ useHandCursor: true });
+      .setOrigin(0.5);
+
+    this.targetButton.add([targetBg, this.targetBtnText]);
+    this.targetButton.setSize(120, 40);
+    this.targetButton.setInteractive({ useHandCursor: true });
     this.targetButton.on('pointerdown', () => this.callbacks.onToggleTarget());
 
     // 4. Hàng nút dưới cùng (Bottom bar)
-    // Nút Đặt lại (Reset)
-    const resetBtn = this.scene.add
-      .text(104, 1200, '↺ ĐẶT LẠI', {
-        fontFamily: 'system-ui, -apple-system, sans-serif',
-        fontSize: '16px',
-        color: '#EEF4FA',
-        backgroundColor: '#0c1730',
-        padding: { x: 18, y: 12 },
-      })
-      .setOrigin(0, 0.5)
+    // A. Nút Đặt lại tròn 64px (x=180, y=1164)
+    this.resetContainer = this.scene.add.container(180, 1164);
+    const resetBtnBase = this.scene.add
+      .image(0, 0, TEXTURE_KEYS.btnCircle64)
       .setInteractive({ useHandCursor: true });
-    resetBtn.on('pointerdown', () => this.callbacks.onReset());
-
-    // Nút Xoay ↻ (chỉ sáng khi canRotate = true)
-    this.rotateButton = this.scene.add
-      .text(616, 1200, 'XOAY ↻', {
-        fontFamily: 'system-ui, -apple-system, sans-serif',
-        fontSize: '16px',
-        color: '#4ECDC4',
-        backgroundColor: '#0c1730',
-        padding: { x: 18, y: 12 },
+    const resetIcon = this.scene.add.image(0, 0, TEXTURE_KEYS.iconReset);
+    const resetLabel = this.scene.add
+      .text(0, 44, 'Đặt lại', {
+        fontFamily: TYPO_TOKENS.fontFamily.sans,
+        fontSize: '13px',
+        color: COLOR_TOKENS.text.secondary,
       })
-      .setOrigin(1, 0.5)
-      .setInteractive({ useHandCursor: true });
-    this.rotateButton.on('pointerdown', () => this.callbacks.onRotate());
+      .setOrigin(0.5);
 
-    // 5. Modal chúc mừng chiến thắng (Win Container)
+    resetBtnBase.on('pointerdown', () => {
+      this.animateButtonTap(resetBtnBase, () => this.callbacks.onReset());
+    });
+    this.resetContainer.add([resetBtnBase, resetIcon, resetLabel]);
+
+    // B. Nút Xoay tròn 64px (x=540, y=1164)
+    // Ẩn hoàn toàn nếu ở Chương 1 & 2
+    const chapterNum = parseInt(this.levelId.split('-')[0], 10) || 1;
+    this.rotateContainer = this.scene.add.container(540, 1164);
+    this.rotateBtnBase = this.scene.add
+      .image(0, 0, TEXTURE_KEYS.btnCircle64)
+      .setInteractive({ useHandCursor: true });
+    this.rotateIcon = this.scene.add.image(0, 0, TEXTURE_KEYS.iconRotate);
+    this.rotateLabel = this.scene.add
+      .text(0, 44, 'Xoay', {
+        fontFamily: TYPO_TOKENS.fontFamily.sans,
+        fontSize: '13px',
+        color: COLOR_TOKENS.text.secondary,
+      })
+      .setOrigin(0.5);
+
+    this.rotateBtnBase.on('pointerdown', () => {
+      this.animateButtonTap(this.rotateBtnBase, () => this.callbacks.onRotate());
+    });
+    this.rotateContainer.add([this.rotateBtnBase, this.rotateIcon, this.rotateLabel]);
+
+    if (chapterNum < 3) {
+      this.rotateContainer.setVisible(false);
+    }
+
+    // 5. Modal Hoàn Thành Chiến Thắng (Celestial Victory Dialog)
     this.winContainer = this.scene.add.container(360, 640).setDepth(100).setVisible(false);
 
-    const winOverlay = this.scene.add.rectangle(0, 0, 720, 1280, 0x050814, 0.85);
+    const winOverlay = this.scene.add.rectangle(0, 0, 720, 1280, COLOR_NUMBERS.navyBackdrop, 0.85);
+    winOverlay.setInteractive(); // Chặn click xuyên xuống bàn
 
     const winPanel = this.scene.add.graphics();
-    winPanel.fillStyle(0x0c1730, 0.98);
-    winPanel.fillRoundedRect(-240, -180, 480, 360, 20);
-    winPanel.lineStyle(2, 0xffd166, 0.8);
-    winPanel.strokeRoundedRect(-240, -180, 480, 360, 20);
+    winPanel.fillStyle(COLOR_NUMBERS.navyStele, 0.98);
+    winPanel.fillRoundedRect(-240, -190, 480, 380, 28);
+    winPanel.lineStyle(6, COLOR_NUMBERS.icePrimary, 0.9);
+    winPanel.strokeRoundedRect(-240, -190, 480, 380, 28);
+
+    // Đường viền vàng bên trong
+    winPanel.lineStyle(1.5, COLOR_NUMBERS.amberGrid, 0.5);
+    winPanel.strokeRoundedRect(-232, -182, 464, 364, 22);
 
     const winTitle = this.scene.add
-      .text(0, -90, '✦ HOÀN THÀNH ✦', {
-        fontFamily: 'system-ui, -apple-system, sans-serif',
-        fontSize: '28px',
-        color: '#FFD166',
-        fontStyle: 'bold',
+      .text(0, -110, '✦ Cổ Ngữ Thức Tỉnh ✦', {
+        fontFamily: TYPO_TOKENS.fontFamily.serif,
+        fontSize: '26px',
+        color: COLOR_TOKENS.amberGold.solidPrimary,
       })
       .setOrigin(0.5);
 
     const winDesc = this.scene.add
-      .text(0, -30, 'Cổ ngữ Song Tinh đã được giải mã trọn vẹn!', {
-        fontFamily: 'system-ui, -apple-system, sans-serif',
+      .text(0, -45, 'Ánh sáng tinh tú đã soi chiếu cổ ngữ trọn vẹn!', {
+        fontFamily: TYPO_TOKENS.fontFamily.sans,
         fontSize: '15px',
-        color: '#EEF4FA',
+        color: COLOR_TOKENS.text.primary,
+        wordWrap: { width: 400, useAdvancedWrap: true },
+        align: 'center',
       })
       .setOrigin(0.5);
 
+    // Khối nút chính vàng đặc (Primary CTA)
     const nextBtnBg = this.scene.add.graphics();
-    nextBtnBg.fillStyle(0xf9c74f, 1);
-    nextBtnBg.fillRoundedRect(-140, 20, 280, 52, 16);
+    nextBtnBg.fillStyle(COLOR_NUMBERS.amberSolid, 1.0);
+    nextBtnBg.fillRoundedRect(-150, 25, 300, 56, 18);
 
     const nextBtn = this.scene.add
-      .text(0, 46, 'MÀN TIẾP THEO →', {
-        fontFamily: 'system-ui, -apple-system, sans-serif',
+      .text(0, 53, 'Màn tiếp theo →', {
+        fontFamily: TYPO_TOKENS.fontFamily.sans,
         fontSize: '16px',
-        color: '#080E24',
+        color: COLOR_TOKENS.navy.spaceBackground,
         fontStyle: 'bold',
       })
       .setOrigin(0.5)
@@ -127,10 +168,10 @@ export class Hud {
     nextBtn.on('pointerdown', () => this.callbacks.onNextLevel());
 
     const menuReturnBtn = this.scene.add
-      .text(0, 115, 'Về màn hình chính', {
-        fontFamily: 'system-ui, -apple-system, sans-serif',
+      .text(0, 125, 'Về màn hình chính', {
+        fontFamily: TYPO_TOKENS.fontFamily.sans,
         fontSize: '14px',
-        color: '#9DAFC7',
+        color: COLOR_TOKENS.text.secondary,
       })
       .setOrigin(0.5)
       .setInteractive({ useHandCursor: true });
@@ -147,13 +188,27 @@ export class Hud {
     ]);
   }
 
-  update(snapshot: PlayViewSnapshot): void {
-    this.targetButton.setText(snapshot.showTarget ? 'BÓNG MẪU: BẬT' : 'BÓNG MẪU: TẮT');
+  private animateButtonTap(target: Phaser.GameObjects.GameObject, onComplete: () => void): void {
+    this.scene.tweens.add({
+      targets: target,
+      scaleX: 0.94,
+      scaleY: 0.94,
+      duration: 80,
+      yoyo: true,
+      ease: 'Cubic.easeOut',
+      onComplete,
+    });
+  }
+
+  public update(snapshot: PlayViewSnapshot): void {
+    this.targetBtnText.setText(snapshot.showTarget ? 'Bóng mẫu: Bật' : 'Bóng mẫu: Tắt');
 
     if (snapshot.canRotate) {
-      this.rotateButton.setAlpha(1).setInteractive({ useHandCursor: true });
+      this.rotateContainer.setAlpha(1.0);
+      this.rotateBtnBase.setInteractive({ useHandCursor: true });
     } else {
-      this.rotateButton.setAlpha(0.3).disableInteractive();
+      this.rotateContainer.setAlpha(0.3);
+      this.rotateBtnBase.disableInteractive();
     }
 
     if (snapshot.phase !== 'won') {
@@ -161,25 +216,26 @@ export class Hud {
     }
   }
 
-  showWinModal(): void {
+  public showWinModal(): void {
     if (this.winContainer.visible) return;
     this.winContainer.setAlpha(0).setVisible(true);
     this.scene.tweens.add({
       targets: this.winContainer,
       alpha: 1,
-      duration: 600,
+      duration: 500,
       ease: 'Cubic.easeOut',
     });
   }
 
-  hideWinModal(): void {
+  public hideWinModal(): void {
     this.winContainer.setVisible(false);
   }
 
-  destroy(): void {
+  public destroy(): void {
     this.titleText.destroy();
     this.targetButton.destroy();
-    this.rotateButton.destroy();
+    this.resetContainer.destroy();
+    this.rotateContainer.destroy();
     this.winContainer.destroy();
   }
 }
