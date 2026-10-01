@@ -149,3 +149,14 @@ export function pieceCenterCanvas(
 export function pieceRadiusPx(frameSize: number, layout: LayoutMetrics): number {
   return (frameSize / 2) * layout.cellPixel;
 }
+
+/**
+ * Bán kính mảnh khi nằm trong khay.
+ *
+ * Khay thấp hơn bàn nhiều nên không dùng chung bán kính được: mảnh 48 ô ở
+ * 5px/ô cao 240px, trong khi khay chỉ cao 160px và sẽ bị tràn. Chừa 16px
+ * đệm trên dưới cho mảnh không chạm mép khung kính.
+ */
+export function trayPieceRadiusPx(layout: LayoutMetrics): number {
+  return layout.trayBounds.height / 2 - 16;
+}

@@ -1,10 +1,17 @@
 import Phaser from 'phaser';
 import type { Level, Piece, PieceState } from '../domain/model.ts';
 import type { LayoutMetrics } from './layout.ts';
-import { gridToCanvas, pieceHitbox, pieceCenterCanvas, pieceRadiusPx } from './layout.ts';
+import {
+  gridToCanvas,
+  pieceHitbox,
+  pieceCenterCanvas,
+  pieceRadiusPx,
+  trayPieceRadiusPx,
+} from './layout.ts';
 import { GridPainter } from './GridPainter.ts';
+import { drawJewel } from './JewelShape.ts';
 import type { DragInfo, PlayViewSnapshot } from '../application/playController.ts';
-import { COLOR_NUMBERS, DEPTH_TOKENS } from './designTokens.ts';
+import { COLOR_NUMBERS, DEPTH_TOKENS, PIECE_TOKENS } from './designTokens.ts';
 
 export class BoardRenderer {
   private readonly scene: Phaser.Scene;
@@ -201,17 +208,13 @@ export class BoardRenderer {
           (idx === 0 && snapshot.dragInfo?.snapCandidateId === 'A' && snapshot.dragInfo.pieceId === 'D1') ||
           (idx === 1 && snapshot.dragInfo?.snapCandidateId === 'A' && snapshot.dragInfo.pieceId === 'D2');
 
-        this.drawVectorDiamond(
-          this.targetGraphics,
-          center.x,
-          center.y,
-          radiusPx,
-          COLOR_NUMBERS.icePrimary,
-          isHovered ? 0.32 : 0.18,
-          isHovered ? COLOR_NUMBERS.amberSolid : COLOR_NUMBERS.icePrimary,
-          isHovered ? 0.85 : 0.45,
-          isHovered ? 2.2 : 1.5
-        );
+        drawJewel(this.targetGraphics, {
+          cx: center.x,
+          cy: center.y,
+          radius: radiusPx,
+          variant: 'target',
+          alpha: isHovered ? 1 : 0.7,
+        });
       }
     }
 
@@ -260,45 +263,7 @@ export class BoardRenderer {
     }
   }
 
-  /**
-   * Vẽ hình thoi Vector sắc nét
-   */
-  private drawVectorDiamond(
-    g: Phaser.GameObjects.Graphics,
-    cx: number,
-    cy: number,
-    r: number,
-    fillColor: number,
-    fillAlpha: number,
-    strokeColor: number,
-    strokeAlpha: number,
-    strokeWidth: number
-  ): void {
-    const points = [
-      new Phaser.Geom.Point(cx, cy - r),
-      new Phaser.Geom.Point(cx + r, cy),
-      new Phaser.Geom.Point(cx, cy + r),
-      new Phaser.Geom.Point(cx - r, cy),
-    ];
 
-    g.fillStyle(fillColor, fillAlpha);
-    g.fillPoints(points, true);
-
-    g.lineStyle(strokeWidth, strokeColor, strokeAlpha);
-    g.strokePoints(points, true);
-
-    // Gân tinh thể mảnh bên trong
-    g.lineStyle(1, strokeColor, strokeAlpha * 0.3);
-    g.lineBetween(cx, cy - r, cx, cy + r);
-    g.lineBetween(cx - r, cy, cx + r, cy);
-
-    // Điểm tinh thể tại 4 góc
-    g.fillStyle(strokeColor, strokeAlpha * 0.9);
-    g.fillCircle(cx, cy - r, 2);
-    g.fillCircle(cx + r, cy, 2);
-    g.fillCircle(cx, cy + r, 2);
-    g.fillCircle(cx - r, cy, 2);
-  }
 
   /**
    * Trạng thái 1: Đang kéo (Dragging) - Phóng to 1.06x và đổ bóng mềm
@@ -318,17 +283,13 @@ export class BoardRenderer {
     this.piecesGraphics.fillPoints(shadowPoints, true);
 
     // Thân mảnh vàng hổ phách sáng
-    this.drawVectorDiamond(
-      this.piecesGraphics,
-      dragInfo.x,
-      dragInfo.y,
-      r,
-      isHoveringSnap ? COLOR_NUMBERS.amberGlow : COLOR_NUMBERS.amberSolid,
-      isHoveringSnap ? 0.98 : 0.92,
-      COLOR_NUMBERS.amberGlow,
-      1.0,
-      isHoveringSnap ? 2.8 : 2.0
-    );
+    drawJewel(this.piecesGraphics, {
+      cx: dragInfo.x,
+      cy: dragInfo.y,
+      radius: r,
+      variant: 'ghost',
+      alpha: isHoveringSnap ? 1 : PIECE_TOKENS.ghostAlpha,
+    });
   }
 
   private drawTrayPlaceholder(
@@ -341,17 +302,12 @@ export class BoardRenderer {
     const cx = hitbox.x + hitbox.width / 2;
     const cy = hitbox.y + hitbox.height / 2;
 
-    this.drawVectorDiamond(
-      this.piecesGraphics,
+    drawJewel(this.piecesGraphics, {
       cx,
       cy,
-      radiusPx,
-      COLOR_NUMBERS.skyTop,
-      0.35,
-      COLOR_NUMBERS.iceShadow,
-      0.4,
-      1.0
-    );
+      radius: trayPieceRadiusPx(this.layout),
+      variant: 'placeholder',
+    });
   }
 
   private drawTrayPiece(
@@ -365,17 +321,13 @@ export class BoardRenderer {
     const cx = hitbox.x + hitbox.width / 2;
     const cy = hitbox.y + hitbox.height / 2;
 
-    this.drawVectorDiamond(
-      this.piecesGraphics,
+    drawJewel(this.piecesGraphics, {
       cx,
       cy,
-      radiusPx,
-      COLOR_NUMBERS.amberSolid,
-      isSelected ? 0.95 : 0.85,
-      COLOR_NUMBERS.amberGlow,
-      isSelected ? 1.0 : 0.8,
-      isSelected ? 2.5 : 1.5
-    );
+      radius: trayPieceRadiusPx(this.layout),
+      variant: 'solid',
+      alpha: isSelected ? 1 : 0.9,
+    });
   }
 
   /**
@@ -390,17 +342,13 @@ export class BoardRenderer {
   ): void {
     const center = pieceCenterCanvas(frameSize, pState.x, pState.y, this.layout);
 
-    this.drawVectorDiamond(
-      this.piecesGraphics,
-      center.x,
-      center.y,
-      radiusPx,
-      COLOR_NUMBERS.amberSolid,
-      0.6,
-      COLOR_NUMBERS.amberGlow,
-      0.75,
-      isSelected ? 2.5 : 1.5
-    );
+    drawJewel(this.piecesGraphics, {
+      cx: center.x,
+      cy: center.y,
+      radius: radiusPx,
+      variant: 'ghost',
+      alpha: isSelected ? 0.85 : 0.6,
+    });
 
     // Chữ chú thích nhỏ phía trên mảnh
     this.fxGraphics.lineStyle(1, COLOR_NUMBERS.textSecondary, 0.4);
@@ -421,17 +369,12 @@ export class BoardRenderer {
 
     const center = pieceCenterCanvas(piece.frameSize, anchor.x, anchor.y, this.layout);
 
-    this.drawVectorDiamond(
-      this.piecesGraphics,
-      center.x,
-      center.y,
-      radiusPx,
-      COLOR_NUMBERS.amberSolid,
-      0.95,
-      COLOR_NUMBERS.amberGlow,
-      1.0,
-      isSelected ? 2.6 : 1.8
-    );
+    drawJewel(this.piecesGraphics, {
+      cx: center.x,
+      cy: center.y,
+      radius: radiusPx,
+      variant: 'solid',
+    });
   }
 
   /**

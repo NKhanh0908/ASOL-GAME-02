@@ -5,6 +5,7 @@ import {
   canvasToGrid,
   pieceCenterCanvas,
   pieceRadiusPx,
+  trayPieceRadiusPx,
 } from '../src/presentation/layout.ts';
 import { GRID_WIDTH, GRID_HEIGHT } from '../src/domain/model.ts';
 import { GRID_TOKENS } from '../src/presentation/designTokens.ts';
@@ -86,5 +87,24 @@ describe('Tâm và bán kính mảnh suy ra từ frameSize', () => {
     // Và điểm chạm nằm đúng tâm bàn theo chiều ngang
     expect(left.x + radius).toBe(layout.boardBounds.x + layout.boardBounds.width / 2);
     expect(left.y).toBe(right.y);
+  });
+});
+
+describe('Bán kính mảnh trong khay', () => {
+  const layout = computeLayout(720, 1280);
+
+  test('mảnh trong khay phải lọt hẳn chiều cao khay', () => {
+    const r = trayPieceRadiusPx(layout);
+    expect(r * 2).toBeLessThanOrEqual(layout.trayBounds.height);
+    expect(r).toBeGreaterThan(0);
+  });
+
+  test('nhỏ hơn mảnh trên bàn, vì khay thấp hơn bàn nhiều', () => {
+    expect(trayPieceRadiusPx(layout)).toBeLessThan(pieceRadiusPx(48, layout));
+  });
+
+  test('hai mảnh nằm cạnh nhau trong khay không chạm nhau', () => {
+    const slotWidth = layout.trayBounds.width / 2;
+    expect(trayPieceRadiusPx(layout) * 2).toBeLessThan(slotWidth);
   });
 });
