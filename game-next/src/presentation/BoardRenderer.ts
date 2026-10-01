@@ -2,22 +2,26 @@ import Phaser from 'phaser';
 import type { Level, Piece, PieceState } from '../domain/model.ts';
 import type { LayoutMetrics } from './layout.ts';
 import { gridToCanvas, pieceHitbox, pieceCenterCanvas, pieceRadiusPx } from './layout.ts';
+import { GridPainter } from './GridPainter.ts';
 import type { DragInfo, PlayViewSnapshot } from '../application/playController.ts';
 import { COLOR_NUMBERS, DEPTH_TOKENS } from './designTokens.ts';
 
 export class BoardRenderer {
+  private readonly scene: Phaser.Scene;
   private layout: LayoutMetrics;
   private ringGraphics: Phaser.GameObjects.Graphics;
   private bgGraphics: Phaser.GameObjects.Graphics;
   private targetGraphics: Phaser.GameObjects.Graphics;
   private piecesGraphics: Phaser.GameObjects.Graphics;
   private fxGraphics: Phaser.GameObjects.Graphics;
+  private gridTexture: Phaser.GameObjects.RenderTexture | null = null;
 
   private ring1Angle = 0;
   private ring2Angle = 0;
   private victoryPulse = 0;
 
   constructor(scene: Phaser.Scene, layout: LayoutMetrics) {
+    this.scene = scene;
     this.layout = layout;
 
     // Phân lớp depth theo chuẩn DEPTH_TOKENS
@@ -85,30 +89,9 @@ export class BoardRenderer {
       28
     );
 
-    // 4. Lưới tọa độ vàng hổ phách 8 ô (32px mỗi ô)
-    const step = 8 * cellPixel; // 32px
-    this.bgGraphics.lineStyle(1, COLOR_NUMBERS.gridModule, 0.12);
-
-    for (let x = boardBounds.x + step; x < boardBounds.x + boardBounds.width; x += step) {
-      this.bgGraphics.lineBetween(x, boardBounds.y + 12, x, boardBounds.y + boardBounds.height - 12);
-    }
-    for (let y = boardBounds.y + step; y < boardBounds.y + boardBounds.height; y += step) {
-      this.bgGraphics.lineBetween(boardBounds.x + 12, y, boardBounds.x + boardBounds.width - 12, y);
-    }
-
-    // Trục trung tâm (Center Axis) sáng hơn
-    const centerAxisX = boardBounds.x + 64 * cellPixel; // x=64
-    const centerAxisY = boardBounds.y + 96 * cellPixel; // y=96
-    this.bgGraphics.lineStyle(1.5, COLOR_NUMBERS.gridModule, 0.28);
-    this.bgGraphics.lineBetween(centerAxisX, boardBounds.y + 8, centerAxisX, boardBounds.y + boardBounds.height - 8);
-    this.bgGraphics.lineBetween(boardBounds.x + 8, centerAxisY, boardBounds.x + boardBounds.width - 8, centerAxisY);
-
-    // Chấm tròn tinh thể tại các giao điểm lưới (Intersection dots)
-    this.bgGraphics.fillStyle(COLOR_NUMBERS.gridModule, 0.35);
-    for (let x = boardBounds.x + step; x < boardBounds.x + boardBounds.width; x += step) {
-      for (let y = boardBounds.y + step; y < boardBounds.y + boardBounds.height; y += step) {
-        this.bgGraphics.fillCircle(x, y, 1.5);
-      }
+    // 4. Lưới thước đo năm lớp — GridPainter dựng một lần vào RenderTexture
+    if (!this.gridTexture) {
+      this.gridTexture = GridPainter.paint(this.scene, boardBounds);
     }
 
     // 5. Khắc 4 ký tự rune chiêm tinh tại 4 phương vị (0°, 90°, 180°, 270°)
