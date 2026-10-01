@@ -106,13 +106,13 @@ export class LevelSelectScene extends Phaser.Scene {
   private buildHeader(completedCount: number, totalCount: number): void {
     // Nền header mờ dần xuống dưới (Soft gradient fade thay cho kẻ ngang)
     const headerBg = this.add.graphics();
-    headerBg.fillStyle(COLOR_NUMBERS.navySpace, 0.96);
+    headerBg.fillStyle(COLOR_NUMBERS.skyTop, 0.96);
     headerBg.fillRect(0, 0, 720, 96);
 
     // Gradient mờ dần từ y=96 đến y=136
     for (let h = 0; h < 40; h++) {
       const alpha = 0.96 * (1 - h / 40);
-      headerBg.fillStyle(COLOR_NUMBERS.navySpace, alpha);
+      headerBg.fillStyle(COLOR_NUMBERS.skyTop, alpha);
       headerBg.fillRect(0, 96 + h, 720, 1);
     }
 
@@ -138,9 +138,9 @@ export class LevelSelectScene extends Phaser.Scene {
     // Huy hiệu tiến độ tổng ở góc phải (ví dụ: "✦ 1/18")
     const progressPill = this.add.container(640, 56);
     const pillBg = this.add.graphics();
-    pillBg.fillStyle(COLOR_NUMBERS.navyStele, 0.95);
+    pillBg.fillStyle(COLOR_NUMBERS.boardSurfaceTop, 0.95);
     pillBg.fillRoundedRect(-52, -22, 104, 44, 22);
-    pillBg.lineStyle(1.5, COLOR_NUMBERS.amberGrid, 0.65);
+    pillBg.lineStyle(1.5, COLOR_NUMBERS.gridModule, 0.65);
     pillBg.strokeRoundedRect(-52, -22, 104, 44, 22);
 
     const progressText = this.add
@@ -273,7 +273,7 @@ export class LevelSelectScene extends Phaser.Scene {
 
       const chContainer = this.add.container(360, bannerY);
       const chBg = this.add.graphics();
-      chBg.fillStyle(COLOR_NUMBERS.navyStele, 0.95);
+      chBg.fillStyle(COLOR_NUMBERS.boardSurfaceTop, 0.95);
       chBg.fillRoundedRect(-180, -22, 360, 44, 22);
       chBg.lineStyle(1.5, COLOR_NUMBERS.icePrimary, 0.7);
       chBg.strokeRoundedRect(-180, -22, 360, 44, 22);
@@ -337,7 +337,7 @@ export class LevelSelectScene extends Phaser.Scene {
           .text(0, 0, node.id, {
             fontFamily: TYPO_TOKENS.fontFamily.sans,
             fontSize: '20px',
-            color: COLOR_TOKENS.navy.spaceBackground,
+            color: COLOR_TOKENS.sky.stops[0],
             fontStyle: 'bold',
           })
           .setOrigin(0.5);

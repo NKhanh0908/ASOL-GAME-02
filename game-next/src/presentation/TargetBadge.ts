@@ -67,7 +67,7 @@ export class TargetBadge {
 
     // 4. Vòng vàng đứt nét bên trong (bán kính 75px)
     const ringR = 75;
-    g.lineStyle(1.5, COLOR_NUMBERS.amberGrid, 0.55);
+    g.lineStyle(1.5, COLOR_NUMBERS.gridModule, 0.55);
     const numDashes = 28;
     for (let i = 0; i < numDashes; i++) {
       const startA = (i / numDashes) * Math.PI * 2;

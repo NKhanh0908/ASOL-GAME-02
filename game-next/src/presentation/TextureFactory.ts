@@ -38,7 +38,7 @@ export class TextureFactory {
       const canvas = tm.createCanvas(TEXTURE_KEYS.btnCircle112, 112, 112);
       if (canvas) {
         const ctx = canvas.context;
-        ctx.fillStyle = COLOR_TOKENS.navy.steleSurface;
+        ctx.fillStyle = COLOR_TOKENS.board.surfaceTop;
         ctx.beginPath();
         ctx.arc(56, 56, 52, 0, Math.PI * 2);
         ctx.fill();
@@ -78,7 +78,7 @@ export class TextureFactory {
       const canvas = tm.createCanvas(TEXTURE_KEYS.btnCircle80, 80, 80);
       if (canvas) {
         const ctx = canvas.context;
-        ctx.fillStyle = COLOR_TOKENS.navy.steleSurface;
+        ctx.fillStyle = COLOR_TOKENS.board.surfaceTop;
         ctx.beginPath();
         ctx.arc(40, 40, 36, 0, Math.PI * 2);
         ctx.fill();
@@ -170,7 +170,7 @@ export class TextureFactory {
       const canvas = tm.createCanvas(TEXTURE_KEYS.btnCircle64, 64, 64);
       if (canvas) {
         const ctx = canvas.context;
-        ctx.fillStyle = COLOR_TOKENS.navy.steleSurface;
+        ctx.fillStyle = COLOR_TOKENS.board.surfaceTop;
         ctx.beginPath();
         ctx.arc(32, 32, 30, 0, Math.PI * 2);
         ctx.fill();
@@ -196,7 +196,7 @@ export class TextureFactory {
       const canvas = tm.createCanvas(TEXTURE_KEYS.btnCircle56, 56, 56);
       if (canvas) {
         const ctx = canvas.context;
-        ctx.fillStyle = COLOR_TOKENS.navy.steleSurface;
+        ctx.fillStyle = COLOR_TOKENS.board.surfaceTop;
         ctx.beginPath();
         ctx.arc(28, 28, 26, 0, Math.PI * 2);
         ctx.fill();
@@ -345,7 +345,7 @@ export class TextureFactory {
         ctx.stroke();
 
         // Dấu checkmark navy đậm
-        ctx.strokeStyle = COLOR_TOKENS.navy.spaceBackground;
+        ctx.strokeStyle = COLOR_TOKENS.sky.stops[0];
         ctx.lineWidth = 4.5;
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
@@ -363,7 +363,7 @@ export class TextureFactory {
       const canvas = tm.createCanvas(TEXTURE_KEYS.nodeCurrent, 72, 72);
       if (canvas) {
         const ctx = canvas.context;
-        ctx.fillStyle = COLOR_TOKENS.navy.steleSurface;
+        ctx.fillStyle = COLOR_TOKENS.board.surfaceTop;
         ctx.beginPath();
         ctx.arc(36, 36, 32, 0, Math.PI * 2);
         ctx.fill();
@@ -401,7 +401,7 @@ export class TextureFactory {
       const canvas = tm.createCanvas(TEXTURE_KEYS.nodeUnlocked, 72, 72);
       if (canvas) {
         const ctx = canvas.context;
-        ctx.fillStyle = COLOR_TOKENS.navy.steleSurface;
+        ctx.fillStyle = COLOR_TOKENS.board.surfaceTop;
         ctx.beginPath();
         ctx.arc(36, 36, 32, 0, Math.PI * 2);
         ctx.fill();
@@ -457,7 +457,7 @@ export class TextureFactory {
         ctx.fill();
 
         // Lỗ khóa
-        ctx.fillStyle = COLOR_TOKENS.navy.spaceBackground;
+        ctx.fillStyle = COLOR_TOKENS.sky.stops[0];
         ctx.beginPath();
         ctx.arc(36, 38, 2.5, 0, Math.PI * 2);
         ctx.fill();

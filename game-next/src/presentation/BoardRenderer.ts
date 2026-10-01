@@ -40,7 +40,7 @@ export class BoardRenderer {
     this.bgGraphics.clear();
 
     // 1. Mặt đá Tấm Bia Tiên Tri (Stele Surface)
-    this.bgGraphics.fillStyle(COLOR_NUMBERS.navyStele, 0.98);
+    this.bgGraphics.fillStyle(COLOR_NUMBERS.boardSurfaceTop, 0.98);
     this.bgGraphics.fillRoundedRect(
       boardBounds.x,
       boardBounds.y,
@@ -76,7 +76,7 @@ export class BoardRenderer {
     this.bgGraphics.strokePath();
 
     // 3. Đường chỉ phụ vàng hổ phách đứt nét bên trong (cách viền 8px)
-    this.bgGraphics.lineStyle(1.5, COLOR_NUMBERS.amberGrid, 0.45);
+    this.bgGraphics.lineStyle(1.5, COLOR_NUMBERS.gridModule, 0.45);
     this.bgGraphics.strokeRoundedRect(
       boardBounds.x + 8,
       boardBounds.y + 8,
@@ -87,7 +87,7 @@ export class BoardRenderer {
 
     // 4. Lưới tọa độ vàng hổ phách 8 ô (32px mỗi ô)
     const step = 8 * cellPixel; // 32px
-    this.bgGraphics.lineStyle(1, COLOR_NUMBERS.amberGrid, 0.12);
+    this.bgGraphics.lineStyle(1, COLOR_NUMBERS.gridModule, 0.12);
 
     for (let x = boardBounds.x + step; x < boardBounds.x + boardBounds.width; x += step) {
       this.bgGraphics.lineBetween(x, boardBounds.y + 12, x, boardBounds.y + boardBounds.height - 12);
@@ -99,12 +99,12 @@ export class BoardRenderer {
     // Trục trung tâm (Center Axis) sáng hơn
     const centerAxisX = boardBounds.x + 64 * cellPixel; // x=64
     const centerAxisY = boardBounds.y + 96 * cellPixel; // y=96
-    this.bgGraphics.lineStyle(1.5, COLOR_NUMBERS.amberGrid, 0.28);
+    this.bgGraphics.lineStyle(1.5, COLOR_NUMBERS.gridModule, 0.28);
     this.bgGraphics.lineBetween(centerAxisX, boardBounds.y + 8, centerAxisX, boardBounds.y + boardBounds.height - 8);
     this.bgGraphics.lineBetween(boardBounds.x + 8, centerAxisY, boardBounds.x + boardBounds.width - 8, centerAxisY);
 
     // Chấm tròn tinh thể tại các giao điểm lưới (Intersection dots)
-    this.bgGraphics.fillStyle(COLOR_NUMBERS.amberGrid, 0.35);
+    this.bgGraphics.fillStyle(COLOR_NUMBERS.gridModule, 0.35);
     for (let x = boardBounds.x + step; x < boardBounds.x + boardBounds.width; x += step) {
       for (let y = boardBounds.y + step; y < boardBounds.y + boardBounds.height; y += step) {
         this.bgGraphics.fillCircle(x, y, 1.5);
@@ -139,7 +139,7 @@ export class BoardRenderer {
   private drawCardinalRunes(cx: number, cy: number): void {
     const { boardBounds } = this.layout;
     const g = this.bgGraphics;
-    g.fillStyle(COLOR_NUMBERS.amberGrid, 0.45);
+    g.fillStyle(COLOR_NUMBERS.gridModule, 0.45);
 
     // Bắc (0°)
     g.fillCircle(cx, boardBounds.y + 24, 3);
@@ -176,7 +176,7 @@ export class BoardRenderer {
     this.ringGraphics.fillCircle(p1X, p1Y, 4);
 
     // Vòng 2: Viền vàng hổ phách đứt nét
-    this.ringGraphics.lineStyle(1.2, COLOR_NUMBERS.amberGrid, 0.22);
+    this.ringGraphics.lineStyle(1.2, COLOR_NUMBERS.gridModule, 0.22);
     this.ringGraphics.strokeCircle(cx, cy, 410);
 
     // Đốm sáng trên vòng 2
@@ -361,7 +361,7 @@ export class BoardRenderer {
       cx,
       cy,
       radiusPx,
-      COLOR_NUMBERS.navySpace,
+      COLOR_NUMBERS.skyTop,
       0.35,
       COLOR_NUMBERS.iceShadow,
       0.4,
@@ -472,7 +472,7 @@ export class BoardRenderer {
         const overlapRadius = (radiusPx * 2 - dist) / 2;
 
         // Triệt tiêu quang học về màu mặt bia
-        this.fxGraphics.fillStyle(COLOR_NUMBERS.navyStele, 1.0);
+        this.fxGraphics.fillStyle(COLOR_NUMBERS.boardSurfaceTop, 1.0);
         this.fxGraphics.fillCircle(midX, midY, overlapRadius);
 
         // Rìa trong vùng khuyết sáng nhẹ màu vàng nhạt

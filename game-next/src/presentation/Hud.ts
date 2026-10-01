@@ -136,13 +136,13 @@ export class Hud {
     winOverlay.setInteractive(); // Chặn click xuyên xuống bàn
 
     const winPanel = this.scene.add.graphics();
-    winPanel.fillStyle(COLOR_NUMBERS.navyStele, 0.98);
+    winPanel.fillStyle(COLOR_NUMBERS.boardSurfaceTop, 0.98);
     winPanel.fillRoundedRect(-240, -190, 480, 380, 28);
     winPanel.lineStyle(6, COLOR_NUMBERS.icePrimary, 0.9);
     winPanel.strokeRoundedRect(-240, -190, 480, 380, 28);
 
     // Đường viền vàng bên trong
-    winPanel.lineStyle(1.5, COLOR_NUMBERS.amberGrid, 0.5);
+    winPanel.lineStyle(1.5, COLOR_NUMBERS.gridModule, 0.5);
     winPanel.strokeRoundedRect(-232, -182, 464, 364, 22);
 
     const winTitle = this.scene.add
@@ -172,7 +172,7 @@ export class Hud {
       .text(0, 53, 'Màn tiếp theo →', {
         fontFamily: TYPO_TOKENS.fontFamily.sans,
         fontSize: '16px',
-        color: COLOR_TOKENS.navy.spaceBackground,
+        color: COLOR_TOKENS.sky.stops[0],
         fontStyle: 'bold',
       })
       .setOrigin(0.5)

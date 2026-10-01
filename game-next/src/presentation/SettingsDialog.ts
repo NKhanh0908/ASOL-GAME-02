@@ -30,13 +30,13 @@ export class SettingsDialog {
     const modalW = 460;
     const modalH = 440;
     const panel = this.scene.add.graphics();
-    panel.fillStyle(COLOR_NUMBERS.navyStele, 0.98);
+    panel.fillStyle(COLOR_NUMBERS.boardSurfaceTop, 0.98);
     panel.fillRoundedRect(-modalW / 2, -modalH / 2, modalW, modalH, 24);
     panel.lineStyle(4, COLOR_NUMBERS.icePrimary, 0.85);
     panel.strokeRoundedRect(-modalW / 2, -modalH / 2, modalW, modalH, 24);
 
     // Đường viền vàng mờ bên trong
-    panel.lineStyle(1.2, COLOR_NUMBERS.amberGrid, 0.35);
+    panel.lineStyle(1.2, COLOR_NUMBERS.gridModule, 0.35);
     panel.strokeRoundedRect(-modalW / 2 + 6, -modalH / 2 + 6, modalW - 12, modalH - 12, 18);
 
     // 3. Tiêu đề
@@ -137,13 +137,13 @@ export class SettingsDialog {
 
     const drawSwitch = () => {
       track.clear();
-      track.fillStyle(isChecked ? COLOR_NUMBERS.amberSolid : COLOR_NUMBERS.navySpace, 1.0);
+      track.fillStyle(isChecked ? COLOR_NUMBERS.amberSolid : COLOR_NUMBERS.skyTop, 1.0);
       track.fillRoundedRect(switchX - trackW / 2, y - trackH / 2, trackW, trackH, 14);
       track.lineStyle(1.5, isChecked ? COLOR_NUMBERS.amberGlow : COLOR_NUMBERS.iceShadow, 0.8);
       track.strokeRoundedRect(switchX - trackW / 2, y - trackH / 2, trackW, trackH, 14);
 
       thumb.clear();
-      thumb.fillStyle(isChecked ? COLOR_NUMBERS.navySpace : COLOR_NUMBERS.textSecondary, 1.0);
+      thumb.fillStyle(isChecked ? COLOR_NUMBERS.skyTop : COLOR_NUMBERS.textSecondary, 1.0);
       const thumbX = isChecked ? switchX + 13 : switchX - 13;
       thumb.fillCircle(thumbX, y, 10);
     };
@@ -192,7 +192,7 @@ export class SettingsDialog {
 
     // Nút Hủy
     const cancelBtnBg = this.scene.add.graphics();
-    cancelBtnBg.fillStyle(COLOR_NUMBERS.navyStele, 1.0);
+    cancelBtnBg.fillStyle(COLOR_NUMBERS.boardSurfaceTop, 1.0);
     cancelBtnBg.fillRoundedRect(-140, 40, 120, 44, 12);
     cancelBtnBg.lineStyle(1.5, COLOR_NUMBERS.icePrimary, 0.8);
     cancelBtnBg.strokeRoundedRect(-140, 40, 120, 44, 12);

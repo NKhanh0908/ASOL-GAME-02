@@ -14,8 +14,8 @@ describe('BoardRenderer Astrological Stele Rules', () => {
 
   test('màu viền kính bevel và màu mặt bia tuân thủ họ màu nghiêm ngặt', () => {
     expect(COLOR_TOKENS.iceGlass.primaryBorder).toBe('#68B8DC');
-    expect(COLOR_TOKENS.navy.steleSurface).toBe('#101B32');
-    expect(COLOR_NUMBERS.navyStele).toBe(0x101b32);
+    expect(COLOR_TOKENS.board.surfaceTop).toBe('#101B32');
+    expect(COLOR_NUMBERS.boardSurfaceTop).toBe(0x101b32);
     expect(COLOR_NUMBERS.icePrimary).toBe(0x68b8dc);
   });
 

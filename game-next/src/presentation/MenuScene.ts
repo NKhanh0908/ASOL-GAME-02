@@ -126,7 +126,7 @@ export class MenuScene extends Phaser.Scene {
       .text(btnX, btnY - 12, btnLabelText, {
         fontFamily: TYPO_TOKENS.fontFamily.sans,
         fontSize: '20px',
-        color: COLOR_TOKENS.navy.spaceBackground,
+        color: COLOR_TOKENS.sky.stops[0],
         fontStyle: 'bold',
       })
       .setOrigin(0.5);
@@ -154,7 +154,7 @@ export class MenuScene extends Phaser.Scene {
     // Nút phụ "Chọn màn" (Secondary Button - Viền kính xanh trong suốt)
     const secBtnY = 930;
     const secBtnBg = this.add.graphics();
-    secBtnBg.fillStyle(COLOR_NUMBERS.navyStele, 0.7);
+    secBtnBg.fillStyle(COLOR_NUMBERS.boardSurfaceTop, 0.7);
     secBtnBg.fillRoundedRect(btnX - btnWidth / 2, secBtnY - 28, btnWidth, 56, 18);
     secBtnBg.lineStyle(1.8, COLOR_NUMBERS.icePrimary, 0.85);
     secBtnBg.strokeRoundedRect(btnX - btnWidth / 2, secBtnY - 28, btnWidth, 56, 18);
@@ -232,7 +232,7 @@ export class MenuScene extends Phaser.Scene {
     this.emblemGraphics.strokeCircle(cx, cy, 140);
 
     // Vòng trong vàng (R = 115px)
-    this.emblemGraphics.lineStyle(1.2, COLOR_NUMBERS.amberGrid, 0.35);
+    this.emblemGraphics.lineStyle(1.2, COLOR_NUMBERS.gridModule, 0.35);
     this.emblemGraphics.strokeCircle(cx, cy, 115);
 
     // Các điểm vệ tinh xoay trên vòng ngoài
@@ -251,7 +251,7 @@ export class MenuScene extends Phaser.Scene {
       const y1 = cy + Math.sin(angle) * 95;
       const x2 = cx + Math.cos(angle) * 115;
       const y2 = cy + Math.sin(angle) * 115;
-      this.emblemGraphics.lineStyle(1, COLOR_NUMBERS.amberGrid, 0.4);
+      this.emblemGraphics.lineStyle(1, COLOR_NUMBERS.gridModule, 0.4);
       this.emblemGraphics.lineBetween(x1, y1, x2, y2);
     }
 
