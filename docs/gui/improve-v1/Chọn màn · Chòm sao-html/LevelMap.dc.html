@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>Chọn màn — Chòm Sao Tiên Tri</title>
+<script src="./vendor/react.js"></script>
+<script src="./vendor/react-dom.js"></script>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&amp;family=Be+Vietnam+Pro:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+@keyframes tw{0%,100%{opacity:.25}50%{opacity:1}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes spinr{to{transform:rotate(-360deg)}}
+@keyframes pulse{0%{transform:scale(.6);opacity:1}100%{transform:scale(1.7);opacity:0}}
+@keyframes breathe{0%,100%{opacity:.55}50%{opacity:1}}
+@keyframes bob{0%,100%{transform:translate(0,0)}50%{transform:translate(0,-3px)}}
+@keyframes sweep{0%{stroke-dashoffset:0}100%{stroke-dashoffset:-1600}}
+@keyframes rays{to{transform:rotate(360deg)}}
+.tw{animation:tw 3.2s ease-in-out infinite}
+.spin{animation:spin 120s linear infinite;transform-box:fill-box;transform-origin:center}
+.spinr{animation:spinr 160s linear infinite;transform-box:fill-box;transform-origin:center}
+.pulse{animation:pulse 1.6s ease-out infinite;transform-box:fill-box;transform-origin:center}
+.breathe{animation:breathe 2.4s ease-in-out infinite}
+.bob{animation:bob 2.2s ease-in-out infinite}
+.sweep{animation:sweep 6s linear infinite}
+.rays{animation:rays 40s linear infinite;transform-box:fill-box;transform-origin:center}
+button{font:inherit;cursor:pointer}
+</style>
+</helmet>
+
+<div style="position:relative;width:390px;height:844px;overflow:hidden;font-family:'Be Vietnam Pro',sans-serif;color:#FFFFFF;background:#1A2470">
+<svg width="390" height="844" viewBox="0 0 390 844" style="position:absolute;left:0;top:0;display:block" aria-hidden="true">
+<defs>
+<linearGradient id="skyg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1A2470"></stop><stop offset=".45" stop-color="#2B3192"></stop><stop offset=".78" stop-color="#4A3A9E"></stop><stop offset="1" stop-color="#6B4BA8"></stop></linearGradient>
+<radialGradient id="neb1" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#7FB8FF" stop-opacity=".45"></stop><stop offset="1" stop-color="#7FB8FF" stop-opacity="0"></stop></radialGradient>
+<radialGradient id="neb2" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#FF9FD2" stop-opacity=".32"></stop><stop offset="1" stop-color="#FF9FD2" stop-opacity="0"></stop></radialGradient>
+<radialGradient id="moon" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#FFF4D6" stop-opacity=".9"></stop><stop offset=".25" stop-color="#FFE3A3" stop-opacity=".35"></stop><stop offset="1" stop-color="#FFE3A3" stop-opacity="0"></stop></radialGradient>
+</defs>
+<rect width="390" height="844" fill="url(#skyg)"></rect>
+<ellipse cx="58.5" cy="236.32000000000002" rx="214.50000000000003" ry="151.92" fill="url(#neb1)"></ellipse>
+<ellipse cx="351.0" cy="523.28" rx="195.0" ry="168.8" fill="url(#neb2)"></ellipse>
+<circle cx="335.4" cy="75.96" r="85.8" fill="url(#moon)"></circle>
+<circle cx="176.4" cy="425.2" r="1" fill="#FFE8B8" opacity="0.77" class="tw" style="animation-delay:1.52s"></circle>
+<circle cx="72.0" cy="388.8" r="1.7" fill="#FFFFFF" opacity="0.50"></circle>
+<circle cx="118.3" cy="68.9" r="1.7" fill="#FFFFFF" opacity="0.78"></circle>
+<circle cx="154.5" cy="344.1" r="1.7" fill="#FFFFFF" opacity="0.91" class="tw" style="animation-delay:1.87s"></circle>
+<circle cx="24.6" cy="27.1" r="0.8" fill="#FFFFFF" opacity="0.88"></circle>
+<circle cx="127.3" cy="448.9" r="0.8" fill="#FFFFFF" opacity="0.80"></circle>
+<circle cx="194.9" cy="503.2" r="1" fill="#CFE6FF" opacity="0.75" class="tw" style="animation-delay:1.22s"></circle>
+<circle cx="363.4" cy="63.2" r="1" fill="#CFE6FF" opacity="0.87"></circle>
+<circle cx="200.0" cy="22.6" r="1.3" fill="#FFFFFF" opacity="0.67"></circle>
+<circle cx="330.2" cy="293.6" r="0.6" fill="#FFFFFF" opacity="0.96" class="tw" style="animation-delay:0.64s"></circle>
+<circle cx="20.4" cy="285.2" r="1.7" fill="#FFE8B8" opacity="0.68"></circle>
+<circle cx="220.8" cy="150.8" r="1.7" fill="#CFE6FF" opacity="0.64"></circle>
+<circle cx="121.4" cy="11.5" r="1" fill="#FFFFFF" opacity="0.84" class="tw" style="animation-delay:0.40s"></circle>
+<circle cx="4.3" cy="353.2" r="1" fill="#FFFFFF" opacity="0.83"></circle>
+<circle cx="73.5" cy="386.5" r="1.7" fill="#FFFFFF" opacity="0.68"></circle>
+<circle cx="149.7" cy="299.9" r="0.8" fill="#FFFFFF" opacity="0.98" class="tw" style="animation-delay:0.81s"></circle>
+<circle cx="313.3" cy="231.0" r="0.6" fill="#FFFFFF" opacity="0.55"></circle>
+<circle cx="388.4" cy="457.3" r="1.3" fill="#FFFFFF" opacity="0.47"></circle>
+<circle cx="57.1" cy="335.4" r="0.6" fill="#CFE6FF" opacity="0.66" class="tw" style="animation-delay:2.49s"></circle>
+<circle cx="29.0" cy="158.6" r="1.7" fill="#FFFFFF" opacity="0.46"></circle>
+<circle cx="143.8" cy="472.6" r="0.8" fill="#FFE8B8" opacity="0.91"></circle>
+<circle cx="52.9" cy="293.3" r="1.7" fill="#FFFFFF" opacity="0.58" class="tw" style="animation-delay:0.93s"></circle>
+<circle cx="238.1" cy="551.0" r="0.8" fill="#FFFFFF" opacity="0.83"></circle>
+<circle cx="151.4" cy="366.5" r="0.6" fill="#FFE8B8" opacity="0.48"></circle>
+<circle cx="42.5" cy="389.2" r="1" fill="#FFFFFF" opacity="0.67" class="tw" style="animation-delay:2.22s"></circle>
+<circle cx="164.1" cy="687.3" r="1" fill="#CFE6FF" opacity="0.74"></circle>
+<circle cx="362.4" cy="742.3" r="0.8" fill="#FFFFFF" opacity="0.71"></circle>
+<circle cx="254.9" cy="467.8" r="0.6" fill="#CFE6FF" opacity="0.95" class="tw" style="animation-delay:0.64s"></circle>
+<circle cx="292.1" cy="52.5" r="1" fill="#FFE8B8" opacity="0.59"></circle>
+<circle cx="18.2" cy="214.2" r="1.3" fill="#FFFFFF" opacity="0.50"></circle>
+<circle cx="54.0" cy="342.1" r="1" fill="#FFFFFF" opacity="0.96" class="tw" style="animation-delay:1.77s"></circle>
+<circle cx="185.2" cy="271.5" r="1" fill="#FFFFFF" opacity="0.46"></circle>
+<circle cx="248.1" cy="366.3" r="1.7" fill="#CFE6FF" opacity="0.63"></circle>
+<circle cx="389.7" cy="57.2" r="1.3" fill="#CFE6FF" opacity="0.95" class="tw" style="animation-delay:2.21s"></circle>
+<circle cx="287.5" cy="534.5" r="1" fill="#CFE6FF" opacity="0.50"></circle>
+<circle cx="184.6" cy="59.0" r="1" fill="#FFFFFF" opacity="0.92"></circle>
+<circle cx="223.4" cy="474.7" r="1" fill="#FFE8B8" opacity="0.78" class="tw" style="animation-delay:1.75s"></circle>
+<circle cx="31.3" cy="485.7" r="1" fill="#FFE8B8" opacity="0.85"></circle>
+<circle cx="151.5" cy="558.3" r="1.3" fill="#FFE8B8" opacity="0.69"></circle>
+<circle cx="327.0" cy="63.6" r="1.3" fill="#FFFFFF" opacity="0.50" class="tw" style="animation-delay:0.93s"></circle>
+<circle cx="8.7" cy="727.2" r="0.6" fill="#FFE8B8" opacity="0.88"></circle>
+<circle cx="257.5" cy="369.4" r="0.6" fill="#CFE6FF" opacity="0.62"></circle>
+<circle cx="264.5" cy="153.9" r="0.8" fill="#CFE6FF" opacity="0.69" class="tw" style="animation-delay:1.98s"></circle>
+<circle cx="347.8" cy="248.4" r="1.7" fill="#CFE6FF" opacity="0.56"></circle>
+<circle cx="168.0" cy="612.2" r="0.8" fill="#FFFFFF" opacity="0.66"></circle>
+<circle cx="227.4" cy="240.4" r="0.8" fill="#FFFFFF" opacity="0.91" class="tw" style="animation-delay:1.49s"></circle>
+<circle cx="331.0" cy="540.2" r="1" fill="#FFFFFF" opacity="0.51"></circle>
+<circle cx="183.8" cy="703.2" r="1" fill="#FFE8B8" opacity="0.79"></circle>
+<circle cx="192.6" cy="239.6" r="1.3" fill="#FFE8B8" opacity="0.91" class="tw" style="animation-delay:0.96s"></circle>
+<circle cx="108.5" cy="461.5" r="1.7" fill="#CFE6FF" opacity="0.76"></circle>
+<circle cx="120.5" cy="601.2" r="0.6" fill="#FFFFFF" opacity="0.67"></circle>
+<circle cx="74.1" cy="584.3" r="1" fill="#FFFFFF" opacity="0.89" class="tw" style="animation-delay:2.34s"></circle>
+<circle cx="383.8" cy="87.6" r="0.6" fill="#CFE6FF" opacity="0.98"></circle>
+<circle cx="267.0" cy="151.4" r="1" fill="#CFE6FF" opacity="0.55"></circle>
+<circle cx="4.2" cy="358.7" r="1.7" fill="#FFFFFF" opacity="0.60" class="tw" style="animation-delay:0.54s"></circle>
+<circle cx="134.8" cy="529.7" r="1.3" fill="#FFFFFF" opacity="0.67"></circle>
+<circle cx="308.9" cy="688.4" r="0.6" fill="#FFE8B8" opacity="0.96"></circle>
+<circle cx="281.7" cy="98.7" r="1" fill="#FFFFFF" opacity="0.95" class="tw" style="animation-delay:1.88s"></circle>
+<circle cx="147.0" cy="432.1" r="1.3" fill="#CFE6FF" opacity="0.71"></circle>
+<circle cx="254.0" cy="155.6" r="1.7" fill="#FFFFFF" opacity="0.57"></circle>
+<circle cx="351.0" cy="744.8" r="1" fill="#CFE6FF" opacity="0.85" class="tw" style="animation-delay:0.79s"></circle>
+<circle cx="6.1" cy="383.4" r="0.6" fill="#FFE8B8" opacity="0.64"></circle>
+<circle cx="164.4" cy="209.1" r="0.6" fill="#FFFFFF" opacity="0.90"></circle>
+<circle cx="25.0" cy="607.6" r="0.8" fill="#CFE6FF" opacity="0.95" class="tw" style="animation-delay:2.06s"></circle>
+<circle cx="183.5" cy="759.5" r="1.7" fill="#FFE8B8" opacity="0.97"></circle>
+<circle cx="192.1" cy="721.0" r="0.6" fill="#FFFFFF" opacity="0.69"></circle>
+<circle cx="217.9" cy="631.3" r="1.3" fill="#FFFFFF" opacity="0.91" class="tw" style="animation-delay:1.57s"></circle>
+<circle cx="218.4" cy="236.8" r="1" fill="#FFFFFF" opacity="0.62"></circle>
+<circle cx="55.0" cy="413.8" r="1" fill="#FFE8B8" opacity="0.56"></circle>
+<circle cx="209.0" cy="382.2" r="1.3" fill="#FFE8B8" opacity="0.98" class="tw" style="animation-delay:0.08s"></circle>
+<circle cx="201.2" cy="304.3" r="1.3" fill="#FFFFFF" opacity="0.72"></circle>
+<circle cx="269.5" cy="50.1" r="1.3" fill="#FFE8B8" opacity="0.68"></circle>
+<circle cx="373.2" cy="701.4" r="1" fill="#FFFFFF" opacity="0.52" class="tw" style="animation-delay:1.42s"></circle>
+<circle cx="169.1" cy="619.6" r="1" fill="#CFE6FF" opacity="0.51"></circle>
+<circle cx="163.6" cy="22.3" r="1" fill="#FFFFFF" opacity="0.84"></circle>
+<circle cx="381.1" cy="27.1" r="0.8" fill="#FFFFFF" opacity="0.61" class="tw" style="animation-delay:0.04s"></circle>
+<circle cx="282.2" cy="185.7" r="1" fill="#FFFFFF" opacity="0.72"></circle>
+<circle cx="227.1" cy="647.1" r="1.3" fill="#CFE6FF" opacity="0.84"></circle>
+<circle cx="273.5" cy="667.5" r="0.6" fill="#FFE8B8" opacity="0.90" class="tw" style="animation-delay:1.90s"></circle>
+<circle cx="240.2" cy="408.8" r="1.7" fill="#FFFFFF" opacity="0.74"></circle>
+<circle cx="332.0" cy="464.7" r="0.8" fill="#FFFFFF" opacity="0.95"></circle>
+<circle cx="244.9" cy="264.0" r="0.8" fill="#CFE6FF" opacity="0.94" class="tw" style="animation-delay:1.81s"></circle>
+<circle cx="75.9" cy="591.2" r="0.8" fill="#FFFFFF" opacity="0.52"></circle>
+<circle cx="93.3" cy="551.9" r="1" fill="#FFE8B8" opacity="0.50"></circle>
+<circle cx="324.5" cy="320.3" r="1.7" fill="#FFFFFF" opacity="0.80" class="tw" style="animation-delay:0.60s"></circle>
+<circle cx="311.6" cy="73.0" r="1.3" fill="#CFE6FF" opacity="0.95"></circle>
+<circle cx="377.7" cy="87.7" r="1.3" fill="#CFE6FF" opacity="0.73"></circle>
+<circle cx="267.4" cy="143.6" r="0.6" fill="#FFE8B8" opacity="0.47" class="tw" style="animation-delay:0.32s"></circle>
+<circle cx="215.2" cy="391.1" r="1.3" fill="#FFE8B8" opacity="0.53"></circle>
+<circle cx="72.0" cy="154.9" r="0.8" fill="#CFE6FF" opacity="0.96"></circle>
+<circle cx="37.1" cy="47.1" r="1.7" fill="#FFE8B8" opacity="0.50" class="tw" style="animation-delay:0.23s"></circle>
+<circle cx="152.4" cy="323.9" r="1" fill="#FFE8B8" opacity="0.57"></circle>
+<circle cx="145.5" cy="481.6" r="0.6" fill="#FFFFFF" opacity="0.55"></circle>
+<circle cx="177.0" cy="561.6" r="1" fill="#FFFFFF" opacity="0.50" class="tw" style="animation-delay:1.81s"></circle>
+<circle cx="309.0" cy="245.9" r="0.6" fill="#FFE8B8" opacity="0.76"></circle>
+<circle cx="74.5" cy="444.1" r="1" fill="#CFE6FF" opacity="0.60"></circle>
+<circle cx="45.3" cy="564.4" r="0.8" fill="#FFE8B8" opacity="0.63" class="tw" style="animation-delay:0.40s"></circle>
+<circle cx="210.2" cy="281.0" r="1" fill="#FFFFFF" opacity="0.67"></circle>
+<circle cx="281.8" cy="53.6" r="1" fill="#CFE6FF" opacity="0.71"></circle>
+<circle cx="4.1" cy="270.1" r="1.7" fill="#FFFFFF" opacity="0.97" class="tw" style="animation-delay:0.70s"></circle>
+<circle cx="259.8" cy="256.6" r="1.7" fill="#FFE8B8" opacity="0.76"></circle>
+<circle cx="207.9" cy="295.9" r="1" fill="#FFFFFF" opacity="0.84"></circle>
+<circle cx="297.1" cy="744.5" r="0.6" fill="#FFFFFF" opacity="0.86" class="tw" style="animation-delay:1.85s"></circle>
+<circle cx="100.1" cy="305.0" r="0.6" fill="#FFFFFF" opacity="0.81"></circle>
+<circle cx="4.2" cy="196.4" r="1" fill="#CFE6FF" opacity="0.75"></circle>
+<circle cx="198.0" cy="734.6" r="1.3" fill="#FFFFFF" opacity="0.90" class="tw" style="animation-delay:1.91s"></circle>
+<circle cx="29.7" cy="453.9" r="0.6" fill="#FFE8B8" opacity="0.96"></circle>
+<circle cx="62.4" cy="358.4" r="0.8" fill="#FFE8B8" opacity="0.75"></circle>
+<circle cx="232.7" cy="326.3" r="1" fill="#FFE8B8" opacity="0.67" class="tw" style="animation-delay:0.85s"></circle>
+<circle cx="121.8" cy="402.9" r="1" fill="#CFE6FF" opacity="0.76"></circle>
+<circle cx="110.6" cy="544.3" r="1" fill="#FFFFFF" opacity="0.46"></circle>
+<circle cx="95.6" cy="32.5" r="0.8" fill="#FFE8B8" opacity="0.66" class="tw" style="animation-delay:2.26s"></circle>
+<circle cx="350.0" cy="568.5" r="0.6" fill="#CFE6FF" opacity="0.49"></circle>
+<circle cx="353.2" cy="326.3" r="1" fill="#CFE6FF" opacity="0.99"></circle>
+<circle cx="95.0" cy="397.5" r="1.7" fill="#FFE8B8" opacity="0.98" class="tw" style="animation-delay:0.43s"></circle>
+<circle cx="95.6" cy="536.6" r="0.6" fill="#FFE8B8" opacity="0.70"></circle>
+<circle cx="79.4" cy="39.5" r="1.3" fill="#FFFFFF" opacity="0.52"></circle>
+<circle cx="172.7" cy="507.3" r="1" fill="#CFE6FF" opacity="0.83" class="tw" style="animation-delay:1.92s"></circle>
+<circle cx="142.0" cy="565.0" r="0.8" fill="#CFE6FF" opacity="0.85"></circle>
+<circle cx="93.0" cy="86.5" r="1" fill="#CFE6FF" opacity="0.60"></circle>
+<circle cx="237.8" cy="550.8" r="1.7" fill="#FFFFFF" opacity="0.86" class="tw" style="animation-delay:1.90s"></circle>
+<circle cx="74.0" cy="189.1" r="1.7" fill="#FFFFFF" opacity="0.93"></circle>
+<circle cx="15.4" cy="46.2" r="1" fill="#CFE6FF" opacity="0.68"></circle>
+<circle cx="243.1" cy="77.8" r="1.3" fill="#CFE6FF" opacity="0.50" class="tw" style="animation-delay:0.22s"></circle>
+<circle cx="263.7" cy="418.3" r="1.7" fill="#CFE6FF" opacity="0.72"></circle>
+<circle cx="138.1" cy="256.9" r="1" fill="#FFFFFF" opacity="0.91"></circle>
+<path d="M37.5,89.7 Q37.5,94.7 42.5,94.7 Q37.5,94.7 37.5,99.7 Q37.5,94.7 32.5,94.7 Q37.5,94.7 37.5,89.7 Z" fill="#FFFFFF" opacity="0.9" class="tw" style="animation-delay:2.51s"></path>
+<path d="M294.5,319.3 Q294.5,324.3 299.5,324.3 Q294.5,324.3 294.5,329.3 Q294.5,324.3 289.5,324.3 Q294.5,324.3 294.5,319.3 Z" fill="#FFFFFF" opacity="0.9" class="tw" style="animation-delay:0.77s"></path>
+<path d="M309.7,266.0 Q309.7,271.0 314.7,271.0 Q309.7,271.0 309.7,276.0 Q309.7,271.0 304.7,271.0 Q309.7,271.0 309.7,266.0 Z" fill="#FFFFFF" opacity="0.9" class="tw" style="animation-delay:2.51s"></path>
+<path d="M230.8,210.8 Q230.8,215.8 235.8,215.8 Q230.8,215.8 230.8,220.8 Q230.8,215.8 225.8,215.8 Q230.8,215.8 230.8,210.8 Z" fill="#FFFFFF" opacity="0.9" class="tw" style="animation-delay:2.48s"></path>
+<path d="M78.0,467.5 Q78.0,472.5 83.0,472.5 Q78.0,472.5 78.0,477.5 Q78.0,472.5 73.0,472.5 Q78.0,472.5 78.0,467.5 Z" fill="#FFFFFF" opacity="0.9" class="tw" style="animation-delay:0.29s"></path>
+<path d="M333.8,62.5 Q333.8,65.5 336.8,65.5 Q333.8,65.5 333.8,68.5 Q333.8,65.5 330.8,65.5 Q333.8,65.5 333.8,62.5 Z" fill="#FFFFFF" opacity="0.9" class="tw" style="animation-delay:1.3s"></path>
+</svg>
+<svg width="390" height="844" viewBox="0 0 390 844" style="position:absolute;left:0;top:0" aria-hidden="true"><defs>
+<filter id="lmglow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="4"></feGaussianBlur></filter>
+<radialGradient id="ch2" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#FF9FD2" stop-opacity=".25"></stop><stop offset="1" stop-color="#FF9FD2" stop-opacity="0"></stop></radialGradient></defs>
+<ellipse cx="195" cy="800" rx="260" ry="90" fill="url(#ch2)"></ellipse>
+<path d="M104,196 Q211.0,221.0 282,290" fill="none" stroke="#FFC857" stroke-width="6" opacity=".6" filter="url(#lmglow)"></path>
+<path d="M104,196 Q211.0,221.0 282,290" fill="none" stroke="#FFE29A" stroke-width="3" stroke-linecap="round"></path>
+<path d="M104,196 Q211.0,221.0 282,290" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-dasharray="6 220" stroke-linecap="round" class="sweep"></path>
+<path d="M282,290 Q175.0,315.0 104,384" fill="none" stroke="#B8D4FF" stroke-opacity=".5" stroke-width="2" stroke-dasharray="3 7" stroke-linecap="round"></path>
+<path d="M104,384 Q211.0,409.0 282,478" fill="none" stroke="#B8D4FF" stroke-opacity=".5" stroke-width="2" stroke-dasharray="3 7" stroke-linecap="round"></path>
+<path d="M282,478 Q175.0,503.0 104,572" fill="none" stroke="#B8D4FF" stroke-opacity=".5" stroke-width="2" stroke-dasharray="3 7" stroke-linecap="round"></path>
+<path d="M104,572 Q211.0,597.0 282,666" fill="none" stroke="#B8D4FF" stroke-opacity=".5" stroke-width="2" stroke-dasharray="3 7" stroke-linecap="round"></path>
+<path d="M282,666 Q198.0,726.0 150,830" fill="none" stroke="#B8D4FF" stroke-opacity=".5" stroke-width="2" stroke-dasharray="3 7" stroke-linecap="round"></path>
+<circle cx="40" cy="120" r="1.6" fill="#FFFFFF" opacity=".8"></circle>
+<circle cx="62" cy="140" r="1.6" fill="#FFFFFF" opacity=".8"></circle>
+<circle cx="88" cy="128" r="1.6" fill="#FFFFFF" opacity=".8"></circle>
+<circle cx="330" cy="400" r="1.6" fill="#FFFFFF" opacity=".8"></circle>
+<circle cx="352" cy="420" r="1.6" fill="#FFFFFF" opacity=".8"></circle>
+<circle cx="340" cy="448" r="1.6" fill="#FFFFFF" opacity=".8"></circle>
+<circle cx="40" cy="640" r="1.6" fill="#FFFFFF" opacity=".8"></circle>
+<circle cx="60" cy="660" r="1.6" fill="#FFFFFF" opacity=".8"></circle>
+<path d="M40,120 L62,140 L88,128 M330,400 L352,420 L340,448 M40,640 L60,660" stroke="#FFFFFF" stroke-opacity=".25" stroke-width="1"></path>
+</svg>
+<a href="Main.dc.html" aria-label="Về menu" style="position:absolute;left:16px;top:22px;box-sizing:border-box;width:46px;height:46px;border-radius:50%;border:2px solid #A9E3FF;background:radial-gradient(circle at 35% 30%,#3D5FC0,#1B2A72);box-shadow:0 0 16px rgba(130,210,255,.55), inset 0 2px 0 rgba(255,255,255,.35);display:flex;align-items:center;justify-content:center;padding:0"><svg width="20" height="20" viewBox="0 0 20 20"><path d="M12.5 4 L6.5 10 L12.5 16" fill="none" stroke="#FFFFFF" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></a>
+<div style="position:absolute;left:72px;right:96px;top:28px;font-family:'Playfair Display',serif;font-weight:800;font-size:24px;line-height:34px;color:#FFFFFF;text-shadow:0 0 14px rgba(255,214,120,.7);text-align:center">Chòm Sao Tiên Tri</div>
+<div style="position:absolute;right:16px;top:28px;height:34px;padding:0 12px;border-radius:17px;display:flex;align-items:center;gap:6px;background:rgba(20,30,90,.6);border:1.5px solid #FFC857;box-shadow:0 0 12px rgba(255,200,87,.45);font-weight:700;font-size:14px;color:#FFE29A">
+<svg width="14" height="14" viewBox="0 0 14 14"><path d="M7,0 Q7,7 14,7 Q7,7 7,14 Q7,7 0,7 Q7,7 7,0 Z" fill="#FFC857"></path></svg>1/18</div>
+<div style="position:absolute;left:0;right:0;top:98px;display:flex;justify-content:center">
+<div style="display:flex;align-items:center;gap:10px;height:36px;padding:0 18px;border-radius:18px;background:linear-gradient(180deg,rgba(60,90,200,.75),rgba(30,45,130,.75));border:1.5px solid #A9E3FF;box-shadow:0 0 16px rgba(130,210,255,.45)">
+<svg width="12" height="12" viewBox="0 0 12 12"><path d="M6,0 Q6,6 12,6 Q6,6 6,12 Q6,6 0,6 Q6,6 6,0 Z" fill="#FFE29A"></path></svg>
+<span style="font-family:'Playfair Display',serif;font-weight:700;font-size:15px;color:#FFFFFF">Chương I · Khởi Nguyên</span>
+<svg width="12" height="12" viewBox="0 0 12 12"><path d="M6,0 Q6,6 12,6 Q6,6 6,12 Q6,6 0,6 Q6,6 6,0 Z" fill="#FFE29A"></path></svg>
+</div></div>
+<div style="position:absolute;left:0;right:0;top:726px;display:flex;justify-content:center">
+<div style="display:flex;align-items:center;gap:10px;height:36px;padding:0 18px;border-radius:18px;background:linear-gradient(180deg,rgba(60,90,200,.75),rgba(30,45,130,.75));border:1.5px solid #A9E3FF;box-shadow:0 0 16px rgba(130,210,255,.45)">
+<svg width="12" height="12" viewBox="0 0 12 12"><path d="M6,0 Q6,6 12,6 Q6,6 6,12 Q6,6 0,6 Q6,6 6,0 Z" fill="#FFE29A"></path></svg>
+<span style="font-family:'Playfair Display',serif;font-weight:700;font-size:15px;color:#FFFFFF">Chương II · Giao Thoa</span>
+<svg width="12" height="12" viewBox="0 0 12 12"><path d="M6,0 Q6,6 12,6 Q6,6 6,12 Q6,6 0,6 Q6,6 6,0 Z" fill="#FFE29A"></path></svg>
+</div></div>
+<a href="Victory.dc.html" aria-label="Màn 1-1 Song Tinh, đã hoàn thành" style="position:absolute;left:70px;top:162px;width:68px;height:68px;border-radius:50%;box-sizing:border-box;border:3px solid #FFF4CC;background:radial-gradient(circle at 35% 30%,#FFE9A8,#FFC857 55%,#E39A2E);box-shadow:0 0 26px rgba(255,200,87,.85);display:flex;align-items:center;justify-content:center">
+<svg width="40" height="22" viewBox="0 0 40 22"><polygon points="10,1 20,11 10,21 0,11" fill="#7A4A00"></polygon><polygon points="30,1 40,11 30,21 20,11" fill="#7A4A00"></polygon></svg>
+<span style="position:absolute;right:-4px;top:-4px;width:24px;height:24px;border-radius:50%;background:#2D46B0;border:2px solid #FFF4CC;display:flex;align-items:center;justify-content:center"><svg width="12" height="12" viewBox="0 0 12 12"><path d="M2.5 6.2 L5 8.5 L9.5 3.5" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></a>
+<div style="position:absolute;left:44px;width:120px;top:234px;text-align:center;font-size:13px;font-weight:700;color:#FFE29A">1-1 · Song Tinh</div>
+<div style="position:absolute;left:226px;top:234px;width:112px;height:112px" aria-hidden="true">
+<svg width="112" height="112" viewBox="0 0 112 112"><circle cx="56" cy="56" r="40" fill="none" stroke="#FFE8A6" stroke-width="2" class="pulse"></circle><circle cx="56" cy="56" r="40" fill="none" stroke="#9BE1FF" stroke-width="2" class="pulse" style="animation-delay:.8s"></circle>
+<g class="spin"><circle cx="56" cy="56" r="50" fill="none" stroke="#FFD27A" stroke-width="1.5" stroke-dasharray="2 6"></circle></g></svg></div>
+<a href="Main.dc.html" aria-label="Chơi màn 1-2 Bảo Tháp Tiên Tri" style="position:absolute;left:244px;top:252px;width:76px;height:76px;border-radius:50%;box-sizing:border-box;border:3px solid #DDF4FF;background:radial-gradient(circle at 35% 30%,#5A86F0,#2340A8 60%,#172A7A);box-shadow:0 0 30px rgba(130,210,255,.9);display:flex;align-items:center;justify-content:center">
+<svg width="34" height="40" viewBox="0 0 34 40"><polygon points="17,1 33,17 1,17" fill="#FFE8A6"></polygon><rect x="1" y="17" width="32" height="22" fill="#FFC857"></rect></svg></a>
+<div style="position:absolute;left:30px;top:260px;width:176px;box-sizing:border-box;padding:10px 12px;border-radius:16px;background:rgba(255,248,225,.97);box-shadow:0 0 22px rgba(255,220,130,.6), 0 8px 18px rgba(10,10,50,.45);color:#2A1C00">
+<div style="font-size:11px;font-weight:700;color:#8A5A00">Màn 1-2 · Đang chơi</div>
+<div style="font-family:'Playfair Display',serif;font-weight:800;font-size:17px;line-height:22px">Bảo Tháp Tiên Tri</div>
+<div style="position:absolute;right:-7px;top:24px;width:14px;height:14px;background:rgba(255,248,225,.97);transform:rotate(45deg)"></div></div>
+<button aria-label="Màn 1-3, chưa mở" disabled="" style="position:absolute;left:76px;top:356px;width:56px;height:56px;border-radius:50%;box-sizing:border-box;border:2px solid rgba(184,212,255,.55);background:radial-gradient(circle at 35% 30%,#3A4AA0,#1E2766);box-shadow:inset 0 2px 6px rgba(0,0,30,.5), 0 0 10px rgba(130,170,255,.25);display:flex;align-items:center;justify-content:center;padding:0;cursor:default">
+<svg width="18" height="20" viewBox="0 0 18 20"><rect x="2" y="8.5" width="14" height="10" rx="2.5" fill="#C9D8F5"></rect><path d="M5 8.5 V6 A4 4 0 0 1 13 6 V8.5" fill="none" stroke="#C9D8F5" stroke-width="2.2"></path><circle cx="9" cy="13.5" r="1.6" fill="#1E2766"></circle></svg></button>
+<div style="position:absolute;left:74px;width:60px;top:416px;text-align:center;font-size:13px;font-weight:600;color:#C9D8F5">1-3</div>
+<button aria-label="Màn 1-4, chưa mở" disabled="" style="position:absolute;left:254px;top:450px;width:56px;height:56px;border-radius:50%;box-sizing:border-box;border:2px solid rgba(184,212,255,.55);background:radial-gradient(circle at 35% 30%,#3A4AA0,#1E2766);box-shadow:inset 0 2px 6px rgba(0,0,30,.5), 0 0 10px rgba(130,170,255,.25);display:flex;align-items:center;justify-content:center;padding:0;cursor:default">
+<svg width="18" height="20" viewBox="0 0 18 20"><rect x="2" y="8.5" width="14" height="10" rx="2.5" fill="#C9D8F5"></rect><path d="M5 8.5 V6 A4 4 0 0 1 13 6 V8.5" fill="none" stroke="#C9D8F5" stroke-width="2.2"></path><circle cx="9" cy="13.5" r="1.6" fill="#1E2766"></circle></svg></button>
+<div style="position:absolute;left:252px;width:60px;top:510px;text-align:center;font-size:13px;font-weight:600;color:#C9D8F5">1-4</div>
+<button aria-label="Màn 1-5, chưa mở" disabled="" style="position:absolute;left:76px;top:544px;width:56px;height:56px;border-radius:50%;box-sizing:border-box;border:2px solid rgba(184,212,255,.55);background:radial-gradient(circle at 35% 30%,#3A4AA0,#1E2766);box-shadow:inset 0 2px 6px rgba(0,0,30,.5), 0 0 10px rgba(130,170,255,.25);display:flex;align-items:center;justify-content:center;padding:0;cursor:default">
+<svg width="18" height="20" viewBox="0 0 18 20"><rect x="2" y="8.5" width="14" height="10" rx="2.5" fill="#C9D8F5"></rect><path d="M5 8.5 V6 A4 4 0 0 1 13 6 V8.5" fill="none" stroke="#C9D8F5" stroke-width="2.2"></path><circle cx="9" cy="13.5" r="1.6" fill="#1E2766"></circle></svg></button>
+<div style="position:absolute;left:74px;width:60px;top:604px;text-align:center;font-size:13px;font-weight:600;color:#C9D8F5">1-5</div>
+<button aria-label="Màn 1-6, chưa mở" disabled="" style="position:absolute;left:254px;top:638px;width:56px;height:56px;border-radius:50%;box-sizing:border-box;border:2px solid rgba(184,212,255,.55);background:radial-gradient(circle at 35% 30%,#3A4AA0,#1E2766);box-shadow:inset 0 2px 6px rgba(0,0,30,.5), 0 0 10px rgba(130,170,255,.25);display:flex;align-items:center;justify-content:center;padding:0;cursor:default">
+<svg width="18" height="20" viewBox="0 0 18 20"><rect x="2" y="8.5" width="14" height="10" rx="2.5" fill="#C9D8F5"></rect><path d="M5 8.5 V6 A4 4 0 0 1 13 6 V8.5" fill="none" stroke="#C9D8F5" stroke-width="2.2"></path><circle cx="9" cy="13.5" r="1.6" fill="#1E2766"></circle></svg></button>
+<div style="position:absolute;left:252px;width:60px;top:698px;text-align:center;font-size:13px;font-weight:600;color:#C9D8F5">1-6</div>
+<button aria-label="Màn 2-1, chưa mở" disabled="" style="position:absolute;left:122px;top:802px;width:56px;height:56px;border-radius:50%;box-sizing:border-box;border:2px solid rgba(184,212,255,.55);background:radial-gradient(circle at 35% 30%,#3A4AA0,#1E2766);box-shadow:inset 0 2px 6px rgba(0,0,30,.5), 0 0 10px rgba(130,170,255,.25);display:flex;align-items:center;justify-content:center;padding:0;cursor:default">
+<svg width="18" height="20" viewBox="0 0 18 20"><rect x="2" y="8.5" width="14" height="10" rx="2.5" fill="#C9D8F5"></rect><path d="M5 8.5 V6 A4 4 0 0 1 13 6 V8.5" fill="none" stroke="#C9D8F5" stroke-width="2.2"></path><circle cx="9" cy="13.5" r="1.6" fill="#1E2766"></circle></svg></button>
+<div style="position:absolute;left:120px;width:60px;top:862px;text-align:center;font-size:13px;font-weight:600;color:#C9D8F5">2-1</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview": {"width": 390, "height": 844}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>
