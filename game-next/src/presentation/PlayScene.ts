@@ -109,6 +109,9 @@ export class PlayScene extends Phaser.Scene {
         this.controller.onToggleTarget();
         this.refreshView();
       },
+      onLevelSelect: () => {
+        this.scene.start('LevelSelectScene');
+      },
       onNextLevel: () => {
         const nextId = nextLevelId(campaignManifest, this.level.id);
         if (nextId) {
@@ -161,7 +164,7 @@ export class PlayScene extends Phaser.Scene {
     this.refreshView();
 
     if (this.controller.getSnapshot().phase === 'won') {
-      this.hud.showWinModal();
+      this.hud.showWinModal(this.level.victoryVerse);
     }
   }
 
@@ -327,7 +330,7 @@ export class PlayScene extends Phaser.Scene {
         duration: 400,
         ease: 'Linear',
       });
-      this.hud.showWinModal();
+      this.hud.showWinModal(this.level.victoryVerse);
     });
   }
 

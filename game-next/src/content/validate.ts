@@ -252,6 +252,7 @@ export function validateLevel(input: unknown): ValidationResult {
       rotationEnabled: doc.rotationEnabled!,
       pieces: parsedPieces,
       targetMask,
+      victoryVerse: doc.victoryVerse,
     },
   };
 }

@@ -9,7 +9,7 @@ import {
 } from './designTokens.ts';
 import { TEXTURE_KEYS } from './TextureFactory.ts';
 import { drawJewel } from './JewelShape.ts';
-import { SNAP_HINT_TEXT, formatMatchCount } from './hudText.ts';
+import { SNAP_HINT_TEXT, VICTORY_LABELS, formatMatchCount } from './hudText.ts';
 
 export type HudCallbacks = {
   onMenu: () => void;
@@ -17,6 +17,7 @@ export type HudCallbacks = {
   onRotate: () => void;
   onToggleTarget: () => void;
   onNextLevel: () => void;
+  onLevelSelect: () => void;
 };
 
 export class Hud {
@@ -40,6 +41,7 @@ export class Hud {
   private matchBarGraphics: Phaser.GameObjects.Graphics;
   private matchBarText: Phaser.GameObjects.Text;
   private snapHint: Phaser.GameObjects.Container | null = null;
+  private winVerseText!: Phaser.GameObjects.Text;
 
   constructor(scene: Phaser.Scene, title: string, callbacks: HudCallbacks, levelId: string = '1-1') {
     this.scene = scene;
@@ -159,71 +161,87 @@ export class Hud {
     // 6. Modal Hoàn Thành Chiến Thắng (Celestial Victory Dialog)
     this.winContainer = this.scene.add.container(360, 640).setDepth(100).setVisible(false);
 
-    const winOverlay = this.scene.add.rectangle(0, 0, 720, 1280, COLOR_NUMBERS.navyBackdrop, 0.85);
+    // Mockup không dùng hộp thoại đè lên: bàn chơi đã giải vẫn hiện rõ, chỉ
+    // phủ tối nhẹ. Người chơi nhìn thành quả, không nhìn hộp thoại.
+    const winOverlay = this.scene.add.rectangle(
+      0,
+      0,
+      LAYOUT_TOKENS.canvas.width,
+      LAYOUT_TOKENS.canvas.height,
+      COLOR_NUMBERS.navyBackdrop,
+      0.35
+    );
     winOverlay.setInteractive(); // Chặn click xuyên xuống bàn
 
-    const winPanel = this.scene.add.graphics();
-    winPanel.fillStyle(COLOR_NUMBERS.boardSurfaceTop, 0.98);
-    winPanel.fillRoundedRect(-240, -190, 480, 380, 28);
-    winPanel.lineStyle(6, COLOR_NUMBERS.icePrimary, 0.9);
-    winPanel.strokeRoundedRect(-240, -190, 480, 380, 28);
-
-    // Đường viền vàng bên trong
-    winPanel.lineStyle(1.5, COLOR_NUMBERS.gridModule, 0.5);
-    winPanel.strokeRoundedRect(-232, -182, 464, 364, 22);
+    const boardTop = LAYOUT_TOKENS.board.y;
+    const boardBottom = LAYOUT_TOKENS.board.y + LAYOUT_TOKENS.board.height;
 
     const winTitle = this.scene.add
-      .text(0, -110, '✦ Cổ Ngữ Thức Tỉnh ✦', {
+      .text(0, boardTop - 640 - 60, VICTORY_LABELS.title, {
         fontFamily: TYPO_TOKENS.fontFamily.serif,
-        fontSize: '26px',
-        color: COLOR_TOKENS.amberGold.solidPrimary,
+        fontSize: TYPO_TOKENS.fontSize.modalTitle,
+        color: COLOR_TOKENS.text.primary,
+        fontStyle: 'bold',
       })
       .setOrigin(0.5);
 
-    const winDesc = this.scene.add
-      .text(0, -45, 'Ánh sáng tinh tú đã soi chiếu cổ ngữ trọn vẹn!', {
+    const winVerse = this.scene.add
+      .text(0, boardBottom - 640 + 46, '', {
         fontFamily: TYPO_TOKENS.fontFamily.sans,
-        fontSize: '15px',
-        color: COLOR_TOKENS.text.primary,
-        wordWrap: { width: 400, useAdvancedWrap: true },
+        fontSize: '26px',
+        fontStyle: 'italic',
+        color: COLOR_TOKENS.text.secondary,
+        wordWrap: { width: 600, useAdvancedWrap: true },
         align: 'center',
       })
       .setOrigin(0.5);
+    this.winVerseText = winVerse;
 
-    // Khối nút chính vàng đặc (Primary CTA)
+    const btnY = LAYOUT_TOKENS.bottomBar.y - 640 - 40;
+
     const nextBtnBg = this.scene.add.graphics();
-    nextBtnBg.fillStyle(COLOR_NUMBERS.amberSolid, 1.0);
-    nextBtnBg.fillRoundedRect(-150, 25, 300, 56, 18);
+    nextBtnBg.fillStyle(COLOR_NUMBERS.amberSolid, 1);
+    nextBtnBg.fillRoundedRect(
+      -LAYOUT_TOKENS.buttonSizes.primaryW / 2,
+      btnY - LAYOUT_TOKENS.buttonSizes.primaryH / 2,
+      LAYOUT_TOKENS.buttonSizes.primaryW,
+      LAYOUT_TOKENS.buttonSizes.primaryH,
+      LAYOUT_TOKENS.buttonSizes.primaryH / 2
+    );
 
     const nextBtn = this.scene.add
-      .text(0, 53, 'Màn tiếp theo →', {
+      .text(0, btnY, VICTORY_LABELS.next, {
         fontFamily: TYPO_TOKENS.fontFamily.sans,
-        fontSize: '16px',
-        color: COLOR_TOKENS.sky.stops[0],
+        fontSize: TYPO_TOKENS.fontSize.buttonLabel,
+        color: COLOR_TOKENS.text.onAmber,
         fontStyle: 'bold',
       })
       .setOrigin(0.5)
       .setInteractive({ useHandCursor: true });
     nextBtn.on('pointerdown', () => this.callbacks.onNextLevel());
 
-    const menuReturnBtn = this.scene.add
-      .text(0, 125, 'Về màn hình chính', {
+    const selectBtnBg = this.scene.add.graphics();
+    selectBtnBg.lineStyle(2, COLOR_NUMBERS.icePrimary, 0.9);
+    selectBtnBg.strokeRoundedRect(-150, btnY + 54, 300, 64, 32);
+
+    const selectBtn = this.scene.add
+      .text(0, btnY + 86, VICTORY_LABELS.levelSelect, {
         fontFamily: TYPO_TOKENS.fontFamily.sans,
-        fontSize: '14px',
-        color: COLOR_TOKENS.text.secondary,
+        fontSize: TYPO_TOKENS.fontSize.buttonLabel,
+        color: COLOR_TOKENS.text.primary,
       })
       .setOrigin(0.5)
       .setInteractive({ useHandCursor: true });
-    menuReturnBtn.on('pointerdown', () => this.callbacks.onMenu());
+    selectBtn.on('pointerdown', () => this.callbacks.onLevelSelect());
 
     this.winContainer.add([
       winOverlay,
-      winPanel,
       winTitle,
-      winDesc,
+      winVerse,
       nextBtnBg,
       nextBtn,
-      menuReturnBtn,
+      selectBtnBg,
+      selectBtn,
     ]);
   }
 
@@ -317,7 +335,8 @@ export class Hud {
     this.snapHint?.setVisible(false);
   }
 
-  public showWinModal(): void {
+  public showWinModal(victoryVerse?: string): void {
+    this.winVerseText.setText(victoryVerse ?? '').setVisible(Boolean(victoryVerse));
     if (this.winContainer.visible) return;
     this.winContainer.setAlpha(0).setVisible(true);
     this.scene.tweens.add({

@@ -12,3 +12,10 @@ export const SNAP_HINT_TEXT = 'Thả để khớp';
 export function formatMatchCount(matched: number, total: number): string {
   return `${matched}/${total} mảnh đã khớp`;
 }
+
+/** Nhãn của màn hoàn thành */
+export const VICTORY_LABELS = {
+  title: 'Hoàn thành',
+  next: 'Màn tiếp theo',
+  levelSelect: 'Chọn màn',
+} as const;

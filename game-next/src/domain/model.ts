@@ -22,6 +22,8 @@ export type Level = Readonly<{
   rotationEnabled: boolean;
   pieces: readonly Piece[];
   targetMask: Uint8Array;
+  /** Câu thơ hiện ở màn hoàn thành; màn nào không khai báo thì bỏ qua */
+  victoryVerse?: string;
 }>;
 
 export type Placement = Readonly<{
