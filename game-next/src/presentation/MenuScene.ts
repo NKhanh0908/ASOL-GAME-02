@@ -2,6 +2,8 @@ import Phaser from 'phaser';
 import { campaignManifest } from '../content/manifest.ts';
 import { createProgressRepository } from '../infrastructure/progressRepository.ts';
 import type { ProgressRepository } from '../application/progressPort.ts';
+import { COLOR_NUMBERS, COLOR_TOKENS, TYPO_TOKENS } from './designTokens.ts';
+import { TEXTURE_KEYS, TextureFactory } from './TextureFactory.ts';
 
 type StarParticle = {
   x: number;
@@ -17,10 +19,10 @@ export class MenuScene extends Phaser.Scene {
   private starGraphics!: Phaser.GameObjects.Graphics;
   private emblemGraphics!: Phaser.GameObjects.Graphics;
   private uiContainer!: Phaser.GameObjects.Container;
-  private settingsModalContainer?: Phaser.GameObjects.Container;
 
   private stars: StarParticle[] = [];
-  private emblemAngle = 0;
+  private ringAngle1 = 0;
+  private ringAngle2 = 0;
   private pulseTime = 0;
 
   constructor() {
@@ -28,24 +30,26 @@ export class MenuScene extends Phaser.Scene {
   }
 
   create(): void {
+    TextureFactory.generateAll(this);
+
     this.progressRepo = createProgressRepository(localStorage, campaignManifest, 'oracle-v1');
     const { progress } = this.progressRepo.read();
 
     // 1. Tạo bầu trời sao li ti (Cosmic Starfield)
     this.starGraphics = this.add.graphics();
     this.stars = [];
-    for (let i = 0; i < 60; i++) {
+    for (let i = 0; i < 35; i++) {
       this.stars.push({
         x: Phaser.Math.Between(10, 710),
         y: Phaser.Math.Between(10, 1270),
-        r: Phaser.Math.FloatBetween(0.8, 2.4),
-        baseAlpha: Phaser.Math.FloatBetween(0.2, 0.85),
-        speed: Phaser.Math.FloatBetween(0.12, 0.4),
+        r: Phaser.Math.FloatBetween(0.8, 2.2),
+        baseAlpha: Phaser.Math.FloatBetween(0.2, 0.75),
+        speed: Phaser.Math.FloatBetween(0.1, 0.25),
         phase: Phaser.Math.FloatBetween(0, Math.PI * 2),
       });
     }
 
-    // 2. Tinh ấn xoay nhẹ (Rotating Astrolabe Emblem)
+    // 2. Ấn bia cổ ngữ xoay (280px Prophecy Seal)
     this.emblemGraphics = this.add.graphics();
 
     // 3. UI Container chính
@@ -56,360 +60,213 @@ export class MenuScene extends Phaser.Scene {
   private buildMainMenu(completedLevels: readonly string[]): void {
     this.uiContainer.removeAll(true);
 
-    const is1_1Completed = completedLevels.includes('1-1');
+    // Xác định màn kế tiếp
+    const nextLevel =
+      campaignManifest.find((m) => !completedLevels.includes(m.id)) ?? campaignManifest[0];
+
+    // Nút Cài đặt góc trên phải (x=664, y=52)
+    const settingsBtn = this.add
+      .image(664, 52, TEXTURE_KEYS.btnCircle56)
+      .setInteractive({ useHandCursor: true });
+    const settingsIcon = this.add.image(664, 52, TEXTURE_KEYS.iconGear);
+    settingsBtn.on('pointerdown', () => {
+      this.animateButtonTap(settingsBtn, () => this.openSettings());
+    });
+    this.uiContainer.add([settingsBtn, settingsIcon]);
 
     // Tiêu đề game lớn phong cách chiêm tinh
     const titleText = this.add
+      .text(360, 210, 'M I R R O R', {
+        fontFamily: TYPO_TOKENS.fontFamily.serif,
+        fontSize: '46px',
+        color: COLOR_TOKENS.amberGold.solidPrimary,
+      })
+      .setOrigin(0.5);
+
+    // Hình phản chiếu lật ngược (Mirror Reflection)
+    const reflectionText = this.add
       .text(360, 260, 'M I R R O R', {
-        fontFamily: 'system-ui, -apple-system, sans-serif',
-        fontSize: '44px',
-        color: '#FFD166',
-        fontStyle: 'bold',
+        fontFamily: TYPO_TOKENS.fontFamily.serif,
+        fontSize: '46px',
+        color: COLOR_TOKENS.iceGlass.bevelShadow,
       })
       .setOrigin(0.5)
-      .setShadow(0, 0, '#FFE082', 16, true, true);
+      .setScale(1, -0.85)
+      .setAlpha(0.22);
 
     const subtitleText = this.add
-      .text(360, 312, 'CỔ NGỮ CHIÊM TINH · BÍ ẨN GIAO THOA', {
-        fontFamily: 'system-ui, -apple-system, sans-serif',
+      .text(360, 310, 'Cổ Ngữ Chiêm Tinh · Bí Ẩn Giao Thoa', {
+        fontFamily: TYPO_TOKENS.fontFamily.sans,
         fontSize: '14px',
-        color: '#4ECDC4',
+        color: COLOR_TOKENS.text.secondary,
       })
       .setOrigin(0.5);
 
-    // Nút Bắt đầu / Chơi tiếp chính (Primary Hero CTA Button)
-    const btnWidth = 360;
-    const btnHeight = 76;
+    this.uiContainer.add([titleText, reflectionText, subtitleText]);
+
+    // Nút Bắt đầu / Tiếp tục chính (Primary Hero CTA Button - Khối vàng đặc)
+    const btnWidth = 340;
+    const btnHeight = 72;
     const btnX = 360;
-    const btnY = 820;
+    const btnY = 830;
 
     const btnBg = this.add.graphics();
-    btnBg.fillStyle(0x0e1b38, 0.95);
-    btnBg.fillRoundedRect(btnX - btnWidth / 2, btnY - btnHeight / 2, btnWidth, btnHeight, 22);
-    btnBg.lineStyle(2, 0xf9c74f, 0.9);
-    btnBg.strokeRoundedRect(btnX - btnWidth / 2, btnY - btnHeight / 2, btnWidth, btnHeight, 22);
+    btnBg.fillStyle(COLOR_NUMBERS.amberSolid, 1.0);
+    btnBg.fillRoundedRect(btnX - btnWidth / 2, btnY - btnHeight / 2, btnWidth, btnHeight, 20);
 
-    const mainBtnTitle = is1_1Completed ? '✦ CHƠI TIẾP: MÀN 1-1 ✦' : '✦ BẮT ĐẦU: MÀN 1-1 ✦';
-    const mainBtnSub = is1_1Completed
-      ? 'Đã hoàn thành · Chạm để chơi lại'
-      : 'Khởi nguyên · Song Tinh';
-
-    const btnText = this.add
-      .text(btnX, btnY - 10, mainBtnTitle, {
-        fontFamily: 'system-ui, -apple-system, sans-serif',
-        fontSize: '18px',
-        color: '#FFF3B0',
+    const mainBtnText = this.add
+      .text(btnX, btnY - 12, 'Tiếp tục', {
+        fontFamily: TYPO_TOKENS.fontFamily.sans,
+        fontSize: '20px',
+        color: COLOR_TOKENS.navy.spaceBackground,
         fontStyle: 'bold',
       })
       .setOrigin(0.5);
 
-    const btnSubText = this.add
-      .text(btnX, btnY + 16, mainBtnSub, {
-        fontFamily: 'system-ui, -apple-system, sans-serif',
-        fontSize: '12px',
-        color: '#9DAFC7',
+    const subBtnText = this.add
+      .text(btnX, btnY + 14, `${nextLevel.id} · ${nextLevel.title}`, {
+        fontFamily: TYPO_TOKENS.fontFamily.sans,
+        fontSize: '13px',
+        color: '#3E2A00',
       })
       .setOrigin(0.5);
 
-    // Vùng tương tác chạm nút Bắt đầu
-    const playZone = this.add
+    const btnZone = this.add
       .zone(btnX, btnY, btnWidth, btnHeight)
       .setInteractive({ useHandCursor: true });
-
-    playZone.on('pointerdown', () => {
-      this.scene.start('PlayScene', { levelId: '1-1', mode: 'campaign' });
-    });
-
-    playZone.on('pointerover', () => {
-      btnBg.clear();
-      btnBg.fillStyle(0x162c5b, 1);
-      btnBg.fillRoundedRect(btnX - btnWidth / 2, btnY - btnHeight / 2, btnWidth, btnHeight, 22);
-      btnBg.lineStyle(2.5, 0xffd166, 1);
-      btnBg.strokeRoundedRect(btnX - btnWidth / 2, btnY - btnHeight / 2, btnWidth, btnHeight, 22);
-    });
-
-    playZone.on('pointerout', () => {
-      btnBg.clear();
-      btnBg.fillStyle(0x0e1b38, 0.95);
-      btnBg.fillRoundedRect(btnX - btnWidth / 2, btnY - btnHeight / 2, btnWidth, btnHeight, 22);
-      btnBg.lineStyle(2, 0xf9c74f, 0.9);
-      btnBg.strokeRoundedRect(btnX - btnWidth / 2, btnY - btnHeight / 2, btnWidth, btnHeight, 22);
-    });
-
-    // Nút Cài đặt (Settings Button)
-    const settingsY = 930;
-    const settingsWidth = 160;
-    const settingsHeight = 44;
-
-    const settingsBg = this.add.graphics();
-    settingsBg.fillStyle(0x0c162d, 0.8);
-    settingsBg.fillRoundedRect(
-      btnX - settingsWidth / 2,
-      settingsY - settingsHeight / 2,
-      settingsWidth,
-      settingsHeight,
-      14
-    );
-    settingsBg.lineStyle(1.2, 0x4ecdc4, 0.4);
-    settingsBg.strokeRoundedRect(
-      btnX - settingsWidth / 2,
-      settingsY - settingsHeight / 2,
-      settingsWidth,
-      settingsHeight,
-      14
-    );
-
-    const settingsText = this.add
-      .text(btnX, settingsY, '⚙ CÀI ĐẶT', {
-        fontFamily: 'system-ui, -apple-system, sans-serif',
-        fontSize: '14px',
-        color: '#68B8DC',
-        fontStyle: 'bold',
-      })
-      .setOrigin(0.5);
-
-    const settingsZone = this.add
-      .zone(btnX, settingsY, settingsWidth, settingsHeight)
-      .setInteractive({ useHandCursor: true });
-
-    settingsZone.on('pointerdown', () => {
-      this.openSettingsModal();
-    });
-
-    // Chú thích bản quyền & phiên bản dưới cùng
-    const versionText = this.add
-      .text(360, 1220, 'ASOL · MIRROR GALAXY V1.1', {
-        fontFamily: 'system-ui, -apple-system, sans-serif',
-        fontSize: '12px',
-        color: '#415A77',
-      })
-      .setOrigin(0.5);
-
-    this.uiContainer.add([
-      titleText,
-      subtitleText,
-      btnBg,
-      btnText,
-      btnSubText,
-      playZone,
-      settingsBg,
-      settingsText,
-      settingsZone,
-      versionText,
-    ]);
-  }
-
-  /**
-   * Mở modal Cài đặt phong cách Tinh Vân
-   */
-  private openSettingsModal(): void {
-    if (this.settingsModalContainer) return;
-
-    this.settingsModalContainer = this.add.container(0, 0);
-
-    // 1. Lớp phủ đen mờ (Dim Backdrop)
-    const backdrop = this.add.graphics();
-    backdrop.fillStyle(0x000000, 0.7);
-    backdrop.fillRect(0, 0, 720, 1280);
-    const blockClicks = this.add.zone(360, 640, 720, 1280).setInteractive();
-
-    // 2. Khung modal cài đặt
-    const modalW = 440;
-    const modalH = 340;
-    const modalX = 360;
-    const modalY = 640;
-
-    const modalBg = this.add.graphics();
-    modalBg.fillStyle(0x0d1833, 0.98);
-    modalBg.fillRoundedRect(modalX - modalW / 2, modalY - modalH / 2, modalW, modalH, 20);
-    modalBg.lineStyle(2, 0x4ecdc4, 0.6);
-    modalBg.strokeRoundedRect(modalX - modalW / 2, modalY - modalH / 2, modalW, modalH, 20);
-
-    const modalTitle = this.add
-      .text(modalX, modalY - 120, 'CÀI ĐẶT CHIÊM TINH', {
-        fontFamily: 'system-ui, -apple-system, sans-serif',
-        fontSize: '20px',
-        color: '#FFD166',
-        fontStyle: 'bold',
-      })
-      .setOrigin(0.5);
-
-    // Tùy chọn 1: Bóng mục tiêu
-    const currentProgress = this.progressRepo.read().progress;
-    let showTarget = currentProgress.settings.showTarget;
-
-    const targetLabel = this.add
-      .text(modalX - 160, modalY - 50, 'Bóng mục tiêu (Silhouette):', {
-        fontFamily: 'system-ui, -apple-system, sans-serif',
-        fontSize: '14px',
-        color: '#EEF4FA',
-      })
-      .setOrigin(0, 0.5);
-
-    const targetBtnText = this.add
-      .text(modalX + 110, modalY - 50, showTarget ? '✓ BẬT' : '✕ TẮT', {
-        fontFamily: 'system-ui, -apple-system, sans-serif',
-        fontSize: '14px',
-        color: showTarget ? '#4ECDC4' : '#9DAFC7',
-        fontStyle: 'bold',
-      })
-      .setOrigin(0.5);
-
-    const targetZone = this.add
-      .zone(modalX + 110, modalY - 50, 80, 36)
-      .setInteractive({ useHandCursor: true });
-    targetZone.on('pointerdown', () => {
-      showTarget = !showTarget;
-      this.progressRepo.setShowTarget(showTarget);
-      targetBtnText.setText(showTarget ? '✓ BẬT' : '✕ TẮT');
-      targetBtnText.setColor(showTarget ? '#4ECDC4' : '#9DAFC7');
-    });
-
-    // Tùy chọn 2: Đặt lại tiến trình
-    const resetLabel = this.add
-      .text(modalX - 160, modalY + 10, 'Tiến trình chơi:', {
-        fontFamily: 'system-ui, -apple-system, sans-serif',
-        fontSize: '14px',
-        color: '#EEF4FA',
-      })
-      .setOrigin(0, 0.5);
-
-    const resetBtnText = this.add
-      .text(modalX + 100, modalY + 10, 'Đặt lại', {
-        fontFamily: 'system-ui, -apple-system, sans-serif',
-        fontSize: '13px',
-        color: '#E63946',
-        fontStyle: 'bold',
-      })
-      .setOrigin(0.5);
-
-    const resetZone = this.add
-      .zone(modalX + 100, modalY + 10, 90, 36)
-      .setInteractive({ useHandCursor: true });
-    resetZone.on('pointerdown', () => {
-      // Đặt lại dữ liệu rỗng
-      localStorage.removeItem('mirror.rebuild.progress.v1');
-      this.progressRepo = createProgressRepository(localStorage, campaignManifest, 'oracle-v1');
-      resetBtnText.setText('Đã đặt lại!');
-      this.time.delayedCall(800, () => {
-        resetBtnText.setText('Đặt lại');
-        this.buildMainMenu([]);
+    btnZone.on('pointerdown', () => {
+      this.animateButtonTap(mainBtnText, () => {
+        this.scene.start('PlayScene', { levelId: nextLevel.id });
       });
     });
 
-    // Nút Đóng modal
-    const closeBtnBg = this.add.graphics();
-    closeBtnBg.fillStyle(0x13234d, 1);
-    closeBtnBg.fillRoundedRect(modalX - 60, modalY + 90, 120, 40, 12);
-    closeBtnBg.lineStyle(1.5, 0x4ecdc4, 0.5);
-    closeBtnBg.strokeRoundedRect(modalX - 60, modalY + 90, 120, 40, 12);
+    this.uiContainer.add([btnBg, mainBtnText, subBtnText, btnZone]);
 
-    const closeBtnText = this.add
-      .text(modalX, modalY + 110, 'ĐÓNG', {
-        fontFamily: 'system-ui, -apple-system, sans-serif',
-        fontSize: '14px',
-        color: '#FFF3B0',
-        fontStyle: 'bold',
+    // Nút phụ "Chọn màn" (Secondary Button - Viền kính xanh trong suốt)
+    const secBtnY = 930;
+    const secBtnBg = this.add.graphics();
+    secBtnBg.fillStyle(COLOR_NUMBERS.navyStele, 0.7);
+    secBtnBg.fillRoundedRect(btnX - btnWidth / 2, secBtnY - 28, btnWidth, 56, 18);
+    secBtnBg.lineStyle(1.8, COLOR_NUMBERS.icePrimary, 0.85);
+    secBtnBg.strokeRoundedRect(btnX - btnWidth / 2, secBtnY - 28, btnWidth, 56, 18);
+
+    const secBtnText = this.add
+      .text(btnX, secBtnY, 'Chọn màn chơi', {
+        fontFamily: TYPO_TOKENS.fontFamily.sans,
+        fontSize: '16px',
+        color: COLOR_TOKENS.text.primary,
       })
       .setOrigin(0.5);
 
-    const closeZone = this.add
-      .zone(modalX, modalY + 110, 120, 40)
+    const secBtnZone = this.add
+      .zone(btnX, secBtnY, btnWidth, 56)
       .setInteractive({ useHandCursor: true });
-    closeZone.on('pointerdown', () => {
-      this.settingsModalContainer?.destroy();
-      this.settingsModalContainer = undefined;
+    secBtnZone.on('pointerdown', () => {
+      this.animateButtonTap(secBtnText, () => {
+        if (this.scene.get('LevelSelectScene')) {
+          this.scene.start('LevelSelectScene');
+        }
+      });
     });
 
-    this.settingsModalContainer.add([
-      backdrop,
-      blockClicks,
-      modalBg,
-      modalTitle,
-      targetLabel,
-      targetBtnText,
-      targetZone,
-      resetLabel,
-      resetBtnText,
-      resetZone,
-      closeBtnBg,
-      closeBtnText,
-      closeZone,
-    ]);
+    this.uiContainer.add([secBtnBg, secBtnText, secBtnZone]);
+
+    // Chân trang phiên bản
+    const footerText = this.add
+      .text(360, 1240, 'Mirror v0.2.1 · Bản Thử Nghiệm Android', {
+        fontFamily: TYPO_TOKENS.fontFamily.sans,
+        fontSize: '12px',
+        color: COLOR_TOKENS.text.secondary,
+      })
+      .setOrigin(0.5);
+    this.uiContainer.add(footerText);
   }
 
-  update(_time: number, delta: number): void {
-    // 1. Chuyển động sao li ti (Star Drift & Twinkle)
+  private openSettings(): void {
+    // Sẽ được tích hợp với SettingsDialog
+    const settingsScene = this.scene.get('SettingsDialog');
+    if (settingsScene) {
+      this.scene.launch('SettingsDialog');
+    }
+  }
+
+  private animateButtonTap(target: Phaser.GameObjects.GameObject, onComplete: () => void): void {
+    this.tweens.add({
+      targets: target,
+      scaleX: 0.95,
+      scaleY: 0.95,
+      duration: 80,
+      yoyo: true,
+      ease: 'Cubic.easeOut',
+      onComplete,
+    });
+  }
+
+  override update(_time: number, delta: number): void {
+    // 1. Sao nhấp nháy nền
     this.starGraphics.clear();
     for (const star of this.stars) {
-      star.y += star.speed * (delta / 16);
-      star.phase += 0.03;
-      if (star.y > 1280) star.y = 0;
-
+      star.phase += delta * 0.0015 * star.speed;
       const alpha = star.baseAlpha + Math.sin(star.phase) * 0.25;
-      this.starGraphics.fillStyle(0xffffff, Phaser.Math.Clamp(alpha, 0.1, 1));
+      this.starGraphics.fillStyle(COLOR_NUMBERS.iceHighlight, Math.max(0.1, Math.min(1, alpha)));
       this.starGraphics.fillCircle(star.x, star.y, star.r);
     }
 
-    // 2. Tinh ấn cổ ngữ xoay nhẹ ở giữa màn hình (480px)
-    this.emblemAngle += 0.003 * (delta / 16);
-    this.pulseTime += 0.02 * (delta / 16);
+    // 2. Ấn bia cổ ngữ 280px xoay chậm (x=360, y=500)
+    this.ringAngle1 += delta * 0.0003;
+    this.ringAngle2 -= delta * 0.0002;
+    this.pulseTime += delta * 0.003;
 
     this.emblemGraphics.clear();
     const cx = 360;
-    const cy = 540;
-    const baseR = 100 + Math.sin(this.pulseTime) * 3;
+    const cy = 500;
 
-    // Hình thoi ngoài xoay theo chiều kim đồng hồ
-    this.drawRotatingDiamond(this.emblemGraphics, cx, cy, baseR, this.emblemAngle, 0x4ecdc4, 0.28, 1.5);
-    // Hình thoi trong xoay ngược chiều
-    this.drawRotatingDiamond(
-      this.emblemGraphics,
-      cx,
-      cy,
-      baseR * 0.62,
-      -this.emblemAngle * 1.4,
-      0xf9c74f,
-      0.45,
-      1.5
-    );
-    // Điểm sáng hạt nhân tinh thể
-    this.emblemGraphics.fillStyle(0xffffff, 0.85);
-    this.emblemGraphics.fillCircle(cx, cy, 3.5);
+    // Vòng ngoài (R = 140px)
+    this.emblemGraphics.lineStyle(1.8, COLOR_NUMBERS.icePrimary, 0.4);
+    this.emblemGraphics.strokeCircle(cx, cy, 140);
+
+    // Vòng trong vàng (R = 115px)
+    this.emblemGraphics.lineStyle(1.2, COLOR_NUMBERS.amberGrid, 0.35);
+    this.emblemGraphics.strokeCircle(cx, cy, 115);
+
+    // Các điểm vệ tinh xoay trên vòng ngoài
+    for (let i = 0; i < 4; i++) {
+      const angle = this.ringAngle1 + (i * Math.PI) / 2;
+      const x = cx + Math.cos(angle) * 140;
+      const y = cy + Math.sin(angle) * 140;
+      this.emblemGraphics.fillStyle(COLOR_NUMBERS.iceHighlight, 0.7);
+      this.emblemGraphics.fillCircle(x, y, 3.5);
+    }
+
+    // Các ký tự nan hoa trên vòng trong
+    for (let i = 0; i < 6; i++) {
+      const angle = this.ringAngle2 + (i * Math.PI) / 3;
+      const x1 = cx + Math.cos(angle) * 95;
+      const y1 = cy + Math.sin(angle) * 95;
+      const x2 = cx + Math.cos(angle) * 115;
+      const y2 = cy + Math.sin(angle) * 115;
+      this.emblemGraphics.lineStyle(1, COLOR_NUMBERS.amberGrid, 0.4);
+      this.emblemGraphics.lineBetween(x1, y1, x2, y2);
+    }
+
+    // Hai viên ngọc thoi vàng chạm đỉnh ở tâm ấn bia (Song Tinh) phát quang nhịp thở
+    const rhombAlpha = 0.75 + Math.sin(this.pulseTime) * 0.2;
+    this.drawCenterRhomb(cx - 22, cy, 18, rhombAlpha);
+    this.drawCenterRhomb(cx + 22, cy, 18, rhombAlpha);
   }
 
-  private drawRotatingDiamond(
-    g: Phaser.GameObjects.Graphics,
-    cx: number,
-    cy: number,
-    r: number,
-    angle: number,
-    color: number,
-    alpha: number,
-    lineWidth: number
-  ): void {
-    const cos = Math.cos(angle);
-    const sin = Math.sin(angle);
-
-    const localPoints = [
-      { x: 0, y: -r },
-      { x: r, y: 0 },
-      { x: 0, y: r },
-      { x: -r, y: 0 },
+  private drawCenterRhomb(cx: number, cy: number, r: number, alpha: number): void {
+    const points = [
+      new Phaser.Geom.Point(cx, cy - r),
+      new Phaser.Geom.Point(cx + r, cy),
+      new Phaser.Geom.Point(cx, cy + r),
+      new Phaser.Geom.Point(cx - r, cy),
     ];
 
-    const worldPoints = localPoints.map((p) => {
-      const rx = p.x * cos - p.y * sin;
-      const ry = p.x * sin + p.y * cos;
-      return new Phaser.Geom.Point(cx + rx, cy + ry);
-    });
+    this.emblemGraphics.fillStyle(COLOR_NUMBERS.amberSolid, alpha);
+    this.emblemGraphics.fillPoints(points, true);
 
-    g.lineStyle(lineWidth, color, alpha);
-    g.strokePoints(worldPoints, true);
-
-    g.fillStyle(color, alpha * 0.8);
-    for (const pt of worldPoints) {
-      g.fillCircle(pt.x, pt.y, 2.5);
-    }
+    this.emblemGraphics.lineStyle(1.5, COLOR_NUMBERS.amberGlow, alpha);
+    this.emblemGraphics.strokePoints(points, true);
   }
 }

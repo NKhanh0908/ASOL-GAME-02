@@ -32,4 +32,14 @@ describe('Menu Campaign Navigation and Chapter Grouping', () => {
     expect(access2.unlocked).toBe(true);
     expect(access2.available).toBe(false); // Vì 1-2 đang ở status 'planned'
   });
+
+  test('xác định đúng màn chơi kế tiếp cần tiếp tục từ danh sách đã hoàn thành', () => {
+    const resolveNextLevel = (completed: readonly string[]) => {
+      const next = campaignManifest.find((m) => !completed.includes(m.id));
+      return next ?? campaignManifest[0];
+    };
+
+    expect(resolveNextLevel([]).id).toBe('1-1');
+    expect(resolveNextLevel(['1-1']).id).toBe('1-2');
+  });
 });
