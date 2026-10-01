@@ -27,3 +27,14 @@ export const diamond = (size: number): Cell[] =>
 
 export const containsCell = (cells: readonly Cell[], x: number, y: number): boolean =>
   cells.some(([cx, cy]) => cx === Math.floor(x) && cy === Math.floor(y));
+
+export function rotateCells(cells: readonly Cell[], turns: number): Cell[] {
+  const normalized = ((turns % 4) + 4) % 4;
+  if (normalized === 0) return [...cells];
+  const size = Math.max(...cells.flatMap(([x, y]) => [x, y])) + 1;
+  return cells.map(([x, y]) => {
+    if (normalized === 1) return [size - 1 - y, x];
+    if (normalized === 2) return [size - 1 - x, size - 1 - y];
+    return [y, size - 1 - x];
+  });
+}

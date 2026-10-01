@@ -1,22 +1,199 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 590" role="img" aria-labelledby="title desc">
-  <title id="title">Sáu bóng mục tiêu mẫu của Mirror</title>
-  <desc id="desc">Sáu hình minh họa theo lời giải các màn 1-1, 1-2, 1-3, 2-1, 2-2, 2-3. Vùng chồng hai mảnh rỗng, ba mảnh hiện lại.</desc>
-  <rect width="900" height="590" rx="22" fill="#080E24"/>
-  <g fill="#EEF4FA" font-family="Arial, sans-serif" font-size="18" font-weight="bold">
-    <text x="38" y="38">1-1 · Vết khuyết</text><text x="338" y="38">1-2 · Cạnh vỡ</text><text x="638" y="38">1-3 · Hai nhánh</text>
-    <text x="38" y="331">2-1 · Lõi sáng</text><text x="338" y="331">2-2 · Mảnh dấu</text><text x="638" y="331">2-3 · Ấn lệch</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 620" role="img" aria-labelledby="title desc">
+  <title id="title">Mirror — Hệ thống Cổ Ngữ Tiên Tri (Chương 1 &amp; 2)</title>
+  <desc id="desc">Sáu bóng mục tiêu nghệ thuật theo phong cách Honkai Star Rail. Chương 1: Ghép kề không xếp chồng. Chương 2: Giao thoa triệt tiêu (2 lớp rỗng, 3 lớp hiện lại).</desc>
+
+  <defs>
+    <!-- Background Gradient -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#050814"/>
+      <stop offset="50%" stop-color="#091124"/>
+      <stop offset="100%" stop-color="#040711"/>
+    </linearGradient>
+
+    <!-- Card Gradient -->
+    <linearGradient id="cardGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0F1B35" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#091224" stop-opacity="0.95"/>
+    </linearGradient>
+
+    <!-- Gold/Amber Glow Gradient -->
+    <linearGradient id="amberGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFE885"/>
+      <stop offset="60%" stop-color="#FFC857"/>
+      <stop offset="100%" stop-color="#E59B28"/>
+    </linearGradient>
+
+    <!-- Glow Filter -->
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="3.5" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+
+    <filter id="subtleGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="1.5" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- Deep Cosmic Background -->
+  <rect width="960" height="620" rx="20" fill="url(#bgGrad)" stroke="#1F3354" stroke-width="1.5"/>
+
+  <!-- Starry Particles -->
+  <g fill="#A6CEFF" opacity="0.3">
+    <circle cx="80" cy="50" r="1"/><circle cx="150" cy="120" r="1.5"/><circle cx="320" cy="40" r="1"/>
+    <circle cx="580" cy="80" r="1.5"/><circle cx="840" cy="45" r="1.2"/><circle cx="910" cy="140" r="1"/>
+    <circle cx="70" cy="350" r="1.2"/><circle cx="480" cy="320" r="1"/><circle cx="890" cy="420" r="1.5"/>
+    <circle cx="210" cy="580" r="1"/><circle cx="750" cy="590" r="1.2"/>
   </g>
-  <g fill="#101B32" stroke="#29415C" stroke-width="2">
-    <rect x="24" y="54" width="252" height="238" rx="12"/><rect x="324" y="54" width="252" height="238" rx="12"/><rect x="624" y="54" width="252" height="238" rx="12"/>
-    <rect x="24" y="347" width="252" height="219" rx="12"/><rect x="324" y="347" width="252" height="219" rx="12"/><rect x="624" y="347" width="252" height="219" rx="12"/>
+
+  <!-- Header -->
+  <g transform="translate(36, 36)">
+    <text x="0" y="0" fill="#EEF4FA" font-family="'Segoe UI', Roboto, sans-serif" font-size="20" font-weight="700" letter-spacing="1">MIRROR · HỆ THỐNG CỔ NGỮ TIÊN TRI</text>
+    <text x="0" y="20" fill="#68B8DC" font-family="'Segoe UI', Roboto, sans-serif" font-size="12" letter-spacing="0.5">Thiết kế bóng mục tiêu nghệ thuật theo tiêu chuẩn thẩm mỹ Cổ ngữ &amp; Chiêm tinh (Amphoreus)</text>
   </g>
-  <g fill="#FFC857" fill-rule="evenodd" stroke="#FFD98A" stroke-width="0.5">
-    <svg x="24" y="54" width="252" height="238" viewBox="10 42 108 112"><path d="M32 66h48v48H32z M68 78L44 126H92z"/></svg>
-    <svg x="324" y="54" width="252" height="238" viewBox="10 42 108 112"><path d="M28 66h48v48H28z M76 78L100 102 76 126 52 102z"/></svg>
-    <svg x="624" y="54" width="252" height="238" viewBox="10 42 108 112"><path d="M26 68h44v44H26z M74 58L50 106H98z M60 100L80 120 60 140 40 120z"/></svg>
-    <svg x="24" y="347" width="252" height="219" viewBox="10 42 108 112"><path d="M24 68h48v48H24z M72 52L48 100H96z M76 80L96 100 76 120 56 100z"/></svg>
-    <svg x="324" y="347" width="252" height="219" viewBox="10 42 108 112"><path d="M28 72h44v44H28z M56 56L32 104H80z M78 82L100 104 78 126 56 104z"/></svg>
-    <svg x="624" y="347" width="252" height="219" viewBox="10 42 108 112"><path d="M24 64h48v48H24z M72 76L48 124H96z M64 62L86 84 64 106 42 84z"/></svg>
+
+  <!-- SECTION 1 HEADER -->
+  <g transform="translate(36, 82)">
+    <rect x="0" y="0" width="888" height="24" rx="4" fill="#142642" opacity="0.6"/>
+    <text x="14" y="16" fill="#FFC857" font-family="'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="700" letter-spacing="0.8">CHƯƠNG 1: KHỞI NGUYÊN · GHÉP TIẾP GIÁP (KHÔNG XẾP CHỒNG)</text>
   </g>
-  <text x="450" y="584" fill="#9DAFC7" text-anchor="middle" font-family="Arial, sans-serif" font-size="12">Hình vector để review bố cục · mask chấm thắng dùng ô raster 128 × 192</text>
+
+  <!-- ROW 1 CARDS (1-1, 1-2, 1-3) -->
+
+  <!-- Card 1-1: Song Tinh -->
+  <g transform="translate(36, 114)">
+    <rect width="280" height="205" rx="12" fill="url(#cardGrad)" stroke="#223C63" stroke-width="1.2"/>
+    <!-- Celestial Dial Behind -->
+    <circle cx="140" cy="95" r="64" fill="none" stroke="#26456E" stroke-width="0.8" stroke-dasharray="3 3"/>
+    <circle cx="140" cy="95" r="76" fill="none" stroke="#1C3352" stroke-width="0.6"/>
+    <!-- Card Info -->
+    <text x="16" y="26" fill="#EEF4FA" font-family="'Segoe UI', Roboto, sans-serif" font-size="14" font-weight="700">1-1 · Song Tinh</text>
+    <text x="16" y="42" fill="#7E9BB8" font-family="'Segoe UI', Roboto, sans-serif" font-size="11">Twin Stars · 2 thoi chạm đỉnh</text>
+    <text x="264" y="26" text-anchor="end" fill="#5F88B0" font-family="'Segoe UI', Roboto, sans-serif" font-size="10">2 Mảnh</text>
+    <!-- Silhouette: 2 Diamonds touching tips -->
+    <g filter="url(#glow)">
+      <!-- Left Diamond -->
+      <polygon points="105,95 125,65 145,95 125,125" fill="url(#amberGold)" stroke="#FFF3C4" stroke-width="1"/>
+      <!-- Right Diamond -->
+      <polygon points="145,95 165,65 185,95 165,125" fill="url(#amberGold)" stroke="#FFF3C4" stroke-width="1"/>
+    </g>
+    <text x="140" y="190" text-anchor="middle" fill="#8EA9C7" font-family="'Segoe UI', Roboto, sans-serif" font-size="10.5">Tiếp giáp đỉnh · Cân bằng hoàn mỹ</text>
+  </g>
+
+  <!-- Card 1-2: Bảo Tháp Tiên Tri -->
+  <g transform="translate(340, 114)">
+    <rect width="280" height="205" rx="12" fill="url(#cardGrad)" stroke="#223C63" stroke-width="1.2"/>
+    <!-- Celestial Dial Behind -->
+    <circle cx="140" cy="95" r="64" fill="none" stroke="#26456E" stroke-width="0.8" stroke-dasharray="3 3"/>
+    <circle cx="140" cy="95" r="76" fill="none" stroke="#1C3352" stroke-width="0.6"/>
+    <!-- Card Info -->
+    <text x="16" y="26" fill="#EEF4FA" font-family="'Segoe UI', Roboto, sans-serif" font-size="14" font-weight="700">1-2 · Bảo Tháp Tiên Tri</text>
+    <text x="16" y="42" fill="#7E9BB8" font-family="'Segoe UI', Roboto, sans-serif" font-size="11">Sacred Spire · Vuông &amp; Tam giác</text>
+    <text x="264" y="26" text-anchor="end" fill="#5F88B0" font-family="'Segoe UI', Roboto, sans-serif" font-size="10">2 Mảnh</text>
+    <!-- Silhouette: Square base + Triangle roof on top -->
+    <g filter="url(#glow)">
+      <!-- Square base: 56x56 from (112, 85) to (168, 141) -->
+      <rect x="112" y="85" width="56" height="56" fill="url(#amberGold)" stroke="#FFF3C4" stroke-width="1"/>
+      <!-- Triangle roof: apex at (140, 43), base from (112, 85) to (168, 85) -->
+      <polygon points="140,43 168,85 112,85" fill="url(#amberGold)" stroke="#FFF3C4" stroke-width="1"/>
+    </g>
+    <text x="140" y="190" text-anchor="middle" fill="#8EA9C7" font-family="'Segoe UI', Roboto, sans-serif" font-size="10.5">Tiếp giáp cạnh · Tháp thiêng vươn cao</text>
+  </g>
+
+  <!-- Card 1-3: Cánh Chim Báo Điềm -->
+  <g transform="translate(644, 114)">
+    <rect width="280" height="205" rx="12" fill="url(#cardGrad)" stroke="#223C63" stroke-width="1.2"/>
+    <!-- Celestial Dial Behind -->
+    <circle cx="140" cy="95" r="64" fill="none" stroke="#26456E" stroke-width="0.8" stroke-dasharray="3 3"/>
+    <circle cx="140" cy="95" r="76" fill="none" stroke="#1C3352" stroke-width="0.6"/>
+    <!-- Card Info -->
+    <text x="16" y="26" fill="#EEF4FA" font-family="'Segoe UI', Roboto, sans-serif" font-size="14" font-weight="700">1-3 · Cánh Chim Báo Điềm</text>
+    <text x="16" y="42" fill="#7E9BB8" font-family="'Segoe UI', Roboto, sans-serif" font-size="11">Astral Wing · 2 Tam giác đối xứng</text>
+    <text x="264" y="26" text-anchor="end" fill="#5F88B0" font-family="'Segoe UI', Roboto, sans-serif" font-size="10">2 Mảnh</text>
+    <!-- Silhouette: 2 Triangles forming wings -->
+    <g filter="url(#glow)">
+      <!-- Left Wing: (140, 115) to (90, 65) to (140, 65) -->
+      <polygon points="140,118 90,68 140,68" fill="url(#amberGold)" stroke="#FFF3C4" stroke-width="1"/>
+      <!-- Right Wing: (140, 115) to (190, 65) to (140, 65) -->
+      <polygon points="140,118 190,68 140,68" fill="url(#amberGold)" stroke="#FFF3C4" stroke-width="1"/>
+    </g>
+    <text x="140" y="190" text-anchor="middle" fill="#8EA9C7" font-family="'Segoe UI', Roboto, sans-serif" font-size="10.5">Tiếp giáp trục dọc · Đôi cánh vút bay</text>
+  </g>
+
+  <!-- SECTION 2 HEADER -->
+  <g transform="translate(36, 336)">
+    <rect x="0" y="0" width="888" height="24" rx="4" fill="#2B1E4A" opacity="0.6"/>
+    <text x="14" y="16" fill="#FFB469" font-family="'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="700" letter-spacing="0.8">CHƯƠNG 2: GIAO THOA · BÍ ẨN VÙNG GIAO (BẮT ĐẦU XẾP CHỒNG)</text>
+  </g>
+
+  <!-- ROW 2 CARDS (2-1, 2-2, 2-3) -->
+
+  <!-- Card 2-1: Mũi Tên Chỉ Thiên -->
+  <g transform="translate(36, 368)">
+    <rect width="280" height="215" rx="12" fill="url(#cardGrad)" stroke="#3B2E5C" stroke-width="1.2"/>
+    <!-- Celestial Dial Behind -->
+    <circle cx="140" cy="100" r="64" fill="none" stroke="#3D3066" stroke-width="0.8" stroke-dasharray="3 3"/>
+    <circle cx="140" cy="100" r="76" fill="none" stroke="#2B214A" stroke-width="0.6"/>
+    <!-- Card Info -->
+    <text x="16" y="26" fill="#EEF4FA" font-family="'Segoe UI', Roboto, sans-serif" font-size="14" font-weight="700">2-1 · Mũi Tên Chỉ Thiên</text>
+    <text x="16" y="42" fill="#A89BC2" font-family="'Segoe UI', Roboto, sans-serif" font-size="11">Vanguard Arrow · 2 lớp giao rỗng</text>
+    <text x="264" y="26" text-anchor="end" fill="#E89E5B" font-family="'Segoe UI', Roboto, sans-serif" font-size="10">Image 1 HSR</text>
+    <!-- Silhouette: Parity Cutout (Square + Triangle penetrating inside) -->
+    <g filter="url(#glow)">
+      <!-- Triangle apex (140, 52), base (110, 102) to (170, 102) -->
+      <!-- Square from x=110 to 170, y=82 to 142 -->
+      <!-- EvenOdd fill combines them and cuts out the intersection -->
+      <path d="M 140,50 L 172,98 L 108,98 Z 
+               M 112,82 H 168 V 142 H 112 Z" 
+            fill="url(#amberGold)" fill-rule="evenodd" stroke="#FFF3C4" stroke-width="1"/>
+    </g>
+    <!-- Annotation of hollow cutout -->
+    <text x="140" y="180" text-anchor="middle" fill="#68B8DC" font-family="'Segoe UI', Roboto, sans-serif" font-size="10.5">Vùng giao biến mất $\rightarrow$ Rãnh Chevron</text>
+    <text x="140" y="198" text-anchor="middle" fill="#8EA9C7" font-family="'Segoe UI', Roboto, sans-serif" font-size="10">2 lớp triệt tiêu tạo thành mũi tên tiên phong</text>
+  </g>
+
+  <!-- Card 2-2: Cánh Bướm Điệp Ảnh -->
+  <g transform="translate(340, 368)">
+    <rect width="280" height="215" rx="12" fill="url(#cardGrad)" stroke="#3B2E5C" stroke-width="1.2"/>
+    <!-- Celestial Dial Behind -->
+    <circle cx="140" cy="100" r="64" fill="none" stroke="#3D3066" stroke-width="0.8" stroke-dasharray="3 3"/>
+    <circle cx="140" cy="100" r="76" fill="none" stroke="#2B214A" stroke-width="0.6"/>
+    <!-- Card Info -->
+    <text x="16" y="26" fill="#EEF4FA" font-family="'Segoe UI', Roboto, sans-serif" font-size="14" font-weight="700">2-2 · Cánh Bướm Điệp Ảnh</text>
+    <text x="16" y="42" fill="#A89BC2" font-family="'Segoe UI', Roboto, sans-serif" font-size="11">Oracle Butterfly · Tâm rỗng đối xứng</text>
+    <text x="264" y="26" text-anchor="end" fill="#E89E5B" font-family="'Segoe UI', Roboto, sans-serif" font-size="10">Image 3 HSR</text>
+    <!-- Silhouette: 4 triangles meeting at center, overlap creates hollow diamond core -->
+    <g filter="url(#glow)">
+      <!-- Left wing, right wing, top wing, bottom wing with hollow diamond in center -->
+      <path d="M 88,68 L 138,100 L 88,132 Z
+               M 192,68 L 142,100 L 192,132 Z
+               M 108,50 L 140,94 L 172,50 Z
+               M 108,150 L 140,106 L 172,150 Z"
+            fill="url(#amberGold)" fill-rule="evenodd" stroke="#FFF3C4" stroke-width="1"/>
+    </g>
+    <text x="140" y="180" text-anchor="middle" fill="#68B8DC" font-family="'Segoe UI', Roboto, sans-serif" font-size="10.5">Tâm thoi rỗng do 2 lớp giao thoa</text>
+    <text x="140" y="198" text-anchor="middle" fill="#8EA9C7" font-family="'Segoe UI', Roboto, sans-serif" font-size="10">Hình nơ bướm cân bằng tuyệt đối</text>
+  </g>
+
+  <!-- Card 2-3: Trái Tim Tinh Thể -->
+  <g transform="translate(644, 368)">
+    <rect width="280" height="215" rx="12" fill="url(#cardGrad)" stroke="#3B2E5C" stroke-width="1.2"/>
+    <!-- Celestial Dial Behind -->
+    <circle cx="140" cy="100" r="64" fill="none" stroke="#3D3066" stroke-width="0.8" stroke-dasharray="3 3"/>
+    <circle cx="140" cy="100" r="76" fill="none" stroke="#2B214A" stroke-width="0.6"/>
+    <!-- Card Info -->
+    <text x="16" y="26" fill="#EEF4FA" font-family="'Segoe UI', Roboto, sans-serif" font-size="14" font-weight="700">2-3 · Trái Tim Tinh Thể</text>
+    <text x="16" y="42" fill="#A89BC2" font-family="'Segoe UI', Roboto, sans-serif" font-size="11">Crystal Core · 3 lớp sáng hiện lại</text>
+    <text x="264" y="26" text-anchor="end" fill="#6FE3FF" font-family="'Segoe UI', Roboto, sans-serif" font-size="10">3 Lớp</text>
+    <!-- Silhouette: 2 large overlapping pieces make a hollow moat, 3rd piece in center makes core reappear -->
+    <g filter="url(#glow)">
+      <!-- Outer diamond 1 & 2 overlapping, plus central diamond -->
+      <path d="M 140,56 L 184,100 L 140,144 L 96,100 Z
+               M 112,72 H 168 V 128 H 112 Z
+               M 140,88 L 152,100 L 140,112 L 128,100 Z"
+            fill="url(#amberGold)" fill-rule="evenodd" stroke="#FFF3C4" stroke-width="1"/>
+    </g>
+    <text x="140" y="180" text-anchor="middle" fill="#FFC857" font-family="'Segoe UI', Roboto, sans-serif" font-size="10.5">Viên ngọc tâm hiện lại kỳ diệu (3 lớp)</text>
+    <text x="140" y="198" text-anchor="middle" fill="#8EA9C7" font-family="'Segoe UI', Roboto, sans-serif" font-size="10">Hào quang rỗng bao bọc lấy hạt nhân sáng</text>
+  </g>
 </svg>

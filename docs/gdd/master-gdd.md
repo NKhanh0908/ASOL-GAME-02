@@ -66,19 +66,20 @@ Xoay chỉ mở từ Chương 3. Người chơi chọn mảnh rồi bấm nút *
 
 ## Chương 2 — FTUE và UX
 
-### 2.1. Kịch bản học luật từ 1-1 đến 2-2
+### 2.1. Kịch bản học luật từ 1-1 đến 2-3
 
-Hướng dẫn thị giác chỉ xuất hiện khi người chơi chưa thao tác, tự biến mất ngay sau hành động tương ứng. Lời ngắn dưới một dòng; không khóa màn bằng hộp thoại dài. Các chỉ dẫn dưới đây là **kịch bản thiết kế cần playtest**, không tuyên bố người mới chắc chắn hiểu.
+Hướng dẫn thị giác chỉ xuất hiện khi người chơi chưa thao tác, tự biến mất ngay sau hành động tương ứng. Lời ngắn dưới một dòng; không khóa màn bằng hộp thoại dài.
 
-| Màn | Hình ảnh/chuyển động trước thao tác | Người chơi cần tự làm | Dấu hiệu đã học |
-|---|---|---|---|
-| **1-1** | Bóng mục tiêu mờ; bàn tay nét mảnh kéo mảnh vuông từ khay lên vùng sáng rồi biến mất. Lời: “Kéo mảnh vào bóng”. Khi mảnh thứ hai gần mảnh đầu, vùng giao lóe viền rỗng một lần. | Kéo hai mảnh tới vị trí tạo hình mục tiêu; thấy phần giao biến mất. | Bắt đầu kéo không cần người hướng dẫn; không hiểu nhầm vùng rỗng là lỗi hình. |
-| **1-2** | Không lặp bàn tay; thumbnail mẫu và bóng trên bàn nhấn sáng một lần. | Thử neo khác của hai mảnh khi hình chưa khớp. | Tự kéo lại ít nhất một mảnh thay vì chờ nút “đúng”. |
-| **1-3** | Mẫu có nhiều vùng rời; lần đầu thả sai có nhấn viền vùng thừa trong nhịp ngắn. | Dùng ba mảnh, kiểm tra cả vùng thiếu và thừa. | Hoàn thành mà không có chỉ dẫn vị trí. |
-| **2-1** | Cận cảnh **một vùng chỉ có hai mảnh** chồng nhau, vùng đó đổi từ vàng sang nền bàn; lời: “Hai mảnh cùng màu: vùng giao biến mất”. | Tạo khoảng rỗng đúng trong bóng mẫu. | Có thể nói/cho thấy vì sao vùng hai lớp trống. |
-| **2-2** | Vùng rỗng vừa học được khoanh mờ; mảnh thứ ba đi ngang qua trong demo ngắn, vùng giữa sáng lại; lời: “Thêm mảnh thứ ba: vùng đó hiện lại”. | Dùng ba mảnh để làm vùng giữa hiện lại. | Dự đoán được trạng thái vùng trước khi thả mảnh cuối. |
+| Màn | Tên Biểu tượng | Hình ảnh/chuyển động trước thao tác | Người chơi cần tự làm | Dấu hiệu đã học |
+|---|---|---|---|---|
+| **1-1** | **Song Tinh** *(Twin Stars)* | Bóng mẫu 2 viên ngọc thoi chạm đỉnh kề nhau; bàn tay nét mảnh kéo mảnh thoi từ khay lên bóng rồi biến mất. Lời: “Kéo mảnh vào bóng mục tiêu”. | Kéo 2 mảnh thoi vào vị trí tiếp giáp đỉnh; không xếp chồng. | Bắt đầu kéo thả tự nhiên; hiểu cơ chế snap vào lưới toạ độ. |
+| **1-2** | **Bảo Tháp Tiên Tri** *(Sacred Spire)* | Thumbnail mẫu và đỉnh tháp sáng nhẹ một nhịp. | Ghép tam giác đặt ngay ngắn trên đỉnh khối vuông (tiếp giáp cạnh). | Nhận biết việc phối hợp 2 hình khối khác nhau để tạo một biểu tượng có nghĩa. |
+| **1-3** | **Cánh Chim Báo Điềm** *(Astral Wing)* | Hai cánh sáng đối xứng. | Ghép 2 tam giác đối xứng qua trục dọc tạo đôi cánh. | Tự so sánh hình mục tiêu và đặt mảnh chính xác mà không cần hướng dẫn. |
+| **2-1** | **Mũi Tên Chỉ Thiên** *(Vanguard Arrow)* | **Bắt đầu xếp chồng:** Tam giác lồng vào khối vuông; vùng giao thoa đổi từ vàng sang nền bàn tối; lời: “Hai mảnh cùng màu: vùng giao biến mất”. | Lồng tam giác vào khối vuông để tạo vết khuyết rỗng chevron trong mũi tên. | Hiểu và tận dụng cơ chế triệt tiêu (2 lớp = rỗng) để tạo hoa văn khuyết. |
+| **2-2** | **Cánh Bướm Điệp Ảnh** *(Oracle Butterfly)* | Đốm sáng chỉ vào khoảng rỗng trung tâm của hình nơ bướm. | Xếp chồng các tam giác để tạo tâm rỗng đối xứng tuyệt đối. | Chủ động tạo khoảng rỗng cân bằng từ nhiều mảnh giao nhau. |
+| **2-3** | **Trái Tim Tinh Thể** *(Crystal Core)* | Khoảng rỗng hai lớp vừa tạo được khoanh sáng; mảnh thứ ba đi ngang qua trong demo ngắn, hạt nhân ở giữa bừng sáng; lời: “Thêm mảnh thứ ba: vùng đó hiện lại”. | Đặt mảnh thứ ba vào tâm rỗng để viên ngọc nhân hiện lại (3 lớp = hiện). | Dự đoán được trạng thái chẵn-lẻ (parity) của vùng giao trước khi thả mảnh. |
 
-1-1 của prototype đã có hai mảnh và vùng giao, nên FTUE cho người chơi **thấy hiện tượng** trước khi 2-1 **gọi tên quy luật**. Dữ liệu 2-1 hiện cũng tạo một vùng ba lớp; màn này cần được chỉnh hình hoặc chỉ dẫn thị giác phải khoanh rõ vùng hai lớp để không dạy hai quy tắc cùng lúc. Nếu playtest cho thấy 1-1 làm người mới rối, sửa dữ liệu/nhịp màn trước khi thêm hướng dẫn dài.
+Chương 1 hoàn toàn thuần túy là **ghép tiếp giáp không xếp chồng**, giúp người chơi làm quen với thao tác kéo, thả, snap và tạo dựng các biểu tượng cổ ngữ hoàn chỉnh. Bước sang Chương 2, người chơi sẽ đón nhận bất ngờ thú vị khi khám phá cơ chế phép trừ triệt tiêu vùng giao và hồi sinh hạt nhân 3 lớp.
 
 ### 2.2. Màn hình và mockup
 
@@ -104,6 +105,12 @@ MVP **không có hint và không có skip**; người chơi có thể kéo lại
 
 Mỹ thuật dùng nền tối, bóng mục tiêu mờ và một màu kính vàng cam có viền rõ. Bảng màu đang dùng để truyền đạt: nền ngoài `#080E24`, bàn `#101B32`, mảnh `#FFC857`, điểm nhấn `#68B8DC`, chữ chính `#EEF4FA`, chữ phụ `#9DAFC7`. Giá trị hex có thể đổi ở art pass nếu tương phản và trạng thái vẫn rõ trên điện thoại nhỏ. Hình khối MVP gồm vuông, tam giác và thoi; không dùng hiệu ứng khúc xạ, tia sáng hay pha màu. Vùng giao trong suốt phải nhìn như một quy luật có chủ đích qua viền/nhịp chuyển, không như lỗi mất hình.
 
+**Hệ thống Lưới toạ độ Chiêm tinh (HSR Grid System):**
+Học tập mỹ cảm từ minigame *Tấm Bia Tiên Tri* (Honkai: Star Rail), bàn chơi và khung thumbnail mục tiêu được trang bị:
+1. **Lưới kẻ toạ độ vàng hổ phách (`#FFC857` / `#D4A359` mờ):** Các đường kẻ mảnh ngang dọc phân tách từng cụm 8 ô lưới (32 px), giúp người chơi ước lượng vị trí và vùng snap một cách tự nhiên.
+2. **Chấm giao điểm toạ độ (Grid Intersection Dots):** Các chấm tròn vàng mờ tại mỗi giao điểm của hệ lưới, tạo cảm giác một bàn cờ cơ khí/thiên văn cổ đại tinh xảo.
+3. **Vòng tròn ma trận thiên văn (Celestial Dial Rings):** Vòng tròn đồng tâm viền xanh cyan dạ quang và vàng đứt nét bao bọc bàn chơi, điểm xuyết các ký tự và đốm sáng tại các góc phương vị chính (0°, 90°, 180°, 270°).
+
 [Bàn luận style Galaxy](../testing/mirror-play-screen-style.md) và [hình tham khảo play screen](assets/galaxy_glass_layered_landscape_play_screen.svg) chỉ là **tham khảo mỹ thuật** cho không khí, chất liệu kính, bảng màu và lớp phong cảnh. GDD này là chuẩn cho luật chơi, bố cục, trạng thái nút và phản hồi tương tác. Chi tiết trong hai file tham khảo khác GDD không tự trở thành quyết định thiết kế; việc áp dụng một hướng art cụ thể cần review và kiểm tra khả năng đọc trên điện thoại.
 
 Danh mục tài sản tối thiểu: bộ mảnh ba hình, bóng mục tiêu/thumbnail, viền trạng thái kéo–snap–tạm, xung vùng giao, nút/menu/tạm dừng, hình minh họa FTUE 1-1/2-1/2-2 và xác nhận thắng. Mockup tại Chương 2 là hướng bố cục; asset sản xuất phải được kiểm trên máy Android nhỏ.
@@ -116,9 +123,14 @@ Nhạc, SFX và rung hoàn thiện không phải điều kiện ra mắt MVP. N�
 
 ### 4.1. Cấu trúc 18 màn
 
-Ba chương, mỗi chương sáu màn: **1. Khám phá vị trí**, **2. Giao thoa cùng màu**, **3. Xoay chuyển**. 1-1 mở sẵn; hoàn thành một màn lưu tiến độ cục bộ và mở màn kế. Người chơi có thể chơi lại màn đã hoàn thành. Không có tài khoản, cloud, leaderboard, quảng cáo, IAP, tiền ảo hoặc booster. Custom Level là tính năng phụ từ prototype, không là điều kiện nghiệm thu campaign; nếu giữ, dữ liệu của nó tách khỏi tiến độ 18 màn.
+Ba chương, mỗi chương sáu màn:
+1. **Khởi nguyên — Ghép hình tiếp giáp** (1-1 đến 1-6): Làm quen kéo, thả, snap và giải đố hình học tạo biểu tượng cổ ngữ hoàn chỉnh; các mảnh tiếp giáp cạnh/chạm đỉnh, **hoàn toàn không xếp chồng**.
+2. **Giao thoa — Bí ẩn vùng giao** (2-1 đến 2-6): Giới thiệu cơ chế "phép trừ" và chẵn-lẻ (parity): hai mảnh chồng nhau tạo hoa văn rỗng (2 lớp), ba mảnh chồng nhau làm hạt nhân ngọc hiện lại (3 lớp).
+3. **Luân chuyển — Xoay chuyển định hướng** (3-1 đến 3-6): Mở khóa nút Xoay ↻ 90° kết hợp với quy luật giao thoa để hoàn thiện các đại ấn cổ ngữ đa hướng.
 
-Phụ lục A là **level sheet có hình và lời giải mẫu cho sáu màn có dữ liệu hình học**. Phụ lục B là **12 khung thiết kế**; chưa có lời giải mẫu hay hình mục tiêu được duyệt, vì vậy không được chuyển thẳng thành backlog “đã chốt”. Mỗi màn muốn lên bản phát hành phải có một nghiệm hợp lệ, ít nhất một lựa chọn sai có ý nghĩa, bóng mục tiêu dễ đọc và chơi lại được. Độ khó cần xác nhận bằng thời gian, số lần đặt lại và quan sát người chơi; nhãn độ khó trong Phụ lục A chỉ là dự đoán.
+1-1 mở sẵn; hoàn thành một màn lưu tiến độ cục bộ và mở màn kế. Người chơi có thể chơi lại màn đã hoàn thành. Không có tài khoản, cloud, leaderboard, quảng cáo, IAP, tiền ảo hoặc booster. Custom Level là tính năng phụ từ prototype, không là điều kiện nghiệm thu campaign; nếu giữ, dữ liệu của nó tách khỏi tiến độ 18 màn.
+
+Phụ lục A là **level sheet có hình và định nghĩa tạo hình cho sáu màn nền tảng** theo hệ thống Cổ Ngữ Tiên Tri mới. Phụ lục B là **12 khung thiết kế** mở rộng. Mỗi màn muốn lên bản phát hành phải có một nghiệm hợp lệ, ít nhất một lựa chọn sai có ý nghĩa, bóng mục tiêu giàu tính nghệ thuật biểu tượng và chơi lại được.
 
 ### 4.2. Lưu tiến độ và lỗi
 
@@ -176,40 +188,38 @@ Quyết định phạm vi đến từ [spec MVP](../superpowers/specs/2026-09-21
 
 ---
 
-## Phụ lục A — Level sheet sáu màn có dữ liệu hình học
+## Phụ lục A — Level sheet sáu màn Cổ Ngữ Tiên Tri nền tảng
 
-**Cách đọc:** tọa độ `(x,y)` là neo gốc khung mảnh trên lưới 128 × 192; số trong ngoặc sau tên hình là cạnh khung theo ô. `↻` là số nấc 90° theo chiều kim đồng hồ. “Gây nhiễu” ở sáu màn này là **neo thay thế tạo nghiệm sai**, không phải mảnh thừa. Hình dưới phác đúng quan hệ chồng của lời giải mẫu bằng vector; chấm thắng thực tế vẫn dựa trên ô raster.
+**Cách đọc:** Biểu tượng được thiết kế theo cảm quan Cổ ngữ &amp; Chiêm tinh (Amphoreus / Honkai Star Rail). Chương 1 là **ghép tiếp giáp không xếp chồng**; Chương 2 là **giao thoa triệt tiêu tạo hoa văn rỗng và hồi sinh hạt nhân**. `(x,y)` là neo gốc khung mảnh trên lưới 128 × 192; số trong ngoặc sau tên hình là cạnh khung theo ô. `↻` là số nấc 90° theo chiều kim đồng hồ.
 
-![Sáu bóng mục tiêu mẫu từ lời giải prototype](assets/level-silhouettes.svg)
+![Sáu bóng mục tiêu Cổ Ngữ Tiên Tri mẫu](assets/level-silhouettes.svg)
 
-| Màn / vai trò | Mảnh | Bóng mục tiêu và lời giải mẫu | Lựa chọn gây nhiễu | Khó dự đoán |
+| Màn / Vai trò | Mảnh | Bóng mục tiêu và mô tả tạo hình | Cơ chế hình học & Điểm nhấn | Khó dự đoán |
 |---|---|---|---|---|
-| **1-1 Vết khuyết** · học kéo/thả, thấy vùng giao | 2: vuông 48, tam giác 48 | Hình A1: khối vuông có một khuyết tam giác và nhánh dưới. Vuông `(32,66)`, tam giác `(44,78)`; cả hai `↻0`. | Vuông `(48,66)` hoặc tam giác `(28,78)` làm khuyết lệch. | 1/5 |
-| **1-2 Cạnh vỡ** · so bóng và kéo lại | 2: vuông 48, thoi 48 | Hình A2: khối vuông nối thoi với cạnh lõm. Vuông `(28,66)`, thoi `(52,78)`; `↻0`. | Vuông `(44,66)` hoặc thoi `(36,78)` đổi cạnh lõm. | 1/5 |
-| **1-3 Hai nhánh** · ba mảnh và vùng rời | 3: vuông 44, tam giác 48, thoi 40 | Hình A3: bóng ba hướng với nhánh trên và dưới. Vuông `(26,68)`, tam giác `(50,58)`, thoi `(40,100)`; `↻0`. | Vuông `(42,68)`/`(26,84)`; tam giác `(34,58)`/`(50,74)`; thoi `(56,100)`/`(40,84)`. | 2/5 |
-| **2-1 Lõi sáng** · gọi tên vùng hai lớp trống | 3: vuông 48, tam giác 48, thoi 40 | Hình A4: ba mảng bao một khoảng trống giao. Vuông `(24,68)`, tam giác `(48,52)`, thoi `(56,80)`; `↻0`. | Vuông `(40,68)`/`(24,84)`; tam giác `(32,52)`/`(48,68)`; thoi `(40,80)`/`(56,96)`. | 2/5 |
-| **2-2 Mảnh dấu** · vùng ba lớp hiện lại | 3: vuông 44, tam giác 48, thoi 44 | Hình A5: vùng trung tâm hiện trong giao ba mảnh. Vuông `(28,72)`, tam giác `(32,56)`, thoi `(56,82)`; `↻0`. | Vuông `(44,72)`/`(28,88)`; tam giác `(48,56)`/`(32,72)`; thoi `(40,82)`/`(56,66)`. | 3/5 |
-| **2-3 Ấn lệch** · tự áp dụng hai và ba lớp | 3: vuông 48, tam giác 48, thoi 44 | Hình A6: khối lệch với cả khoảng rỗng và phần hiện lại. Vuông `(24,64)`, tam giác `(48,76)`, thoi `(42,62)`; `↻0`. | Vuông `(40,64)`/`(24,80)`/`(24,48)`; tam giác `(32,76)`/`(48,92)`/`(48,60)`; thoi `(58,62)`/`(42,78)`/`(42,46)`. | 3/5 |
+| **1-1 Song Tinh** *(Twin Stars)* · học kéo/thả, snap lưới | 2: thoi 40, thoi 40 | Hình A1: Hai viên ngọc thoi đặt cạnh nhau, chạm đỉnh tại trục ngang. | **Không xếp chồng.** Tiếp giáp đỉnh `◆◆`. Biểu tượng cân bằng sơ khởi của vũ trụ. | 1/5 |
+| **1-2 Bảo Tháp Tiên Tri** *(Sacred Spire)* · phối hợp hai khối | 1: vuông 48, 1: tam giác 48 | Hình A2: Khối vuông làm chân tháp, tam giác đặt ngay ngắn trên đỉnh. | **Không xếp chồng.** Tiếp giáp cạnh (đáy tam giác = cạnh trên vuông). Ngôi tháp vươn cao. | 1/5 |
+| **1-3 Cánh Chim Báo Điềm** *(Astral Wing)* · đối xứng trục | 2: tam giác 48 | Hình A3: Đôi cánh vút bay hướng thiên đối xứng qua trục dọc. | **Không xếp chồng.** Tiếp giáp cạnh dọc. Người chơi tự so sánh bóng và đặt chuẩn xác. | 2/5 |
+| **2-1 Mũi Tên Chỉ Thiên** *(Vanguard Arrow)* · bước ngoặt xếp chồng | 1: vuông 48, 1: tam giác 48 | Hình A4 (Image 1 HSR): Tam giác lồng sâu vào đỉnh khối vuông. | **Xếp chồng 2 lớp:** Vùng giao biến mất tạo thành **vết khuyết rãnh chevron** trong mũi tên tiên phong. | 2/5 |
+| **2-2 Cánh Bướm Điệp Ảnh** *(Oracle Butterfly)* · tâm rỗng đối xứng | 1: vuông 44 (hoặc 2 tam giác), 2: tam giác 48 | Hình A5 (Image 3 HSR): Khối cánh bướm/nơ cân bằng tuyệt đối. | **Xếp chồng 2 lớp:** Các mảnh lồng qua tâm triệt tiêu lẫn nhau, để lại một **tâm thoi rỗng đối xứng**. | 3/5 |
+| **2-3 Trái Tim Tinh Thể** *(Crystal Core)* · quy tắc 3 lớp hiện lại | 3: mảnh lồng tâm (vuông 48, thoi 48, thoi 24) | Hình A6: Hạt nhân ngọc phát sáng giữa khoảng không rỗng. | **Xếp chồng 3 lớp:** 2 mảnh ngoài tạo khoảng rỗng (2 lớp), mảnh thứ ba ở tâm làm **viên ngọc nhân hiện lại** (3 lớp). | 3/5 |
 
-**Điều cần xác minh trước khi coi sáu màn là thiết kế khóa:** hình minh họa phải so với mask raster chạy thật; kiểm tra 2-1 có thực sự nhấn mạnh vùng hai lớp và 2-2 có vùng ba lớp đủ lớn để đọc; đo nhịp chơi, mức khó và khả năng hiểu luật trên máy Android. Việc có dữ liệu hình học không đồng nghĩa đã đạt các kiểm tra này.
+---
 
-## Phụ lục B — Khung thiết kế cho 12 màn chưa duyệt
+## Phụ lục B — Khung thiết kế cho 12 màn Cổ Ngữ Tiên Tri mở rộng
 
-Mỗi dòng nêu **đích thiết kế**, không bịa ra hình mục tiêu, tọa độ nghiệm hay mảnh gây nhiễu chưa được review. Trước khi đưa một màn vào build phát hành, tác giả phải điền đủ: số/loại mảnh, ảnh bóng mục tiêu, tọa độ + góc xoay của ít nhất một lời giải, neo hoặc mảnh gây nhiễu, độ khó dự đoán, rồi tự xác minh bằng mask và playtest.
+Mỗi màn mang một hình tượng cổ ngữ xác định trong vũ trụ chiêm tinh, đảm bảo bóng mục tiêu luôn giàu ý nghĩa nghệ thuật:
 
-| Màn | Vai trò học / ràng buộc nội dung | Số mảnh, mục tiêu, nghiệm, nhiễu, khó |
-|---|---|---|
-| 1-4 | Chọn giữa các neo gần nhau; chỉ một thay đổi so với 1-3 | Chưa duyệt |
-| 1-5 | Đọc bóng có ba hình giao nhau; vẫn chưa dùng xoay | Chưa duyệt |
-| 1-6 | Kiểm tra độc lập các thao tác Chương 1 | Chưa duyệt |
-| 2-4 | Tạo hai khoảng trống có chủ đích, phân biệt chúng trên thumbnail | Chưa duyệt |
-| 2-5 | Tạo vùng hiện lại trong khu vực ba mảnh giao | Chưa duyệt |
-| 2-6 | Kết hợp vùng rỗng, vùng hiện và nhánh rời | Chưa duyệt |
-| 3-1 | Dạy một nấc xoay bằng hình bất đối xứng dễ nhận | Chưa duyệt |
-| 3-2 | Phân biệt đúng vị trí với đúng hướng | Chưa duyệt |
-| 3-3 | Dùng nhiều nấc xoay, tránh thử bừa do hình đối xứng | Chưa duyệt |
-| 3-4 | Xoay cùng vùng giao hai lớp | Chưa duyệt |
-| 3-5 | Xoay để tạo vùng ba lớp hiện lại | Chưa duyệt |
-| 3-6 | Tổng hợp placement, vùng hai/ba lớp và xoay; kết campaign | Chưa duyệt |
-
-**Điều kiện hoàn thiện level sheet:** mỗi dòng Phụ lục B phải đạt độ chi tiết ngang Phụ lục A, có silhouette minh họa và kiểm tra nghiệm trên dữ liệu chạy thật. Đến lúc đó mới đánh giá lại thứ tự màn và KPI campaign.
+| Màn | Tên Biểu Tượng Cổ Ngữ | Vai trò sư phạm & Ràng buộc hình học | Mảnh dự kiến |
+|---|---|---|---|
+| **1-4** | **Ngọn Hải Đăng** *(The Pharos)* | Ghép tiếp giáp 3 khối theo trục đứng: Đế vuông + Thân thoi + Đỉnh tam giác; không xếp chồng | 3: vuông, thoi, tam giác |
+| **1-5** | **Chiếc Thuyền Sao** *(Astral Barque)* | Thân thuyền vuông + 2 tam giác mũi thuyền và cánh buồm tiếp giáp; không xếp chồng | 3: vuông, 2 tam giác |
+| **1-6** | **Vương Miện Bình Minh** *(Crown of Dawn)* | Vương miện 3 đỉnh uy nghi từ khối vuông trung tâm và 2 tam giác chếch góc; kết thúc Chương 1 | 3: vuông, 2 tam giác |
+| **2-4** | **Mắt Tiên Tri** *(Eye of the Oracle)* | Vòng mí mắt rỗng (2 lớp giao) ôm trọn con ngươi phát sáng ở tâm (3 lớp hiện) | 3: 2 thoi, 1 tam giác/vuông |
+| **2-5** | **Chìa Khóa Thời Gian** *(Chrono Key)* | Rãnh răng khóa và tay cầm rỗng được tạo bởi các giao điểm triệt tiêu có tính toán | 3: vuông, thoi, tam giác |
+| **2-6** | **Đại Ấn Hộ Mệnh** *(Grand Sigil)* | Phức hợp cổ ngữ đỉnh cao Chương 2: Kết hợp đa tầng hoa văn chìm (2 lớp rỗng) và ngọc phong ấn (3 lớp) | 3-4 mảnh kết hợp |
+| **3-1** | **La Bàn Gió** *(Anemoi Needle)* | Mở khóa nút Xoay ↻: Xoay tam giác lệch 90° để chỉ đúng hướng gió | 2-3 mảnh, 1 nấc xoay |
+| **3-2** | **Lưỡi Kiếm Thiên Thể** *(Celestial Blade)* | Phân biệt đúng góc xoay với đúng vị trí neo | 3 mảnh, xoay 90°/180° |
+| **3-3** | **Cánh Cung Chiêm Tinh** *(Sagittarius Bow)* | Dùng nhiều nấc xoay để tạo độ cong và dây cung | 3 mảnh |
+| **3-4** | **Bánh Xe Số Phận** *(Rota Fortunae)* | Xoay 4 mảnh quanh tâm tạo bánh xe 4 nan hoa rỗng | 4 mảnh |
+| **3-5** | **Thánh Giá Thiên Cầu** *(Celestial Cross)* | Xoay để tạo vùng giao 3 lớp phát sáng tại tâm chữ thập | 4 mảnh |
+| **3-6** | **Đại Ấn Tiên Tri** *(The Grand Oracle Seal)* | Tổng hợp đỉnh cao: Placement + Xếp chồng 2/3 lớp + Xoay 90°; hoàn tất campaign | 4 mảnh |

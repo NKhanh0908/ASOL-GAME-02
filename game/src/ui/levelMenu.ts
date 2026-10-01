@@ -42,3 +42,11 @@ export function resolveLevel(levelId?: string): Level {
   if (!levelId) return levels[0];
   return LevelRepository.get(levelId) ?? levels[0];
 }
+
+export function campaignChapters(): { title: string; levels: Level[] }[] {
+  const titles = ['Khởi động', 'Giao thoa', 'Xoay chuyển'];
+  return titles.map((title, index) => ({
+    title,
+    levels: levels.filter(level => level.id.startsWith(`${index + 1}-`)),
+  }));
+}

@@ -4,6 +4,23 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-09-30 - Add separate Mirror Master GDD
+
+- Created `docs/gdd/master-gdd.md` as a five-chapter player-experience design document following the Phase 2 workflow, separate from the MVP specification.
+- Recorded the one-color overlap rule, 18-level learning path, UI flow, visual direction, offline progress, non-monetized release scope, design states and unresolved post-MVP color behavior.
+- Verification: cross-checked against the current MVP spec, concept note, six-level prototype evidence and Phase 2 template; documentation-only change, no runtime test.
+
+### 2026-09-30 - Clarify same-color overlap in MVP GDD
+
+- Updated `docs/superpowers/specs/2026-09-21-mirror-mvp-gdd.md` so the one-color MVP explains same-color transparency and reappearance consistently across the rules, chapter goals, UI feedback and acceptance criteria.
+- Confirmed in `docs/concept/same-color-overlap-note.md` that different-color interactions belong after MVP; their display and color-sensitive victory remain open decisions.
+- Verification: reviewed document terminology and scope against the Product Owner's decisions; no gameplay code or runtime tests were changed for this documentation update.
+
+### 2026-09-30 - Same-color overlap concept note
+
+- Added `docs/concept/same-color-overlap-note.md` to record the proposed same-color transparency rule and the unresolved different-color behavior for a future GDD revision.
+- Verification: reviewed the note against the current MVP GDD and concept sheet; no runtime test was needed for this documentation-only change.
+
 ### 2026-09-21 - Approved Mirror MVP GDD
 
 - Recorded the approved 18-level Android MVP: three six-level chapters for drag/drop, parity overlap and 90-degree rotation.

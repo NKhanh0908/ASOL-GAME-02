@@ -1,5 +1,11 @@
 import { expect, it } from 'vitest';
-import { square, triangle, smallTriangle, diamond, containsCell } from './shapes';
+import { square, triangle, smallTriangle, diamond, containsCell, rotateCells } from './shapes';
+
+it('rotates occupied cells clockwise within their bounding square', () => {
+  const corner: [number, number][] = [[0, 0], [0, 1], [1, 1]];
+  expect(rotateCells(corner, 1)).toEqual([[1, 0], [0, 0], [0, 1]]);
+  expect(rotateCells(corner, 4)).toEqual(corner);
+});
 
 it('builds large shapes with fixed upward triangle and diamond axes', () => {
   expect(square(40)).toHaveLength(1600);
@@ -38,4 +44,3 @@ it('does not contain negative coordinates or empty corners', () => {
   expect(containsCell(diamond(8), 0, 0)).toBe(false);
   expect(containsCell(smallTriangle(8), 0, 0)).toBe(false);
 });
-

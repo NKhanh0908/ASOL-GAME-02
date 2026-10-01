@@ -1,4 +1,5 @@
 import { GRID_HEIGHT, GRID_WIDTH, type Level, type Placement } from './types';
+import { rotateCells } from './shapes';
 
 export function evaluate(level: Level, placements: Placement[]): Uint8Array {
   const counts = new Uint8Array(GRID_WIDTH * GRID_HEIGHT);
@@ -7,7 +8,7 @@ export function evaluate(level: Level, placements: Placement[]): Uint8Array {
   for (const placement of placements) {
     const piece = level.pieces.find((candidate) => candidate.id === placement.pieceId);
     if (!piece) throw new Error(`Unknown piece: ${placement.pieceId}`);
-    for (const [localX, localY] of piece.cells) {
+    for (const [localX, localY] of rotateCells(piece.cells, placement.rotation ?? 0)) {
       const x = placement.x + localX;
       const y = placement.y + localY;
       if (x < 0 || x >= GRID_WIDTH || y < 0 || y >= GRID_HEIGHT) continue;

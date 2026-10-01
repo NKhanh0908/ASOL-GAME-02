@@ -1,11 +1,13 @@
 import Phaser from 'phaser';
 import { Session } from '../domain/session';
+import { CampaignProgress } from '../domain/campaignProgress';
+import { levels } from '../domain/levels';
 import { GRID_HEIGHT, GRID_WIDTH, type PieceDefinition } from '../domain/types';
 import { clearMaskCells, drawMask, drawPiece, overlapPreviewCells, pieceSize } from './draw';
 import { drawBackdrop } from './backdrop';
 import { LAYOUT, toGrid, trayHome } from './layout';
 import { THEME } from './theme';
-import { containsCell } from '../domain/shapes';
+import { containsCell, rotateCells } from '../domain/shapes';
 
 import { resolveLevel } from './levelMenu';
 
@@ -34,13 +36,15 @@ export class GameScene extends Phaser.Scene {
   private status!: Phaser.GameObjects.Text;
   private resetButton!: Phaser.GameObjects.Container;
   private nextButton!: Phaser.GameObjects.Container;
+  private rotateButton?: Phaser.GameObjects.Container;
+  private selectedPieceId?: string;
 
 
   constructor() { super('Mirror'); }
 
   init(data?: { levelId?: string }): void {
     const level = resolveLevel(data?.levelId);
-    this.session = new Session(level);
+    this.session = new Session(levels.some(candidate => candidate.id === level.id) && !CampaignProgress.isUnlocked(level.id) ? levels[0] : level);
   }
 
   create(): void {
@@ -53,6 +57,7 @@ export class GameScene extends Phaser.Scene {
     this.pieceDepth.clear();
     this.nextPieceDepth = 5;
     this.dragging = undefined;
+    this.selectedPieceId = undefined;
     drawBackdrop(this);
     this.add.text(28, 24, 'MIRROR', { fontFamily: 'Arial', fontSize: '34px', fontStyle: 'bold', color: THEME.text, letterSpacing: 3 });
     this.add.text(30, 78, `${this.session.level.id}  ·  ${this.session.level.title}`, { fontFamily: 'Arial', fontSize: '21px', color: THEME.muted });
@@ -78,13 +83,27 @@ export class GameScene extends Phaser.Scene {
       this.refresh();
     });
 
+    if (this.session.level.id.startsWith('3-')) {
+      this.rotateButton = this.button(424, 1230, 140, 'Xoay ↻', () => {
+        if (!this.selectedPieceId) return;
+        const before = this.session.result;
+        if (this.session.rotate(this.selectedPieceId)) {
+          this.refresh();
+          this.flashChanged(before, this.session.result);
+        }
+      });
+      this.rotateButton.setAlpha(0.45);
+    } else {
+      this.rotateButton = undefined;
+    }
+
     this.status = this.add.text(360, 950, '', { fontFamily: 'Arial', fontSize: '24px', fontStyle: 'bold', color: THEME.text }).setOrigin(0.5, 1).setDepth(8);
 
     const isNextAvailable = this.session.levelIndex >= 0 && !this.session.isFinalLevel;
     this.nextButton = this.button(
-      545,
+      this.rotateButton ? 620 : 545,
       1230,
-      290,
+      this.rotateButton ? 170 : 290,
       isNextAvailable ? 'Màn tiếp' : 'Về Menu',
       () => {
         if (isNextAvailable && this.session.next()) {
@@ -111,8 +130,16 @@ export class GameScene extends Phaser.Scene {
 
   private drawThumbnail(): void {
     const sample = this.add.container(480, 24).setDepth(10);
-    sample.add(this.add.rectangle(0, 0, 216, 124, THEME.board, 0.8).setOrigin(0).setStrokeStyle(1, THEME.blue, 0.36));
-    sample.add(this.add.text(108, 8, 'MẪU', { fontFamily: 'Arial', fontSize: '14px', fontStyle: 'bold', color: THEME.muted, letterSpacing: 2 }).setOrigin(0.5, 0));
+    sample.add(this.add.rectangle(0, 0, 216, 124, THEME.board, 0.85).setOrigin(0).setStrokeStyle(1.5, THEME.blue, 0.4));
+    
+    // HSR subtle amber grid inside thumbnail
+    const thumbGrid = this.add.graphics();
+    thumbGrid.lineStyle(1, THEME.gold, 0.12);
+    for (let gx = 16; gx < 200; gx += 16) thumbGrid.lineBetween(gx, 30, gx, 116);
+    for (let gy = 30; gy < 116; gy += 16) thumbGrid.lineBetween(16, gy, 200, gy);
+    sample.add(thumbGrid);
+
+    sample.add(this.add.text(108, 8, 'MỤC TIÊU', { fontFamily: 'Arial', fontSize: '13px', fontStyle: 'bold', color: THEME.blueText, letterSpacing: 2 }).setOrigin(0.5, 0));
     const mask = this.session.target;
     let minX = GRID_WIDTH, minY = GRID_HEIGHT, maxX = 0, maxY = 0;
     for (let y = 0; y < GRID_HEIGHT; y += 1) for (let x = 0; x < GRID_WIDTH; x += 1) if (mask[y * GRID_WIDTH + x]) {
@@ -136,7 +163,7 @@ export class GameScene extends Phaser.Scene {
       drawPiece(view, piece, LAYOUT.cell, 'loose');
       view.setInteractive(
         new Phaser.Geom.Rectangle(0, 0, width * LAYOUT.cell, height * LAYOUT.cell),
-        (_area: unknown, localX: number, localY: number) => containsCell(piece.cells, localX / LAYOUT.cell, localY / LAYOUT.cell),
+        (_area: unknown, localX: number, localY: number) => containsCell(rotateCells(piece.cells, this.session.rotationOf(piece.id)), localX / LAYOUT.cell, localY / LAYOUT.cell),
       );
       view.on('pointerdown', (pointer: Phaser.Input.Pointer) => this.startDrag(pointer, piece, view));
       this.views.set(piece.id, view);
@@ -145,6 +172,8 @@ export class GameScene extends Phaser.Scene {
 
   private startDrag(pointer: Phaser.Input.Pointer, piece: PieceDefinition, view: Phaser.GameObjects.Graphics): void {
     if (this.session.won || this.dragging) return;
+    this.selectedPieceId = piece.id;
+    this.rotateButton?.setAlpha(1);
     this.dragging = { id: piece.id, view, pointerId: pointer.id, offsetX: pointer.x - view.x, offsetY: pointer.y - view.y, oldX: view.x, oldY: view.y };
     const depth = this.nextPieceDepth++;
     this.pieceDepth.set(piece.id, depth);
@@ -213,7 +242,7 @@ export class GameScene extends Phaser.Scene {
     const transparentByPiece = this.collectTransparency();
     drawMask(this.composite, this.compositePreview(transparentByPiece), LAYOUT.cell);
     const piece = this.pieceById(id);
-    drawPiece(this.views.get(id)!, piece, LAYOUT.cell, 'dragging', transparentByPiece.get(id));
+    drawPiece(this.views.get(id)!, this.orientedPiece(piece), LAYOUT.cell, 'dragging', transparentByPiece.get(id), true);
     for (const [otherId, transparent] of transparentByPiece) {
       if (otherId === id) continue;
       if (transparent.size) this.drawPieceView(otherId, transparent);
@@ -221,6 +250,9 @@ export class GameScene extends Phaser.Scene {
   }
 
   private refresh(): void {
+    if (this.session.won && levels.some(level => level.id === this.session.levelId) && !('kind' in this.session.level)) {
+      CampaignProgress.complete(this.session.levelId);
+    }
     for (const piece of this.session.level.pieces) {
       const placed = this.session.placements.find((item) => item.pieceId === piece.id);
       const home = this.homes.get(piece.id)!;
@@ -234,12 +266,16 @@ export class GameScene extends Phaser.Scene {
     for (const piece of this.session.level.pieces) {
       this.drawPieceView(piece.id, transparentByPiece.get(piece.id));
     }
-    this.status.setText(this.session.won ? (this.session.isFinalLevel ? 'Hoàn thành bản thử!' : 'Khớp hình!') : '');
+    this.status.setText(this.session.won ? (this.session.isFinalLevel ? 'Hoàn thành campaign!' : 'Khớp hình!') : '');
     this.nextButton.setVisible(this.session.won);
   }
 
   private pieceById(id: string): PieceDefinition {
     return this.session.level.pieces.find((piece) => piece.id === id)!;
+  }
+
+  private orientedPiece(piece: PieceDefinition): PieceDefinition {
+    return { ...piece, cells: rotateCells(piece.cells, this.session.rotationOf(piece.id)) };
   }
 
   private isPlaced(id: string): boolean {
@@ -253,7 +289,7 @@ export class GameScene extends Phaser.Scene {
 
   private drawPieceView(id: string, transparentCells: ReadonlySet<string> = new Set()): void {
     const piece = this.pieceById(id);
-    drawPiece(this.views.get(id)!, piece, LAYOUT.cell, this.isPlaced(id) ? 'placed' : 'loose', transparentCells);
+    drawPiece(this.views.get(id)!, this.orientedPiece(piece), LAYOUT.cell, this.isPlaced(id) ? 'placed' : 'loose', transparentCells, this.selectedPieceId === id);
   }
 
   private collectTransparency(): Map<string, Set<string>> {
@@ -264,7 +300,7 @@ export class GameScene extends Phaser.Scene {
       for (let otherIndex = index + 1; otherIndex < this.session.level.pieces.length; otherIndex += 1) {
         const second = this.session.level.pieces[otherIndex];
         const secondOrigin = this.pieceOrigin(second.id);
-        const overlap = overlapPreviewCells(first.cells, firstOrigin.x, firstOrigin.y, second.cells, secondOrigin.x, secondOrigin.y);
+        const overlap = overlapPreviewCells(this.orientedPiece(first).cells, firstOrigin.x, firstOrigin.y, this.orientedPiece(second).cells, secondOrigin.x, secondOrigin.y);
         for (const cell of overlap.dragged) transparentByPiece.get(first.id)!.add(cell);
         for (const cell of overlap.underneath) transparentByPiece.get(second.id)!.add(cell);
       }
@@ -306,4 +342,3 @@ export class GameScene extends Phaser.Scene {
     return this.add.container(x, y, [background, this.add.text(0, 0, text, { fontFamily: 'Arial', fontSize: '19px', fontStyle: 'bold', color: THEME.text }).setOrigin(0.5)]).setDepth(10);
   }
 }
-

@@ -85,6 +85,7 @@ export function drawPiece(
   cellSize: number,
   state: 'loose' | 'dragging' | 'placed',
   transparentCells: ReadonlySet<string> = new Set(),
+  selected = false,
 ): void {
   graphics.clear();
   const cells = new Set(piece.cells.map(([x, y]) => `${x},${y}`));
@@ -103,7 +104,7 @@ export function drawPiece(
       }
     }
   }
-  graphics.lineStyle(state === 'dragging' ? 3 : 1.5, COLORS[piece.color], state === 'placed' ? 0.7 : 1);
+  graphics.lineStyle(state === 'dragging' || selected ? 3 : 1.5, COLORS[piece.color], state === 'placed' && !selected ? 0.7 : 1);
   for (const [x, y] of piece.cells) {
     const left = x * cellSize;
     const top = y * cellSize;

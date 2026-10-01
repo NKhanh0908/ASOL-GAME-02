@@ -1,6 +1,7 @@
 import { levels } from './levels';
 import { evaluate, matchesTarget } from './mask';
 import { GRID_HEIGHT, GRID_WIDTH, type Level, type Placement } from './types';
+import { rotateCells } from './shapes';
 
 export const SNAP_RADIUS_CELLS = 6;
 
@@ -10,6 +11,7 @@ export class Session {
   private placed: Placement[] = [];
   private victory = false;
   private targetMask: Uint8Array;
+  private rotations = new Map<string, 0 | 1 | 2 | 3>();
 
   constructor(levelOrIndex: number | Level = 0) {
     if (typeof levelOrIndex === 'number') {
@@ -20,7 +22,7 @@ export class Session {
       this.currentLevel = levelOrIndex;
       this.currentIndex = levels.findIndex((l) => l.id === levelOrIndex.id);
     }
-    this.targetMask = evaluate(this.currentLevel, this.currentLevel.solution);
+    this.targetMask = this.currentLevel.target ?? evaluate(this.currentLevel, this.currentLevel.solution);
   }
 
   get level(): Level { return this.currentLevel; }
@@ -31,6 +33,16 @@ export class Session {
   get result(): Uint8Array { return evaluate(this.currentLevel, this.placed); }
   get won(): boolean { return this.victory; }
   get isFinalLevel(): boolean { return this.currentIndex >= 0 && this.currentIndex === levels.length - 1; }
+  rotationOf(pieceId: string): 0 | 1 | 2 | 3 { return this.rotations.get(pieceId) ?? 0; }
+
+  rotate(pieceId: string): boolean {
+    if (this.victory || !this.currentLevel.id.startsWith('3-') || !this.currentLevel.pieces.some(piece => piece.id === pieceId)) return false;
+    const next = ((this.rotationOf(pieceId) + 1) % 4) as 0 | 1 | 2 | 3;
+    this.rotations.set(pieceId, next);
+    this.placed = this.placed.map(placement => placement.pieceId === pieceId ? { ...placement, rotation: next } : placement);
+    this.victory = matchesTarget(this.result, this.targetMask);
+    return true;
+  }
 
   static canSaveSolution(level: Level, placements: Placement[]): boolean {
     if (!placements || placements.length === 0) return false;
@@ -39,7 +51,7 @@ export class Session {
       const piece = level.pieces.find((p) => p.id === placement.pieceId);
       if (!piece) return false;
 
-      for (const [cx, cy] of piece.cells) {
+      for (const [cx, cy] of rotateCells(piece.cells, placement.rotation ?? 0)) {
         const gx = placement.x + cx;
         const gy = placement.y + cy;
         if (gx < 0 || gx >= GRID_WIDTH || gy < 0 || gy >= GRID_HEIGHT) {
@@ -68,7 +80,7 @@ export class Session {
     }
     if (!nearest) return false;
     this.placed = this.placed.filter((placement) => placement.pieceId !== pieceId);
-    this.placed.push({ pieceId, x: nearest[0], y: nearest[1] });
+    this.placed.push({ pieceId, x: nearest[0], y: nearest[1], rotation: this.rotationOf(pieceId) });
     this.victory = matchesTarget(this.result, this.targetMask);
     return true;
   }
@@ -83,6 +95,7 @@ export class Session {
 
   reset(): void {
     this.placed = [];
+    this.rotations.clear();
     this.victory = false;
   }
 
@@ -91,9 +104,9 @@ export class Session {
     this.currentIndex = (this.currentIndex + 1) % levels.length;
     this.currentLevel = levels[this.currentIndex];
     this.placed = [];
+    this.rotations.clear();
     this.victory = false;
-    this.targetMask = evaluate(this.currentLevel, this.currentLevel.solution);
+    this.targetMask = this.currentLevel.target ?? evaluate(this.currentLevel, this.currentLevel.solution);
     return true;
   }
 }
-

@@ -73,6 +73,7 @@ describe('play session', () => {
     for (let levelIndex = 0; levelIndex < levels.length; levelIndex += 1) {
       const game = new Session(levelIndex);
       for (const placement of game.level.solution) {
+        for (let turn = 0; turn < (placement.rotation ?? 0); turn += 1) expect(game.rotate(placement.pieceId)).toBe(true);
         expect(game.drop(placement.pieceId, placement.x, placement.y)).toBe(true);
       }
       expect(game.won).toBe(true);
@@ -119,5 +120,19 @@ describe('play session', () => {
     expect(Session.canSaveSolution(level, [])).toBe(false);
     expect(Session.canSaveSolution(level, [{ pieceId: level.pieces[0].id, x: 999, y: 999 }])).toBe(false);
   });
-});
 
+  it('rotates a Chapter 3 piece into its target and blocks rotation in earlier chapters', () => {
+    const rotating: Level = {
+      id: '3-1', title: 'Rotation',
+      pieces: [{ id: 'corner', color: 1, cells: [[0, 0], [0, 1], [1, 1]], anchors: [[20, 30]] }],
+      solution: [{ pieceId: 'corner', x: 20, y: 30, rotation: 1 }],
+    };
+    const game = new Session(rotating);
+    expect(game.drop('corner', 20, 30)).toBe(true);
+    expect(game.won).toBe(false);
+    expect(game.rotate('corner')).toBe(true);
+    expect(game.won).toBe(true);
+    expect(game.placements[0].rotation).toBe(1);
+    expect(new Session(levels[0]).rotate(levels[0].pieces[0].id)).toBe(false);
+  });
+});

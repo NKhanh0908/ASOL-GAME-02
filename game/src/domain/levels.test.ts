@@ -3,16 +3,18 @@ import { levels } from './levels';
 import { evaluate, matchesTarget } from './mask';
 import { GRID_WIDTH, GRID_HEIGHT } from './types';
 
-it('contains six intended piece combinations', () => {
-  expect(levels.map(l => l.id)).toEqual(['1-1', '1-2', '1-3', '2-1', '2-2', '2-3']);
-  expect(levels.map(l => l.pieces.map(p => p.id))).toEqual([
+const prototypeLevels = ['1-1', '1-2', '1-3', '2-1', '2-2', '2-3'].map(id => levels.find(level => level.id === id)!);
+
+it('preserves the six prototype piece combinations', () => {
+  expect(prototypeLevels.map(l => l.id)).toEqual(['1-1', '1-2', '1-3', '2-1', '2-2', '2-3']);
+  expect(prototypeLevels.map(l => l.pieces.map(p => p.id))).toEqual([
     ['square', 'triangle'], ['square', 'diamond'],
     ...Array.from({ length: 4 }, () => ['square', 'triangle', 'diamond']),
   ]);
 });
 
 it('authors essential overlapping pieces within the board', () => {
-  levels.forEach((level, index) => {
+  prototypeLevels.forEach((level, index) => {
     const target = evaluate(level, level.solution);
     const coverage = new Uint8Array(GRID_WIDTH * GRID_HEIGHT);
     expect(new Set(level.pieces.map(p => p.color))).toEqual(new Set([1]));
@@ -44,7 +46,7 @@ it('authors essential overlapping pieces within the board', () => {
 });
 
 it('keeps large centered targets and meaningful detached regions', () => {
-  for (const level of levels) {
+  for (const level of prototypeLevels) {
     const mask = evaluate(level, level.solution);
     const occupied = Array.from(mask.keys()).filter(i => mask[i]);
     const xs = occupied.map(i => i % GRID_WIDTH), ys = occupied.map(i => Math.floor(i / GRID_WIDTH));
@@ -69,6 +71,32 @@ it('keeps large centered targets and meaningful detached regions', () => {
         sizes.push(queue.length);
       }
       expect(sizes.filter(size => size >= 64).length).toBeGreaterThanOrEqual(2);
+    }
+  }
+});
+
+it('provides eighteen solvable campaign puzzles with rotation-dependent Chapter 3 targets', () => {
+  expect(levels.map(level => level.id)).toEqual([
+    ...Array.from({ length: 6 }, (_, index) => `1-${index + 1}`),
+    ...Array.from({ length: 6 }, (_, index) => `2-${index + 1}`),
+    ...Array.from({ length: 6 }, (_, index) => `3-${index + 1}`),
+  ]);
+  const signatures = new Set<string>();
+  for (const level of levels) {
+    const target = evaluate(level, level.solution);
+    expect(target.some(Boolean)).toBe(true);
+    const signature = Array.from(target).join('');
+    expect(signatures.has(signature)).toBe(false);
+    signatures.add(signature);
+    for (const piece of level.pieces) {
+      const goal = level.solution.find(placement => placement.pieceId === piece.id)!;
+      expect(piece.anchors).toContainEqual([goal.x, goal.y]);
+      expect(matchesTarget(evaluate(level, level.solution.filter(placement => placement.pieceId !== piece.id)), target)).toBe(false);
+    }
+    if (level.id.startsWith('3-')) {
+      const rotated = level.solution.find(placement => (placement.rotation ?? 0) !== 0)!;
+      expect(rotated).toBeDefined();
+      expect(matchesTarget(evaluate(level, level.solution.map(placement => placement.pieceId === rotated.pieceId ? { ...placement, rotation: 0 } : placement)), target)).toBe(false);
     }
   }
 });

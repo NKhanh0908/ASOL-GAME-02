@@ -14,6 +14,7 @@ export interface Placement {
   pieceId: string;
   x: number;
   y: number;
+  rotation?: 0 | 1 | 2 | 3;
 }
 
 export interface Level {
