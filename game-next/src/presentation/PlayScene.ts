@@ -119,6 +119,11 @@ export class PlayScene extends Phaser.Scene {
       this.refreshView();
     });
 
+    this.input.on('pointerupoutside', (pointer: Phaser.Input.Pointer) => {
+      this.controller.onPointerUp(pointer.x, pointer.y, layout);
+      this.refreshView();
+    });
+
     this.input.on('gameout', () => {
       this.controller.onPointerCancel();
       this.refreshView();

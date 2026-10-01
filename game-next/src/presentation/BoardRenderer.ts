@@ -2,10 +2,9 @@ import Phaser from 'phaser';
 import type { Level, Piece, PieceState } from '../domain/model.ts';
 import type { LayoutMetrics } from './layout.ts';
 import { gridToCanvas, pieceHitbox } from './layout.ts';
-import type { PlayViewSnapshot } from '../application/playController.ts';
+import type { DragInfo, PlayViewSnapshot } from '../application/playController.ts';
 
 export class BoardRenderer {
-  private scene: Phaser.Scene;
   private layout: LayoutMetrics;
   private bgGraphics: Phaser.GameObjects.Graphics;
   private targetGraphics: Phaser.GameObjects.Graphics;
@@ -13,13 +12,12 @@ export class BoardRenderer {
   private fxGraphics: Phaser.GameObjects.Graphics;
 
   constructor(scene: Phaser.Scene, layout: LayoutMetrics) {
-    this.scene = scene;
     this.layout = layout;
 
-    this.bgGraphics = this.scene.add.graphics();
-    this.targetGraphics = this.scene.add.graphics();
-    this.piecesGraphics = this.scene.add.graphics();
-    this.fxGraphics = this.scene.add.graphics();
+    this.bgGraphics = scene.add.graphics();
+    this.targetGraphics = scene.add.graphics();
+    this.piecesGraphics = scene.add.graphics();
+    this.fxGraphics = scene.add.graphics();
 
     this.drawStaticBoard();
   }
@@ -87,10 +85,6 @@ export class BoardRenderer {
       trayBounds.height,
       16
     );
-
-    // Chữ chú thích khay
-    this.bgGraphics.fillStyle(0x5c768d, 0.4);
-    this.bgGraphics.fillCircle(trayBounds.x + trayBounds.width / 2, trayBounds.y + 12, 2.5);
   }
 
   render(
@@ -100,6 +94,7 @@ export class BoardRenderer {
   ): void {
     const { cellPixel } = this.layout;
     const radiusPx = 20 * cellPixel; // Bán kính hình thoi (40x40 ô -> r = 20)
+    const draggingPieceId = snapshot.dragInfo?.pieceId ?? null;
 
     // 1. Vẽ bóng mục tiêu Vector (Silhouette)
     this.targetGraphics.clear();
@@ -125,7 +120,7 @@ export class BoardRenderer {
       }
     }
 
-    // 2. Vẽ các mảnh ghép và trạng thái
+    // 2. Vẽ các mảnh ghép
     this.piecesGraphics.clear();
     this.fxGraphics.clear();
 
@@ -133,32 +128,29 @@ export class BoardRenderer {
       const piece = level.pieces[i];
       const pState = piecesState[piece.id] ?? { kind: 'tray', turns: 0 };
       const isSelected = snapshot.selectedPieceId === piece.id;
+      const isDraggingThis = piece.id === draggingPieceId;
 
-      if (pState.kind === 'tray') {
-        this.drawTrayPiece(piece, pState, i, isSelected, radiusPx);
-      } else if (pState.kind === 'temporary') {
-        this.drawTemporaryPiece(pState, isSelected, radiusPx);
-      } else if (pState.kind === 'snapped') {
-        this.drawSnappedPiece(piece, pState, isSelected, radiusPx);
-      }
-    }
-
-    // 3. Highlight neo hút (Snap Candidate)
-    if (snapshot.snapCandidateId) {
-      for (const piece of level.pieces) {
-        const anchor = piece.anchors.find((a) => a.id === snapshot.snapCandidateId);
-        if (anchor) {
-          const center = gridToCanvas(anchor.x + 20, anchor.y + 20, this.layout);
-          // Vòng hào quang starlight tỏa ra
-          this.fxGraphics.lineStyle(2, 0xffd166, 0.85);
-          this.fxGraphics.strokeCircle(center.x, center.y, radiusPx + 6);
-          this.fxGraphics.fillStyle(0xffd166, 0.15);
-          this.fxGraphics.fillCircle(center.x, center.y, radiusPx + 4);
+      if (isDraggingThis && snapshot.dragInfo) {
+        // Mảnh đang được kéo:
+        // A. Trong khay vẽ bóng mờ slot (placeholder)
+        if (pState.kind === 'tray') {
+          this.drawTrayPlaceholder(piece, pState, i, radiusPx);
+        }
+        // B. Vẽ mảnh bay bám sát ngón tay hoặc hút vào neo candidate
+        this.drawDraggingPiece(piece, snapshot.dragInfo, radiusPx);
+      } else {
+        // Mảnh không bị kéo: vẽ bình thường
+        if (pState.kind === 'tray') {
+          this.drawTrayPiece(piece, pState, i, isSelected, radiusPx);
+        } else if (pState.kind === 'temporary') {
+          this.drawTemporaryPiece(pState, isSelected, radiusPx);
+        } else if (pState.kind === 'snapped') {
+          this.drawSnappedPiece(piece, pState, isSelected, radiusPx);
         }
       }
     }
 
-    // 4. Nếu đã hoàn thành (Won), vẽ điểm sáng kết nối chiêm tinh tại điểm chạm đỉnh (64, 96)
+    // 3. Nếu đã hoàn thành (Won), vẽ điểm sáng kết nối chiêm tinh tại điểm chạm đỉnh (64, 96)
     if (snapshot.phase === 'won') {
       const contact = gridToCanvas(64, 96, this.layout);
       this.drawSparkleStar(this.fxGraphics, contact.x, contact.y, 14, 0xffffff, 0xffd166);
@@ -166,7 +158,7 @@ export class BoardRenderer {
   }
 
   /**
-   * Vẽ hình thoi Vector Polygon phẳng, thẳng tắp và sắc nét
+   * Vẽ hình thoi Vector Polygon phẳng, thẳng tắp và sắc nét (KHÔNG VẼ VÒNG TRÒN)
    */
   private drawVectorDiamond(
     g: Phaser.GameObjects.Graphics,
@@ -200,11 +192,72 @@ export class BoardRenderer {
     g.lineBetween(cx - r, cy, cx + r, cy);
 
     // Hạt sao lấp lánh tại 4 đỉnh
-    g.fillStyle(strokeColor, strokeAlpha * 0.8);
+    g.fillStyle(strokeColor, strokeAlpha * 0.85);
     g.fillCircle(cx, cy - r, 2);
     g.fillCircle(cx + r, cy, 2);
     g.fillCircle(cx, cy + r, 2);
     g.fillCircle(cx - r, cy, 2);
+  }
+
+  /**
+   * Mảnh đang kéo theo con trỏ chuột (mượt mà 60 FPS)
+   */
+  private drawDraggingPiece(piece: Piece, dragInfo: DragInfo, radiusPx: number): void {
+    let drawX = dragInfo.x;
+    let drawY = dragInfo.y;
+    let isSnappedPreview = false;
+
+    // Nếu đang trong bán kính hút neo (snap candidate)
+    if (dragInfo.snapCandidateId) {
+      const anchor = piece.anchors.find((a) => a.id === dragInfo.snapCandidateId);
+      if (anchor) {
+        // Tự động hút nhẹ về tâm neo (44, 96 hoặc 84, 96)
+        const snapCenter = gridToCanvas(anchor.x + 20, anchor.y + 20, this.layout);
+        drawX = snapCenter.x;
+        drawY = snapCenter.y;
+        isSnappedPreview = true;
+      }
+    }
+
+    // Vẽ hình thoi đang kéo (thẳng tắp, thuần khiết, không vòng tròn!)
+    this.drawVectorDiamond(
+      this.piecesGraphics,
+      drawX,
+      drawY,
+      radiusPx,
+      isSnappedPreview ? 0xfff3b0 : 0xf9c74f, // Vàng sáng khi hút neo, vàng hổ phách khi bay tự do
+      isSnappedPreview ? 0.98 : 0.9,
+      isSnappedPreview ? 0xffd166 : 0xffe082,
+      1.0,
+      isSnappedPreview ? 3.0 : 2.0
+    );
+  }
+
+  /**
+   * Ô khay rỗng khi mảnh đang được nhấc ra kéo
+   */
+  private drawTrayPlaceholder(
+    piece: Piece,
+    pState: PieceState,
+    trayIndex: number,
+    radiusPx: number
+  ): void {
+    const hitbox = pieceHitbox(piece, pState, this.layout, trayIndex);
+    const cx = hitbox.x + hitbox.width / 2;
+    const cy = hitbox.y + hitbox.height / 2;
+
+    // Vẽ hình thoi mờ biểu thị vị trí xuất phát
+    this.drawVectorDiamond(
+      this.piecesGraphics,
+      cx,
+      cy,
+      radiusPx,
+      0x0a1128,
+      0.4,
+      0x3a506b,
+      0.35,
+      1.0
+    );
   }
 
   private drawTrayPiece(
@@ -224,7 +277,7 @@ export class BoardRenderer {
       cy,
       radiusPx,
       0xf9c74f, // Star Gold
-      isSelected ? 0.95 : 0.75,
+      isSelected ? 0.95 : 0.8,
       0xffe082, // Amber Starlight
       isSelected ? 1.0 : 0.8,
       isSelected ? 2.5 : 1.5
@@ -236,12 +289,7 @@ export class BoardRenderer {
     isSelected: boolean,
     radiusPx: number
   ): void {
-    // Tâm world của mảnh = (pState.x + 20, pState.y + 20)
     const center = gridToCanvas(pState.x + 20, pState.y + 20, this.layout);
-
-    // Hào quang mềm xung quanh khi đang kéo
-    this.piecesGraphics.lineStyle(4, 0xf9c74f, 0.25);
-    this.piecesGraphics.strokeCircle(center.x, center.y, radiusPx + 2);
 
     this.drawVectorDiamond(
       this.piecesGraphics,
@@ -252,7 +300,7 @@ export class BoardRenderer {
       0.85,
       0xffe082,
       1.0,
-      2
+      isSelected ? 2.5 : 1.8
     );
   }
 
@@ -281,7 +329,7 @@ export class BoardRenderer {
   }
 
   /**
-   * Ngôi sao 4 cánh lấp lánh biểu thị kết nối chiêm tinh
+   * Ngôi sao 4 cánh lấp lánh biểu thị kết nối chiêm tinh khi hoàn thành
    */
   private drawSparkleStar(
     g: Phaser.GameObjects.Graphics,

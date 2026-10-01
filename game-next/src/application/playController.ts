@@ -7,6 +7,13 @@ import { beginDrag, cancelDrag, finishDrag, updateDrag } from './drag.ts';
 import type { LayoutMetrics } from '../presentation/layout.ts';
 import { pieceHitbox } from '../presentation/layout.ts';
 
+export type DragInfo = {
+  pieceId: string;
+  x: number;
+  y: number;
+  snapCandidateId: string | null;
+};
+
 export type PlayViewSnapshot = {
   levelId: string;
   phase: 'playing' | 'won';
@@ -17,6 +24,7 @@ export type PlayViewSnapshot = {
   selectedPieceId: string | null;
   dragPreviewMask: Uint8Array | null;
   snapCandidateId: string | null;
+  dragInfo: DragInfo | null;
   committedMask: Uint8Array;
 };
 
@@ -28,6 +36,7 @@ export class PlayController {
   private selectedPieceId: string | null = null;
   private dragSession: DragSession | null = null;
   private dragUpdate: DragUpdate | null = null;
+  private dragInfo: DragInfo | null = null;
   private showTarget: boolean;
 
   constructor(
@@ -61,6 +70,7 @@ export class PlayController {
       selectedPieceId: this.selectedPieceId,
       dragPreviewMask: this.dragUpdate ? this.dragUpdate.previewMask : null,
       snapCandidateId: this.dragUpdate ? this.dragUpdate.snapCandidateId : null,
+      dragInfo: this.dragInfo,
       committedMask,
     };
   }
@@ -92,6 +102,12 @@ export class PlayController {
         this.selectedPieceId = piece.id;
         this.dragSession = beginDrag(this.puzzleState, piece, pointerX, pointerY, layout);
         this.dragUpdate = updateDrag(this.dragSession, this.level, pointerX, pointerY, layout);
+        this.dragInfo = {
+          pieceId: piece.id,
+          x: pointerX,
+          y: pointerY,
+          snapCandidateId: this.dragUpdate.snapCandidateId,
+        };
         return true;
       }
     }
@@ -102,6 +118,12 @@ export class PlayController {
   onPointerMove(pointerX: number, pointerY: number, layout: LayoutMetrics): void {
     if (!this.dragSession) return;
     this.dragUpdate = updateDrag(this.dragSession, this.level, pointerX, pointerY, layout);
+    this.dragInfo = {
+      pieceId: this.dragSession.pieceId,
+      x: pointerX,
+      y: pointerY,
+      snapCandidateId: this.dragUpdate.snapCandidateId,
+    };
   }
 
   onPointerUp(pointerX: number, pointerY: number, layout: LayoutMetrics): Transition | null {
@@ -110,6 +132,7 @@ export class PlayController {
     const transition = finishDrag(this.dragSession, this.level, pointerX, pointerY, layout);
     this.dragSession = null;
     this.dragUpdate = null;
+    this.dragInfo = null;
 
     if (transition.accepted) {
       this.puzzleState = transition.state;
@@ -127,6 +150,7 @@ export class PlayController {
     const transition = cancelDrag(this.dragSession, this.level);
     this.dragSession = null;
     this.dragUpdate = null;
+    this.dragInfo = null;
 
     return transition;
   }
