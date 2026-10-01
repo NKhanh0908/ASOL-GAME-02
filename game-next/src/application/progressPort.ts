@@ -22,4 +22,5 @@ export interface ProgressRepository {
   read(): LoadResult;
   complete(id: string): LoadResult;
   setShowTarget(show: boolean): LoadResult;
+  reset(): LoadResult;
 }

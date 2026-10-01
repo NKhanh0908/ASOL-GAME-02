@@ -4,6 +4,20 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-01 - Update UI architecture in Master GDD
+
+- Updated `docs/gdd/master-gdd.md` (v0.2.2) to comprehensively document the Astrological Glass Stele (Tấm Bia Tiên Tri) UI/UX design:
+  - Vertical layout metrics and safe area partitioning on 720x1280 canvas.
+  - Detailed specifications for Main Menu (rotating prophecy seal, mirrored logo), Level Select (constellation map), Gameplay (5 visual interaction states), Pause and Settings modals.
+  - Strict 3 color families (Navy, Ice Glass, Amber Gold), typography standards (Serif Playfair Display + Sans Be Vietnam Pro), vector polygon rendering to eliminate pixel aliasing, and mobile motion budgets.
+- Verification: verified against UI specs and presentation layer implementation; all references aligned.
+
+### 2026-10-01 - Simplify Divination Disc target guidance
+
+- Updated `docs/superpowers/specs/2026-10-01-ui-redesign-divination-disc.md` to remove the target badge and place the optional target silhouette directly on the board.
+- Kept the existing target visibility setting and moved the victory emphasis to the completed shape on the board.
+- Verification: checked all target-badge references and the documentation diff; no runtime code changed.
+
 ### 2026-09-30 - Add separate Mirror Master GDD
 
 - Created `docs/gdd/master-gdd.md` as a five-chapter player-experience design document following the Phase 2 workflow, separate from the MVP specification.

@@ -100,12 +100,12 @@ export class PlayController {
         pointerY <= hitbox.y + hitbox.height
       ) {
         this.selectedPieceId = piece.id;
-        this.dragSession = beginDrag(this.puzzleState, piece, pointerX, pointerY, layout);
+        this.dragSession = beginDrag(this.puzzleState, piece, pointerX, pointerY, layout, originalIndex);
         this.dragUpdate = updateDrag(this.dragSession, this.level, pointerX, pointerY, layout);
         this.dragInfo = {
           pieceId: piece.id,
-          x: pointerX,
-          y: pointerY,
+          x: pointerX - this.dragSession.pointerOffset.x,
+          y: pointerY - this.dragSession.pointerOffset.y,
           snapCandidateId: this.dragUpdate.snapCandidateId,
         };
         return true;
@@ -120,8 +120,8 @@ export class PlayController {
     this.dragUpdate = updateDrag(this.dragSession, this.level, pointerX, pointerY, layout);
     this.dragInfo = {
       pieceId: this.dragSession.pieceId,
-      x: pointerX,
-      y: pointerY,
+      x: pointerX - this.dragSession.pointerOffset.x,
+      y: pointerY - this.dragSession.pointerOffset.y,
       snapCandidateId: this.dragUpdate.snapCandidateId,
     };
   }

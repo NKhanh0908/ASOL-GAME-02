@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { campaignManifest } from '../content/manifest.ts';
+import { resolveNextCampaignLevel } from '../domain/campaign.ts';
 import { createProgressRepository } from '../infrastructure/progressRepository.ts';
 import type { ProgressRepository } from '../application/progressPort.ts';
 import { COLOR_NUMBERS, COLOR_TOKENS, TYPO_TOKENS } from './designTokens.ts';
@@ -61,9 +62,15 @@ export class MenuScene extends Phaser.Scene {
   private buildMainMenu(completedLevels: readonly string[]): void {
     this.uiContainer.removeAll(true);
 
-    // Xác định màn kế tiếp
-    const nextLevel =
-      campaignManifest.find((m) => !completedLevels.includes(m.id)) ?? campaignManifest[0];
+    // Xác định màn kế tiếp an toàn
+    const nextResolution = resolveNextCampaignLevel(campaignManifest, completedLevels);
+    const targetLevel = nextResolution.level;
+    const btnLabelText =
+      nextResolution.type === 'start'
+        ? 'Bắt đầu'
+        : nextResolution.type === 'continue'
+        ? 'Tiếp tục'
+        : 'Chơi lại';
 
     // Nút Cài đặt góc trên phải (x=664, y=52)
     const settingsBtn = this.add
@@ -116,7 +123,7 @@ export class MenuScene extends Phaser.Scene {
     btnBg.fillRoundedRect(btnX - btnWidth / 2, btnY - btnHeight / 2, btnWidth, btnHeight, 20);
 
     const mainBtnText = this.add
-      .text(btnX, btnY - 12, 'Tiếp tục', {
+      .text(btnX, btnY - 12, btnLabelText, {
         fontFamily: TYPO_TOKENS.fontFamily.sans,
         fontSize: '20px',
         color: COLOR_TOKENS.navy.spaceBackground,
@@ -125,7 +132,7 @@ export class MenuScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     const subBtnText = this.add
-      .text(btnX, btnY + 14, `${nextLevel.id} · ${nextLevel.title}`, {
+      .text(btnX, btnY + 14, `${targetLevel.id} · ${targetLevel.title}`, {
         fontFamily: TYPO_TOKENS.fontFamily.sans,
         fontSize: '13px',
         color: '#3E2A00',
@@ -136,8 +143,9 @@ export class MenuScene extends Phaser.Scene {
       .zone(btnX, btnY, btnWidth, btnHeight)
       .setInteractive({ useHandCursor: true });
     btnZone.on('pointerdown', () => {
+      btnZone.disableInteractive();
       this.animateButtonTap(mainBtnText, () => {
-        this.scene.start('PlayScene', { levelId: nextLevel.id });
+        this.scene.start('PlayScene', { levelId: targetLevel.id });
       });
     });
 
@@ -163,6 +171,7 @@ export class MenuScene extends Phaser.Scene {
       .zone(btnX, secBtnY, btnWidth, 56)
       .setInteractive({ useHandCursor: true });
     secBtnZone.on('pointerdown', () => {
+      secBtnZone.disableInteractive();
       this.animateButtonTap(secBtnText, () => {
         if (this.scene.get('LevelSelectScene')) {
           this.scene.start('LevelSelectScene');

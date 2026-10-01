@@ -11,7 +11,7 @@ import { fitsBoard, rotateCells } from '../domain/geometry.ts';
 import { evaluate } from '../domain/mask.ts';
 import { applyCommand, placementsOf } from '../domain/session.ts';
 import type { LayoutMetrics } from '../presentation/layout.ts';
-import { canvasToGrid, gridToCanvas } from '../presentation/layout.ts';
+import { canvasToGrid, gridToCanvas, pieceHitbox } from '../presentation/layout.ts';
 
 export type DragSession = {
   pieceId: string;
@@ -32,29 +32,36 @@ export function beginDrag(
   piece: Piece,
   pointerX: number,
   pointerY: number,
-  layout: LayoutMetrics
+  layout: LayoutMetrics,
+  pieceIndexInTray: number = 0
 ): DragSession {
   const originState = state.pieces[piece.id] ?? { kind: 'tray', turns: 0 };
-  let pieceCanvasX = pointerX;
-  let pieceCanvasY = pointerY;
+  let pieceCenterX = pointerX;
+  let pieceCenterY = pointerY;
+
+  const halfFrame = piece.frameSize / 2;
 
   if (originState.kind === 'snapped') {
     const anchor = piece.anchors.find((a) => a.id === originState.anchorId) ?? piece.anchors[0];
-    const pos = gridToCanvas(anchor.x, anchor.y, layout);
-    pieceCanvasX = pos.x;
-    pieceCanvasY = pos.y;
+    const pos = gridToCanvas(anchor.x + halfFrame, anchor.y + halfFrame, layout);
+    pieceCenterX = pos.x;
+    pieceCenterY = pos.y;
   } else if (originState.kind === 'temporary') {
-    const pos = gridToCanvas(originState.x, originState.y, layout);
-    pieceCanvasX = pos.x;
-    pieceCanvasY = pos.y;
+    const pos = gridToCanvas(originState.x + halfFrame, originState.y + halfFrame, layout);
+    pieceCenterX = pos.x;
+    pieceCenterY = pos.y;
+  } else {
+    const hitbox = pieceHitbox(piece, originState, layout, pieceIndexInTray);
+    pieceCenterX = hitbox.x + hitbox.width / 2;
+    pieceCenterY = hitbox.y + hitbox.height / 2;
   }
 
   return {
     pieceId: piece.id,
     startWorld: { x: pointerX, y: pointerY },
     pointerOffset: {
-      x: pointerX - pieceCanvasX,
-      y: pointerY - pieceCanvasY,
+      x: pointerX - pieceCenterX,
+      y: pointerY - pieceCenterY,
     },
     originState,
     committedState: state,
@@ -78,23 +85,23 @@ export function updateDrag(
     };
   }
 
+  const halfFrame = piece.frameSize / 2;
   const pieceCanvasX = pointerX - drag.pointerOffset.x;
   const pieceCanvasY = pointerY - drag.pointerOffset.y;
   const grid = canvasToGrid(pieceCanvasX, pieceCanvasY, layout);
 
   const rotatedCells = rotateCells(piece.cells, piece.frameSize, drag.originState.turns);
 
-  // Tìm neo gần nhất trong bán kính 8 ô (d <= 64):
-  // Hỗ trợ cả trường hợp grid là tâm (anchor + 20) lẫn grid là góc top-left (anchor)
+  // Tìm neo gần nhất trong bán kính hít: d <= 36 (6 ô, tương ứng 24px canvas)
+  // Hỗ trợ cả trường hợp grid là tâm mảnh (kéo tự do) lẫn grid là góc top-left (unit test)
   let best: Anchor | undefined;
   let bestDistance = Infinity;
   for (const anchor of piece.anchors) {
     const dTopLeft = (anchor.x - grid.x) ** 2 + (anchor.y - grid.y) ** 2;
-    const dCenter = (anchor.x + 20 - grid.x) ** 2 + (anchor.y + 20 - grid.y) ** 2;
+    const dCenter = (anchor.x + halfFrame - grid.x) ** 2 + (anchor.y + halfFrame - grid.y) ** 2;
     const d = Math.min(dTopLeft, dCenter);
 
-    // Bán kính hít tinh tế: 4.5 ô (d^2 <= 20) giúp thao tác tự nhiên, không bị khựng từ xa
-    if (d <= 20 && d < bestDistance && fitsBoard(rotatedCells, anchor.x, anchor.y)) {
+    if (d <= 36 && d < bestDistance && fitsBoard(rotatedCells, anchor.x, anchor.y)) {
       best = anchor;
       bestDistance = d;
     }
@@ -108,13 +115,24 @@ export function updateDrag(
       y: best.y,
       turns: drag.originState.turns,
     };
-  } else if (fitsBoard(rotatedCells, grid.x, grid.y)) {
-    previewPlacement = {
-      pieceId: piece.id,
-      x: grid.x,
-      y: grid.y,
-      turns: drag.originState.turns,
-    };
+  } else {
+    const dCenterToAnchor = Math.min(
+      ...piece.anchors.map((a) => (a.x + halfFrame - grid.x) ** 2 + (a.y + halfFrame - grid.y) ** 2)
+    );
+    const dTopLeftToAnchor = Math.min(
+      ...piece.anchors.map((a) => (a.x - grid.x) ** 2 + (a.y - grid.y) ** 2)
+    );
+    const dropX = dCenterToAnchor <= dTopLeftToAnchor ? Math.round(grid.x - halfFrame) : grid.x;
+    const dropY = dCenterToAnchor <= dTopLeftToAnchor ? Math.round(grid.y - halfFrame) : grid.y;
+
+    if (fitsBoard(rotatedCells, dropX, dropY)) {
+      previewPlacement = {
+        pieceId: piece.id,
+        x: dropX,
+        y: dropY,
+        turns: drag.originState.turns,
+      };
+    }
   }
 
   // Tập hợp placement ngoại trừ piece đang drag
@@ -162,6 +180,7 @@ export function finishDrag(
   }
 
   const piece = level.pieces.find((p) => p.id === drag.pieceId);
+  const halfFrame = piece ? piece.frameSize / 2 : 20;
   const pieceCanvasX = pointerX - drag.pointerOffset.x;
   const pieceCanvasY = pointerY - drag.pointerOffset.y;
   const grid = canvasToGrid(pieceCanvasX, pieceCanvasY, layout);
@@ -169,16 +188,15 @@ export function finishDrag(
   if (piece) {
     const rotatedCells = rotateCells(piece.cells, piece.frameSize, drag.originState.turns);
 
-    // Kiểm tra neo gần nhất
+    // Kiểm tra neo gần nhất trong bán kính hít: d <= 36
     let best: Anchor | undefined;
     let bestDistance = Infinity;
     for (const anchor of piece.anchors) {
       const dTopLeft = (anchor.x - grid.x) ** 2 + (anchor.y - grid.y) ** 2;
-      const dCenter = (anchor.x + 20 - grid.x) ** 2 + (anchor.y + 20 - grid.y) ** 2;
+      const dCenter = (anchor.x + halfFrame - grid.x) ** 2 + (anchor.y + halfFrame - grid.y) ** 2;
       const d = Math.min(dTopLeft, dCenter);
 
-      // Bán kính hít tinh tế: 4.5 ô (d^2 <= 20)
-      if (d <= 20 && d < bestDistance && fitsBoard(rotatedCells, anchor.x, anchor.y)) {
+      if (d <= 36 && d < bestDistance && fitsBoard(rotatedCells, anchor.x, anchor.y)) {
         best = anchor;
         bestDistance = d;
       }
@@ -197,14 +215,14 @@ export function finishDrag(
     // Nếu không gần neo nhưng vẫn thả trong bàn cờ:
     // Căn chỉnh tọa độ top-left để tâm hình thoi trùng với vị trí chuột thả
     const dCenterToAnchor = Math.min(
-      ...piece.anchors.map((a) => (a.x + 20 - grid.x) ** 2 + (a.y + 20 - grid.y) ** 2)
+      ...piece.anchors.map((a) => (a.x + halfFrame - grid.x) ** 2 + (a.y + halfFrame - grid.y) ** 2)
     );
     const dTopLeftToAnchor = Math.min(
       ...piece.anchors.map((a) => (a.x - grid.x) ** 2 + (a.y - grid.y) ** 2)
     );
 
-    const dropX = dCenterToAnchor < dTopLeftToAnchor ? Math.round(grid.x - 20) : grid.x;
-    const dropY = dCenterToAnchor < dTopLeftToAnchor ? Math.round(grid.y - 20) : grid.y;
+    const dropX = dCenterToAnchor <= dTopLeftToAnchor ? Math.round(grid.x - halfFrame) : grid.x;
+    const dropY = dCenterToAnchor <= dTopLeftToAnchor ? Math.round(grid.y - halfFrame) : grid.y;
 
     if (fitsBoard(rotatedCells, dropX, dropY)) {
       return applyCommand(level, drag.committedState, {

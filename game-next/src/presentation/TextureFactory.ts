@@ -3,6 +3,8 @@ import { COLOR_TOKENS } from './designTokens.ts';
 
 export const TEXTURE_KEYS = {
   steleBorder: 'stele_border_9slice',
+  btnCircle112: 'btn_circle_112',
+  btnCircle80: 'btn_circle_80',
   btnCircle64: 'btn_circle_64',
   btnCircle56: 'btn_circle_56',
   btnPrimaryAmber: 'btn_primary_amber',
@@ -10,6 +12,8 @@ export const TEXTURE_KEYS = {
   iconRotate: 'icon_rotate',
   iconGear: 'icon_gear',
   iconMenuBack: 'icon_menu_back',
+  iconEyeOpen: 'icon_eye_open',
+  iconEyeClosed: 'icon_eye_closed',
   iconClose: 'icon_close',
   nodeCompleted: 'node_completed',
   nodeCurrent: 'node_current',
@@ -28,6 +32,138 @@ export class TextureFactory {
   public static generateAll(scene: Phaser.Scene): void {
     const tm = scene.textures;
     if (!tm) return;
+
+    // 0a. Nút tròn chính 112px (Chuẩn 56dp: Đặt lại, Xoay)
+    if (!tm.exists(TEXTURE_KEYS.btnCircle112)) {
+      const canvas = tm.createCanvas(TEXTURE_KEYS.btnCircle112, 112, 112);
+      if (canvas) {
+        const ctx = canvas.context;
+        ctx.fillStyle = COLOR_TOKENS.navy.steleSurface;
+        ctx.beginPath();
+        ctx.arc(56, 56, 52, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Viền kính xanh dày 4px
+        ctx.lineWidth = 4;
+        ctx.strokeStyle = COLOR_TOKENS.iceGlass.primaryBorder;
+        ctx.stroke();
+
+        // Highlight cạnh trên
+        ctx.lineWidth = 2.5;
+        ctx.strokeStyle = COLOR_TOKENS.iceGlass.bevelHighlight;
+        ctx.beginPath();
+        ctx.arc(56, 56, 51, Math.PI * 1.1, Math.PI * 1.9);
+        ctx.stroke();
+
+        // Rãnh bóng tối cạnh dưới
+        ctx.lineWidth = 2.5;
+        ctx.strokeStyle = COLOR_TOKENS.iceGlass.bevelShadow;
+        ctx.beginPath();
+        ctx.arc(56, 56, 51, Math.PI * 0.1, Math.PI * 0.9);
+        ctx.stroke();
+
+        // Chỉ vàng hổ phách mảnh bên trong
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = COLOR_TOKENS.amberGold.gridCoordinate;
+        ctx.beginPath();
+        ctx.arc(56, 56, 44, 0, Math.PI * 2);
+        ctx.stroke();
+
+        canvas.refresh();
+      }
+    }
+
+    // 0b. Nút tròn phụ 80px (Chuẩn 40dp: Menu, Mắt bóng mẫu)
+    if (!tm.exists(TEXTURE_KEYS.btnCircle80)) {
+      const canvas = tm.createCanvas(TEXTURE_KEYS.btnCircle80, 80, 80);
+      if (canvas) {
+        const ctx = canvas.context;
+        ctx.fillStyle = COLOR_TOKENS.navy.steleSurface;
+        ctx.beginPath();
+        ctx.arc(40, 40, 36, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = COLOR_TOKENS.iceGlass.primaryBorder;
+        ctx.stroke();
+
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = COLOR_TOKENS.iceGlass.bevelHighlight;
+        ctx.beginPath();
+        ctx.arc(40, 40, 35, Math.PI * 1.1, Math.PI * 1.9);
+        ctx.stroke();
+
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = COLOR_TOKENS.iceGlass.bevelShadow;
+        ctx.beginPath();
+        ctx.arc(40, 40, 35, Math.PI * 0.1, Math.PI * 0.9);
+        ctx.stroke();
+
+        canvas.refresh();
+      }
+    }
+
+    // 0c. Icon Mắt mở 36x36 (Bóng mẫu: Bật)
+    if (!tm.exists(TEXTURE_KEYS.iconEyeOpen)) {
+      const canvas = tm.createCanvas(TEXTURE_KEYS.iconEyeOpen, 36, 36);
+      if (canvas) {
+        const ctx = canvas.context;
+        ctx.strokeStyle = COLOR_TOKENS.iceGlass.bevelHighlight;
+        ctx.lineWidth = 2.4;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+
+        // Viền mắt quả hạnh
+        ctx.beginPath();
+        ctx.moveTo(5, 18);
+        ctx.quadraticCurveTo(18, 7, 31, 18);
+        ctx.quadraticCurveTo(18, 29, 5, 18);
+        ctx.stroke();
+
+        // Đồng tử mắt vàng rực
+        ctx.fillStyle = COLOR_TOKENS.amberGold.solidPrimary;
+        ctx.beginPath();
+        ctx.arc(18, 18, 4.5, 0, Math.PI * 2);
+        ctx.fill();
+
+        canvas.refresh();
+      }
+    }
+
+    // 0d. Icon Mắt gạch chéo 36x36 (Bóng mẫu: Tắt)
+    if (!tm.exists(TEXTURE_KEYS.iconEyeClosed)) {
+      const canvas = tm.createCanvas(TEXTURE_KEYS.iconEyeClosed, 36, 36);
+      if (canvas) {
+        const ctx = canvas.context;
+        ctx.strokeStyle = COLOR_TOKENS.text.secondary;
+        ctx.lineWidth = 2;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+
+        // Viền mắt mờ
+        ctx.beginPath();
+        ctx.moveTo(5, 18);
+        ctx.quadraticCurveTo(18, 7, 31, 18);
+        ctx.quadraticCurveTo(18, 29, 5, 18);
+        ctx.stroke();
+
+        // Đồng tử mờ
+        ctx.fillStyle = COLOR_TOKENS.text.secondary;
+        ctx.beginPath();
+        ctx.arc(18, 18, 4, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Đường gạch chéo đỏ cam
+        ctx.strokeStyle = COLOR_TOKENS.danger.warningText;
+        ctx.lineWidth = 2.4;
+        ctx.beginPath();
+        ctx.moveTo(7, 29);
+        ctx.lineTo(29, 7);
+        ctx.stroke();
+
+        canvas.refresh();
+      }
+    }
 
     // 1. Nút tròn 64px (Dùng cho Đặt lại và Xoay)
     if (!tm.exists(TEXTURE_KEYS.btnCircle64)) {
@@ -193,85 +329,140 @@ export class TextureFactory {
     const tm = scene.textures;
     if (!tm) return;
 
-    // Node Hoàn thành (Vàng đặc + checkmark)
+    // 1. Node Hoàn thành 72px (Vàng đặc + viền sáng + checkmark sắc nét)
     if (!tm.exists(TEXTURE_KEYS.nodeCompleted)) {
-      const canvas = tm.createCanvas(TEXTURE_KEYS.nodeCompleted, 48, 48);
+      const canvas = tm.createCanvas(TEXTURE_KEYS.nodeCompleted, 72, 72);
       if (canvas) {
         const ctx = canvas.context;
         ctx.fillStyle = COLOR_TOKENS.amberGold.solidPrimary;
         ctx.beginPath();
-        ctx.arc(24, 24, 20, 0, Math.PI * 2);
+        ctx.arc(36, 36, 32, 0, Math.PI * 2);
         ctx.fill();
 
-        ctx.strokeStyle = COLOR_TOKENS.navy.spaceBackground;
-        ctx.lineWidth = 3;
-        ctx.lineCap = 'round';
-        ctx.beginPath();
-        ctx.moveTo(16, 24);
-        ctx.lineTo(22, 30);
-        ctx.lineTo(32, 18);
-        ctx.stroke();
-        canvas.refresh();
-      }
-    }
-
-    // Node Hiện tại (Vòng vàng phát sáng)
-    if (!tm.exists(TEXTURE_KEYS.nodeCurrent)) {
-      const canvas = tm.createCanvas(TEXTURE_KEYS.nodeCurrent, 48, 48);
-      if (canvas) {
-        const ctx = canvas.context;
-        ctx.fillStyle = COLOR_TOKENS.navy.steleSurface;
-        ctx.beginPath();
-        ctx.arc(24, 24, 18, 0, Math.PI * 2);
-        ctx.fill();
-
+        // Viền sáng vàng lấp lánh
         ctx.strokeStyle = COLOR_TOKENS.amberGold.glowHighlight;
         ctx.lineWidth = 3;
         ctx.stroke();
 
-        ctx.fillStyle = COLOR_TOKENS.amberGold.solidPrimary;
+        // Dấu checkmark navy đậm
+        ctx.strokeStyle = COLOR_TOKENS.navy.spaceBackground;
+        ctx.lineWidth = 4.5;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
         ctx.beginPath();
-        ctx.arc(24, 24, 7, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.moveTo(25, 36);
+        ctx.lineTo(33, 44);
+        ctx.lineTo(49, 28);
+        ctx.stroke();
         canvas.refresh();
       }
     }
 
-    // Node Đã mở nhưng chưa chơi (Viền kính xanh trong suốt)
-    if (!tm.exists(TEXTURE_KEYS.nodeUnlocked)) {
-      const canvas = tm.createCanvas(TEXTURE_KEYS.nodeUnlocked, 48, 48);
+    // 2. Node Hiện tại 72px (Vành kính xanh + vòng vàng phát quang + tâm rực)
+    if (!tm.exists(TEXTURE_KEYS.nodeCurrent)) {
+      const canvas = tm.createCanvas(TEXTURE_KEYS.nodeCurrent, 72, 72);
       if (canvas) {
         const ctx = canvas.context;
         ctx.fillStyle = COLOR_TOKENS.navy.steleSurface;
         ctx.beginPath();
-        ctx.arc(24, 24, 18, 0, Math.PI * 2);
+        ctx.arc(36, 36, 32, 0, Math.PI * 2);
         ctx.fill();
 
+        // Vành kính xanh
         ctx.strokeStyle = COLOR_TOKENS.iceGlass.primaryBorder;
-        ctx.lineWidth = 2;
+        ctx.lineWidth = 3.5;
         ctx.stroke();
+
+        // Highlight kính cạnh trên
+        ctx.strokeStyle = COLOR_TOKENS.iceGlass.bevelHighlight;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(36, 36, 31, Math.PI * 1.1, Math.PI * 1.9);
+        ctx.stroke();
+
+        // Vành vàng phát quang bên trong
+        ctx.strokeStyle = COLOR_TOKENS.amberGold.glowHighlight;
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.arc(36, 36, 25, 0, Math.PI * 2);
+        ctx.stroke();
+
+        // Lõi vàng đặc radius 21px để hiển thị số màn rõ nét
+        ctx.fillStyle = COLOR_TOKENS.amberGold.solidPrimary;
+        ctx.beginPath();
+        ctx.arc(36, 36, 21, 0, Math.PI * 2);
+        ctx.fill();
         canvas.refresh();
       }
     }
 
-    // Node Khóa (Mờ tối + chấm khóa)
-    if (!tm.exists(TEXTURE_KEYS.nodeLocked)) {
-      const canvas = tm.createCanvas(TEXTURE_KEYS.nodeLocked, 48, 48);
+    // 3. Node Đã mở chưa chơi 72px (Viền kính xanh trong suốt + bevel)
+    if (!tm.exists(TEXTURE_KEYS.nodeUnlocked)) {
+      const canvas = tm.createCanvas(TEXTURE_KEYS.nodeUnlocked, 72, 72);
       if (canvas) {
         const ctx = canvas.context;
-        ctx.fillStyle = 'rgba(16, 27, 50, 0.4)';
+        ctx.fillStyle = COLOR_TOKENS.navy.steleSurface;
         ctx.beginPath();
-        ctx.arc(24, 24, 16, 0, Math.PI * 2);
+        ctx.arc(36, 36, 32, 0, Math.PI * 2);
         ctx.fill();
 
-        ctx.strokeStyle = 'rgba(157, 175, 199, 0.3)';
-        ctx.lineWidth = 1.5;
+        ctx.strokeStyle = COLOR_TOKENS.iceGlass.primaryBorder;
+        ctx.lineWidth = 3;
         ctx.stroke();
 
+        ctx.strokeStyle = COLOR_TOKENS.iceGlass.bevelHighlight;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(36, 36, 31, Math.PI * 1.1, Math.PI * 1.9);
+        ctx.stroke();
+
+        ctx.fillStyle = COLOR_TOKENS.iceGlass.primaryBorder;
+        ctx.beginPath();
+        ctx.arc(36, 36, 7, 0, Math.PI * 2);
+        ctx.fill();
+        canvas.refresh();
+      }
+    }
+
+    // 4. Node Khóa 72px (Mờ tối + Icon ổ khóa chiêm tinh)
+    if (!tm.exists(TEXTURE_KEYS.nodeLocked)) {
+      const canvas = tm.createCanvas(TEXTURE_KEYS.nodeLocked, 72, 72);
+      if (canvas) {
+        const ctx = canvas.context;
+        ctx.fillStyle = 'rgba(11, 20, 48, 0.7)';
+        ctx.beginPath();
+        ctx.arc(36, 36, 30, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.strokeStyle = 'rgba(157, 175, 199, 0.35)';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // Quai khóa
+        ctx.strokeStyle = COLOR_TOKENS.text.secondary;
+        ctx.lineWidth = 2.5;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.arc(36, 32, 7.5, Math.PI, 0, false);
+        ctx.stroke();
+
+        // Thân khóa
         ctx.fillStyle = COLOR_TOKENS.text.secondary;
         ctx.beginPath();
-        ctx.arc(24, 24, 3, 0, Math.PI * 2);
+        if (ctx.roundRect) {
+          ctx.roundRect(26, 32, 20, 15, 3);
+        } else {
+          ctx.rect(26, 32, 20, 15);
+        }
         ctx.fill();
+
+        // Lỗ khóa
+        ctx.fillStyle = COLOR_TOKENS.navy.spaceBackground;
+        ctx.beginPath();
+        ctx.arc(36, 38, 2.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillRect(35, 38, 2, 4);
+
         canvas.refresh();
       }
     }

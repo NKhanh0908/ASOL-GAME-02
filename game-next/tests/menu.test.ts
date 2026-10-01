@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
 import { campaignManifest } from '../src/content/manifest.ts';
-import { levelAccess } from '../src/domain/campaign.ts';
+import { levelAccess, resolveNextCampaignLevel } from '../src/domain/campaign.ts';
 
 describe('Menu Campaign Navigation and Chapter Grouping', () => {
   test('18 màn được phân bố đều vào 3 chương (mỗi chương 6 màn)', () => {
@@ -33,13 +33,14 @@ describe('Menu Campaign Navigation and Chapter Grouping', () => {
     expect(access2.available).toBe(false); // Vì 1-2 đang ở status 'planned'
   });
 
-  test('xác định đúng màn chơi kế tiếp cần tiếp tục từ danh sách đã hoàn thành', () => {
-    const resolveNextLevel = (completed: readonly string[]) => {
-      const next = campaignManifest.find((m) => !completed.includes(m.id));
-      return next ?? campaignManifest[0];
-    };
+  test('xác định đúng màn chơi kế tiếp an toàn (chỉ chọn màn approved, không trỏ vào màn planned gây crash)', () => {
+    const res0 = resolveNextCampaignLevel(campaignManifest, []);
+    expect(res0.level.id).toBe('1-1');
+    expect(res0.type).toBe('start');
 
-    expect(resolveNextLevel([]).id).toBe('1-1');
-    expect(resolveNextLevel(['1-1']).id).toBe('1-2');
+    // Sau khi đã chơi xong 1-1, vì 1-2 đang ở status 'planned', hệ thống an toàn trỏ về chơi lại 1-1
+    const res1 = resolveNextCampaignLevel(campaignManifest, ['1-1']);
+    expect(res1.level.id).toBe('1-1');
+    expect(res1.type).toBe('replay');
   });
 });

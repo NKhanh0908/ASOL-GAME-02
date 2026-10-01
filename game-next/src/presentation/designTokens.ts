@@ -45,11 +45,13 @@ export const TYPO_TOKENS = {
     sans: "'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
   },
   fontSize: {
-    heroTitle: '40px',
-    sectionHeader: '24px',
-    modalTitle: '20px',
-    bodyPrimary: '15px',
-    caption: '12px',
+    heroTitle: '44px',
+    headerTitle: '36px',
+    sectionHeader: '28px',
+    modalTitle: '28px',
+    bodyPrimary: '28px',
+    buttonLabel: '24px',
+    caption: '24px',
   },
 } as const;
 
@@ -57,6 +59,7 @@ export const LAYOUT_TOKENS = {
   canvas: { width: 720, height: 1280 },
   header: { y: 0, height: 96 },
   topBuffer: { y: 96, height: 88 },
+  targetBadge: { x: 360, y: 148, size: 180, radius: 90 },
   board: { x: 104, y: 184, width: 512, height: 768, cornerRadius: 36, borderWidth: 10 },
   tray: { x: 104, y: 968, width: 512, height: 140, cornerRadius: 20 },
   bottomBar: { y: 1124, height: 92 },
@@ -66,6 +69,9 @@ export const LAYOUT_TOKENS = {
     primaryH: 72,
     circularAction: 64,
     circularNav: 56,
+    circularPrimary: 112,
+    circularSecondary: 80,
+    minTouchArea: 96,
   },
 } as const;
 
@@ -89,6 +95,7 @@ export const DEPTH_TOKENS = {
   steleBoard: 10,
   boardGrid: 15,
   targetSilhouette: 20,
+  targetBadge: 25,
   placedPieces: 30,
   trayArea: 40,
   temporaryPieces: 50,

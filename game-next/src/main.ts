@@ -7,6 +7,18 @@ import { FixtureScene } from './presentation/FixtureScene.ts';
 import { setupAndroidLifecycle } from './infrastructure/lifecycle.ts';
 import './style.css';
 
+window.addEventListener('error', (event) => {
+  console.error('[UNCAUGHT ERROR]:', event.error || event.message);
+});
+
+window.addEventListener('unhandledrejection', (event) => {
+  console.error('[UNHANDLED REJECTION]:', event.reason);
+});
+
+const urlParams = new URLSearchParams(window.location.search);
+const initialScene = urlParams.get('scene');
+const initialLevel = urlParams.get('level') ?? '1-1';
+
 const game = new Phaser.Game({
   type: Phaser.AUTO,
   parent: 'game',
@@ -19,6 +31,18 @@ const game = new Phaser.Game({
   },
   scene: [MenuScene, PlayScene, LevelSelectScene, FixtureScene],
 });
+
+if (initialScene === 'play') {
+  game.events.once('ready', () => {
+    game.scene.stop('MenuScene');
+    game.scene.start('PlayScene', { levelId: initialLevel });
+  });
+} else if (initialScene === 'levelSelect') {
+  game.events.once('ready', () => {
+    game.scene.stop('MenuScene');
+    game.scene.start('LevelSelectScene');
+  });
+}
 
 setupAndroidLifecycle({
   onHardwareBack: () => {

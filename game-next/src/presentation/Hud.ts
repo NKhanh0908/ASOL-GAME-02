@@ -17,8 +17,9 @@ export class Hud {
   private levelId: string;
 
   private titleText: Phaser.GameObjects.Text;
+  private subtitleText: Phaser.GameObjects.Text;
   private targetButton: Phaser.GameObjects.Container;
-  private targetBtnText: Phaser.GameObjects.Text;
+  private targetIcon: Phaser.GameObjects.Image;
 
   private resetContainer: Phaser.GameObjects.Container;
   private rotateContainer: Phaser.GameObjects.Container;
@@ -33,56 +34,68 @@ export class Hud {
     this.callbacks = callbacks;
     this.levelId = levelId;
 
-    // 1. Nút Menu tròn 56px (Góc trên trái: x=56, y=48)
+    const chapterNum = parseInt(this.levelId.split('-')[0], 10) || 1;
+    const chapterRoman = chapterNum === 1 ? 'Chương I' : chapterNum === 2 ? 'Chương II' : 'Chương III';
+    const levelName = title.includes('·') ? title.split('·')[1].trim() : title;
+
+    // 1. Nút Menu tròn 80px (Vùng chạm 96px, Góc trên trái: x=56, y=56)
     const menuBtn = this.scene.add
-      .image(56, 48, TEXTURE_KEYS.btnCircle56)
+      .image(56, 56, TEXTURE_KEYS.btnCircle80)
+      .setSize(96, 96)
       .setInteractive({ useHandCursor: true });
-    const menuIcon = this.scene.add.image(56, 48, TEXTURE_KEYS.iconMenuBack);
+    const menuIcon = this.scene.add.image(56, 56, TEXTURE_KEYS.iconMenuBack).setScale(1.25);
     menuBtn.on('pointerdown', () => {
       this.animateButtonTap(menuBtn, () => this.callbacks.onMenu());
     });
 
-    // 2. Tiêu đề màn chơi (Giữa header: x=360, y=48)
+    // 2. Tiêu đề màn chơi 36px + Dòng phụ Chương 24px (Giữa header: x=360)
     this.titleText = this.scene.add
-      .text(360, 48, title, {
+      .text(360, 36, levelName, {
         fontFamily: TYPO_TOKENS.fontFamily.serif,
-        fontSize: '22px',
-        color: COLOR_TOKENS.amberGold.solidPrimary,
+        fontSize: '36px',
+        color: COLOR_TOKENS.text.primary,
       })
       .setOrigin(0.5);
 
-    // 3. Nút Toggle bóng mục tiêu (Góc trên phải: x=630, y=48)
-    this.targetButton = this.scene.add.container(630, 48);
-    const targetBg = this.scene.add.graphics();
-    targetBg.fillStyle(COLOR_NUMBERS.navyStele, 0.95);
-    targetBg.fillRoundedRect(-60, -20, 120, 40, 20);
-    targetBg.lineStyle(1.5, COLOR_NUMBERS.icePrimary, 0.7);
-    targetBg.strokeRoundedRect(-60, -20, 120, 40, 20);
-
-    this.targetBtnText = this.scene.add
-      .text(0, 0, 'Bóng mẫu: Bật', {
+    this.subtitleText = this.scene.add
+      .text(360, 72, `${chapterRoman} · Màn ${this.levelId}`, {
         fontFamily: TYPO_TOKENS.fontFamily.sans,
-        fontSize: '12px',
-        color: COLOR_TOKENS.iceGlass.bevelHighlight,
+        fontSize: '24px',
+        color: COLOR_TOKENS.text.secondary,
       })
       .setOrigin(0.5);
 
-    this.targetButton.add([targetBg, this.targetBtnText]);
-    this.targetButton.setSize(120, 40);
-    this.targetButton.setInteractive({ useHandCursor: true });
-    this.targetButton.on('pointerdown', () => this.callbacks.onToggleTarget());
+    // 3. Nút tròn Icon mắt bóng mục tiêu 80px (Vùng chạm 96px, Góc trên phải: x=664, y=56)
+    this.targetButton = this.scene.add.container(664, 56);
+    const targetBtnBase = this.scene.add
+      .image(0, 0, TEXTURE_KEYS.btnCircle80)
+      .setSize(96, 96)
+      .setInteractive({ useHandCursor: true });
+    this.targetIcon = this.scene.add.image(0, 0, TEXTURE_KEYS.iconEyeOpen);
+
+    targetBtnBase.on('pointerdown', () => {
+      this.animateButtonTap(targetBtnBase, () => this.callbacks.onToggleTarget());
+    });
+    this.targetButton.add([targetBtnBase, this.targetIcon]);
 
     // 4. Hàng nút dưới cùng (Bottom bar)
-    // A. Nút Đặt lại tròn 64px (x=180, y=1164)
-    this.resetContainer = this.scene.add.container(180, 1164);
+    // Nút 112px canvas (56dp), nhãn 24px canvas
+    // Ở Chương 1–2 chỉ có 1 nút Đặt lại -> căn giữa x=360
+    // Từ Chương 3 có 2 nút -> Đặt lại x=210, Xoay x=510
+    const isChapter3Plus = chapterNum >= 3;
+    const resetX = isChapter3Plus ? 210 : 360;
+
+    // A. Nút Đặt lại tròn 112px
+    this.resetContainer = this.scene.add.container(resetX, 1176);
     const resetBtnBase = this.scene.add
-      .image(0, 0, TEXTURE_KEYS.btnCircle64)
+      .image(0, 0, TEXTURE_KEYS.btnCircle112)
+      .setSize(112, 112)
       .setInteractive({ useHandCursor: true });
-    const resetIcon = this.scene.add.image(0, 0, TEXTURE_KEYS.iconReset);
+    const resetIcon = this.scene.add.image(0, 0, TEXTURE_KEYS.iconReset).setScale(1.4);
     const resetLabel = this.scene.add
-      .text(0, 44, 'Đặt lại', {
+      .text(0, 74, 'Đặt lại', {
         fontFamily: TYPO_TOKENS.fontFamily.sans,
-        fontSize: '13px',
+        fontSize: '24px',
         color: COLOR_TOKENS.text.secondary,
       })
       .setOrigin(0.5);
@@ -92,18 +105,17 @@ export class Hud {
     });
     this.resetContainer.add([resetBtnBase, resetIcon, resetLabel]);
 
-    // B. Nút Xoay tròn 64px (x=540, y=1164)
-    // Ẩn hoàn toàn nếu ở Chương 1 & 2
-    const chapterNum = parseInt(this.levelId.split('-')[0], 10) || 1;
-    this.rotateContainer = this.scene.add.container(540, 1164);
+    // B. Nút Xoay tròn 112px (Chỉ hiện từ Chương 3)
+    this.rotateContainer = this.scene.add.container(510, 1176);
     this.rotateBtnBase = this.scene.add
-      .image(0, 0, TEXTURE_KEYS.btnCircle64)
+      .image(0, 0, TEXTURE_KEYS.btnCircle112)
+      .setSize(112, 112)
       .setInteractive({ useHandCursor: true });
-    this.rotateIcon = this.scene.add.image(0, 0, TEXTURE_KEYS.iconRotate);
+    this.rotateIcon = this.scene.add.image(0, 0, TEXTURE_KEYS.iconRotate).setScale(1.4);
     this.rotateLabel = this.scene.add
-      .text(0, 44, 'Xoay', {
+      .text(0, 74, 'Xoay', {
         fontFamily: TYPO_TOKENS.fontFamily.sans,
-        fontSize: '13px',
+        fontSize: '24px',
         color: COLOR_TOKENS.text.secondary,
       })
       .setOrigin(0.5);
@@ -113,7 +125,7 @@ export class Hud {
     });
     this.rotateContainer.add([this.rotateBtnBase, this.rotateIcon, this.rotateLabel]);
 
-    if (chapterNum < 3) {
+    if (!isChapter3Plus) {
       this.rotateContainer.setVisible(false);
     }
 
@@ -201,7 +213,7 @@ export class Hud {
   }
 
   public update(snapshot: PlayViewSnapshot): void {
-    this.targetBtnText.setText(snapshot.showTarget ? 'Bóng mẫu: Bật' : 'Bóng mẫu: Tắt');
+    this.targetIcon.setTexture(snapshot.showTarget ? TEXTURE_KEYS.iconEyeOpen : TEXTURE_KEYS.iconEyeClosed);
 
     if (snapshot.canRotate) {
       this.rotateContainer.setAlpha(1.0);
@@ -233,6 +245,7 @@ export class Hud {
 
   public destroy(): void {
     this.titleText.destroy();
+    this.subtitleText.destroy();
     this.targetButton.destroy();
     this.resetContainer.destroy();
     this.rotateContainer.destroy();

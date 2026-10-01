@@ -70,8 +70,9 @@ export class BoardRenderer {
     // Rãnh bóng tối ở cạnh dưới (Bevel shadow)
     this.bgGraphics.lineStyle(3, COLOR_NUMBERS.iceShadow, 0.85);
     this.bgGraphics.beginPath();
-    this.bgGraphics.arc(boardBounds.x + 36, boardBounds.y + boardBounds.height - 36, 36, Math.PI * 0.5, Math.PI);
+    this.bgGraphics.arc(boardBounds.x + 36, boardBounds.y + boardBounds.height - 36, 36, Math.PI, Math.PI * 0.5, true);
     this.bgGraphics.lineTo(boardBounds.x + boardBounds.width - 36, boardBounds.y + boardBounds.height);
+    this.bgGraphics.arc(boardBounds.x + boardBounds.width - 36, boardBounds.y + boardBounds.height - 36, 36, Math.PI * 0.5, 0, true);
     this.bgGraphics.strokePath();
 
     // 3. Đường chỉ phụ vàng hổ phách đứt nét bên trong (cách viền 8px)

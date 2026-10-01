@@ -187,5 +187,9 @@ export function createProgressRepository(
 
       return saveToStorage(nextProgress);
     },
+
+    reset(): LoadResult {
+      return saveToStorage(defaultProgress());
+    },
   };
 }

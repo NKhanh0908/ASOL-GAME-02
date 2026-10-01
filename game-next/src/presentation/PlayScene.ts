@@ -13,6 +13,7 @@ import type { LayoutMetrics } from './layout.ts';
 import { TextureFactory } from './TextureFactory.ts';
 
 import { PauseDialog } from './PauseDialog.ts';
+import { TargetBadge } from './TargetBadge.ts';
 
 type StarParticle = {
   x: number;
@@ -28,6 +29,7 @@ export class PlayScene extends Phaser.Scene {
   private mode: 'campaign' | 'harness' = 'campaign';
   private controller!: PlayController;
   private boardRenderer!: BoardRenderer;
+  private targetBadge!: TargetBadge;
   private hud!: Hud;
   private pauseDialog!: PauseDialog;
   private starGraphics!: Phaser.GameObjects.Graphics;
@@ -41,7 +43,17 @@ export class PlayScene extends Phaser.Scene {
   init(data: { levelId?: string; mode?: 'campaign' | 'harness' }): void {
     const levelId = data.levelId ?? '1-1';
     this.mode = data.mode ?? 'campaign';
-    this.level = loadLevel(levelId, this.mode);
+    try {
+      this.level = loadLevel(levelId, this.mode);
+    } catch (err) {
+      console.warn(`[PlayScene] Không thể tải màn ${levelId}, tự động chuyển về màn 1-1 an toàn:`, err);
+      try {
+        this.level = loadLevel('1-1', this.mode);
+      } catch (fallbackErr) {
+        console.error('[PlayScene] Lỗi nghiêm trọng khi tải màn 1-1:', fallbackErr);
+        this.scene.start('MenuScene');
+      }
+    }
   }
 
   create(): void {
@@ -77,6 +89,7 @@ export class PlayScene extends Phaser.Scene {
     );
 
     this.boardRenderer = new BoardRenderer(this, layout);
+    this.targetBadge = new TargetBadge(this, layout, this.level);
 
     this.pauseDialog = new PauseDialog(this, {
       onResume: () => {},

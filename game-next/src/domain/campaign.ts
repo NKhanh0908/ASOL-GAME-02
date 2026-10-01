@@ -53,3 +53,40 @@ export function nextLevelId(
   const next = manifest.find((e) => e.order === current.order + 1);
   return next ? next.id : null;
 }
+
+export type NextLevelResolution = {
+  level: ManifestEntry;
+  type: 'start' | 'continue' | 'replay';
+};
+
+/**
+ * Xác định màn chơi chiến dịch tiếp theo an toàn:
+ * - Ưu tiên màn chưa hoàn thành, đã mở khóa và ĐÃ KIỂM DUYỆT (approved).
+ * - Nếu người chơi đã hoàn thành hết các màn đã duyệt (ví dụ 1-1 xong, 1-2 đang hoàn thiện),
+ *   trả về màn đã duyệt gần nhất để chơi lại, tuyệt đối không trỏ vào màn unavailable gây crash.
+ */
+export function resolveNextCampaignLevel(
+  manifest: readonly ManifestEntry[],
+  completed: readonly string[]
+): NextLevelResolution {
+  const nextPlayable = manifest.find((entry) => {
+    const access = levelAccess(manifest, completed, entry.id);
+    return access.unlocked && access.available && !access.completed;
+  });
+
+  if (nextPlayable) {
+    return {
+      level: nextPlayable,
+      type: completed.length === 0 ? 'start' : 'continue',
+    };
+  }
+
+  const lastApprovedCompleted = [...manifest]
+    .reverse()
+    .find((m) => completed.includes(m.id) && m.status === 'approved');
+
+  return {
+    level: lastApprovedCompleted ?? manifest[0],
+    type: 'replay',
+  };
+}
