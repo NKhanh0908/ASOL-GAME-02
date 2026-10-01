@@ -93,7 +93,8 @@ export function updateDrag(
     const dCenter = (anchor.x + 20 - grid.x) ** 2 + (anchor.y + 20 - grid.y) ** 2;
     const d = Math.min(dTopLeft, dCenter);
 
-    if (d <= 64 && d < bestDistance && fitsBoard(rotatedCells, anchor.x, anchor.y)) {
+    // Bán kính hít tinh tế: 4.5 ô (d^2 <= 20) giúp thao tác tự nhiên, không bị khựng từ xa
+    if (d <= 20 && d < bestDistance && fitsBoard(rotatedCells, anchor.x, anchor.y)) {
       best = anchor;
       bestDistance = d;
     }
@@ -176,7 +177,8 @@ export function finishDrag(
       const dCenter = (anchor.x + 20 - grid.x) ** 2 + (anchor.y + 20 - grid.y) ** 2;
       const d = Math.min(dTopLeft, dCenter);
 
-      if (d <= 64 && d < bestDistance && fitsBoard(rotatedCells, anchor.x, anchor.y)) {
+      // Bán kính hít tinh tế: 4.5 ô (d^2 <= 20)
+      if (d <= 20 && d < bestDistance && fitsBoard(rotatedCells, anchor.x, anchor.y)) {
         best = anchor;
         bestDistance = d;
       }

@@ -156,11 +156,24 @@ export class Hud {
       this.rotateButton.setAlpha(0.3).disableInteractive();
     }
 
-    if (snapshot.phase === 'won') {
-      this.winContainer.setVisible(true);
-    } else {
+    if (snapshot.phase !== 'won') {
       this.winContainer.setVisible(false);
     }
+  }
+
+  showWinModal(): void {
+    if (this.winContainer.visible) return;
+    this.winContainer.setAlpha(0).setVisible(true);
+    this.scene.tweens.add({
+      targets: this.winContainer,
+      alpha: 1,
+      duration: 600,
+      ease: 'Cubic.easeOut',
+    });
+  }
+
+  hideWinModal(): void {
+    this.winContainer.setVisible(false);
   }
 
   destroy(): void {
