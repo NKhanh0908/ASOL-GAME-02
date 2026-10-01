@@ -20,7 +20,7 @@ Tuyệt đối không dùng các màu ngoài 3 họ này (ngoại trừ màu đ�
 | :--- | :--- | :--- |
 | **Họ Navy** | `#080E24` | Nền vũ trụ chính (Gradient chuyển sắc dọc) |
 | | `#101B32` | Mặt đá tấm bia chơi, nền khay chứa mảnh |
-| | `#050A1A` | Nền tối sâu bên trong huy hiệu mục tiêu, vùng phủ modal |
+| | `#050A1A` | Nền tối sâu của không gian vũ trụ, vùng phủ modal |
 | **Họ Kính Xanh Trắng** | `#68B8DC` | Viền kính chính (dày 8–10px, bo góc 36px, hiệu ứng mài vát bevel) |
 | | `#CFEFFF` | Điểm phản quang sáng (Bevel highlight) ở cạnh trên khung kính |
 | | `#3A5E78` | Rãnh bóng tối ở cạnh dưới khung kính (Bevel shadow) |
@@ -54,8 +54,8 @@ Bố cục được chia thành các dải cố định theo chiều dọc, tôn
 | 0 - 96px: Thanh trên (Menu tròn 56px | Tiêu đề | Tạm dừng) |
 |           [Chừa Notch / Camera đục lỗ an toàn]            |
 +-----------------------------------------------------------+ (y = 96)
-| 96 - 200px: HUY HIỆU MỤC TIÊU (Vòng tròn 150px)          |
-|             [Chồng 30% lên đỉnh Tấm Bia]                  |
+| 96 - 184px: KHOẢNG ĐỆM TRÊN BIA                          |
+|             [Vòng cung trang trí không che vùng chơi]     |
 +-----------------------------------------------------------+ (y = 184)
 |                                                           |
 | 184 - 952px: TẤM BIA THIÊN VĂN (Bàn cờ 512 x 768)        |
@@ -88,24 +88,20 @@ Bố cục được chia thành các dải cố định theo chiều dọc, tôn
    - Bốn góc và tâm các cạnh có khắc 4 ký tự rune chiêm tinh nhỏ phát sáng mờ tượng trưng cho 4 phương vị $0^\circ / 90^\circ / 180^\circ / 270^\circ$.
    - Phía sau tấm bia: Hai cụm vòng cung đồng tâm (vòng nét mảnh xanh phát quang + vòng vàng đứt) nhô ra ở hai bên và đỉnh/đáy, tự xoay chậm ngược chiều nhau để tạo chiều sâu huyền bí (không cắt vào mặt bàn).
    - Mặt bàn: Nền `#101B32` có vignette rìa. Lưới ô vàng hổ phách `#D4A359` gom cụm 8 ô (32px), có chấm nhỏ tại giao điểm. Ở giữa bàn có khắc chìm một vòng đồng tâm rất mờ (độ mờ $\le 8\%$).
-2. **Huy hiệu mục tiêu (Target Badge)**:
-   - Vòng tròn 150px nằm ở đỉnh bàn cờ ($y = 148$, tràn lên thanh trên và phủ 30% mép trên tấm bia).
-   - Viền kính xanh vát cạnh kết hợp hoa văn cổ ngữ bao quanh.
-   - Nền tối sâu `#050A1A`, bên trong hiển thị **bóng mục tiêu màu vàng đặc `#FFC857` luôn luôn hiển thị** (bất kể cài đặt "Hình mẫu mờ" trên bàn có bật hay tắt).
-   - Chạm vào huy hiệu: Phóng to nhẹ có hiệu ứng đàn hồi để người chơi nhìn rõ chi tiết.
-3. **Khay mảnh (Piece Tray)**:
+   - Bóng mục tiêu nằm đúng vị trí cần ghép trên mặt bia, dưới các mảnh đang chơi. Dùng họ kính xanh trắng `#68B8DC` với độ mờ nhẹ để phân biệt với mảnh vàng hổ phách; mặc định hiển thị và có thể tắt bằng cài đặt "Hình mẫu mờ trên bàn".
+2. **Khay mảnh (Piece Tray)**:
    - Dải nằm ngang bo tròn mềm mại tại $y = 968..1108$. Chất liệu đá tối hơn bàn cờ.
    - Mỗi mảnh nằm trong một ô lõm viền kính riêng biệt. Mảnh đã đặt lên bàn để lại một bóng mờ nhẹ trong ô khay tương ứng.
    - Kích thước hiển thị mảnh trong khay tương đồng tỉ lệ thực tế, loại bỏ hoàn toàn đường chữ thập xước cũ.
-4. **Hàng nút dưới**:
+3. **Hàng nút dưới**:
    - Nút "Đặt lại": Nút tròn 64px bên trái, viền kính xanh, icon SVG mũi tên tròn xoay lại, chữ nhỏ "Đặt lại" phía dưới. Vùng chạm đạt chuẩn $\ge 64\text{px}$.
    - Nút "Xoay": Nút tròn 64px bên phải. **Ẩn hoàn toàn ở Chương 1 và Chương 2**. Chỉ xuất hiện từ Chương 3; khi chưa chọn mảnh sẽ mờ (opacity 0.3), khi chọn mảnh sẽ sáng màu vàng hổ phách.
-5. **Năm trạng thái hiển thị của Màn chơi**:
+4. **Năm trạng thái hiển thị của Màn chơi**:
    - **Trạng thái 1 (Đang kéo - Dragging)**: Mảnh nhấc lên phóng to nhẹ ($1.06\times$) kèm bóng đổ mờ rộng xuống mặt bàn. Xuất hiện vòng hào quang sáng nhẹ quanh các neo hợp lệ gần đó.
    - **Trạng thái 2 (Đã snap - Snapped)**: Mảnh hút vào neo, viền sáng `#FFE8A6` lóe nhẹ 120ms rồi cố định với màu vàng ấm `#FFC857`, đổ bóng mềm sát mặt đá.
    - **Trạng thái 3 (Vùng giao 2 lớp - Overlap Inversion)**: Vùng giao giữa 2 mảnh chuyển về màu mặt đá `#101B32` (triệt tiêu quang học) với thời gian chuyển tiếp 150ms. Rìa trong của vùng khuyết sáng nhẹ màu vàng nhạt, giúp người chơi hiểu ngay đây là cơ chế trừ hình có chủ đích.
    - **Trạng thái 4 (Mảnh tạm - Temporary Placement)**: Mảnh thả ngoài neo hiển thị viền nét đứt, độ mờ 60%, kèm nhãn chỉ dẫn nhỏ thân thiện: "Chưa đặt — chưa tính vào hình".
-   - **Trạng thái 5 (Hoàn thành - Victory Celebration)**: Viền tấm bia chạy một vệt sáng xung quanh, các vòng thiên văn phía sau bừng sáng và tăng tốc độ xoay; huy hiệu mục tiêu phát quang rực rỡ; hiển thị tên biểu tượng chiêm tinh (ví dụ: "Song Tinh") kèm một câu ngạn ngữ huyền bí ngắn. Nút "Màn tiếp theo" (khối vàng đặc) nổi bật.
+   - **Trạng thái 5 (Hoàn thành - Victory Celebration)**: Viền tấm bia chạy một vệt sáng xung quanh, các vòng thiên văn phía sau bừng sáng và tăng tốc độ xoay; hình ghép hoàn chỉnh trên bia phát quang nhẹ; hiển thị tên biểu tượng chiêm tinh (ví dụ: "Song Tinh") kèm một câu ngạn ngữ huyền bí ngắn. Nút "Màn tiếp theo" (khối vàng đặc) nổi bật.
 
 ---
 
@@ -144,7 +140,7 @@ Bố cục được chia thành các dải cố định theo chiều dọc, tôn
    - Nút đóng "X" tròn ở góc trên phải; cho phép chạm ra ngoài để đóng hộp thoại.
 2. **Nội dung Cài đặt**:
    - Công tắc chuyển đổi (Switch Toggle): Dạng thanh trượt bo tròn thực thụ, chạm vào toàn bộ hàng để bật/tắt với animation trượt mượt mà 150ms.
-   - Nhãn rõ ràng: "Hình mẫu mờ trên bàn" (chỉ điều khiển bóng mờ trên bàn cờ, không ảnh hưởng huy hiệu mục tiêu).
+   - Nhãn rõ ràng: "Hình mẫu mờ trên bàn" (mặc định bật; chỉ điều khiển bóng mục tiêu trên tấm bia, không ảnh hưởng hình ghép hay điều kiện thắng).
    - "Rung phản hồi": Tự động ẩn nếu thiết bị không hỗ trợ.
    - Tùy chọn "Giảm chuyển động": Tắt các vòng xoay nền và giảm hạt bụi sao cho người chơi nhạy cảm hoặc máy yếu.
    - **Tách biệt nút Xóa dữ liệu**: Nút "Xóa toàn bộ tiến trình" được tách xuống dòng cuối cùng, hiển thị dạng chữ cảnh báo màu cam đỏ nhạt. Khi bấm vào bắt buộc phải qua một hộp thoại xác nhận 2 nút ("Hủy" và "Xác nhận xóa") để tránh bấm nhầm với nút "Đặt lại màn".
