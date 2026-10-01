@@ -11,9 +11,10 @@ export class TargetBadge {
   private isEnlarged = false;
 
   constructor(scene: Phaser.Scene, layout: LayoutMetrics, level: Level) {
-    // Tọa độ tâm huy hiệu: x=360, y=168 (chồng ~41% lên mép trên của tấm bia tại y=184)
+    // Tâm huy hiệu: chồng một phần lên mép trên bàn (y=200) như mockup, nhưng
+    // đỉnh huy hiệu phải nằm dưới phụ đề chương (y≈86) — trước đây đè lên nó.
     const cx = 360;
-    const cy = 168;
+    const cy = 178;
 
     this.container = scene.add.container(cx, cy).setDepth(DEPTH_TOKENS.hudControls + 5);
     this.badgeGraphics = scene.add.graphics();
@@ -23,10 +24,10 @@ export class TargetBadge {
     this.drawBadgeBase();
     this.drawTargetSilhouette(level);
 
-    // Vùng chạm hình tròn đường kính 180px (bán kính 90px)
-    this.container.setSize(180, 180);
+    // Vùng chạm hình tròn bán kính 76px
+    this.container.setSize(152, 152);
     this.container.setInteractive(
-      new Phaser.Geom.Circle(0, 0, 90),
+      new Phaser.Geom.Circle(0, 0, 76),
       Phaser.Geom.Circle.Contains
     );
 
@@ -40,15 +41,20 @@ export class TargetBadge {
     const g = this.badgeGraphics;
     g.clear();
 
-    const r = 90;
+    const r = 76;
 
     // 1. Quầng sáng mềm bên ngoài
     g.lineStyle(4, COLOR_NUMBERS.icePrimary, 0.2);
     g.strokeCircle(0, 0, r + 2);
 
-    // 2. Nền tròn vũ trụ tối sâu #050A1A
-    g.fillStyle(COLOR_NUMBERS.navyBackdrop, 0.98);
+    // 2. Lòng huy hiệu xanh như mặt bàn, sáng dần lên phía trên-trái — mockup
+    // dùng kính xanh, không phải hố đen.
+    g.fillStyle(COLOR_NUMBERS.buttonFillBottom, 1);
     g.fillCircle(0, 0, r);
+    g.fillStyle(COLOR_NUMBERS.buttonFillTop, 0.55);
+    g.fillCircle(-r * 0.15, -r * 0.2, r * 0.72);
+    g.fillStyle(COLOR_NUMBERS.boardSurfaceTop, 0.5);
+    g.fillCircle(0, 0, r * 0.86);
 
     // 3. Viền kính xanh 6px có bevel
     g.lineStyle(6, COLOR_NUMBERS.icePrimary, 0.95);
@@ -67,7 +73,7 @@ export class TargetBadge {
     g.strokePath();
 
     // 4. Vòng vàng đứt nét bên trong (bán kính 75px)
-    const ringR = 75;
+    const ringR = 63;
     g.lineStyle(1.5, COLOR_NUMBERS.gridModule, 0.55);
     const numDashes = 28;
     for (let i = 0; i < numDashes; i++) {
@@ -134,18 +140,23 @@ export class TargetBadge {
     const centerX = (minX + maxX) / 2;
     const centerY = (minY + maxY) / 2;
 
-    // Scale để hình mục tiêu chiếm khoảng 100x60px ở giữa huy hiệu
-    const scale = Math.min(106 / w, 76 / h);
+    // Hình mục tiêu phải nằm gọn trong vòng vàng (bán kính 63px)
+    const scale = Math.min(92 / w, 64 / h);
 
-    // Với level 1-1: hai hình thoi tiếp giáp đỉnh
-    // Vẽ trực tiếp vector diamond sắc nét
-    if (level.id === '1-1') {
-      const diamondRadius = 20 * scale; // ~26.5px
-      const leftCenter = (44 - centerX) * scale;
-      const rightCenter = (84 - centerX) * scale;
-
-      this.drawSolidDiamond(g, leftCenter, 0, diamondRadius);
-      this.drawSolidDiamond(g, rightCenter, 0, diamondRadius);
+    // Màn toàn hình thoi: vẽ vector sắc nét thay vì tô từng ô của mask. Tâm
+    // và bán kính suy ra từ neo A của từng mảnh — viết cứng thì sai ngay khi
+    // frameSize đổi (đã xảy ra khi mảnh đổi từ 40 sang 48 ô).
+    if (level.pieces.every((p) => p.cells.length > 0) && level.id === '1-1') {
+      for (const piece of level.pieces) {
+        const anchor = piece.anchors.find((a) => a.id === 'A') ?? piece.anchors[0];
+        const half = piece.frameSize / 2;
+        this.drawSolidDiamond(
+          g,
+          (anchor.x + half - centerX) * scale,
+          (anchor.y + half - centerY) * scale,
+          half * scale
+        );
+      }
       return;
     }
 

@@ -93,24 +93,27 @@ export class Hud {
     });
     this.targetButton.add([targetBtnBase, this.targetIcon]);
 
-    // 4. Hàng nút dưới cùng (Bottom bar)
-    // Nút 112px canvas (56dp), nhãn 24px canvas
-    // Ở Chương 1–2 chỉ có 1 nút Đặt lại -> căn giữa x=360
-    // Từ Chương 3 có 2 nút -> Đặt lại x=210, Xoay x=510
+    // 4. Hàng nút dưới cùng: Đặt lại ở góc trái, Xoay ở góc phải (từ Chương
+    // 3), thanh đếm mảnh ở giữa — theo mockup. Trước đây nút Đặt lại nằm
+    // giữa màn, ngay chỗ khay và thanh đếm, nên bị cả hai che.
     const isChapter3Plus = chapterNum >= 3;
-    const resetX = isChapter3Plus ? 210 : 360;
+    const bottomRowY = LAYOUT_TOKENS.bottomBar.y + 44;
+    const buttonScale = 0.8; // 112px -> ~90px, vẫn trên chuẩn chạm tối thiểu
 
-    // A. Nút Đặt lại tròn 112px
-    this.resetContainer = this.scene.add.container(resetX, 1176);
+    // A. Nút Đặt lại
+    this.resetContainer = this.scene.add
+      .container(84, bottomRowY)
+      .setDepth(DEPTH_TOKENS.hudControls);
     const resetBtnBase = this.scene.add
       .image(0, 0, TEXTURE_KEYS.btnCircle112)
+      .setScale(buttonScale)
       .setSize(112, 112)
       .setInteractive({ useHandCursor: true });
-    const resetIcon = this.scene.add.image(0, 0, TEXTURE_KEYS.iconReset).setScale(1.4);
+    const resetIcon = this.scene.add.image(0, 0, TEXTURE_KEYS.iconReset).setScale(1.2);
     const resetLabel = this.scene.add
-      .text(0, 74, 'Đặt lại', {
+      .text(0, 58, 'Đặt lại', {
         fontFamily: TYPO_TOKENS.fontFamily.sans,
-        fontSize: '24px',
+        fontSize: '22px',
         color: COLOR_TOKENS.text.secondary,
       })
       .setOrigin(0.5);
@@ -121,16 +124,19 @@ export class Hud {
     this.resetContainer.add([resetBtnBase, resetIcon, resetLabel]);
 
     // B. Nút Xoay tròn 112px (Chỉ hiện từ Chương 3)
-    this.rotateContainer = this.scene.add.container(510, 1176);
+    this.rotateContainer = this.scene.add
+      .container(636, bottomRowY)
+      .setDepth(DEPTH_TOKENS.hudControls);
     this.rotateBtnBase = this.scene.add
       .image(0, 0, TEXTURE_KEYS.btnCircle112)
+      .setScale(buttonScale)
       .setSize(112, 112)
       .setInteractive({ useHandCursor: true });
-    this.rotateIcon = this.scene.add.image(0, 0, TEXTURE_KEYS.iconRotate).setScale(1.4);
+    this.rotateIcon = this.scene.add.image(0, 0, TEXTURE_KEYS.iconRotate).setScale(1.2);
     this.rotateLabel = this.scene.add
-      .text(0, 74, 'Xoay', {
+      .text(0, 58, 'Xoay', {
         fontFamily: TYPO_TOKENS.fontFamily.sans,
-        fontSize: '24px',
+        fontSize: '22px',
         color: COLOR_TOKENS.text.secondary,
       })
       .setOrigin(0.5);
@@ -146,7 +152,8 @@ export class Hud {
 
     // 5. Thanh đếm mảnh ở đáy: viên thuốc bo tròn, icon thoi đặc cho mảnh đã
     // khớp và thoi nét đứt cho mảnh còn lại.
-    const barY = LAYOUT_TOKENS.bottomBar.y + LAYOUT_TOKENS.bottomBar.height / 2;
+    // Cùng hàng với nút Đặt lại để đáy màn hình đọc thành một dải
+    const barY = LAYOUT_TOKENS.bottomBar.y + 44;
     this.matchBar = this.scene.add.container(360, barY).setDepth(DEPTH_TOKENS.hudControls);
     this.matchBarGraphics = this.scene.add.graphics();
     this.matchBarText = this.scene.add

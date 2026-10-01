@@ -90,8 +90,8 @@ export const LAYOUT_TOKENS = {
   header: { y: 0, height: 96 },
   targetBadge: { x: 360, y: 158, size: 188, radius: 94 },
   board: { x: 40, y: 200, width: 640, height: 800, cornerRadius: 30, borderWidth: 6 },
-  tray: { x: 40, y: 1032, width: 640, height: 160, cornerRadius: 24 },
-  bottomBar: { y: 1200, height: 80 },
+  tray: { x: 40, y: 1016, width: 640, height: 136, cornerRadius: 24 },
+  bottomBar: { y: 1164, height: 116 },
   buttonSizes: {
     primaryW: 360,
     primaryH: 72,

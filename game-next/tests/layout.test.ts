@@ -26,9 +26,9 @@ describe('Layout Metrics Specification', () => {
   });
 
   test('khay, header và thanh dưới theo bố cục dọc mới', () => {
-    expect(layout.trayBounds).toEqual({ x: 40, y: 1032, width: 640, height: 160 });
+    expect(layout.trayBounds).toEqual({ x: 40, y: 1016, width: 640, height: 136 });
     expect(layout.headerBounds).toEqual({ y: 0, height: 96 });
-    expect(layout.bottomBarBounds).toEqual({ y: 1200, height: 80 });
+    expect(layout.bottomBarBounds).toEqual({ y: 1164, height: 116 });
   });
 
   test('chuyển đổi grid sang canvas tính đúng gốc (40, 200)', () => {

@@ -74,9 +74,9 @@ describe('Design Tokens Validation', () => {
       cornerRadius: 30,
       borderWidth: 6,
     });
-    expect(LAYOUT_TOKENS.tray).toEqual({ x: 40, y: 1032, width: 640, height: 160, cornerRadius: 24 });
+    expect(LAYOUT_TOKENS.tray).toEqual({ x: 40, y: 1016, width: 640, height: 136, cornerRadius: 24 });
     expect(LAYOUT_TOKENS.header).toEqual({ y: 0, height: 96 });
-    expect(LAYOUT_TOKENS.bottomBar).toEqual({ y: 1200, height: 80 });
+    expect(LAYOUT_TOKENS.bottomBar).toEqual({ y: 1164, height: 116 });
     expect(LAYOUT_TOKENS.targetBadge).toEqual({ x: 360, y: 158, size: 188, radius: 94 });
 
     const used =
@@ -84,7 +84,7 @@ describe('Design Tokens Validation', () => {
       LAYOUT_TOKENS.board.height +
       LAYOUT_TOKENS.tray.height +
       LAYOUT_TOKENS.bottomBar.height;
-    expect(used).toBe(1136);
+    expect(used).toBe(1148);
     expect(used).toBeLessThanOrEqual(LAYOUT_TOKENS.canvas.height);
   });
 

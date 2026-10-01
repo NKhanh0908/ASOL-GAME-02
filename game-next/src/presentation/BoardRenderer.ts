@@ -25,6 +25,8 @@ export class BoardRenderer {
   private fxGraphics: Phaser.GameObjects.Graphics;
   private gridTexture: Phaser.GameObjects.RenderTexture | null = null;
   private boardFrame: Phaser.GameObjects.Image | null = null;
+  private boardSurface: Phaser.GameObjects.Image | null = null;
+  private trayWells: Phaser.GameObjects.Image[] = [];
   private trayFrame: Phaser.GameObjects.Image | null = null;
 
   private ring1Angle = 0;
@@ -56,24 +58,14 @@ export class BoardRenderer {
 
     const radius = LAYOUT_TOKENS.board.cornerRadius;
 
-    // 1. Mặt bàn: gradient hai chặng, xấp xỉ bằng hai lớp vì Graphics không
-    // có gradient fill.
-    this.bgGraphics.fillStyle(COLOR_NUMBERS.boardSurfaceTop, 1);
-    this.bgGraphics.fillRoundedRect(
-      boardBounds.x,
-      boardBounds.y,
-      boardBounds.width,
-      boardBounds.height,
-      radius
-    );
-    this.bgGraphics.fillStyle(COLOR_NUMBERS.boardSurfaceBottom, 0.6);
-    this.bgGraphics.fillRoundedRect(
-      boardBounds.x,
-      boardBounds.y + boardBounds.height / 2,
-      boardBounds.width,
-      boardBounds.height / 2,
-      radius
-    );
+    // 1. Mặt bàn: texture gradient thật. Trước đây chồng hai lớp màu phẳng
+    // nên lộ một vạch cứng ngang giữa bàn.
+    if (!this.boardSurface) {
+      this.boardSurface = this.scene.add
+        .image(boardBounds.x, boardBounds.y, TEXTURE_KEYS.boardSurface)
+        .setOrigin(0, 0)
+        .setDepth(DEPTH_TOKENS.steleBoard);
+    }
 
     // 2. Khung kính: một texture dùng chung cho bàn và khay, thay cho khối
     // bevel thủ công dựng bằng arc trước đây.
@@ -96,23 +88,22 @@ export class BoardRenderer {
     // 5. Khắc 4 ký tự rune chiêm tinh tại 4 phương vị (0°, 90°, 180°, 270°)
     this.drawCardinalRunes(boardBounds.x + boardBounds.width / 2, boardBounds.y + boardBounds.height / 2);
 
-    // 6. Khay chứa mảnh bên dưới (y=968..1108)
-    this.bgGraphics.fillStyle(COLOR_NUMBERS.navyBackdrop, 0.95);
-    this.bgGraphics.fillRoundedRect(
-      trayBounds.x,
-      trayBounds.y,
-      trayBounds.width,
-      trayBounds.height,
-      20
-    );
-    this.bgGraphics.lineStyle(2, COLOR_NUMBERS.icePrimary, 0.5);
-    this.bgGraphics.strokeRoundedRect(
-      trayBounds.x,
-      trayBounds.y,
-      trayBounds.width,
-      trayBounds.height,
-      20
-    );
+    // 6. Khay: hai ô lõm trong suốt, mỗi ô chứa một mảnh. Trước đây là một
+    // hộp đen đặc che luôn cả nút Đặt lại phía sau.
+    if (this.trayWells.length === 0) {
+      const wellW = trayBounds.width / 2 - 24;
+      for (let i = 0; i < 2; i++) {
+        const x = trayBounds.x + 16 + i * (trayBounds.width / 2 - 8);
+        this.trayWells.push(
+          this.scene.add
+            .image(x, trayBounds.y + 14, TEXTURE_KEYS.trayWell)
+            .setOrigin(0, 0)
+            .setDisplaySize(wellW, trayBounds.height - 28)
+            // Dưới lớp mảnh (placedPieces), nếu không ô lõm phủ lên mảnh
+            .setDepth(DEPTH_TOKENS.steleBoard)
+        );
+      }
+    }
   }
 
   /**

@@ -5,6 +5,8 @@ export const TEXTURE_KEYS = {
   steleBorder: 'stele_border_9slice',
   glassFrameBoard: 'glass_frame_board',
   glassFrameTray: 'glass_frame_tray',
+  boardSurface: 'board_surface',
+  trayWell: 'tray_well',
   btnCircle112: 'btn_circle_112',
   btnCircle80: 'btn_circle_80',
   btnCircle64: 'btn_circle_64',
@@ -43,6 +45,31 @@ export class TextureFactory {
       LAYOUT_TOKENS.board.height,
       LAYOUT_TOKENS.board.cornerRadius
     );
+    // Mặt bàn: gradient xanh đậm kèm quầng sáng nhẹ ở giữa, như mockup
+    TextureFactory.makeSurface(scene, TEXTURE_KEYS.boardSurface, {
+      width: LAYOUT_TOKENS.board.width,
+      height: LAYOUT_TOKENS.board.height,
+      radius: LAYOUT_TOKENS.board.cornerRadius,
+      stops: [
+        [0, COLOR_TOKENS.board.surfaceTop],
+        [1, COLOR_TOKENS.board.surfaceBottom],
+      ],
+      innerGlow: { color: COLOR_TOKENS.board.innerGlow, alpha: 0.3 },
+    });
+
+    // Ô chứa mảnh trong khay: lõm xuống, xanh đậm trong suốt — không phải
+    // hộp đen. Khay có hai ô nên mỗi ô rộng nửa khay trừ khe giữa.
+    TextureFactory.makeSurface(scene, TEXTURE_KEYS.trayWell, {
+      width: LAYOUT_TOKENS.tray.width / 2 - 24,
+      height: LAYOUT_TOKENS.tray.height - 28,
+      radius: 22,
+      stops: [
+        [0, 'rgba(10, 20, 70, 0.70)'],
+        [1, 'rgba(25, 40, 110, 0.55)'],
+      ],
+      innerShadow: true,
+    });
+
     TextureFactory.makeGlassFrame(
       scene,
       TEXTURE_KEYS.glassFrameTray,
@@ -541,6 +568,71 @@ export class TextureFactory {
     ctx.fill();
     ctx.globalCompositeOperation = 'source-over';
 
+    canvas.refresh();
+    return key;
+  }
+
+  /**
+   * Bề mặt bo góc có gradient dọc thật, tuỳ chọn quầng sáng giữa và bóng lõm
+   * ở mép trên. Dùng cho mặt bàn và ô chứa mảnh trong khay.
+   */
+  public static makeSurface(
+    scene: Phaser.Scene,
+    key: string,
+    opts: {
+      width: number;
+      height: number;
+      radius: number;
+      stops: Array<[number, string]>;
+      innerGlow?: { color: string; alpha: number };
+      innerShadow?: boolean;
+    }
+  ): string {
+    const tm = scene.textures;
+    if (!tm || tm.exists(key)) return key;
+    const { width, height, radius } = opts;
+    const canvas = tm.createCanvas(key, width, height);
+    if (!canvas) return key;
+    const ctx = canvas.context;
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.roundRect(0, 0, width, height, radius);
+    ctx.clip();
+
+    const fill = ctx.createLinearGradient(0, 0, 0, height);
+    for (const [offset, color] of opts.stops) fill.addColorStop(offset, color);
+    ctx.fillStyle = fill;
+    ctx.fillRect(0, 0, width, height);
+
+    if (opts.innerGlow) {
+      const { color, alpha } = opts.innerGlow;
+      const r = parseInt(color.slice(1, 3), 16);
+      const g = parseInt(color.slice(3, 5), 16);
+      const b = parseInt(color.slice(5, 7), 16);
+      const glow = ctx.createRadialGradient(
+        width / 2, height / 2, 0,
+        width / 2, height / 2, Math.max(width, height) * 0.55
+      );
+      glow.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${alpha})`);
+      glow.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
+      ctx.fillStyle = glow;
+      ctx.fillRect(0, 0, width, height);
+    }
+
+    if (opts.innerShadow) {
+      // Bóng đổ vào trong ở mép trên tạo cảm giác ô bị lõm xuống
+      const shade = ctx.createLinearGradient(0, 0, 0, 18);
+      shade.addColorStop(0, 'rgba(0, 0, 20, 0.6)');
+      shade.addColorStop(1, 'rgba(0, 0, 20, 0)');
+      ctx.fillStyle = shade;
+      ctx.fillRect(0, 0, width, 18);
+      // Viền sáng mảnh ở mép dưới
+      ctx.fillStyle = 'rgba(160, 220, 255, 0.25)';
+      ctx.fillRect(0, height - 1, width, 1);
+    }
+
+    ctx.restore();
     canvas.refresh();
     return key;
   }
