@@ -5,6 +5,7 @@ import { createProgressRepository } from '../infrastructure/progressRepository.t
 import type { ProgressRepository } from '../application/progressPort.ts';
 import { COLOR_NUMBERS, COLOR_TOKENS, TYPO_TOKENS } from './designTokens.ts';
 import { TEXTURE_KEYS, TextureFactory } from './TextureFactory.ts';
+import { SkyBackdrop } from './SkyBackdrop.ts';
 
 type NodeInfo = {
   id: string;
@@ -16,23 +17,13 @@ type NodeInfo = {
   available: boolean;
 };
 
-type StarParticle = {
-  x: number;
-  y: number;
-  r: number;
-  baseAlpha: number;
-  speed: number;
-  phase: number;
-};
-
 export class LevelSelectScene extends Phaser.Scene {
   private progressRepo!: ProgressRepository;
   private mapContainer!: Phaser.GameObjects.Container;
   private headerContainer!: Phaser.GameObjects.Container;
   private toastContainer?: Phaser.GameObjects.Container;
 
-  private starGraphics!: Phaser.GameObjects.Graphics;
-  private stars: StarParticle[] = [];
+  private sky!: SkyBackdrop;
 
   private isDragging = false;
   private dragStartY = 0;
@@ -50,19 +41,8 @@ export class LevelSelectScene extends Phaser.Scene {
     this.progressRepo = createProgressRepository(localStorage, campaignManifest, 'oracle-v1');
     const { progress } = this.progressRepo.read();
 
-    // 1. Nền sao vũ trụ lấp lánh (Đồng nhất với PlayScene)
-    this.starGraphics = this.add.graphics().setDepth(1);
-    this.stars = [];
-    for (let i = 0; i < 40; i++) {
-      this.stars.push({
-        x: Phaser.Math.Between(10, 710),
-        y: Phaser.Math.Between(10, 1270),
-        r: Phaser.Math.FloatBetween(0.8, 2.4),
-        baseAlpha: Phaser.Math.FloatBetween(0.15, 0.65),
-        speed: Phaser.Math.FloatBetween(0.08, 0.25),
-        phase: Phaser.Math.FloatBetween(0, Math.PI * 2),
-      });
-    }
+    // 1. Nền trời dùng chung; màn chọn màn cho sao trôi xuống
+    this.sky = new SkyBackdrop(this, { seed: 3, drift: true });
 
     // 2. Container bản đồ chòm sao có thể cuộn dọc
     this.mapContainer = this.add.container(0, 0).setDepth(10);
@@ -90,17 +70,7 @@ export class LevelSelectScene extends Phaser.Scene {
   }
 
   update(_time: number, delta: number): void {
-    // Chuyển động lấp lánh sao nền
-    this.starGraphics.clear();
-    for (const star of this.stars) {
-      star.y += star.speed * (delta / 16);
-      star.phase += 0.02;
-      if (star.y > 1280) star.y = 0;
-
-      const alpha = star.baseAlpha + Math.sin(star.phase) * 0.2;
-      this.starGraphics.fillStyle(0xffffff, Phaser.Math.Clamp(alpha, 0.1, 0.85));
-      this.starGraphics.fillCircle(star.x, star.y, star.r);
-    }
+    this.sky.update(delta);
   }
 
   private buildHeader(completedCount: number, totalCount: number): void {

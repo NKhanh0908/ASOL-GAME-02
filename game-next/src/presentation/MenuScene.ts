@@ -5,24 +5,15 @@ import { createProgressRepository } from '../infrastructure/progressRepository.t
 import type { ProgressRepository } from '../application/progressPort.ts';
 import { COLOR_NUMBERS, COLOR_TOKENS, TYPO_TOKENS } from './designTokens.ts';
 import { TEXTURE_KEYS, TextureFactory } from './TextureFactory.ts';
+import { SkyBackdrop } from './SkyBackdrop.ts';
 import { SettingsDialog } from './SettingsDialog.ts';
-
-type StarParticle = {
-  x: number;
-  y: number;
-  r: number;
-  baseAlpha: number;
-  speed: number;
-  phase: number;
-};
 
 export class MenuScene extends Phaser.Scene {
   private progressRepo!: ProgressRepository;
-  private starGraphics!: Phaser.GameObjects.Graphics;
+  private sky!: SkyBackdrop;
   private emblemGraphics!: Phaser.GameObjects.Graphics;
   private uiContainer!: Phaser.GameObjects.Container;
 
-  private stars: StarParticle[] = [];
   private ringAngle1 = 0;
   private ringAngle2 = 0;
   private pulseTime = 0;
@@ -37,19 +28,8 @@ export class MenuScene extends Phaser.Scene {
     this.progressRepo = createProgressRepository(localStorage, campaignManifest, 'oracle-v1');
     const { progress } = this.progressRepo.read();
 
-    // 1. Tạo bầu trời sao li ti (Cosmic Starfield)
-    this.starGraphics = this.add.graphics();
-    this.stars = [];
-    for (let i = 0; i < 35; i++) {
-      this.stars.push({
-        x: Phaser.Math.Between(10, 710),
-        y: Phaser.Math.Between(10, 1270),
-        r: Phaser.Math.FloatBetween(0.8, 2.2),
-        baseAlpha: Phaser.Math.FloatBetween(0.2, 0.75),
-        speed: Phaser.Math.FloatBetween(0.1, 0.25),
-        phase: Phaser.Math.FloatBetween(0, Math.PI * 2),
-      });
-    }
+    // 1. Nền trời dùng chung (gradient, nebula, trăng, trường sao)
+    this.sky = new SkyBackdrop(this, { seed: 1, drift: false });
 
     // 2. Ấn bia cổ ngữ xoay (280px Prophecy Seal)
     this.emblemGraphics = this.add.graphics();
@@ -209,14 +189,8 @@ export class MenuScene extends Phaser.Scene {
   }
 
   override update(_time: number, delta: number): void {
-    // 1. Sao nhấp nháy nền
-    this.starGraphics.clear();
-    for (const star of this.stars) {
-      star.phase += delta * 0.0015 * star.speed;
-      const alpha = star.baseAlpha + Math.sin(star.phase) * 0.25;
-      this.starGraphics.fillStyle(COLOR_NUMBERS.iceHighlight, Math.max(0.1, Math.min(1, alpha)));
-      this.starGraphics.fillCircle(star.x, star.y, star.r);
-    }
+    // 1. Nền trời
+    this.sky.update(delta);
 
     // 2. Ấn bia cổ ngữ 280px xoay chậm (x=360, y=500)
     this.ringAngle1 += delta * 0.0003;

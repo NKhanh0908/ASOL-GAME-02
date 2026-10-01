@@ -10,19 +10,11 @@ import { Hud } from './Hud.ts';
 import { computeLayout, gridToCanvas } from './layout.ts';
 import type { LayoutMetrics } from './layout.ts';
 
+import { SkyBackdrop } from './SkyBackdrop.ts';
 import { TextureFactory } from './TextureFactory.ts';
 
 import { PauseDialog } from './PauseDialog.ts';
 import { TargetBadge } from './TargetBadge.ts';
-
-type StarParticle = {
-  x: number;
-  y: number;
-  r: number;
-  baseAlpha: number;
-  speed: number;
-  phase: number;
-};
 
 export class PlayScene extends Phaser.Scene {
   private level!: Level;
@@ -32,8 +24,7 @@ export class PlayScene extends Phaser.Scene {
   private targetBadge!: TargetBadge;
   private hud!: Hud;
   private pauseDialog!: PauseDialog;
-  private starGraphics!: Phaser.GameObjects.Graphics;
-  private stars: StarParticle[] = [];
+  private sky!: SkyBackdrop;
   private celebrationContainer: Phaser.GameObjects.Container | null = null;
 
   constructor() {
@@ -60,19 +51,8 @@ export class PlayScene extends Phaser.Scene {
     TextureFactory.generateAll(this);
     const layout = computeLayout(this.scale.width, this.scale.height);
 
-    // 1. Sao li ti nền galaxy
-    this.starGraphics = this.add.graphics();
-    this.stars = [];
-    for (let i = 0; i < 30; i++) {
-      this.stars.push({
-        x: Phaser.Math.Between(10, 710),
-        y: Phaser.Math.Between(10, 1270),
-        r: Phaser.Math.FloatBetween(0.8, 2.2),
-        baseAlpha: Phaser.Math.FloatBetween(0.15, 0.6),
-        speed: Phaser.Math.FloatBetween(0.1, 0.3),
-        phase: Phaser.Math.FloatBetween(0, Math.PI * 2),
-      });
-    }
+    // 1. Nền trời dùng chung
+    this.sky = new SkyBackdrop(this, { seed: 2, drift: false });
 
     const progressRepo = createProgressRepository(
       localStorage,
@@ -183,16 +163,7 @@ export class PlayScene extends Phaser.Scene {
   }
 
   update(_time: number, delta: number): void {
-    this.starGraphics.clear();
-    for (const star of this.stars) {
-      star.y += star.speed * (delta / 16);
-      star.phase += 0.02;
-      if (star.y > 1280) star.y = 0;
-
-      const alpha = star.baseAlpha + Math.sin(star.phase) * 0.2;
-      this.starGraphics.fillStyle(0xffffff, Phaser.Math.Clamp(alpha, 0.08, 0.8));
-      this.starGraphics.fillCircle(star.x, star.y, star.r);
-    }
+    this.sky.update(delta);
   }
 
   private refreshView(): void {
