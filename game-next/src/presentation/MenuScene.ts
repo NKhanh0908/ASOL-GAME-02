@@ -4,6 +4,7 @@ import { createProgressRepository } from '../infrastructure/progressRepository.t
 import type { ProgressRepository } from '../application/progressPort.ts';
 import { COLOR_NUMBERS, COLOR_TOKENS, TYPO_TOKENS } from './designTokens.ts';
 import { TEXTURE_KEYS, TextureFactory } from './TextureFactory.ts';
+import { SettingsDialog } from './SettingsDialog.ts';
 
 type StarParticle = {
   x: number;
@@ -183,11 +184,7 @@ export class MenuScene extends Phaser.Scene {
   }
 
   private openSettings(): void {
-    // Sẽ được tích hợp với SettingsDialog
-    const settingsScene = this.scene.get('SettingsDialog');
-    if (settingsScene) {
-      this.scene.launch('SettingsDialog');
-    }
+    new SettingsDialog(this, this.progressRepo).open();
   }
 
   private animateButtonTap(target: Phaser.GameObjects.GameObject, onComplete: () => void): void {

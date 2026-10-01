@@ -12,6 +12,8 @@ import type { LayoutMetrics } from './layout.ts';
 
 import { TextureFactory } from './TextureFactory.ts';
 
+import { PauseDialog } from './PauseDialog.ts';
+
 type StarParticle = {
   x: number;
   y: number;
@@ -27,6 +29,7 @@ export class PlayScene extends Phaser.Scene {
   private controller!: PlayController;
   private boardRenderer!: BoardRenderer;
   private hud!: Hud;
+  private pauseDialog!: PauseDialog;
   private starGraphics!: Phaser.GameObjects.Graphics;
   private stars: StarParticle[] = [];
   private celebrationContainer: Phaser.GameObjects.Container | null = null;
@@ -75,12 +78,24 @@ export class PlayScene extends Phaser.Scene {
 
     this.boardRenderer = new BoardRenderer(this, layout);
 
+    this.pauseDialog = new PauseDialog(this, {
+      onResume: () => {},
+      onRestart: () => {
+        this.controller.onReset();
+        this.cleanupCelebration();
+        this.refreshView();
+      },
+      onLevelSelect: () => {
+        this.scene.start('LevelSelectScene');
+      },
+    });
+
     this.hud = new Hud(
       this,
       `${this.level.id} · ${this.level.title}`,
       {
         onMenu: () => {
-          this.scene.start('MenuScene');
+          this.pauseDialog.open();
         },
       onReset: () => {
         this.controller.onReset();
