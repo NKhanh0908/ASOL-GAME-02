@@ -353,8 +353,7 @@ export class TextureFactory {
       if (canvas) {
         const ctx = canvas.context;
         ctx.fillStyle = COLOR_TOKENS.amberGold.solidPrimary;
-        ctx.beginPath();
-        ctx.arc(36, 36, 32, 0, Math.PI * 2);
+        TextureFactory.diamondPath(ctx, 36, 36, 32);
         ctx.fill();
 
         // Viền sáng vàng lấp lánh
@@ -382,8 +381,7 @@ export class TextureFactory {
       if (canvas) {
         const ctx = canvas.context;
         ctx.fillStyle = COLOR_TOKENS.board.surfaceTop;
-        ctx.beginPath();
-        ctx.arc(36, 36, 32, 0, Math.PI * 2);
+        TextureFactory.diamondPath(ctx, 36, 36, 32);
         ctx.fill();
 
         // Vành kính xanh
@@ -401,14 +399,12 @@ export class TextureFactory {
         // Vành vàng phát quang bên trong
         ctx.strokeStyle = COLOR_TOKENS.amberGold.glowHighlight;
         ctx.lineWidth = 2.5;
-        ctx.beginPath();
-        ctx.arc(36, 36, 25, 0, Math.PI * 2);
+        TextureFactory.diamondPath(ctx, 36, 36, 25);
         ctx.stroke();
 
         // Lõi vàng đặc radius 21px để hiển thị số màn rõ nét
         ctx.fillStyle = COLOR_TOKENS.amberGold.solidPrimary;
-        ctx.beginPath();
-        ctx.arc(36, 36, 21, 0, Math.PI * 2);
+        TextureFactory.diamondPath(ctx, 36, 36, 21);
         ctx.fill();
         canvas.refresh();
       }
@@ -420,8 +416,7 @@ export class TextureFactory {
       if (canvas) {
         const ctx = canvas.context;
         ctx.fillStyle = COLOR_TOKENS.board.surfaceTop;
-        ctx.beginPath();
-        ctx.arc(36, 36, 32, 0, Math.PI * 2);
+        TextureFactory.diamondPath(ctx, 36, 36, 32);
         ctx.fill();
 
         ctx.strokeStyle = COLOR_TOKENS.iceGlass.primaryBorder;
@@ -435,8 +430,7 @@ export class TextureFactory {
         ctx.stroke();
 
         ctx.fillStyle = COLOR_TOKENS.iceGlass.primaryBorder;
-        ctx.beginPath();
-        ctx.arc(36, 36, 7, 0, Math.PI * 2);
+        TextureFactory.diamondPath(ctx, 36, 36, 7);
         ctx.fill();
         canvas.refresh();
       }
@@ -448,8 +442,7 @@ export class TextureFactory {
       if (canvas) {
         const ctx = canvas.context;
         ctx.fillStyle = 'rgba(11, 20, 48, 0.7)';
-        ctx.beginPath();
-        ctx.arc(36, 36, 30, 0, Math.PI * 2);
+        TextureFactory.diamondPath(ctx, 36, 36, 30);
         ctx.fill();
 
         ctx.strokeStyle = 'rgba(157, 175, 199, 0.35)';
@@ -493,6 +486,26 @@ export class TextureFactory {
    * Khoét lòng khung để chỉ còn lại dải viền, nên một texture dùng được cho
    * mọi kích thước khung mà không phải vẽ bevel thủ công từng cạnh.
    */
+  /**
+   * Đường viền hình thoi dùng cho node bản đồ.
+   *
+   * Mockup dùng thoi chứ không dùng tròn: node phải cùng ngôn ngữ hình học
+   * với mảnh ghép trên bàn, nếu không bản đồ trông như game khác.
+   */
+  private static diamondPath(
+    ctx: CanvasRenderingContext2D,
+    cx: number,
+    cy: number,
+    r: number
+  ): void {
+    ctx.beginPath();
+    ctx.moveTo(cx, cy - r);
+    ctx.lineTo(cx + r, cy);
+    ctx.lineTo(cx, cy + r);
+    ctx.lineTo(cx - r, cy);
+    ctx.closePath();
+  }
+
   public static makeGlassFrame(
     scene: Phaser.Scene,
     key: string,

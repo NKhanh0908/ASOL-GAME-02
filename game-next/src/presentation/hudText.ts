@@ -19,3 +19,8 @@ export const VICTORY_LABELS = {
   next: 'Màn tiếp theo',
   levelSelect: 'Chọn màn',
 } as const;
+
+/** Chỉ số tiến độ ở header màn chọn màn, ví dụ "1/18" */
+export function formatProgress(completed: number, total: number): string {
+  return `${completed}/${total}`;
+}

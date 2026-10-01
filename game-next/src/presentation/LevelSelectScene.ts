@@ -3,9 +3,10 @@ import { campaignManifest } from '../content/manifest.ts';
 import { levelAccess } from '../domain/campaign.ts';
 import { createProgressRepository } from '../infrastructure/progressRepository.ts';
 import type { ProgressRepository } from '../application/progressPort.ts';
-import { COLOR_NUMBERS, COLOR_TOKENS, TYPO_TOKENS } from './designTokens.ts';
+import { ANIM_TOKENS, COLOR_NUMBERS, COLOR_TOKENS, TYPO_TOKENS } from './designTokens.ts';
 import { TEXTURE_KEYS, TextureFactory } from './TextureFactory.ts';
 import { SkyBackdrop } from './SkyBackdrop.ts';
+import { formatProgress } from './hudText.ts';
 
 type NodeInfo = {
   id: string;
@@ -114,7 +115,7 @@ export class LevelSelectScene extends Phaser.Scene {
     pillBg.strokeRoundedRect(-52, -22, 104, 44, 22);
 
     const progressText = this.add
-      .text(0, 0, `✦ ${completedCount}/${totalCount}`, {
+      .text(0, 0, formatProgress(completedCount, totalCount), {
         fontFamily: TYPO_TOKENS.fontFamily.sans,
         fontSize: '20px',
         color: COLOR_TOKENS.amberGold.solidPrimary,
@@ -221,6 +222,21 @@ export class LevelSelectScene extends Phaser.Scene {
         for (let j = 0; j < points.length - 1; j++) {
           linesGraphics.lineBetween(points[j].x, points[j].y, points[j + 1].x, points[j + 1].y);
         }
+
+        // Đốm sáng chạy dọc đường. Phaser không có stroke-dashoffset như
+        // mockup, nên mô phỏng bằng một chấm tween theo các điểm của đường.
+        const spark = this.add.circle(points[0].x, points[0].y, 4, COLOR_NUMBERS.amberGlow, 0.9);
+        this.mapContainer.add(spark);
+        this.tweens.addCounter({
+          from: 0,
+          to: points.length - 1,
+          duration: ANIM_TOKENS.duration.linkSweepMs,
+          repeat: -1,
+          onUpdate: (tween) => {
+            const point = points[Math.round(tween.getValue() ?? 0)];
+            if (point) spark.setPosition(point.x, point.y);
+          },
+        });
       } else {
         // Đoạn chưa tới: Xanh kính 25% opacity nét đứt
         linesGraphics.lineStyle(2, COLOR_NUMBERS.icePrimary, 0.35);
@@ -242,20 +258,22 @@ export class LevelSelectScene extends Phaser.Scene {
       const bannerY = firstNode.y - 85;
 
       const chContainer = this.add.container(360, bannerY);
-      const chBg = this.add.graphics();
-      chBg.fillStyle(COLOR_NUMBERS.boardSurfaceTop, 0.95);
-      chBg.fillRoundedRect(-180, -22, 360, 44, 22);
-      chBg.lineStyle(1.5, COLOR_NUMBERS.icePrimary, 0.7);
-      chBg.strokeRoundedRect(-180, -22, 360, 44, 22);
-
+      // Mockup dùng chữ serif có hai gạch amber hai bên, không có nền
       const chText = this.add
         .text(0, 0, chapterTitles[c], {
           fontFamily: TYPO_TOKENS.fontFamily.serif,
-          fontSize: '22px',
-          color: COLOR_TOKENS.iceGlass.bevelHighlight,
-          letterSpacing: 1,
+          fontSize: TYPO_TOKENS.fontSize.sectionHeader,
+          color: COLOR_TOKENS.text.primary,
+          fontStyle: 'bold',
         })
         .setOrigin(0.5);
+
+      const chBg = this.add.graphics();
+      chBg.lineStyle(1.5, COLOR_NUMBERS.gridModule, 0.5);
+      const rule = 80;
+      const gap = chText.width / 2 + 24;
+      chBg.lineBetween(-gap - rule, 0, -gap, 0);
+      chBg.lineBetween(gap, 0, gap + rule, 0);
 
       chContainer.add([chBg, chText]);
       this.mapContainer.add(chContainer);
