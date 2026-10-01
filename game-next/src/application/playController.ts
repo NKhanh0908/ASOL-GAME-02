@@ -23,6 +23,7 @@ export type PlayViewSnapshot = {
 export class PlayController {
   private level: Level;
   private progressRepo: ProgressRepository;
+  private isCampaign: boolean;
   private puzzleState: PuzzleState;
   private selectedPieceId: string | null = null;
   private dragSession: DragSession | null = null;
@@ -32,10 +33,12 @@ export class PlayController {
   constructor(
     level: Level,
     progressRepo: ProgressRepository,
+    isCampaign: boolean = true,
     initialShowTarget: boolean = true
   ) {
     this.level = level;
     this.progressRepo = progressRepo;
+    this.isCampaign = isCampaign;
     this.puzzleState = createPuzzle(level);
     this.showTarget = initialShowTarget;
   }
@@ -110,7 +113,7 @@ export class PlayController {
 
     if (transition.accepted) {
       this.puzzleState = transition.state;
-      if (transition.becameWon) {
+      if (transition.becameWon && this.isCampaign) {
         this.progressRepo.complete(this.level.id);
       }
     }
@@ -140,7 +143,7 @@ export class PlayController {
 
     if (transition.accepted) {
       this.puzzleState = transition.state;
-      if (transition.becameWon) {
+      if (transition.becameWon && this.isCampaign) {
         this.progressRepo.complete(this.level.id);
       }
     }

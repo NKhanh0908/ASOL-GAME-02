@@ -11,6 +11,7 @@ import { computeLayout } from './layout.ts';
 
 export class PlayScene extends Phaser.Scene {
   private level!: Level;
+  private mode: 'campaign' | 'harness' = 'campaign';
   private controller!: PlayController;
   private boardRenderer!: BoardRenderer;
   private hud!: Hud;
@@ -19,10 +20,10 @@ export class PlayScene extends Phaser.Scene {
     super({ key: 'PlayScene' });
   }
 
-  init(data: { levelId?: string }): void {
+  init(data: { levelId?: string; mode?: 'campaign' | 'harness' }): void {
     const levelId = data.levelId ?? '1-1';
-    // Dùng mode harness cho M1 vì 1-1 đang ở trạng thái review 'validated'
-    this.level = loadLevel(levelId, 'harness');
+    this.mode = data.mode ?? 'campaign';
+    this.level = loadLevel(levelId, this.mode);
   }
 
   create(): void {
@@ -37,6 +38,7 @@ export class PlayScene extends Phaser.Scene {
     this.controller = new PlayController(
       this.level,
       progressRepo,
+      this.mode === 'campaign',
       savedProgress.settings.showTarget
     );
 

@@ -1,7 +1,7 @@
 import type { ManifestEntry } from './document.ts';
 
 export const campaignManifest: readonly ManifestEntry[] = [
-  { id: '1-1', title: 'Song Tinh', chapter: 1, order: 1, contentRevision: 'song-tinh-v1', status: 'validated', dataPath: 'src/content/levels/1-1.json' },
+  { id: '1-1', title: 'Song Tinh', chapter: 1, order: 1, contentRevision: 'song-tinh-v1', status: 'approved', dataPath: 'src/content/levels/1-1.json' },
   { id: '1-2', title: 'Bảo Tháp Tiên Tri', chapter: 1, order: 2, contentRevision: 'v0.1', status: 'planned' },
   { id: '1-3', title: 'Cánh Chim Báo Điềm', chapter: 1, order: 3, contentRevision: 'v0.1', status: 'planned' },
   { id: '1-4', title: 'Ngọn Hải Đăng', chapter: 1, order: 4, contentRevision: 'v0.1', status: 'planned' },
