@@ -175,18 +175,14 @@ export class LevelSelectScene extends Phaser.Scene {
       currentY += 160;
     }
 
-    // 2. Dải màu chuyển tiếp 3 Chương trên nền bản đồ
+    // 2. Sắc độ riêng cho từng chương, phủ rất nhẹ để nền trời vẫn lộ ra.
+    // Trước đây phủ 98% nên che kín SkyBackdrop và bản đồ trông như cũ.
     const chBackdrop = this.add.graphics();
-    // Chương I (y=0..1160)
-    chBackdrop.fillStyle(0x080e24, 0.98);
+    chBackdrop.fillStyle(0x7fb8ff, 0.04); // Chương I: xanh trời
     chBackdrop.fillRect(0, 0, 720, 1160);
-
-    // Chương II (y=1160..2200): Tím xanh vũ trụ #0D0B28
-    chBackdrop.fillStyle(0x0d0b28, 0.98);
+    chBackdrop.fillStyle(0xb48cff, 0.06); // Chương II: tím giao thoa
     chBackdrop.fillRect(0, 1160, 720, 1040);
-
-    // Chương III (y=2200..3400): Hổ phách hoàng hôn huyền bí #181220
-    chBackdrop.fillStyle(0x181220, 0.98);
+    chBackdrop.fillStyle(0xffb86b, 0.06); // Chương III: hổ phách hoàng hôn
     chBackdrop.fillRect(0, 2200, 720, 1200);
 
     this.mapContainer.add(chBackdrop);
@@ -248,9 +244,9 @@ export class LevelSelectScene extends Phaser.Scene {
 
     // 4. Tiêu đề phân đoạn Chương (B2: Bỏ thuật ngữ kỹ thuật, banner kính thanh lịch)
     const chapterTitles = [
-      '✦ CHƯƠNG I · KHỞI NGUYÊN ✦',
-      '✦ CHƯƠNG II · GIAO THOA ✦',
-      '✦ CHƯƠNG III · LUÂN CHUYỂN ✦',
+      'Chương I · Khởi Nguyên',
+      'Chương II · Giao Thoa',
+      'Chương III · Luân Chuyển',
     ];
 
     for (let c = 0; c < 3; c++) {
