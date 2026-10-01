@@ -1,5 +1,5 @@
 export const GRID_WIDTH = 128;
-export const GRID_HEIGHT = 192;
+export const GRID_HEIGHT = 160;
 export const TOTAL_CELLS = GRID_WIDTH * GRID_HEIGHT;
 
 export type Cell = readonly [number, number];

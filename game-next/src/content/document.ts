@@ -17,7 +17,7 @@ export type LevelDocument = {
   chapter: 1 | 2 | 3;
   order: number;
   contentRevision: string;
-  board: { width: 128; height: 192 };
+  board: { width: 128; height: 160 };
   rotationEnabled: boolean;
   pieces: Array<{
     id: string;

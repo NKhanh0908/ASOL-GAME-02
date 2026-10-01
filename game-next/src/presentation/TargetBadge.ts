@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import type { Level } from '../domain/model.ts';
+import { GRID_WIDTH, GRID_HEIGHT } from '../domain/model.ts';
 import type { LayoutMetrics } from './layout.ts';
 import { COLOR_NUMBERS, DEPTH_TOKENS } from './designTokens.ts';
 
@@ -110,14 +111,14 @@ export class TargetBadge {
     g.clear();
 
     // Tìm bounding box của targetMask
-    let minX = 128;
+    let minX = GRID_WIDTH;
     let maxX = 0;
-    let minY = 192;
+    let minY = GRID_HEIGHT;
     let maxY = 0;
 
-    for (let y = 0; y < 192; y++) {
-      for (let x = 0; x < 128; x++) {
-        if (level.targetMask[y * 128 + x] > 0) {
+    for (let y = 0; y < GRID_HEIGHT; y++) {
+      for (let x = 0; x < GRID_WIDTH; x++) {
+        if (level.targetMask[y * GRID_WIDTH + x] > 0) {
           if (x < minX) minX = x;
           if (x > maxX) maxX = x;
           if (y < minY) minY = y;
@@ -153,7 +154,7 @@ export class TargetBadge {
     const pixelSize = Math.max(1, Math.round(scale));
     for (let y = minY; y <= maxY; y++) {
       for (let x = minX; x <= maxX; x++) {
-        if (level.targetMask[y * 128 + x] > 0) {
+        if (level.targetMask[y * GRID_WIDTH + x] > 0) {
           const drawX = (x - centerX) * scale;
           const drawY = (y - centerY) * scale;
           g.fillRect(drawX, drawY, pixelSize, pixelSize);

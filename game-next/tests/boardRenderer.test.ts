@@ -5,22 +5,25 @@ import { COLOR_NUMBERS, COLOR_TOKENS, LAYOUT_TOKENS } from '../src/presentation/
 describe('BoardRenderer Astrological Stele Rules', () => {
   const layout = computeLayout(720, 1280);
 
-  test('tấm bia kích thước 512x768 bắt đầu tại y=184 với tỉ lệ 4px/ô chuẩn mực', () => {
-    expect(layout.boardBounds.y).toBe(184);
-    expect(layout.boardBounds.width).toBe(512);
-    expect(layout.boardBounds.height).toBe(768);
-    expect(layout.boardBounds.x).toBe(104);
+  test('bàn chơi 640x800 bắt đầu tại y=200, căn giữa ngang', () => {
+    expect(layout.boardBounds.x).toBe(40);
+    expect(layout.boardBounds.y).toBe(200);
+    expect(layout.boardBounds.width).toBe(640);
+    expect(layout.boardBounds.height).toBe(800);
   });
 
-  test('màu viền kính bevel và màu mặt bia tuân thủ họ màu nghiêm ngặt', () => {
-    expect(COLOR_TOKENS.iceGlass.primaryBorder).toBe('#68B8DC');
-    expect(COLOR_TOKENS.board.surfaceTop).toBe('#101B32');
-    expect(COLOR_NUMBERS.boardSurfaceTop).toBe(0x101b32);
-    expect(COLOR_NUMBERS.icePrimary).toBe(0x68b8dc);
+  test('màu khung kính và mặt bàn tuân thủ bảng màu improve-v1', () => {
+    expect(COLOR_TOKENS.iceGlass.primaryBorder).toBe('#A9E3FF');
+    expect(COLOR_TOKENS.board.surfaceTop).toBe('#1D3482');
+    expect(COLOR_NUMBERS.boardSurfaceTop).toBe(0x1d3482);
+    expect(COLOR_NUMBERS.icePrimary).toBe(0xa9e3ff);
   });
 
-  test('khay mảnh nằm ở dải y=968..1108 phù hợp với bố cục dọc', () => {
+  test('khay mảnh nằm ngay dưới bàn, không chồng lấn', () => {
     expect(layout.trayBounds.y).toBe(LAYOUT_TOKENS.tray.y);
     expect(layout.trayBounds.height).toBe(LAYOUT_TOKENS.tray.height);
+    expect(layout.trayBounds.y).toBeGreaterThanOrEqual(
+      layout.boardBounds.y + layout.boardBounds.height
+    );
   });
 });

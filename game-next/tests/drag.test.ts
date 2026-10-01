@@ -71,7 +71,7 @@ describe('Hitbox, Layout and Drag Transactions', () => {
 
   test('finishDrag xa neo giữ ở vị trí tạm (temporary)', () => {
     const state = createPuzzle(level);
-    const farCanvas = gridToCanvas(50, 150, layout);
+    const farCanvas = gridToCanvas(50, 110, layout);
 
     const drag = beginDrag(state, pieceD1, 200, 1000, layout);
     drag.pointerOffset = { x: 0, y: 0 };

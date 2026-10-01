@@ -4,7 +4,7 @@ import { LAYOUT_TOKENS } from './designTokens.ts';
 
 export type LayoutMetrics = {
   boardBounds: { x: number; y: number; width: number; height: number };
-  cellPixel: 4;
+  cellPixel: 5;
   trayBounds: { x: number; y: number; width: number; height: number };
   headerBounds: { y: number; height: number };
   bottomBarBounds: { y: number; height: number };
@@ -17,7 +17,7 @@ const BOARD_X = LAYOUT_TOKENS.board.x;
 const BOARD_Y = LAYOUT_TOKENS.board.y;
 const BOARD_WIDTH = LAYOUT_TOKENS.board.width;
 const BOARD_HEIGHT = LAYOUT_TOKENS.board.height;
-const CELL_PIXEL: 4 = 4;
+const CELL_PIXEL: 5 = 5;
 const TRAY_X = LAYOUT_TOKENS.tray.x;
 const TRAY_Y = LAYOUT_TOKENS.tray.y;
 const TRAY_WIDTH = LAYOUT_TOKENS.tray.width;

@@ -34,7 +34,7 @@ export function makeAdjacentFixture(): LevelDocument {
     chapter: 1,
     order: 1,
     contentRevision: 'fixture-v1',
-    board: { width: 128, height: 192 },
+    board: { width: 128, height: 160 },
     rotationEnabled: false,
     pieces: [
       {
