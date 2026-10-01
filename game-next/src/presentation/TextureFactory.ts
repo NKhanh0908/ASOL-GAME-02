@@ -5,6 +5,10 @@ export const TEXTURE_KEYS = {
   steleBorder: 'stele_border_9slice',
   glassFrameBoard: 'glass_frame_board',
   glassFrameTray: 'glass_frame_tray',
+  goldFrameBoard: 'gold_frame_board',
+  victoryCardFrame: 'victory_card_frame',
+  victoryCardSurface: 'victory_card_surface',
+  victoryNextButton: 'victory_next_button',
   boardSurface: 'board_surface',
   trayWell: 'tray_well',
   btnCircle112: 'btn_circle_112',
@@ -45,6 +49,33 @@ export class TextureFactory {
       LAYOUT_TOKENS.board.height,
       LAYOUT_TOKENS.board.cornerRadius
     );
+    // Khung vàng khi thắng màn: cùng hình dạng khung kính, đổi bốn chặng màu
+    TextureFactory.makeGlassFrame(
+      scene,
+      TEXTURE_KEYS.goldFrameBoard,
+      LAYOUT_TOKENS.board.width,
+      LAYOUT_TOKENS.board.height,
+      LAYOUT_TOKENS.board.cornerRadius,
+      ['#FFF6D6', '#FFD86E', '#F2A93B', '#C77A1F']
+    );
+
+    // Thẻ hoàn thành: viền vàng, lòng xanh đậm, nút chính vàng bóng
+    TextureFactory.makeGlassFrame(scene, TEXTURE_KEYS.victoryCardFrame, 660, 262, 40, [
+      '#FFF6D6', '#FFC857', '#E9A240', '#C9842A',
+    ]);
+    TextureFactory.makeSurface(scene, TEXTURE_KEYS.victoryCardSurface, {
+      width: 648,
+      height: 250,
+      radius: 34,
+      stops: [[0, '#24358C'], [1, '#1A2468']],
+    });
+    TextureFactory.makeSurface(scene, TEXTURE_KEYS.victoryNextButton, {
+      width: 346,
+      height: 76,
+      radius: 30,
+      stops: [[0, '#FFE29A'], [0.55, '#FFC857'], [1, '#F0A83A']],
+    });
+
     // Mặt bàn: gradient xanh đậm kèm quầng sáng nhẹ ở giữa, như mockup
     TextureFactory.makeSurface(scene, TEXTURE_KEYS.boardSurface, {
       width: LAYOUT_TOKENS.board.width,
@@ -538,7 +569,8 @@ export class TextureFactory {
     key: string,
     width: number,
     height: number,
-    radius: number
+    radius: number,
+    stops: readonly string[] = GLASS_TOKENS.frameStops
   ): string {
     const tm = scene.textures;
     if (!tm || tm.exists(key)) return key;
@@ -548,7 +580,7 @@ export class TextureFactory {
     const ctx = canvas.context;
 
     const gradient = ctx.createLinearGradient(0, 0, 0, height);
-    GLASS_TOKENS.frameStops.forEach((stop, index) => {
+    stops.forEach((stop, index) => {
       gradient.addColorStop(GLASS_TOKENS.frameStopOffsets[index], stop);
     });
 

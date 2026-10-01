@@ -8,7 +8,13 @@ import { createProgressRepository } from '../infrastructure/progressRepository.t
 import { PlayController } from '../application/playController.ts';
 import { BoardRenderer } from './BoardRenderer.ts';
 import { Hud } from './Hud.ts';
-import { computeLayout, gridToCanvas, pieceRadiusPx } from './layout.ts';
+import {
+  computeLayout,
+  gridToCanvas,
+  pieceCenterCanvas,
+  pieceHitbox,
+  pieceRadiusPx,
+} from './layout.ts';
 import type { LayoutMetrics } from './layout.ts';
 
 import { SkyBackdrop } from './SkyBackdrop.ts';
@@ -97,6 +103,8 @@ export class PlayScene extends Phaser.Scene {
       onReset: () => {
         this.controller.onReset();
         this.cleanupCelebration();
+        this.boardRenderer.setVictoryMode(false);
+        this.hud.hideWinModal();
         this.refreshView();
       },
       onRotate: () => {
@@ -165,8 +173,39 @@ export class PlayScene extends Phaser.Scene {
     this.refreshView();
 
     if (this.controller.getSnapshot().phase === 'won') {
+      this.boardRenderer.setVictoryMode(true);
       this.hud.showWinModal(this.level.victoryVerse);
     }
+
+    // Chỉ dùng khi phát triển: tự kéo mảnh để chụp ảnh kiểm tra thị giác.
+    // ?autosolve=win  -> đặt đủ mảnh, ra màn hoàn thành
+    // ?autosolve=drag -> mảnh đầu đã khớp, mảnh sau đang được kéo gần đích
+    if (import.meta.env.DEV) {
+      const mode = new URLSearchParams(window.location.search).get('autosolve');
+      if (mode === 'win' || mode === 'drag') this.autosolve(mode, layout);
+    }
+  }
+
+  private autosolve(mode: 'win' | 'drag', layout: LayoutMetrics): void {
+    const pieces = this.level.pieces;
+    pieces.forEach((piece, index) => {
+      const start = pieceHitbox(piece, { kind: 'tray', turns: 0 }, layout, index);
+      const anchor = piece.anchors.find((a) => a.id === 'A') ?? piece.anchors[0];
+      const target = pieceCenterCanvas(piece.frameSize, anchor.x, anchor.y, layout);
+      this.controller.onPointerDown(start.x + start.width / 2, start.y + start.height / 2, layout);
+
+      const isLast = index === pieces.length - 1;
+      if (mode === 'drag' && isLast) {
+        // Dừng giữa chừng, lệch nhẹ khỏi đích để còn trong vùng hít
+        this.controller.onPointerMove(target.x + 12, target.y - 12, layout);
+        this.refreshView();
+        return;
+      }
+
+      const transition = this.controller.onPointerUp(target.x, target.y, layout);
+      this.refreshView();
+      if (transition?.becameWon) this.playCelebration(layout);
+    });
   }
 
   update(_time: number, delta: number): void {
@@ -290,47 +329,10 @@ export class PlayScene extends Phaser.Scene {
       },
     });
 
-    // 4. Dòng chữ chiêm tinh thức tỉnh
-    const runeText = this.add
-      .text(center.x, center.y - 120, '✦ CỔ NGỮ THỨC TỈNH ✦', {
-        fontFamily: 'system-ui, -apple-system, sans-serif',
-        fontSize: '26px',
-        color: '#FFD166',
-        fontStyle: 'bold',
-        stroke: COLOR_TOKENS.sky.stops[0],
-        strokeThickness: 5,
-        shadow: {
-          offsetX: 0,
-          offsetY: 0,
-          color: '#F9C74F',
-          blur: 16,
-          stroke: true,
-          fill: true,
-        },
-      })
-      .setOrigin(0.5)
-      .setScale(0.6)
-      .setAlpha(0);
-
-    celebration.add(runeText);
-
-    this.tweens.add({
-      targets: runeText,
-      scale: 1,
-      alpha: 1,
-      y: center.y - 140,
-      duration: 500,
-      ease: 'Back.easeOut',
-    });
-
-    // 5. Hoãn 1.5s để người chơi tận hưởng khoảnh khắc hoàn thành trước khi mở bảng modal
-    this.time.delayedCall(1500, () => {
-      this.tweens.add({
-        targets: runeText,
-        alpha: 0,
-        duration: 400,
-        ease: 'Linear',
-      });
+    // 4. Khung bàn đổi vàng, rồi hiện thẻ hoàn thành sau một nhịp để người
+    // chơi kịp thấy hai mảnh khớp. Thẻ thay chỗ khay, không đè lên bàn.
+    this.boardRenderer.setVictoryMode(true);
+    this.time.delayedCall(700, () => {
       this.hud.showWinModal(this.level.victoryVerse);
     });
   }

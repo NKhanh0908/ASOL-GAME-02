@@ -42,6 +42,7 @@ export class Hud {
   private matchBarText: Phaser.GameObjects.Text;
   private snapHint: Phaser.GameObjects.Container | null = null;
   private winVerseText!: Phaser.GameObjects.Text;
+  private rotateAllowed = false;
 
   constructor(scene: Phaser.Scene, title: string, callbacks: HudCallbacks, levelId: string = '1-1') {
     this.scene = scene;
@@ -146,6 +147,7 @@ export class Hud {
     });
     this.rotateContainer.add([this.rotateBtnBase, this.rotateIcon, this.rotateLabel]);
 
+    this.rotateAllowed = isChapter3Plus;
     if (!isChapter3Plus) {
       this.rotateContainer.setVisible(false);
     }
@@ -166,89 +168,112 @@ export class Hud {
     this.matchBar.add([this.matchBarGraphics, this.matchBarText]);
 
     // 6. Modal Hoàn Thành Chiến Thắng (Celestial Victory Dialog)
-    this.winContainer = this.scene.add.container(360, 640).setDepth(100).setVisible(false);
+    this.winContainer = this.scene.add.container(0, 0).setDepth(100).setVisible(false);
 
-    // Mockup không dùng hộp thoại đè lên: bàn chơi đã giải vẫn hiện rõ, chỉ
-    // phủ tối nhẹ. Người chơi nhìn thành quả, không nhìn hộp thoại.
-    const winOverlay = this.scene.add.rectangle(
-      0,
-      0,
-      LAYOUT_TOKENS.canvas.width,
-      LAYOUT_TOKENS.canvas.height,
-      COLOR_NUMBERS.navyBackdrop,
-      0.35
-    );
-    winOverlay.setInteractive(); // Chặn click xuyên xuống bàn
+    // Thẻ hoàn thành thay chỗ khay và hàng nút đáy, theo mockup: bàn chơi đã
+    // giải vẫn hiện trọn phía trên, không có gì đè lên nó.
+    const card = { x: 30, y: 1012, w: 660, h: 262 };
+    const cx = card.x + card.w / 2;
 
-    const boardTop = LAYOUT_TOKENS.board.y;
-    const boardBottom = LAYOUT_TOKENS.board.y + LAYOUT_TOKENS.board.height;
+    // Lớp chặn chạm xuống bàn, gần như trong suốt để không làm tối khung vàng
+    const winOverlay = this.scene.add
+      .rectangle(0, 0, LAYOUT_TOKENS.canvas.width, LAYOUT_TOKENS.canvas.height, 0x000000, 0.01)
+      .setOrigin(0, 0)
+      .setInteractive();
+
+    const cardFrame = this.scene.add
+      .image(card.x, card.y, TEXTURE_KEYS.victoryCardFrame)
+      .setOrigin(0, 0);
+    const cardSurface = this.scene.add
+      .image(card.x + 6, card.y + 6, TEXTURE_KEYS.victoryCardSurface)
+      .setOrigin(0, 0);
+
+    const winLabel = this.scene.add
+      .text(cx, card.y + 38, VICTORY_LABELS.title, {
+        fontFamily: TYPO_TOKENS.fontFamily.sans,
+        fontSize: '22px',
+        fontStyle: 'bold',
+        color: '#FFD983',
+      })
+      .setOrigin(0.5);
 
     const winTitle = this.scene.add
-      .text(0, boardTop - 640 - 60, VICTORY_LABELS.title, {
+      .text(cx, card.y + 79, levelName, {
         fontFamily: TYPO_TOKENS.fontFamily.serif,
-        fontSize: TYPO_TOKENS.fontSize.modalTitle,
-        color: COLOR_TOKENS.text.primary,
+        fontSize: '40px',
         fontStyle: 'bold',
+        color: COLOR_TOKENS.text.primary,
       })
       .setOrigin(0.5);
 
     const winVerse = this.scene.add
-      .text(0, boardBottom - 640 + 46, '', {
+      .text(cx, card.y + 123, '', {
         fontFamily: TYPO_TOKENS.fontFamily.sans,
-        fontSize: '26px',
-        fontStyle: 'italic',
-        color: COLOR_TOKENS.text.secondary,
-        wordWrap: { width: 600, useAdvancedWrap: true },
+        fontSize: '22px',
+        color: '#D8E6FF',
         align: 'center',
+        wordWrap: { width: card.w - 80, useAdvancedWrap: true },
       })
       .setOrigin(0.5);
     this.winVerseText = winVerse;
 
-    const btnY = LAYOUT_TOKENS.bottomBar.y - 640 - 40;
-
-    const nextBtnBg = this.scene.add.graphics();
-    nextBtnBg.fillStyle(COLOR_NUMBERS.amberSolid, 1);
-    nextBtnBg.fillRoundedRect(
-      -LAYOUT_TOKENS.buttonSizes.primaryW / 2,
-      btnY - LAYOUT_TOKENS.buttonSizes.primaryH / 2,
-      LAYOUT_TOKENS.buttonSizes.primaryW,
-      LAYOUT_TOKENS.buttonSizes.primaryH,
-      LAYOUT_TOKENS.buttonSizes.primaryH / 2
-    );
-
-    const nextBtn = this.scene.add
-      .text(0, btnY, VICTORY_LABELS.next, {
-        fontFamily: TYPO_TOKENS.fontFamily.sans,
-        fontSize: TYPO_TOKENS.fontSize.buttonLabel,
-        color: COLOR_TOKENS.text.onAmber,
-        fontStyle: 'bold',
-      })
-      .setOrigin(0.5)
-      .setInteractive({ useHandCursor: true });
-    nextBtn.on('pointerdown', () => this.callbacks.onNextLevel());
+    // Hai nút nằm ngang: Chọn màn (phụ, hẹp) | Màn tiếp theo (chính, rộng)
+    const btnTop = card.y + 152;
+    const btnH = 76;
+    const innerLeft = card.x + 40;
+    const selectW = 216;
+    const nextX = innerLeft + selectW + 18;
 
     const selectBtnBg = this.scene.add.graphics();
-    selectBtnBg.lineStyle(2, COLOR_NUMBERS.icePrimary, 0.9);
-    selectBtnBg.strokeRoundedRect(-150, btnY + 54, 300, 64, 32);
+    selectBtnBg.fillStyle(0x2846a0, 0.5);
+    selectBtnBg.fillRoundedRect(innerLeft, btnTop, selectW, btnH, 30);
+    selectBtnBg.lineStyle(1.5, COLOR_NUMBERS.icePrimary, 0.45);
+    selectBtnBg.strokeRoundedRect(innerLeft, btnTop, selectW, btnH, 30);
 
     const selectBtn = this.scene.add
-      .text(0, btnY + 86, VICTORY_LABELS.levelSelect, {
+      .text(innerLeft + selectW / 2, btnTop + btnH / 2, VICTORY_LABELS.levelSelect, {
         fontFamily: TYPO_TOKENS.fontFamily.sans,
-        fontSize: TYPO_TOKENS.fontSize.buttonLabel,
+        fontSize: '26px',
+        fontStyle: 'bold',
         color: COLOR_TOKENS.text.primary,
       })
-      .setOrigin(0.5)
+      .setOrigin(0.5);
+    const selectHit = this.scene.add
+      .zone(innerLeft, btnTop, selectW, btnH)
+      .setOrigin(0, 0)
       .setInteractive({ useHandCursor: true });
-    selectBtn.on('pointerdown', () => this.callbacks.onLevelSelect());
+    selectHit.on('pointerdown', () => this.callbacks.onLevelSelect());
+
+    const nextBtnBg = this.scene.add
+      .image(nextX, btnTop, TEXTURE_KEYS.victoryNextButton)
+      .setOrigin(0, 0);
+    const nextBtn = this.scene.add
+      .text(nextX + 173, btnTop + btnH / 2, VICTORY_LABELS.next, {
+        fontFamily: TYPO_TOKENS.fontFamily.sans,
+        fontSize: '28px',
+        fontStyle: 'bold',
+        color: COLOR_TOKENS.text.onAmber,
+      })
+      .setOrigin(0.5);
+    const nextHit = this.scene.add
+      .zone(nextX, btnTop, 346, btnH)
+      .setOrigin(0, 0)
+      .setInteractive({ useHandCursor: true });
+    nextHit.on('pointerdown', () => this.callbacks.onNextLevel());
 
     this.winContainer.add([
       winOverlay,
+      cardFrame,
+      cardSurface,
+      winLabel,
       winTitle,
       winVerse,
-      nextBtnBg,
-      nextBtn,
       selectBtnBg,
       selectBtn,
+      selectHit,
+      nextBtnBg,
+      nextBtn,
+      nextHit,
     ]);
   }
 
@@ -277,8 +302,8 @@ export class Hud {
 
     this.drawMatchBar(snapshot.snappedCount, snapshot.totalPieces);
 
-    if (snapshot.phase !== 'won') {
-      this.winContainer.setVisible(false);
+    if (snapshot.phase !== 'won' && this.winContainer.visible) {
+      this.hideWinModal();
     }
   }
 
@@ -343,7 +368,13 @@ export class Hud {
   }
 
   public showWinModal(victoryVerse?: string): void {
-    this.winVerseText.setText(victoryVerse ?? '').setVisible(Boolean(victoryVerse));
+    this.winVerseText
+      .setText(victoryVerse ? `“${victoryVerse}”` : '')
+      .setVisible(Boolean(victoryVerse));
+    // Thẻ chiếm chỗ hàng đáy, nên nút và thanh đếm phải nhường chỗ
+    this.resetContainer.setVisible(false);
+    this.rotateContainer.setVisible(false);
+    this.matchBar.setVisible(false);
     if (this.winContainer.visible) return;
     this.winContainer.setAlpha(0).setVisible(true);
     this.scene.tweens.add({
@@ -356,6 +387,9 @@ export class Hud {
 
   public hideWinModal(): void {
     this.winContainer.setVisible(false);
+    this.resetContainer.setVisible(true);
+    this.rotateContainer.setVisible(this.rotateAllowed);
+    this.matchBar.setVisible(true);
   }
 
   public destroy(): void {

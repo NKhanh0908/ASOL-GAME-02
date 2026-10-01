@@ -107,6 +107,16 @@ export class BoardRenderer {
   }
 
   /**
+   * Chế độ thắng màn: khung bàn đổi sang vàng, khay và các ô chứa ẩn đi để
+   * thẻ hoàn thành chiếm chỗ của chúng.
+   */
+  public setVictoryMode(on: boolean): void {
+    this.boardFrame?.setTexture(on ? TEXTURE_KEYS.goldFrameBoard : TEXTURE_KEYS.glassFrameBoard);
+    this.trayFrame?.setVisible(!on);
+    for (const well of this.trayWells) well.setVisible(!on);
+  }
+
+  /**
    * Vẽ 4 ký tự phương vị chiêm tinh
    */
   private drawCardinalRunes(cx: number, cy: number): void {
