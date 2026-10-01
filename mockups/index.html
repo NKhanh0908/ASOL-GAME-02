@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mirror · UI/UX Divination Disc Mockups</title>
+  <link rel="stylesheet" href="preview.css">
+</head>
+<body>
+
+  <!-- Thanh điều hướng Tab -->
+  <div class="toolbar">
+    <button class="tab-btn active" data-tab="gameplay">Màn Chơi (Gameplay)</button>
+    <button class="tab-btn" data-tab="menu">Menu Chính</button>
+    <button class="tab-btn" data-tab="levelselect">Chọn Màn (Chòm Sao)</button>
+    <button class="tab-btn" data-tab="modals">Hộp Thoại (Modals)</button>
+  </div>
+
+  <!-- Thanh chọn 5 trạng thái Gameplay -->
+  <div class="gameplay-states-bar" id="gameplayStatesBar">
+    <span class="state-chip active" data-state="snapped">1. Đã Snap</span>
+    <span class="state-chip" data-state="dragging">2. Đang Kéo</span>
+    <span class="state-chip" data-state="overlap">3. Giao Nhau (Triệt Tiêu)</span>
+    <span class="state-chip" data-state="temporary">4. Mảnh Tạm</span>
+    <span class="state-chip" data-state="victory">5. Hoàn Thành</span>
+  </div>
+
+  <!-- Khung giả lập thiết bị di động -->
+  <div class="phone-viewport">
+
+    <!-- ==================== VIEW 1: GAMEPLAY ==================== -->
+    <div class="screen-view active" id="view-gameplay">
+      <svg viewBox="0 0 720 1280" width="100%" height="100%">
+        <!-- Header (y=0..96) -->
+        <g id="gp-header">
+          <!-- Nút Menu tròn 56px -->
+          <circle cx="56" cy="48" r="28" fill="#101B32" stroke="#68B8DC" stroke-width="2"/>
+          <path d="M60 40 L50 48 L60 56" stroke="#EEF4FA" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+
+          <!-- Tiêu đề màn chơi -->
+          <text x="360" y="55" fill="#FFC857" font-family="'Playfair Display', serif" font-size="24" font-weight="bold" text-anchor="middle">Màn 1-1 · Song Tinh</text>
+
+          <!-- Nút bóng mẫu -->
+          <rect x="560" y="28" width="120" height="40" rx="20" fill="#101B32" stroke="#68B8DC" stroke-width="1.5"/>
+          <text x="620" y="53" fill="#CFEFFF" font-family="'Be Vietnam Pro', sans-serif" font-size="12" text-anchor="middle">Bóng mẫu: Bật</text>
+        </g>
+
+        <!-- Hai vòng thiên cầu đồng tâm phía sau bia (y=568) -->
+        <g id="gp-celestial-rings">
+          <circle cx="360" cy="568" r="380" fill="none" stroke="#68B8DC" stroke-width="1.5" stroke-opacity="0.25"/>
+          <circle cx="740" cy="568" r="4" fill="#CFEFFF" opacity="0.6"/>
+          <circle cx="360" cy="568" r="410" fill="none" stroke="#D4A359" stroke-width="1.2" stroke-opacity="0.2"/>
+          <circle cx="360" cy="978" r="3.5" fill="#FFC857" opacity="0.55"/>
+        </g>
+
+        <!-- Tấm Bia Tiên Tri (Board 512 x 768 tại 104, 184) -->
+        <g id="gp-stele-board">
+          <!-- Mặt đá bia -->
+          <rect x="104" y="184" width="512" height="768" rx="36" fill="#101B32"/>
+
+          <!-- Viền kính dày 10px Bevel -->
+          <rect x="104" y="184" width="512" height="768" rx="36" fill="none" stroke="#68B8DC" stroke-width="10"/>
+
+          <!-- Highlight Bevel cạnh trên -->
+          <path d="M140 184 L580 184" stroke="#CFEFFF" stroke-width="3" stroke-linecap="round"/>
+
+          <!-- Shadow Bevel cạnh dưới -->
+          <path d="M140 952 L580 952" stroke="#3A5E78" stroke-width="3" stroke-linecap="round"/>
+
+          <!-- Đường chỉ vàng đứt nét bên trong -->
+          <rect x="112" y="192" width="496" height="752" rx="28" fill="none" stroke="#D4A359" stroke-width="1.5" stroke-dasharray="6,4" stroke-opacity="0.45"/>
+
+          <!-- Lưới vàng 8 ô (32px) -->
+          <path d="M136 196 L136 940 M168 196 L168 940 M200 196 L200 940 M232 196 L232 940 M264 196 L264 940 M296 196 L296 940 M328 196 L328 940 M360 196 L360 940 M392 196 L392 940 M424 196 L424 940 M456 196 L456 940 M488 196 L488 940 M520 196 L520 940 M552 196 L552 940 M584 196 L584 940" stroke="#D4A359" stroke-width="0.8" stroke-opacity="0.12"/>
+          <path d="M116 216 L604 216 M116 248 L604 248 M116 280 L604 280 M116 312 L604 312 M116 344 L604 344 M116 376 L604 376 M116 408 L604 408 M116 440 L604 440 M116 472 L604 472 M116 504 L604 504 M116 536 L604 536 M116 568 L604 568 M116 600 L604 600 M116 632 L604 632 M116 664 L604 664 M116 696 L604 696 M116 728 L604 728 M116 760 L604 760 M116 792 L604 792 M116 824 L604 824 M116 856 L604 856 M116 888 L604 888 M116 920 L604 920" stroke="#D4A359" stroke-width="0.8" stroke-opacity="0.12"/>
+
+          <!-- Trục trung tâm sáng hơn -->
+          <line x1="360" y1="192" x2="360" y2="944" stroke="#D4A359" stroke-width="1.5" stroke-opacity="0.3"/>
+          <line x1="112" y1="568" x2="608" y2="568" stroke="#D4A359" stroke-width="1.5" stroke-opacity="0.3"/>
+
+          <!-- 4 ký tự phương vị -->
+          <circle cx="360" cy="208" r="3" fill="#D4A359" opacity="0.5"/>
+          <circle cx="360" cy="928" r="3" fill="#D4A359" opacity="0.5"/>
+          <circle cx="128" cy="568" r="3" fill="#D4A359" opacity="0.5"/>
+          <circle cx="592" cy="568" r="3" fill="#D4A359" opacity="0.5"/>
+        </g>
+
+        <!-- Bóng mục tiêu mờ (Silhouette Target: 2 thoi chạm đỉnh tại 360, 568) -->
+        <g id="gp-target-silhouette">
+          <polygon points="280,568 280,488 280,568 280,648" points="280,488 360,568 280,648 200,568" fill="#68B8DC" fill-opacity="0.16" stroke="#68B8DC" stroke-width="1.5" stroke-opacity="0.4"/>
+          <polygon points="440,488 520,568 440,648 360,568" fill="#68B8DC" fill-opacity="0.16" stroke="#68B8DC" stroke-width="1.5" stroke-opacity="0.4"/>
+        </g>
+
+        <!-- Lớp Mảnh Ghép Thay Đổi Theo Trạng Thái -->
+        <g id="gp-dynamic-pieces">
+          <!-- Sẽ được preview.js render động -->
+        </g>
+
+        <!-- Khay Mảnh (Tray 512 x 140 tại 104, 968) -->
+        <g id="gp-tray">
+          <rect x="104" y="968" width="512" height="140" rx="20" fill="#050A1A" fill-opacity="0.95" stroke="#68B8DC" stroke-width="2" stroke-opacity="0.5"/>
+          <!-- 2 ô chứa mảnh trong khay -->
+          <rect x="132" y="988" width="210" height="100" rx="14" fill="#101B32" stroke="#3A5E78" stroke-width="1"/>
+          <rect x="378" y="988" width="210" height="100" rx="14" fill="#101B32" stroke="#3A5E78" stroke-width="1"/>
+        </g>
+
+        <!-- Hàng Nút Dưới (y=1124..1216) -->
+        <g id="gp-bottom-bar">
+          <!-- Nút Đặt lại tròn 64px -->
+          <circle cx="180" cy="1164" r="32" fill="#101B32" stroke="#68B8DC" stroke-width="2.5"/>
+          <path d="M180 1148 A16 16 0 1 0 196 1164" fill="none" stroke="#EEF4FA" stroke-width="2.8" stroke-linecap="round"/>
+          <polygon points="178,1144 186,1148 182,1154" fill="#EEF4FA"/>
+          <text x="180" y="1212" fill="#9DAFC7" font-family="'Be Vietnam Pro', sans-serif" font-size="13" text-anchor="middle">Đặt lại</text>
+
+          <!-- Nút Xoay tròn 64px (Chương 3) -->
+          <g id="btn-rotate-group" opacity="0.3">
+            <circle cx="540" cy="1164" r="32" fill="#101B32" stroke="#68B8DC" stroke-width="2.5"/>
+            <path d="M540 1148 A16 16 0 1 1 524 1164" fill="none" stroke="#FFC857" stroke-width="2.8" stroke-linecap="round"/>
+            <polygon points="542,1144 534,1148 538,1154" fill="#FFC857"/>
+            <text x="540" y="1212" fill="#9DAFC7" font-family="'Be Vietnam Pro', sans-serif" font-size="13" text-anchor="middle">Xoay (Ch3)</text>
+          </g>
+        </g>
+      </svg>
+    </div>
+
+    <!-- ==================== VIEW 2: MAIN MENU ==================== -->
+    <div class="screen-view" id="view-menu">
+      <svg viewBox="0 0 720 1280" width="100%" height="100%">
+        <!-- Nút Cài đặt trên đỉnh -->
+        <circle cx="664" cy="52" r="28" fill="#101B32" stroke="#68B8DC" stroke-width="2"/>
+        <circle cx="664" cy="52" r="8" fill="none" stroke="#CFEFFF" stroke-width="2"/>
+
+        <!-- Tiêu đề & Phản chiếu -->
+        <text x="360" y="210" fill="#FFC857" font-family="'Playfair Display', serif" font-size="46" font-weight="bold" text-anchor="middle" letter-spacing="8">M I R R O R</text>
+        <g transform="scale(1, -0.85) translate(0, -560)" opacity="0.22">
+          <text x="360" y="210" fill="#3A5E78" font-family="'Playfair Display', serif" font-size="46" font-weight="bold" text-anchor="middle" letter-spacing="8">M I R R O R</text>
+        </g>
+        <text x="360" y="310" fill="#EEF4FA" font-family="'Be Vietnam Pro', sans-serif" font-size="14" text-anchor="middle" opacity="0.8">Cổ Ngữ Chiêm Tinh · Bí Ẩn Giao Thoa</text>
+
+        <!-- Ấn Bia Cổ Ngữ Xoay 280px (x=360, y=500) -->
+        <g id="menu-prophecy-seal">
+          <circle cx="360" cy="500" r="140" fill="none" stroke="#68B8DC" stroke-width="2" stroke-opacity="0.4"/>
+          <circle cx="360" cy="500" r="115" fill="none" stroke="#D4A359" stroke-width="1.5" stroke-opacity="0.35"/>
+          <!-- Tâm ấn: Hai viên thoi Song Tinh -->
+          <polygon points="338,476 360,500 338,524 316,500" fill="#FFC857" stroke="#FFE8A6" stroke-width="1.5"/>
+          <polygon points="382,476 404,500 382,524 360,500" fill="#FFC857" stroke="#FFE8A6" stroke-width="1.5"/>
+        </g>
+
+        <!-- Nút CTA chính Tiếp tục -->
+        <rect x="190" y="794" width="340" height="72" rx="20" fill="#FFC857"/>
+        <text x="360" y="830" fill="#080E24" font-family="'Be Vietnam Pro', sans-serif" font-size="20" font-weight="bold" text-anchor="middle">Tiếp tục</text>
+        <text x="360" y="852" fill="#3E2A00" font-family="'Be Vietnam Pro', sans-serif" font-size="13" text-anchor="middle">Màn 1-1 · Song Tinh</text>
+
+        <!-- Nút phụ Chọn màn -->
+        <rect x="190" y="902" width="340" height="56" rx="18" fill="#101B32" fill-opacity="0.7" stroke="#68B8DC" stroke-width="1.8"/>
+        <text x="360" y="936" fill="#EEF4FA" font-family="'Be Vietnam Pro', sans-serif" font-size="16" text-anchor="middle">Chọn màn chơi</text>
+
+        <!-- Footer -->
+        <text x="360" y="1240" fill="#9DAFC7" font-family="'Be Vietnam Pro', sans-serif" font-size="12" text-anchor="middle">Mirror v0.2.1 · Bản Thử Nghiệm Android</text>
+      </svg>
+    </div>
+
+    <!-- ==================== VIEW 3: LEVEL SELECT ==================== -->
+    <div class="screen-view" id="view-levelselect">
+      <svg viewBox="0 0 720 1280" width="100%" height="100%">
+        <!-- Header -->
+        <circle cx="56" cy="48" r="28" fill="#101B32" stroke="#68B8DC" stroke-width="2"/>
+        <path d="M60 40 L50 48 L60 56" stroke="#EEF4FA" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+        <text x="360" y="55" fill="#FFC857" font-family="'Playfair Display', serif" font-size="24" font-weight="bold" text-anchor="middle">Chòm Sao Tiên Tri</text>
+        <line x1="0" y1="96" x2="720" y2="96" stroke="#68B8DC" stroke-width="1.5" stroke-opacity="0.4"/>
+
+        <!-- Chapter 1 Banner -->
+        <rect x="180" y="130" width="360" height="32" rx="12" fill="#0C1730"/>
+        <text x="360" y="152" fill="#CFEFFF" font-family="'Be Vietnam Pro', sans-serif" font-size="13" text-anchor="middle">Chương I · Khởi Nguyên (Ghép Tiếp Giáp)</text>
+
+        <!-- Đường nối chòm sao uốn lượn -->
+        <path d="M260 230 L460 300 L280 370 L440 440 L300 510 L420 580" fill="none" stroke="#D4A359" stroke-width="2" stroke-opacity="0.45"/>
+
+        <!-- Node 1-1 (Current - Vàng phát sáng) -->
+        <circle cx="260" cy="230" r="22" fill="#101B32" stroke="#FFE8A6" stroke-width="3"/>
+        <circle cx="260" cy="230" r="9" fill="#FFC857"/>
+        <text x="300" y="235" fill="#EEF4FA" font-family="'Be Vietnam Pro', sans-serif" font-size="14">1-1 · Song Tinh</text>
+
+        <!-- Node 1-2 (Locked - Tối mờ) -->
+        <circle cx="460" cy="300" r="18" fill="#101B32" fill-opacity="0.5" stroke="#9DAFC7" stroke-width="1.5" stroke-opacity="0.4"/>
+        <circle cx="460" cy="300" r="4" fill="#9DAFC7" opacity="0.6"/>
+        <text x="410" y="305" fill="#9DAFC7" font-family="'Be Vietnam Pro', sans-serif" font-size="14" text-anchor="end">1-2 · Bảo Tháp</text>
+
+        <!-- Node 1-3 (Locked) -->
+        <circle cx="280" cy="370" r="18" fill="#101B32" fill-opacity="0.5" stroke="#9DAFC7" stroke-width="1.5" stroke-opacity="0.4"/>
+        <text x="320" y="375" fill="#9DAFC7" font-family="'Be Vietnam Pro', sans-serif" font-size="14">1-3 · Cánh Chim</text>
+
+        <!-- Node 1-4, 1-5, 1-6 -->
+        <circle cx="440" cy="440" r="18" fill="#101B32" fill-opacity="0.5" stroke="#9DAFC7" stroke-width="1.5" stroke-opacity="0.4"/>
+        <text x="390" y="445" fill="#9DAFC7" font-family="'Be Vietnam Pro', sans-serif" font-size="14" text-anchor="end">1-4 · Hải Đăng</text>
+
+        <circle cx="300" cy="510" r="18" fill="#101B32" fill-opacity="0.5" stroke="#9DAFC7" stroke-width="1.5" stroke-opacity="0.4"/>
+        <text x="340" y="515" fill="#9DAFC7" font-family="'Be Vietnam Pro', sans-serif" font-size="14">1-5 · Thuyền Sao</text>
+
+        <circle cx="420" cy="580" r="18" fill="#101B32" fill-opacity="0.5" stroke="#9DAFC7" stroke-width="1.5" stroke-opacity="0.4"/>
+        <text x="370" y="585" fill="#9DAFC7" font-family="'Be Vietnam Pro', sans-serif" font-size="14" text-anchor="end">1-6 · Vương Miện</text>
+      </svg>
+    </div>
+
+    <!-- ==================== VIEW 4: MODALS ==================== -->
+    <div class="screen-view" id="view-modals">
+      <svg viewBox="0 0 720 1280" width="100%" height="100%">
+        <!-- Nền mờ phía sau -->
+        <rect x="0" y="0" width="720" height="1280" fill="#050A1A" fill-opacity="0.65"/>
+
+        <!-- Tấm Bia Modal Cài Đặt (460 x 440) -->
+        <rect x="130" y="420" width="460" height="440" rx="24" fill="#101B32" stroke="#68B8DC" stroke-width="4"/>
+        <rect x="136" y="426" width="448" height="428" rx="18" fill="none" stroke="#D4A359" stroke-width="1.2" stroke-opacity="0.35"/>
+
+        <text x="360" y="470" fill="#FFC857" font-family="'Playfair Display', serif" font-size="22" font-weight="bold" text-anchor="middle">Cài Đặt Chiêm Tinh</text>
+
+        <!-- Toggle Row 1: Hình mẫu mờ -->
+        <text x="170" y="540" fill="#EEF4FA" font-family="'Be Vietnam Pro', sans-serif" font-size="15">Hình mẫu mờ trên bàn</text>
+        <!-- Switch Bật -->
+        <rect x="470" y="525" width="56" height="28" rx="14" fill="#FFC857" stroke="#FFE8A6" stroke-width="1.5"/>
+        <circle cx="513" cy="539" r="10" fill="#080E24"/>
+
+        <!-- Toggle Row 2: Giảm chuyển động -->
+        <text x="170" y="605" fill="#EEF4FA" font-family="'Be Vietnam Pro', sans-serif" font-size="15">Giảm chuyển động xoay</text>
+        <!-- Switch Tắt -->
+        <rect x="470" y="590" width="56" height="28" rx="14" fill="#080E24" stroke="#3A5E78" stroke-width="1.5"/>
+        <circle cx="483" cy="604" r="10" fill="#9DAFC7"/>
+
+        <!-- Toggle Row 3: Rung phản hồi -->
+        <text x="170" y="670" fill="#EEF4FA" font-family="'Be Vietnam Pro', sans-serif" font-size="15">Rung phản hồi khi snap</text>
+        <rect x="470" y="655" width="56" height="28" rx="14" fill="#FFC857" stroke="#FFE8A6" stroke-width="1.5"/>
+        <circle cx="513" cy="669" r="10" fill="#080E24"/>
+
+        <!-- Danger Button: Xóa tiến trình -->
+        <text x="360" y="780" fill="#E65A5A" font-family="'Be Vietnam Pro', sans-serif" font-size="14" text-anchor="middle">Xóa toàn bộ tiến trình chơi</text>
+      </svg>
+    </div>
+
+  </div>
+
+  <script src="preview.js"></script>
+</body>
+</html>

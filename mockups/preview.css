@@ -1,0 +1,121 @@
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap');
+
+:root {
+  --navy-space: #080E24;
+  --navy-stele: #101B32;
+  --navy-backdrop: #050A1A;
+  --ice-primary: #68B8DC;
+  --ice-highlight: #CFEFFF;
+  --ice-shadow: #3A5E78;
+  --amber-solid: #FFC857;
+  --amber-grid: #D4A359;
+  --amber-glow: #FFE8A6;
+  --text-primary: #EEF4FA;
+  --text-secondary: #9DAFC7;
+  --danger-warning: #E65A5A;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: #030612;
+  font-family: 'Be Vietnam Pro', -apple-system, sans-serif;
+  color: var(--text-primary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+/* Thanh điều khiển tab */
+.toolbar {
+  display: flex;
+  gap: 12px;
+  background: var(--navy-stele);
+  border: 1px solid var(--ice-primary);
+  border-radius: 28px;
+  padding: 8px 16px;
+  margin-bottom: 20px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+.tab-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-secondary);
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-size: 14px;
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tab-btn:hover {
+  color: var(--text-primary);
+}
+
+.tab-btn.active {
+  background: var(--amber-solid);
+  color: var(--navy-space);
+  font-weight: 600;
+  box-shadow: 0 0 16px rgba(255, 200, 87, 0.4);
+}
+
+/* Giả lập khung điện thoại 720 x 1280 (thu nhỏ tỉ lệ xem trên desktop) */
+.phone-viewport {
+  width: 360px;
+  height: 640px;
+  border-radius: 36px;
+  overflow: hidden;
+  position: relative;
+  background: radial-gradient(circle at 50% 30%, #101B32 0%, #080E24 60%, #050A1A 100%);
+  border: 4px solid var(--ice-shadow);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 40px rgba(104, 184, 220, 0.15);
+}
+
+.screen-view {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: none;
+  flex-direction: column;
+}
+
+.screen-view.active {
+  display: flex;
+}
+
+/* Bộ chọn trạng thái Gameplay */
+.gameplay-states-bar {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  background: rgba(16, 27, 50, 0.8);
+  padding: 6px 12px;
+  border-radius: 16px;
+  margin-bottom: 12px;
+}
+
+.state-chip {
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 12px;
+  background: rgba(104, 184, 220, 0.15);
+  color: var(--ice-highlight);
+  border: 1px solid var(--ice-shadow);
+  cursor: pointer;
+}
+
+.state-chip.active {
+  background: var(--amber-solid);
+  color: var(--navy-space);
+  font-weight: 600;
+}
