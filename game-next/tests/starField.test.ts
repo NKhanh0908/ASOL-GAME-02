@@ -2,7 +2,8 @@ import { describe, expect, test } from 'vitest';
 import {
   generateStarField,
   twinkleAlpha,
-  advanceDrift,
+  driftOffset,
+  DRIFT_PX_PER_MS,
 } from '../src/presentation/starField.ts';
 
 const BOUNDS = { width: 720, height: 1280 };
@@ -52,11 +53,29 @@ describe('starField', () => {
     const [star] = generateStarField(5, BOUNDS).twinkling;
     expect(twinkleAlpha(star, 1000)).toBeCloseTo(twinkleAlpha(star, 1000 + 3200), 5);
   });
+});
 
-  test('sao trôi xuống và quấn vòng khi vượt mép dưới', () => {
-    const star = { ...generateStarField(9, BOUNDS).static[0], y: 1270, driftSpeed: 0.2 };
-    const next = advanceDrift(star, 100, BOUNDS.height);
-    expect(next).toBeLessThan(100); // đã quấn về phía trên
-    expect(next).toBeGreaterThanOrEqual(0);
+describe('driftOffset', () => {
+  test('tăng đều theo thời gian và quấn vòng theo chiều cao', () => {
+    expect(driftOffset(0, 1280)).toBe(0);
+    expect(driftOffset(1000, 1280)).toBeCloseTo(DRIFT_PX_PER_MS * 1000, 6);
+    // Sau đúng một vòng thì trở về 0
+    const oneLap = 1280 / DRIFT_PX_PER_MS;
+    expect(driftOffset(oneLap, 1280)).toBeCloseTo(0, 6);
+    expect(driftOffset(oneLap + 500, 1280)).toBeCloseTo(driftOffset(500, 1280), 6);
+  });
+
+  test('luôn nằm trong [0, height) nên không bao giờ lộ mép', () => {
+    for (let ms = 0; ms < 200000; ms += 3137) {
+      const v = driftOffset(ms, 1280);
+      expect(v).toBeGreaterThanOrEqual(0);
+      expect(v).toBeLessThan(1280);
+    }
+  });
+
+  test('tốc độ trôi đủ chậm để không gây nhiễu thị giác', () => {
+    // Dưới 1px mỗi khung hình ở 60fps
+    expect(DRIFT_PX_PER_MS * 16.7).toBeLessThan(1);
+    expect(DRIFT_PX_PER_MS).toBeGreaterThan(0);
   });
 });

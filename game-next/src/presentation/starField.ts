@@ -84,8 +84,20 @@ export function twinkleAlpha(star: Star, elapsedMs: number): number {
   return Math.max(0, Math.min(1, value * star.alpha + value * (1 - star.alpha) * 0.4));
 }
 
-/** Toạ độ y mới sau khi trôi xuống, quấn vòng lên đỉnh khi vượt mép dưới. */
-export function advanceDrift(star: Star, deltaMs: number, height: number): number {
-  const next = star.y + star.driftSpeed * deltaMs;
-  return next > height ? next - height : next;
+/**
+ * Tốc độ trôi của cả lớp sao, pixel mỗi mili giây.
+ *
+ * Giữ dưới 1px mỗi khung hình ở 60fps: nhanh hơn thì nền giành mất sự chú ý
+ * khỏi bàn chơi.
+ */
+export const DRIFT_PX_PER_MS = 0.012;
+
+/**
+ * Độ dịch của lớp sao tại thời điểm elapsedMs, đã quấn vòng theo chiều cao.
+ *
+ * Cả lớp sao cùng trôi chứ không chỉ vài sao lẻ: nếu phần lớn sao đứng yên
+ * thì mắt đọc ra là nền tĩnh, dù vài chấm có nhúc nhích.
+ */
+export function driftOffset(elapsedMs: number, height: number): number {
+  return ((elapsedMs * DRIFT_PX_PER_MS) % height + height) % height;
 }

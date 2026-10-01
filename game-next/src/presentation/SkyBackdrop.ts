@@ -1,11 +1,11 @@
 import Phaser from 'phaser';
 import { COLOR_TOKENS, DEPTH_TOKENS, LAYOUT_TOKENS } from './designTokens.ts';
-import { generateStarField, twinkleAlpha, advanceDrift } from './starField.ts';
+import { generateStarField, twinkleAlpha, driftOffset } from './starField.ts';
 import type { Star } from './starField.ts';
 
 export type SkyBackdropOptions = {
   seed: number;
-  /** true cho màn chọn màn: sao trôi xuống rồi quấn vòng */
+  /** true cho màn chọn màn: cả lớp sao trôi xuống rồi quấn vòng */
   drift: boolean;
 };
 
@@ -13,16 +13,24 @@ export type SkyBackdropOptions = {
  * Nền trời dùng chung cho mọi màn: gradient bốn chặng, hai nebula, quầng
  * trăng, và trường sao.
  *
- * Phần tĩnh vẽ một lần vào RenderTexture. Chỉ 30 sao nhấp nháy là vẽ lại mỗi
- * khung hình — vẽ lại cả 150 sao mỗi frame là chi phí không cần thiết.
+ * Chia làm ba lớp vì chúng có nhịp khác nhau:
+ *  - Lớp trời (gradient, nebula, trăng) không bao giờ đổi -> RenderTexture.
+ *  - Lớp sao tĩnh đổi vị trí cả khối khi trôi -> TileSprite, cuộn bằng
+ *    tilePositionY nên không phải vẽ lại 120 sao mỗi khung hình.
+ *  - Lớp sao nhấp nháy đổi độ sáng từng sao -> Graphics, chỉ 30 sao.
+ *
+ * Gộp lớp sao vào lớp trời là sai: lúc đó sao không thể trôi, và vì chúng
+ * chiếm đa số nên mắt đọc ra nền hoàn toàn tĩnh.
  */
 export class SkyBackdrop {
   private readonly scene: Phaser.Scene;
   private readonly options: SkyBackdropOptions;
-  private readonly staticLayer: Phaser.GameObjects.RenderTexture;
+  private readonly skyLayer: Phaser.GameObjects.RenderTexture;
+  private readonly starLayer: Phaser.GameObjects.TileSprite;
   private readonly twinkleLayer: Phaser.GameObjects.Graphics;
   private readonly twinklingStars: Star[];
   private readonly staticStars: Star[];
+  private readonly starTextureKey: string;
   private elapsedMs = 0;
 
   constructor(scene: Phaser.Scene, options: SkyBackdropOptions) {
@@ -33,23 +41,30 @@ export class SkyBackdrop {
     const field = generateStarField(options.seed, { width, height });
     this.staticStars = field.static;
     this.twinklingStars = field.twinkling;
+    this.starTextureKey = `sky_stars_${options.seed}`;
 
-    this.staticLayer = scene.add
+    this.skyLayer = scene.add
       .renderTexture(0, 0, width, height)
       .setOrigin(0, 0)
       .setDepth(DEPTH_TOKENS.backgroundSky);
 
-    this.twinkleLayer = scene.add.graphics().setDepth(DEPTH_TOKENS.backgroundSky + 1);
+    this.paintSky(width, height);
+    this.buildStarTexture(width, height);
 
-    this.paintStatic();
+    this.starLayer = scene.add
+      .tileSprite(0, 0, width, height, this.starTextureKey)
+      .setOrigin(0, 0)
+      .setDepth(DEPTH_TOKENS.backgroundSky + 1);
+
+    this.twinkleLayer = scene.add.graphics().setDepth(DEPTH_TOKENS.backgroundSky + 2);
   }
 
-  private paintStatic(): void {
-    const { width, height } = LAYOUT_TOKENS.canvas;
+  /** Gradient trời, hai nebula và quầng trăng — phần không bao giờ đổi. */
+  private paintSky(width: number, height: number): void {
     const g = this.scene.add.graphics();
 
-    // Gradient trời: Phaser Graphics không có gradient fill, nên xấp xỉ bằng
-    // các dải ngang nội suy giữa bốn chặng màu.
+    // Phaser Graphics không có gradient fill, nên xấp xỉ bằng các dải ngang
+    // nội suy giữa bốn chặng màu.
     const stops = COLOR_TOKENS.sky.stops.map((hex) =>
       Phaser.Display.Color.HexStringToColor(hex)
     );
@@ -71,19 +86,29 @@ export class SkyBackdrop {
       g.fillRect(0, (height / bandCount) * i, width, height / bandCount + 1);
     }
 
-    // Hai nebula và quầng trăng: xấp xỉ radial gradient bằng các vòng tròn
-    // đồng tâm giảm dần độ mờ.
+    // Xấp xỉ radial gradient bằng các vòng tròn đồng tâm giảm dần độ mờ.
     this.paintGlow(g, 108, 436, 396, COLOR_TOKENS.sky.nebulaBlue, 0.45);
     this.paintGlow(g, 648, 966, 360, COLOR_TOKENS.sky.nebulaPink, 0.32);
     this.paintGlow(g, 619, 140, 158, COLOR_TOKENS.sky.moonHalo, 0.35);
     this.paintGlow(g, 619, 140, 62, COLOR_TOKENS.sky.moonCore, 0.9);
 
+    this.skyLayer.draw(g);
+    g.destroy();
+  }
+
+  /**
+   * Nướng 120 sao tĩnh thành một texture để TileSprite cuộn được cả khối.
+   * Texture lặp theo chiều dọc nên sao phải phủ đều, không chừa dải trống.
+   */
+  private buildStarTexture(width: number, height: number): void {
+    if (this.scene.textures.exists(this.starTextureKey)) return;
+
+    const g = this.scene.make.graphics({ x: 0, y: 0 }, false);
     for (const star of this.staticStars) {
       g.fillStyle(Phaser.Display.Color.HexStringToColor(star.color).color, star.alpha);
       g.fillCircle(star.x, star.y, star.r);
     }
-
-    this.staticLayer.draw(g);
+    g.generateTexture(this.starTextureKey, width, height);
     g.destroy();
   }
 
@@ -108,22 +133,31 @@ export class SkyBackdrop {
     this.elapsedMs += deltaMs;
     const { height } = LAYOUT_TOKENS.canvas;
 
+    if (this.options.drift) {
+      // tilePositionY âm dần thì texture đi xuống, tức sao rơi xuống.
+      this.starLayer.tilePositionY = -driftOffset(this.elapsedMs, height);
+    }
+
     this.twinkleLayer.clear();
     for (const star of this.twinklingStars) {
-      if (this.options.drift) {
-        star.y = advanceDrift(star, deltaMs, height);
-      }
+      const y = this.options.drift
+        ? (star.y + driftOffset(this.elapsedMs, height)) % height
+        : star.y;
       const alpha = twinkleAlpha(star, this.elapsedMs);
       this.twinkleLayer.fillStyle(
         Phaser.Display.Color.HexStringToColor(star.color).color,
         alpha
       );
-      this.twinkleLayer.fillCircle(star.x, star.y, star.r);
+      this.twinkleLayer.fillCircle(star.x, y, star.r);
     }
   }
 
   public destroy(): void {
-    this.staticLayer.destroy();
+    this.skyLayer.destroy();
+    this.starLayer.destroy();
     this.twinkleLayer.destroy();
+    if (this.scene.textures.exists(this.starTextureKey)) {
+      this.scene.textures.remove(this.starTextureKey);
+    }
   }
 }

@@ -95,14 +95,14 @@ describe('Level 1-1 Song Tinh Content and Catalog Loader', () => {
     // Đặt D1
     const p1Hitbox = pieceHitbox(pD1, { kind: 'tray', turns: 0 }, layout, 0);
     controller.onPointerDown(p1Hitbox.x + p1Hitbox.width / 2, p1Hitbox.y + p1Hitbox.height / 2, layout);
-    const a1Canvas = gridToCanvas(16, 56, layout);
+    const a1Canvas = gridToCanvas(40, 80, layout);
     controller.onPointerMove(a1Canvas.x, a1Canvas.y, layout);
     controller.onPointerUp(a1Canvas.x, a1Canvas.y, layout);
 
     // Đặt D2
     const p2Hitbox = pieceHitbox(pD2, { kind: 'tray', turns: 0 }, layout, 1);
     controller.onPointerDown(p2Hitbox.x + p2Hitbox.width / 2, p2Hitbox.y + p2Hitbox.height / 2, layout);
-    const a2Canvas = gridToCanvas(64, 56, layout);
+    const a2Canvas = gridToCanvas(88, 80, layout);
     controller.onPointerMove(a2Canvas.x, a2Canvas.y, layout);
     controller.onPointerUp(a2Canvas.x, a2Canvas.y, layout);
 
@@ -127,14 +127,14 @@ describe('Level 1-1 Song Tinh Content and Catalog Loader', () => {
     // Đặt D1
     const p1Hitbox = pieceHitbox(pD1, { kind: 'tray', turns: 0 }, layout, 0);
     controller.onPointerDown(p1Hitbox.x + p1Hitbox.width / 2, p1Hitbox.y + p1Hitbox.height / 2, layout);
-    const a1Canvas = gridToCanvas(16, 56, layout);
+    const a1Canvas = gridToCanvas(40, 80, layout);
     controller.onPointerMove(a1Canvas.x, a1Canvas.y, layout);
     controller.onPointerUp(a1Canvas.x, a1Canvas.y, layout);
 
     // Đặt D2
     const p2Hitbox = pieceHitbox(pD2, { kind: 'tray', turns: 0 }, layout, 1);
     controller.onPointerDown(p2Hitbox.x + p2Hitbox.width / 2, p2Hitbox.y + p2Hitbox.height / 2, layout);
-    const a2Canvas = gridToCanvas(64, 56, layout);
+    const a2Canvas = gridToCanvas(88, 80, layout);
     controller.onPointerMove(a2Canvas.x, a2Canvas.y, layout);
     controller.onPointerUp(a2Canvas.x, a2Canvas.y, layout);
 

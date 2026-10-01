@@ -2,6 +2,7 @@ import { describe, expect, test } from 'vitest';
 import { makeAdjacentFixture } from '../src/content/fixtures.ts';
 import { validateLevel } from '../src/content/validate.ts';
 import { createPuzzle } from '../src/domain/session.ts';
+import { loadLevel } from '../src/content/catalog.ts';
 import { computeLayout, gridToCanvas } from '../src/presentation/layout.ts';
 import { beginDrag, cancelDrag, finishDrag, updateDrag } from '../src/application/drag.ts';
 
@@ -23,8 +24,8 @@ describe('Hitbox, Layout and Drag Transactions', () => {
 
   test('updateDrag nhận biết snapCandidateId khi ở gần neo và không mutate committedState', () => {
     const state = createPuzzle(level);
-    // Neo A của D1 là (24, 76)
-    const anchorCanvas = gridToCanvas(24, 76, layout);
+    // Neo A của D1: gốc (24, 76), tâm (44, 96). Kéo thả tính theo TÂM mảnh.
+    const anchorCanvas = gridToCanvas(44, 96, layout);
 
     // Kéo từ khay lên bàn
     const drag = beginDrag(state, pieceD1, 200, 1000, layout);
@@ -59,7 +60,7 @@ describe('Hitbox, Layout and Drag Transactions', () => {
 
   test('finishDrag gần neo thực hiện snap vào neo A', () => {
     const state = createPuzzle(level);
-    const anchorCanvas = gridToCanvas(24, 76, layout);
+    const anchorCanvas = gridToCanvas(44, 96, layout);
 
     const drag = beginDrag(state, pieceD1, 200, 1000, layout);
     drag.pointerOffset = { x: 0, y: 0 };
@@ -88,5 +89,51 @@ describe('Hitbox, Layout and Drag Transactions', () => {
     const transition = cancelDrag(drag, level);
     expect(transition.state).toEqual(state);
     expect(transition.state.pieces.D1).toEqual({ kind: 'tray', turns: 0 });
+  });
+});
+
+describe('Thả mảnh: grid luôn là tâm mảnh', () => {
+  const layout = computeLayout(720, 1280);
+  const level = loadLevel('1-1', 'campaign');
+  const d1 = level.pieces.find((p) => p.id === 'D1')!;
+
+  /** Kéo bằng tâm: pointerOffset = 0 nghĩa là con trỏ chính là tâm mảnh. */
+  function dropAtCenter(gx: number, gy: number) {
+    const state = createPuzzle(level);
+    const drag = beginDrag(state, d1, 300, 1000, layout);
+    drag.pointerOffset = { x: 0, y: 0 };
+    const canvas = gridToCanvas(gx, gy, layout);
+    return finishDrag(drag, level, canvas.x, canvas.y, layout);
+  }
+
+  test('thả lệch lên-trái khỏi tâm mục tiêu: mảnh nằm đúng chỗ thả, không nhảy xuống', () => {
+    // Neo A của D1: gốc (16, 56), tâm (40, 80). Thả tâm tại (28, 64):
+    // xa tâm neo hơn là xa gốc neo, đúng trường hợp làm lộ lỗi.
+    const t = dropAtCenter(28, 64);
+
+    expect(t.outcome).toBe('temporary');
+    const state = t.state.pieces.D1;
+    expect(state.kind).toBe('temporary');
+    if (state.kind !== 'temporary') throw new Error('unreachable');
+
+    // Gốc phải bằng tâm trừ nửa khung; nếu lấy thẳng tâm làm gốc thì
+    // mảnh hiện xuống dưới-phải đúng 24 ô.
+    expect({ x: state.x, y: state.y }).toEqual({ x: 28 - 24, y: 64 - 24 });
+  });
+
+  test('thả đúng tâm neo thì hít vào neo', () => {
+    const t = dropAtCenter(40, 80);
+    expect(t.outcome).toBe('snapped');
+    expect(t.state.pieces.D1).toEqual({ kind: 'snapped', anchorId: 'A', turns: 0 });
+  });
+
+  test('thả gần gốc neo nhưng xa tâm neo thì KHÔNG được hít', () => {
+    // Tâm thả tại (72,120): xa mọi tâm neo của D1 nên không được hít,
+    // và gốc (48,96) vẫn lọt bàn nên mảnh nằm tạm chứ không về khay.
+    const t = dropAtCenter(72, 120);
+    expect(t.outcome).toBe('temporary');
+    const state = t.state.pieces.D1;
+    if (state.kind !== 'temporary') throw new Error('unreachable');
+    expect({ x: state.x, y: state.y }).toEqual({ x: 48, y: 96 });
   });
 });
