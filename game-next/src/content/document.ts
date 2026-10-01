@@ -30,6 +30,8 @@ export type LevelDocument = {
   targetCells: Cell[];
   sampleSolutions: Array<Array<{ pieceId: string; anchorId: string; turns: Turns }>>;
   learningObjective: string;
+  /** Câu thơ hiện ở màn hoàn thành; màn nào không có thì ẩn dòng này */
+  victoryVerse?: string;
   difficultyEstimate: 1 | 2 | 3 | 4 | 5;
   distractors: Array<{ pieceId: string; anchorId?: string; reason: string }>;
   ftueSteps: Array<{

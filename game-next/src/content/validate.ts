@@ -32,6 +32,9 @@ export function validateLevel(input: unknown): ValidationResult {
   if (typeof doc.rotationEnabled !== 'boolean') {
     issues.push({ levelId, field: 'rotationEnabled', code: 'invalid-rotation-flag' });
   }
+  if (doc.victoryVerse !== undefined && typeof doc.victoryVerse !== 'string') {
+    issues.push({ levelId, field: 'victoryVerse', code: 'invalid-victory-verse' });
+  }
 
   // Chapter 1 & 2: rotation must not be enabled
   if ((doc.chapter === 1 || doc.chapter === 2) && doc.rotationEnabled) {

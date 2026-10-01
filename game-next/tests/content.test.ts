@@ -68,7 +68,7 @@ describe('Level Content and Validation', () => {
 
   test('cấm vùng giao (xếp chồng) trong nghiệm Chapter 1', () => {
     const doc = makeAdjacentFixture();
-    // Đặt D2 cùng neo với D1 (24, 76) khiến 2 mảnh đè lên nhau
+    // Đặt D2 cùng neo với D1 (16, 56) khiến 2 mảnh đè lên nhau
     doc.pieces[1].anchors[0] = { id: 'A', x: 24, y: 76 };
     doc.sampleSolutions[0][1].anchorId = 'A';
     const result = validateLevel(doc);

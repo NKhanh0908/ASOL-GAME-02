@@ -206,8 +206,8 @@ export class BoardRenderer {
     this.targetGraphics.clear();
     if (snapshot.showTarget) {
       const targetCenters = [
-        gridToCanvas(44, 96, this.layout),
-        gridToCanvas(84, 96, this.layout),
+        gridToCanvas(40, 80, this.layout),
+        gridToCanvas(88, 80, this.layout),
       ];
 
       for (let idx = 0; idx < targetCenters.length; idx++) {
