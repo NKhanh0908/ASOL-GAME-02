@@ -1,24 +1,27 @@
 import type { Piece, PieceState } from '../domain/model.ts';
 import { GRID_HEIGHT, GRID_WIDTH } from '../domain/model.ts';
+import { LAYOUT_TOKENS } from './designTokens.ts';
 
 export type LayoutMetrics = {
   boardBounds: { x: number; y: number; width: number; height: number };
   cellPixel: 4;
   trayBounds: { x: number; y: number; width: number; height: number };
+  headerBounds: { y: number; height: number };
+  bottomBarBounds: { y: number; height: number };
   scale: number;
 };
 
-const BASE_WIDTH = 720;
-const BASE_HEIGHT = 1280;
-const BOARD_X = 104;
-const BOARD_Y = 168;
-const BOARD_WIDTH = 512;
-const BOARD_HEIGHT = 768;
+const BASE_WIDTH = LAYOUT_TOKENS.canvas.width;
+const BASE_HEIGHT = LAYOUT_TOKENS.canvas.height;
+const BOARD_X = LAYOUT_TOKENS.board.x;
+const BOARD_Y = LAYOUT_TOKENS.board.y;
+const BOARD_WIDTH = LAYOUT_TOKENS.board.width;
+const BOARD_HEIGHT = LAYOUT_TOKENS.board.height;
 const CELL_PIXEL: 4 = 4;
-const TRAY_X = 104;
-const TRAY_Y = 960;
-const TRAY_WIDTH = 512;
-const TRAY_HEIGHT = 200;
+const TRAY_X = LAYOUT_TOKENS.tray.x;
+const TRAY_Y = LAYOUT_TOKENS.tray.y;
+const TRAY_WIDTH = LAYOUT_TOKENS.tray.width;
+const TRAY_HEIGHT = LAYOUT_TOKENS.tray.height;
 
 export function computeLayout(
   viewportWidth: number,
@@ -42,6 +45,14 @@ export function computeLayout(
       y: TRAY_Y,
       width: TRAY_WIDTH,
       height: TRAY_HEIGHT,
+    },
+    headerBounds: {
+      y: LAYOUT_TOKENS.header.y,
+      height: LAYOUT_TOKENS.header.height,
+    },
+    bottomBarBounds: {
+      y: LAYOUT_TOKENS.bottomBar.y,
+      height: LAYOUT_TOKENS.bottomBar.height,
     },
     scale: scale > 0 ? scale : 1,
   };
