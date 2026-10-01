@@ -66,7 +66,7 @@ export class MenuScene extends Phaser.Scene {
     const titleText = this.add
       .text(360, 210, 'M I R R O R', {
         fontFamily: TYPO_TOKENS.fontFamily.serif,
-        fontSize: '46px',
+        fontSize: TYPO_TOKENS.fontSize.heroTitle,
         color: COLOR_TOKENS.amberGold.solidPrimary,
       })
       .setOrigin(0.5);
@@ -75,7 +75,7 @@ export class MenuScene extends Phaser.Scene {
     const reflectionText = this.add
       .text(360, 260, 'M I R R O R', {
         fontFamily: TYPO_TOKENS.fontFamily.serif,
-        fontSize: '46px',
+        fontSize: TYPO_TOKENS.fontSize.heroTitle,
         color: COLOR_TOKENS.iceGlass.bevelShadow,
       })
       .setOrigin(0.5)

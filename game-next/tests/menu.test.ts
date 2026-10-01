@@ -1,4 +1,5 @@
 import { describe, expect, test } from 'vitest';
+import { COLOR_TOKENS, TYPO_TOKENS } from '../src/presentation/designTokens.ts';
 import { campaignManifest } from '../src/content/manifest.ts';
 import { levelAccess, resolveNextCampaignLevel } from '../src/domain/campaign.ts';
 
@@ -42,5 +43,15 @@ describe('Menu Campaign Navigation and Chapter Grouping', () => {
     const res1 = resolveNextCampaignLevel(campaignManifest, ['1-1']);
     expect(res1.level.id).toBe('1-1');
     expect(res1.type).toBe('replay');
+  });
+});
+
+describe('Màn chính theo mockup improve-v1', () => {
+  test('màu nền canvas khớp chặng đầu của gradient trời', () => {
+    expect(COLOR_TOKENS.sky.stops[0]).toBe('#1A2470');
+  });
+
+  test('tiêu đề game dùng cỡ chữ hero của bộ token', () => {
+    expect(TYPO_TOKENS.fontSize.heroTitle).toBe('52px');
   });
 });

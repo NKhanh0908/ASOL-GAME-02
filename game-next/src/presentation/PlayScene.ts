@@ -12,6 +12,7 @@ import { computeLayout, gridToCanvas, pieceRadiusPx } from './layout.ts';
 import type { LayoutMetrics } from './layout.ts';
 
 import { SkyBackdrop } from './SkyBackdrop.ts';
+import { COLOR_TOKENS } from './designTokens.ts';
 import { TextureFactory } from './TextureFactory.ts';
 
 import { PauseDialog } from './PauseDialog.ts';
@@ -296,7 +297,7 @@ export class PlayScene extends Phaser.Scene {
         fontSize: '26px',
         color: '#FFD166',
         fontStyle: 'bold',
-        stroke: '#080E24',
+        stroke: COLOR_TOKENS.sky.stops[0],
         strokeThickness: 5,
         shadow: {
           offsetX: 0,

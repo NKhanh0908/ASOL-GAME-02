@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import type { Level, Piece, PieceState } from '../domain/model.ts';
+import { GRID_WIDTH, GRID_HEIGHT } from '../domain/model.ts';
 import type { LayoutMetrics } from './layout.ts';
 import {
   gridToCanvas,
@@ -370,13 +371,13 @@ export class BoardRenderer {
 
   /**
    * Trạng thái 3: Vùng giao 2 lớp (Overlap Inversion)
-   * Triệt tiêu vùng giao về màu nền mặt bia `#101B32`
+   * Triệt tiêu vùng giao về màu mặt bàn
    */
   private drawOverlapInversion(
     snapped: Array<{ piece: Piece; pState: Extract<PieceState, { kind: 'snapped' }> }>,
     radiusPx: number
   ): void {
-    // Với 2 mảnh Song Tinh tại 1-1, 2 mảnh tiếp giáp chạm đỉnh tại (64, 96)
+    // Hai mảnh tiếp giáp chạm đỉnh tại tâm bàn
     // Nếu trong màn có overlap (như Chương 2), vẽ vùng giao triệt tiêu
     const centers = snapped.map((s) => {
       const anchor = s.piece.anchors.find((a) => a.id === s.pState.anchorId) ?? s.piece.anchors[0];
@@ -406,7 +407,7 @@ export class BoardRenderer {
    * Trạng thái 5: Hoàn thành (Victory Celebration)
    */
   private drawVictoryCelebration(radiusPx: number): void {
-    const contact = gridToCanvas(64, 96, this.layout);
+    const contact = gridToCanvas(GRID_WIDTH / 2, GRID_HEIGHT / 2, this.layout);
 
     // Ngôi sao 4 cánh lấp lánh tại tâm kết nối
     const sparkleSize = 16 + Math.sin(this.victoryPulse) * 4;

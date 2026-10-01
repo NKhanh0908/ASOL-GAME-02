@@ -177,7 +177,7 @@ export class LevelSelectScene extends Phaser.Scene {
 
     // 2. Dải màu chuyển tiếp 3 Chương trên nền bản đồ
     const chBackdrop = this.add.graphics();
-    // Chương I (y=0..1160): Navy sâu #080E24
+    // Chương I (y=0..1160)
     chBackdrop.fillStyle(0x080e24, 0.98);
     chBackdrop.fillRect(0, 0, 720, 1160);
 
