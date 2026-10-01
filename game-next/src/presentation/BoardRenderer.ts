@@ -11,7 +11,8 @@ import {
 import { GridPainter } from './GridPainter.ts';
 import { drawJewel } from './JewelShape.ts';
 import type { DragInfo, PlayViewSnapshot } from '../application/playController.ts';
-import { COLOR_NUMBERS, DEPTH_TOKENS, PIECE_TOKENS } from './designTokens.ts';
+import { COLOR_NUMBERS, DEPTH_TOKENS, LAYOUT_TOKENS, PIECE_TOKENS } from './designTokens.ts';
+import { TEXTURE_KEYS } from './TextureFactory.ts';
 
 export class BoardRenderer {
   private readonly scene: Phaser.Scene;
@@ -22,6 +23,8 @@ export class BoardRenderer {
   private piecesGraphics: Phaser.GameObjects.Graphics;
   private fxGraphics: Phaser.GameObjects.Graphics;
   private gridTexture: Phaser.GameObjects.RenderTexture | null = null;
+  private boardFrame: Phaser.GameObjects.Image | null = null;
+  private trayFrame: Phaser.GameObjects.Image | null = null;
 
   private ring1Angle = 0;
   private ring2Angle = 0;
@@ -50,51 +53,39 @@ export class BoardRenderer {
 
     this.bgGraphics.clear();
 
-    // 1. Mặt đá Tấm Bia Tiên Tri (Stele Surface)
-    this.bgGraphics.fillStyle(COLOR_NUMBERS.boardSurfaceTop, 0.98);
+    const radius = LAYOUT_TOKENS.board.cornerRadius;
+
+    // 1. Mặt bàn: gradient hai chặng, xấp xỉ bằng hai lớp vì Graphics không
+    // có gradient fill.
+    this.bgGraphics.fillStyle(COLOR_NUMBERS.boardSurfaceTop, 1);
     this.bgGraphics.fillRoundedRect(
       boardBounds.x,
       boardBounds.y,
       boardBounds.width,
       boardBounds.height,
-      36
+      radius
     );
-
-    // 2. Viền kính dày 10px (Ice Glass Bevel 10px)
-    this.bgGraphics.lineStyle(10, COLOR_NUMBERS.icePrimary, 0.95);
-    this.bgGraphics.strokeRoundedRect(
+    this.bgGraphics.fillStyle(COLOR_NUMBERS.boardSurfaceBottom, 0.6);
+    this.bgGraphics.fillRoundedRect(
       boardBounds.x,
-      boardBounds.y,
+      boardBounds.y + boardBounds.height / 2,
       boardBounds.width,
-      boardBounds.height,
-      36
+      boardBounds.height / 2,
+      radius
     );
 
-    // Điểm phản quang sáng (Bevel highlight) ở cạnh trên
-    this.bgGraphics.lineStyle(3, COLOR_NUMBERS.iceHighlight, 0.9);
-    this.bgGraphics.beginPath();
-    this.bgGraphics.arc(boardBounds.x + 36, boardBounds.y + 36, 36, Math.PI, Math.PI * 1.5);
-    this.bgGraphics.lineTo(boardBounds.x + boardBounds.width - 36, boardBounds.y);
-    this.bgGraphics.arc(boardBounds.x + boardBounds.width - 36, boardBounds.y + 36, 36, Math.PI * 1.5, Math.PI * 2);
-    this.bgGraphics.strokePath();
-
-    // Rãnh bóng tối ở cạnh dưới (Bevel shadow)
-    this.bgGraphics.lineStyle(3, COLOR_NUMBERS.iceShadow, 0.85);
-    this.bgGraphics.beginPath();
-    this.bgGraphics.arc(boardBounds.x + 36, boardBounds.y + boardBounds.height - 36, 36, Math.PI, Math.PI * 0.5, true);
-    this.bgGraphics.lineTo(boardBounds.x + boardBounds.width - 36, boardBounds.y + boardBounds.height);
-    this.bgGraphics.arc(boardBounds.x + boardBounds.width - 36, boardBounds.y + boardBounds.height - 36, 36, Math.PI * 0.5, 0, true);
-    this.bgGraphics.strokePath();
-
-    // 3. Đường chỉ phụ vàng hổ phách đứt nét bên trong (cách viền 8px)
-    this.bgGraphics.lineStyle(1.5, COLOR_NUMBERS.gridModule, 0.45);
-    this.bgGraphics.strokeRoundedRect(
-      boardBounds.x + 8,
-      boardBounds.y + 8,
-      boardBounds.width - 16,
-      boardBounds.height - 16,
-      28
-    );
+    // 2. Khung kính: một texture dùng chung cho bàn và khay, thay cho khối
+    // bevel thủ công dựng bằng arc trước đây.
+    if (!this.boardFrame) {
+      this.boardFrame = this.scene.add
+        .image(boardBounds.x, boardBounds.y, TEXTURE_KEYS.glassFrameBoard)
+        .setOrigin(0, 0)
+        .setDepth(DEPTH_TOKENS.boardGrid + 1);
+      this.trayFrame = this.scene.add
+        .image(trayBounds.x, trayBounds.y, TEXTURE_KEYS.glassFrameTray)
+        .setOrigin(0, 0)
+        .setDepth(DEPTH_TOKENS.trayArea);
+    }
 
     // 4. Lưới thước đo năm lớp — GridPainter dựng một lần vào RenderTexture
     if (!this.gridTexture) {

@@ -1,8 +1,10 @@
 import type Phaser from 'phaser';
-import { COLOR_TOKENS } from './designTokens.ts';
+import { COLOR_TOKENS, GLASS_TOKENS, LAYOUT_TOKENS } from './designTokens.ts';
 
 export const TEXTURE_KEYS = {
   steleBorder: 'stele_border_9slice',
+  glassFrameBoard: 'glass_frame_board',
+  glassFrameTray: 'glass_frame_tray',
   btnCircle112: 'btn_circle_112',
   btnCircle80: 'btn_circle_80',
   btnCircle64: 'btn_circle_64',
@@ -32,6 +34,22 @@ export class TextureFactory {
   public static generateAll(scene: Phaser.Scene): void {
     const tm = scene.textures;
     if (!tm) return;
+
+    // 0. Khung kính dùng chung cho bàn chơi và khay mảnh
+    TextureFactory.makeGlassFrame(
+      scene,
+      TEXTURE_KEYS.glassFrameBoard,
+      LAYOUT_TOKENS.board.width,
+      LAYOUT_TOKENS.board.height,
+      LAYOUT_TOKENS.board.cornerRadius
+    );
+    TextureFactory.makeGlassFrame(
+      scene,
+      TEXTURE_KEYS.glassFrameTray,
+      LAYOUT_TOKENS.tray.width,
+      LAYOUT_TOKENS.tray.height,
+      LAYOUT_TOKENS.tray.cornerRadius
+    );
 
     // 0a. Nút tròn chính 112px (Chuẩn 56dp: Đặt lại, Xoay)
     if (!tm.exists(TEXTURE_KEYS.btnCircle112)) {
@@ -466,5 +484,51 @@ export class TextureFactory {
         canvas.refresh();
       }
     }
+  }
+
+  /**
+   * Khung kính bao quanh bàn chơi và khay mảnh: gradient băng từ trắng xanh
+   * xuống xanh đậm, bo góc, viền tóc trắng mờ ở mép ngoài.
+   *
+   * Khoét lòng khung để chỉ còn lại dải viền, nên một texture dùng được cho
+   * mọi kích thước khung mà không phải vẽ bevel thủ công từng cạnh.
+   */
+  public static makeGlassFrame(
+    scene: Phaser.Scene,
+    key: string,
+    width: number,
+    height: number,
+    radius: number
+  ): string {
+    const tm = scene.textures;
+    if (!tm || tm.exists(key)) return key;
+
+    const canvas = tm.createCanvas(key, width, height);
+    if (!canvas) return key;
+    const ctx = canvas.context;
+
+    const gradient = ctx.createLinearGradient(0, 0, 0, height);
+    GLASS_TOKENS.frameStops.forEach((stop, index) => {
+      gradient.addColorStop(GLASS_TOKENS.frameStopOffsets[index], stop);
+    });
+
+    ctx.fillStyle = gradient;
+    ctx.beginPath();
+    ctx.roundRect(0, 0, width, height, radius);
+    ctx.fill();
+
+    ctx.strokeStyle = `rgba(255, 255, 255, ${GLASS_TOKENS.hairline.alpha})`;
+    ctx.lineWidth = GLASS_TOKENS.hairline.width;
+    ctx.stroke();
+
+    const pad = GLASS_TOKENS.padding;
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.beginPath();
+    ctx.roundRect(pad, pad, width - pad * 2, height - pad * 2, Math.max(0, radius - pad));
+    ctx.fill();
+    ctx.globalCompositeOperation = 'source-over';
+
+    canvas.refresh();
+    return key;
   }
 }
