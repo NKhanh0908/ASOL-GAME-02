@@ -9,12 +9,23 @@ import { BoardRenderer } from './BoardRenderer.ts';
 import { Hud } from './Hud.ts';
 import { computeLayout } from './layout.ts';
 
+type StarParticle = {
+  x: number;
+  y: number;
+  r: number;
+  baseAlpha: number;
+  speed: number;
+  phase: number;
+};
+
 export class PlayScene extends Phaser.Scene {
   private level!: Level;
   private mode: 'campaign' | 'harness' = 'campaign';
   private controller!: PlayController;
   private boardRenderer!: BoardRenderer;
   private hud!: Hud;
+  private starGraphics!: Phaser.GameObjects.Graphics;
+  private stars: StarParticle[] = [];
 
   constructor() {
     super({ key: 'PlayScene' });
@@ -28,6 +39,21 @@ export class PlayScene extends Phaser.Scene {
 
   create(): void {
     const layout = computeLayout(this.scale.width, this.scale.height);
+
+    // 1. Sao li ti nền galaxy
+    this.starGraphics = this.add.graphics();
+    this.stars = [];
+    for (let i = 0; i < 40; i++) {
+      this.stars.push({
+        x: Phaser.Math.Between(10, 710),
+        y: Phaser.Math.Between(10, 1270),
+        r: Phaser.Math.FloatBetween(0.8, 2.2),
+        baseAlpha: Phaser.Math.FloatBetween(0.15, 0.6),
+        speed: Phaser.Math.FloatBetween(0.1, 0.3),
+        phase: Phaser.Math.FloatBetween(0, Math.PI * 2),
+      });
+    }
+
     const progressRepo = createProgressRepository(
       localStorage,
       campaignManifest,
@@ -99,6 +125,19 @@ export class PlayScene extends Phaser.Scene {
     });
 
     this.refreshView();
+  }
+
+  update(_time: number, delta: number): void {
+    this.starGraphics.clear();
+    for (const star of this.stars) {
+      star.y += star.speed * (delta / 16);
+      star.phase += 0.02;
+      if (star.y > 1280) star.y = 0;
+
+      const alpha = star.baseAlpha + Math.sin(star.phase) * 0.2;
+      this.starGraphics.fillStyle(0xffffff, Phaser.Math.Clamp(alpha, 0.08, 0.8));
+      this.starGraphics.fillCircle(star.x, star.y, star.r);
+    }
   }
 
   private refreshView(): void {

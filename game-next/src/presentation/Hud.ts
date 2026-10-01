@@ -21,14 +21,14 @@ export class Hud {
     this.scene = scene;
     this.callbacks = callbacks;
 
-    // 1. Nút Menu (góc trên trái, kích thước >= 48x48 dp)
+    // 1. Nút Menu (góc trên trái)
     const menuBtn = this.scene.add
-      .text(24, 40, '≡ MENU', {
-        fontFamily: 'sans-serif',
-        fontSize: '18px',
+      .text(24, 40, '← MENU', {
+        fontFamily: 'system-ui, -apple-system, sans-serif',
+        fontSize: '15px',
         color: '#EEF4FA',
-        backgroundColor: '#101B32',
-        padding: { x: 16, y: 12 },
+        backgroundColor: '#0c1730',
+        padding: { x: 14, y: 10 },
       })
       .setInteractive({ useHandCursor: true });
     menuBtn.on('pointerdown', () => this.callbacks.onMenu());
@@ -36,21 +36,21 @@ export class Hud {
     // 2. Tiêu đề màn chơi (giữa header)
     this.titleText = this.scene.add
       .text(360, 52, title, {
-        fontFamily: 'sans-serif',
-        fontSize: '24px',
-        color: '#FFC857',
+        fontFamily: 'system-ui, -apple-system, sans-serif',
+        fontSize: '20px',
+        color: '#FFD166',
         fontStyle: 'bold',
       })
       .setOrigin(0.5);
 
     // 3. Nút Toggle bóng mục tiêu (góc trên phải)
     this.targetButton = this.scene.add
-      .text(696, 40, 'MẪU: BẬT', {
-        fontFamily: 'sans-serif',
-        fontSize: '16px',
-        color: '#68B8DC',
-        backgroundColor: '#101B32',
-        padding: { x: 12, y: 12 },
+      .text(696, 40, 'BÓNG MẪU: BẬT', {
+        fontFamily: 'system-ui, -apple-system, sans-serif',
+        fontSize: '14px',
+        color: '#4ECDC4',
+        backgroundColor: '#0c1730',
+        padding: { x: 12, y: 10 },
       })
       .setOrigin(1, 0)
       .setInteractive({ useHandCursor: true });
@@ -60,24 +60,24 @@ export class Hud {
     // Nút Đặt lại (Reset)
     const resetBtn = this.scene.add
       .text(104, 1200, '↺ ĐẶT LẠI', {
-        fontFamily: 'sans-serif',
-        fontSize: '18px',
+        fontFamily: 'system-ui, -apple-system, sans-serif',
+        fontSize: '16px',
         color: '#EEF4FA',
-        backgroundColor: '#101B32',
-        padding: { x: 20, y: 12 },
+        backgroundColor: '#0c1730',
+        padding: { x: 18, y: 12 },
       })
       .setOrigin(0, 0.5)
       .setInteractive({ useHandCursor: true });
     resetBtn.on('pointerdown', () => this.callbacks.onReset());
 
-    // Nút Xoay ↻ 90° (chỉ sáng khi canRotate = true)
+    // Nút Xoay ↻ (chỉ sáng khi canRotate = true)
     this.rotateButton = this.scene.add
       .text(616, 1200, 'XOAY ↻', {
-        fontFamily: 'sans-serif',
-        fontSize: '18px',
-        color: '#68B8DC',
-        backgroundColor: '#101B32',
-        padding: { x: 20, y: 12 },
+        fontFamily: 'system-ui, -apple-system, sans-serif',
+        fontSize: '16px',
+        color: '#4ECDC4',
+        backgroundColor: '#0c1730',
+        padding: { x: 18, y: 12 },
       })
       .setOrigin(1, 0.5)
       .setInteractive({ useHandCursor: true });
@@ -86,54 +86,69 @@ export class Hud {
     // 5. Modal chúc mừng chiến thắng (Win Container)
     this.winContainer = this.scene.add.container(360, 640).setDepth(100).setVisible(false);
 
-    const winOverlay = this.scene.add.rectangle(0, 0, 720, 1280, 0x080e24, 0.85);
-    const winPanel = this.scene.add.rectangle(0, 0, 520, 360, 0x101b32, 1);
-    winPanel.setStrokeStyle(2, 0xffc857, 0.8);
+    const winOverlay = this.scene.add.rectangle(0, 0, 720, 1280, 0x050814, 0.85);
+
+    const winPanel = this.scene.add.graphics();
+    winPanel.fillStyle(0x0c1730, 0.98);
+    winPanel.fillRoundedRect(-240, -180, 480, 360, 20);
+    winPanel.lineStyle(2, 0xffd166, 0.8);
+    winPanel.strokeRoundedRect(-240, -180, 480, 360, 20);
 
     const winTitle = this.scene.add
-      .text(0, -90, 'HOÀN THÀNH!', {
-        fontFamily: 'sans-serif',
-        fontSize: '32px',
-        color: '#FFC857',
+      .text(0, -90, '✦ HOÀN THÀNH ✦', {
+        fontFamily: 'system-ui, -apple-system, sans-serif',
+        fontSize: '28px',
+        color: '#FFD166',
         fontStyle: 'bold',
       })
       .setOrigin(0.5);
 
     const winDesc = this.scene.add
-      .text(0, -30, 'Cổ ngữ Song Tinh đã được giải mã chính xác', {
-        fontFamily: 'sans-serif',
-        fontSize: '16px',
+      .text(0, -30, 'Cổ ngữ Song Tinh đã được giải mã trọn vẹn!', {
+        fontFamily: 'system-ui, -apple-system, sans-serif',
+        fontSize: '15px',
         color: '#EEF4FA',
       })
       .setOrigin(0.5);
 
+    const nextBtnBg = this.scene.add.graphics();
+    nextBtnBg.fillStyle(0xf9c74f, 1);
+    nextBtnBg.fillRoundedRect(-140, 20, 280, 52, 16);
+
     const nextBtn = this.scene.add
-      .text(0, 40, 'MÀN TIẾP THEO →', {
-        fontFamily: 'sans-serif',
-        fontSize: '20px',
+      .text(0, 46, 'MÀN TIẾP THEO →', {
+        fontFamily: 'system-ui, -apple-system, sans-serif',
+        fontSize: '16px',
         color: '#080E24',
-        backgroundColor: '#FFC857',
-        padding: { x: 28, y: 14 },
+        fontStyle: 'bold',
       })
       .setOrigin(0.5)
       .setInteractive({ useHandCursor: true });
     nextBtn.on('pointerdown', () => this.callbacks.onNextLevel());
 
     const menuReturnBtn = this.scene.add
-      .text(0, 110, 'Về chọn màn', {
-        fontFamily: 'sans-serif',
-        fontSize: '16px',
+      .text(0, 115, 'Về màn hình chính', {
+        fontFamily: 'system-ui, -apple-system, sans-serif',
+        fontSize: '14px',
         color: '#9DAFC7',
       })
       .setOrigin(0.5)
       .setInteractive({ useHandCursor: true });
     menuReturnBtn.on('pointerdown', () => this.callbacks.onMenu());
 
-    this.winContainer.add([winOverlay, winPanel, winTitle, winDesc, nextBtn, menuReturnBtn]);
+    this.winContainer.add([
+      winOverlay,
+      winPanel,
+      winTitle,
+      winDesc,
+      nextBtnBg,
+      nextBtn,
+      menuReturnBtn,
+    ]);
   }
 
   update(snapshot: PlayViewSnapshot): void {
-    this.targetButton.setText(snapshot.showTarget ? 'MẪU: BẬT' : 'MẪU: TẮT');
+    this.targetButton.setText(snapshot.showTarget ? 'BÓNG MẪU: BẬT' : 'BÓNG MẪU: TẮT');
 
     if (snapshot.canRotate) {
       this.rotateButton.setAlpha(1).setInteractive({ useHandCursor: true });
