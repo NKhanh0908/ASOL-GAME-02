@@ -22,15 +22,21 @@ const game = new Phaser.Game({
 
 setupAndroidLifecycle({
   onHardwareBack: () => {
-    const activePlayScene = game.scene.getScene('PlayScene');
+    const activePlayScene = game.scene.getScene('PlayScene') as PlayScene;
     const activeLevelSelect = game.scene.getScene('LevelSelectScene');
 
     if (activePlayScene && activePlayScene.scene.isActive()) {
-      activePlayScene.scene.start('MenuScene');
+      activePlayScene.onHardwareBack();
     } else if (activeLevelSelect && activeLevelSelect.scene.isActive()) {
       activeLevelSelect.scene.start('MenuScene');
     } else {
       App.exitApp();
     }
+  },
+  onBackground: () => {
+    game.loop.sleep();
+  },
+  onResume: () => {
+    game.loop.wake();
   },
 });

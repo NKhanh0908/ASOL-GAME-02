@@ -340,4 +340,12 @@ export class PlayScene extends Phaser.Scene {
       this.celebrationContainer = null;
     }
   }
+
+  public onHardwareBack(): void {
+    if (this.pauseDialog.isOpen()) {
+      this.pauseDialog.close();
+    } else {
+      this.pauseDialog.open();
+    }
+  }
 }
