@@ -84,12 +84,16 @@ export function updateDrag(
 
   const rotatedCells = rotateCells(piece.cells, piece.frameSize, drag.originState.turns);
 
-  // Tìm neo gần nhất trong bán kính 6 ô (d^2 <= 36)
+  // Tìm neo gần nhất trong bán kính 8 ô (d <= 64):
+  // Hỗ trợ cả trường hợp grid là tâm (anchor + 20) lẫn grid là góc top-left (anchor)
   let best: Anchor | undefined;
   let bestDistance = Infinity;
   for (const anchor of piece.anchors) {
-    const d = (anchor.x - grid.x) ** 2 + (anchor.y - grid.y) ** 2;
-    if (d <= 36 && d < bestDistance && fitsBoard(rotatedCells, anchor.x, anchor.y)) {
+    const dTopLeft = (anchor.x - grid.x) ** 2 + (anchor.y - grid.y) ** 2;
+    const dCenter = (anchor.x + 20 - grid.x) ** 2 + (anchor.y + 20 - grid.y) ** 2;
+    const d = Math.min(dTopLeft, dCenter);
+
+    if (d <= 64 && d < bestDistance && fitsBoard(rotatedCells, anchor.x, anchor.y)) {
       best = anchor;
       bestDistance = d;
     }
@@ -156,15 +160,64 @@ export function finishDrag(
     });
   }
 
+  const piece = level.pieces.find((p) => p.id === drag.pieceId);
   const pieceCanvasX = pointerX - drag.pointerOffset.x;
   const pieceCanvasY = pointerY - drag.pointerOffset.y;
   const grid = canvasToGrid(pieceCanvasX, pieceCanvasY, layout);
 
+  if (piece) {
+    const rotatedCells = rotateCells(piece.cells, piece.frameSize, drag.originState.turns);
+
+    // Kiểm tra neo gần nhất
+    let best: Anchor | undefined;
+    let bestDistance = Infinity;
+    for (const anchor of piece.anchors) {
+      const dTopLeft = (anchor.x - grid.x) ** 2 + (anchor.y - grid.y) ** 2;
+      const dCenter = (anchor.x + 20 - grid.x) ** 2 + (anchor.y + 20 - grid.y) ** 2;
+      const d = Math.min(dTopLeft, dCenter);
+
+      if (d <= 64 && d < bestDistance && fitsBoard(rotatedCells, anchor.x, anchor.y)) {
+        best = anchor;
+        bestDistance = d;
+      }
+    }
+
+    if (best) {
+      // Hút chuẩn xác vào neo đã tìm thấy
+      return applyCommand(level, drag.committedState, {
+        type: 'drop',
+        pieceId: drag.pieceId,
+        x: best.x,
+        y: best.y,
+      });
+    }
+
+    // Nếu không gần neo nhưng vẫn thả trong bàn cờ:
+    // Căn chỉnh tọa độ top-left để tâm hình thoi trùng với vị trí chuột thả
+    const dCenterToAnchor = Math.min(
+      ...piece.anchors.map((a) => (a.x + 20 - grid.x) ** 2 + (a.y + 20 - grid.y) ** 2)
+    );
+    const dTopLeftToAnchor = Math.min(
+      ...piece.anchors.map((a) => (a.x - grid.x) ** 2 + (a.y - grid.y) ** 2)
+    );
+
+    const dropX = dCenterToAnchor < dTopLeftToAnchor ? Math.round(grid.x - 20) : grid.x;
+    const dropY = dCenterToAnchor < dTopLeftToAnchor ? Math.round(grid.y - 20) : grid.y;
+
+    if (fitsBoard(rotatedCells, dropX, dropY)) {
+      return applyCommand(level, drag.committedState, {
+        type: 'drop',
+        pieceId: drag.pieceId,
+        x: dropX,
+        y: dropY,
+      });
+    }
+  }
+
+  // Thả ngoài phạm vi bàn cờ: trả về khay
   return applyCommand(level, drag.committedState, {
-    type: 'drop',
+    type: 'return',
     pieceId: drag.pieceId,
-    x: grid.x,
-    y: grid.y,
   });
 }
 

@@ -22,13 +22,17 @@ export class BoardRenderer {
     this.drawStaticBoard();
   }
 
+  /**
+   * Vẽ lưới ô vuông nền chuẩn mực (Mỗi ô = 20x20 cell),
+   * làm chuẩn tỉ lệ cho hình mục tiêu và các mảnh kính
+   */
   private drawStaticBoard(): void {
-    const { boardBounds, trayBounds } = this.layout;
+    const { boardBounds, trayBounds, cellPixel } = this.layout;
 
     this.bgGraphics.clear();
 
-    // 1. Tinh Bàn Galaxy (Cosmic Board Surface)
-    this.bgGraphics.fillStyle(0x0a1128, 0.95);
+    // 1. Nền Tinh Bàn Galaxy
+    this.bgGraphics.fillStyle(0x080f24, 0.98);
     this.bgGraphics.fillRoundedRect(
       boardBounds.x,
       boardBounds.y,
@@ -37,8 +41,8 @@ export class BoardRenderer {
       16
     );
 
-    // Viền phát sáng dịu
-    this.bgGraphics.lineStyle(1.5, 0x4ecdc4, 0.45);
+    // Viền phát sáng nhẹ quanh bàn cờ
+    this.bgGraphics.lineStyle(1.5, 0x4ecdc4, 0.4);
     this.bgGraphics.strokeRoundedRect(
       boardBounds.x,
       boardBounds.y,
@@ -47,28 +51,49 @@ export class BoardRenderer {
       16
     );
 
-    // 2. Lưới toạ độ Chiêm tinh mảnh mai (Starlight Grid)
-    this.bgGraphics.lineStyle(1, 0x68b8dc, 0.08);
-    for (let x = 16; x < 128; x += 16) {
-      const cx = boardBounds.x + x * this.layout.cellPixel;
-      this.bgGraphics.lineBetween(cx, boardBounds.y + 8, cx, boardBounds.y + boardBounds.height - 8);
-    }
-    for (let y = 16; y < 128; y += 16) {
-      const cy = boardBounds.y + y * this.layout.cellPixel;
-      this.bgGraphics.lineBetween(boardBounds.x + 8, cy, boardBounds.x + boardBounds.width - 8, cy);
-    }
+    // 2. Lưới ô vuông nền chuẩn (Astrological Unit Grid: 20x20 cell mỗi ô vuông)
+    // Các đường dọc: x = 4, 24, 44, 64, 84, 104, 124 (6 cột ô vuông 20x20)
+    // Các đường ngang: y = 16, 36, 56, 76, 96, 116 (5 hàng ô vuông 20x20)
+    const xs = [4, 24, 44, 64, 84, 104, 124];
+    const ys = [16, 36, 56, 76, 96, 116];
 
-    // 3. Tinh điểm giao thoa (Cosmic Coordinate Nodes)
-    this.bgGraphics.fillStyle(0x4ecdc4, 0.25);
-    for (let x = 32; x < 128; x += 32) {
-      for (let y = 32; y < 128; y += 32) {
-        const cx = boardBounds.x + x * this.layout.cellPixel;
-        const cy = boardBounds.y + y * this.layout.cellPixel;
-        this.bgGraphics.fillCircle(cx, cy, 2);
+    // Vẽ các ô vuông nền cách điệu
+    for (let i = 0; i < xs.length - 1; i++) {
+      for (let j = 0; j < ys.length - 1; j++) {
+        const x1 = boardBounds.x + xs[i] * cellPixel;
+        const y1 = boardBounds.y + ys[j] * cellPixel;
+        const w = (xs[i + 1] - xs[i]) * cellPixel;
+        const h = (ys[j + 1] - ys[j]) * cellPixel;
+
+        // Viền ô vuông nền tinh tế
+        this.bgGraphics.lineStyle(1, 0x4ecdc4, 0.12);
+        this.bgGraphics.strokeRect(x1, y1, w, h);
+
+        // Chấm tinh điểm ở tâm mỗi ô vuông nền
+        this.bgGraphics.fillStyle(0x68b8dc, 0.15);
+        this.bgGraphics.fillCircle(x1 + w / 2, y1 + h / 2, 1);
       }
     }
 
-    // 4. Khay chứa cổ ngữ (Astral Tray)
+    // Các đường trục chính (Center Axis) phát sáng hơn một chút
+    const centerAxisX = boardBounds.x + 64 * cellPixel;
+    const centerAxisY = boardBounds.y + 96 * cellPixel;
+
+    this.bgGraphics.lineStyle(1.2, 0x4ecdc4, 0.25);
+    this.bgGraphics.lineBetween(centerAxisX, boardBounds.y + 16 * cellPixel, centerAxisX, boardBounds.y + 116 * cellPixel);
+    this.bgGraphics.lineBetween(boardBounds.x + 4 * cellPixel, centerAxisY, boardBounds.x + 124 * cellPixel, centerAxisY);
+
+    // Điểm giao tinh thể tại các đỉnh lưới
+    this.bgGraphics.fillStyle(0x4ecdc4, 0.4);
+    for (const x of xs) {
+      for (const y of ys) {
+        const cx = boardBounds.x + x * cellPixel;
+        const cy = boardBounds.y + y * cellPixel;
+        this.bgGraphics.fillCircle(cx, cy, 1.8);
+      }
+    }
+
+    // 3. Khay chứa cổ ngữ bên dưới (Astral Tray)
     this.bgGraphics.fillStyle(0x0c1730, 0.95);
     this.bgGraphics.fillRoundedRect(
       trayBounds.x,
@@ -93,29 +118,35 @@ export class BoardRenderer {
     piecesState: Record<string, PieceState>
   ): void {
     const { cellPixel } = this.layout;
-    const radiusPx = 20 * cellPixel; // Bán kính hình thoi (40x40 ô -> r = 20)
+    const radiusPx = 20 * cellPixel; // Bán kính hình thoi = 20 cell (khớp 1 ô vuông nền mỗi phía)
     const draggingPieceId = snapshot.dragInfo?.pieceId ?? null;
 
-    // 1. Vẽ bóng mục tiêu Vector (Silhouette)
+    // 1. Vẽ bóng mục tiêu Vector (Silhouette) — sinh ra chuẩn xác từ ô vuông nền
     this.targetGraphics.clear();
     if (snapshot.showTarget) {
-      // Hai hình thoi mục tiêu tại Neo A (44, 96) và (84, 96)
+      // Hai hình thoi mục tiêu tại Neo A: tâm (44, 96) và (84, 96)
+      // 4 đỉnh cắm đúng vào các giao điểm của lưới ô vuông nền!
       const targetCenters = [
         gridToCanvas(44, 96, this.layout),
         gridToCanvas(84, 96, this.layout),
       ];
 
-      for (const center of targetCenters) {
+      for (let idx = 0; idx < targetCenters.length; idx++) {
+        const center = targetCenters[idx];
+        const isTargetHovered =
+          (idx === 0 && snapshot.dragInfo?.snapCandidateId === 'A' && snapshot.dragInfo.pieceId === 'D1') ||
+          (idx === 1 && snapshot.dragInfo?.snapCandidateId === 'A' && snapshot.dragInfo.pieceId === 'D2');
+
         this.drawVectorDiamond(
           this.targetGraphics,
           center.x,
           center.y,
           radiusPx,
           0x4ecdc4, // Nebula Cyan
-          0.15,     // Dịu mắt
-          0x4ecdc4,
-          0.45,
-          1.5
+          isTargetHovered ? 0.28 : 0.14,
+          isTargetHovered ? 0xffd166 : 0x4ecdc4,
+          isTargetHovered ? 0.8 : 0.4,
+          isTargetHovered ? 2.0 : 1.5
         );
       }
     }
@@ -132,12 +163,12 @@ export class BoardRenderer {
 
       if (isDraggingThis && snapshot.dragInfo) {
         // Mảnh đang được kéo:
-        // A. Trong khay vẽ bóng mờ slot (placeholder)
+        // A. Trong khay vẽ ô placeholder mờ
         if (pState.kind === 'tray') {
           this.drawTrayPlaceholder(piece, pState, i, radiusPx);
         }
-        // B. Vẽ mảnh bay bám sát ngón tay hoặc hút vào neo candidate
-        this.drawDraggingPiece(piece, snapshot.dragInfo, radiusPx);
+        // B. Vẽ mảnh bay bám sát ngón tay mượt mà (không tự động nhảy giật)
+        this.drawDraggingPiece(snapshot.dragInfo, radiusPx);
       } else {
         // Mảnh không bị kéo: vẽ bình thường
         if (pState.kind === 'tray') {
@@ -158,7 +189,7 @@ export class BoardRenderer {
   }
 
   /**
-   * Vẽ hình thoi Vector Polygon phẳng, thẳng tắp và sắc nét (KHÔNG VẼ VÒNG TRÒN)
+   * Vẽ hình thoi Vector Polygon phẳng, thẳng tắp và sắc nét (KHÔNG CÓ VÒNG TRÒN)
    */
   private drawVectorDiamond(
     g: Phaser.GameObjects.Graphics,
@@ -172,10 +203,10 @@ export class BoardRenderer {
     strokeWidth: number
   ): void {
     const points = [
-      new Phaser.Geom.Point(cx, cy - r), // Đỉnh trên
-      new Phaser.Geom.Point(cx + r, cy), // Đỉnh phải
-      new Phaser.Geom.Point(cx, cy + r), // Đỉnh dưới
-      new Phaser.Geom.Point(cx - r, cy), // Đỉnh trái
+      new Phaser.Geom.Point(cx, cy - r), // Đỉnh trên (chạm giao điểm lưới)
+      new Phaser.Geom.Point(cx + r, cy), // Đỉnh phải (chạm giao điểm lưới)
+      new Phaser.Geom.Point(cx, cy + r), // Đỉnh dưới (chạm giao điểm lưới)
+      new Phaser.Geom.Point(cx - r, cy), // Đỉnh trái (chạm giao điểm lưới)
     ];
 
     // Mặt phẳng đa giác thẳng tắp
@@ -186,13 +217,13 @@ export class BoardRenderer {
     g.lineStyle(strokeWidth, strokeColor, strokeAlpha);
     g.strokePoints(points, true);
 
-    // Đường gân tinh thể chiêm tinh nhẹ bên trong
+    // Đường gân tinh thể nối 4 đỉnh
     g.lineStyle(1, strokeColor, strokeAlpha * 0.35);
     g.lineBetween(cx, cy - r, cx, cy + r);
     g.lineBetween(cx - r, cy, cx + r, cy);
 
-    // Hạt sao lấp lánh tại 4 đỉnh
-    g.fillStyle(strokeColor, strokeAlpha * 0.85);
+    // Hạt sao tại 4 đỉnh
+    g.fillStyle(strokeColor, strokeAlpha * 0.9);
     g.fillCircle(cx, cy - r, 2);
     g.fillCircle(cx + r, cy, 2);
     g.fillCircle(cx, cy + r, 2);
@@ -200,36 +231,22 @@ export class BoardRenderer {
   }
 
   /**
-   * Mảnh đang kéo theo con trỏ chuột (mượt mà 60 FPS)
+   * Mảnh đang kéo: Bay bám sát tuyệt đối theo ngón tay người chơi
+   * KHÔNG tự động nhảy giật khi đang kéo (chỉ snap khi thả tay)
    */
-  private drawDraggingPiece(piece: Piece, dragInfo: DragInfo, radiusPx: number): void {
-    let drawX = dragInfo.x;
-    let drawY = dragInfo.y;
-    let isSnappedPreview = false;
+  private drawDraggingPiece(dragInfo: DragInfo, radiusPx: number): void {
+    const isHoveringSnap = dragInfo.snapCandidateId !== null;
 
-    // Nếu đang trong bán kính hút neo (snap candidate)
-    if (dragInfo.snapCandidateId) {
-      const anchor = piece.anchors.find((a) => a.id === dragInfo.snapCandidateId);
-      if (anchor) {
-        // Tự động hút nhẹ về tâm neo (44, 96 hoặc 84, 96)
-        const snapCenter = gridToCanvas(anchor.x + 20, anchor.y + 20, this.layout);
-        drawX = snapCenter.x;
-        drawY = snapCenter.y;
-        isSnappedPreview = true;
-      }
-    }
-
-    // Vẽ hình thoi đang kéo (thẳng tắp, thuần khiết, không vòng tròn!)
     this.drawVectorDiamond(
       this.piecesGraphics,
-      drawX,
-      drawY,
+      dragInfo.x,
+      dragInfo.y,
       radiusPx,
-      isSnappedPreview ? 0xfff3b0 : 0xf9c74f, // Vàng sáng khi hút neo, vàng hổ phách khi bay tự do
-      isSnappedPreview ? 0.98 : 0.9,
-      isSnappedPreview ? 0xffd166 : 0xffe082,
+      isHoveringSnap ? 0xffe899 : 0xf9c74f,
+      isHoveringSnap ? 0.96 : 0.9,
+      isHoveringSnap ? 0xfff3b0 : 0xffe082,
       1.0,
-      isSnappedPreview ? 3.0 : 2.0
+      isHoveringSnap ? 2.6 : 2.0
     );
   }
 
@@ -246,14 +263,13 @@ export class BoardRenderer {
     const cx = hitbox.x + hitbox.width / 2;
     const cy = hitbox.y + hitbox.height / 2;
 
-    // Vẽ hình thoi mờ biểu thị vị trí xuất phát
     this.drawVectorDiamond(
       this.piecesGraphics,
       cx,
       cy,
       radiusPx,
-      0x0a1128,
-      0.4,
+      0x080f24,
+      0.3,
       0x3a506b,
       0.35,
       1.0
@@ -313,6 +329,7 @@ export class BoardRenderer {
     const anchor = piece.anchors.find((a) => a.id === pState.anchorId);
     if (!anchor) return;
 
+    // Đỉnh cắm chuẩn xác vào các giao điểm của lưới ô vuông nền!
     const center = gridToCanvas(anchor.x + 20, anchor.y + 20, this.layout);
 
     this.drawVectorDiamond(
