@@ -127,3 +127,25 @@ export function pieceHitbox(
     height: size,
   };
 }
+
+/**
+ * Tâm canvas của một mảnh, suy ra từ gốc khung và frameSize.
+ *
+ * Neo là GỐC khung mảnh (góc trên-trái), nên tâm bằng gốc cộng nửa khung.
+ * Viết cứng nửa khung thành hằng số sẽ sai ngay khi frameSize đổi — đó
+ * chính là lỗi đã xảy ra khi mảnh chuyển từ 40 sang 48 ô.
+ */
+export function pieceCenterCanvas(
+  frameSize: number,
+  originX: number,
+  originY: number,
+  layout: LayoutMetrics
+): { x: number; y: number } {
+  const half = frameSize / 2;
+  return gridToCanvas(originX + half, originY + half, layout);
+}
+
+/** Bán kính vẽ hình thoi: nửa đường chéo thật, tính bằng pixel canvas. */
+export function pieceRadiusPx(frameSize: number, layout: LayoutMetrics): number {
+  return (frameSize / 2) * layout.cellPixel;
+}

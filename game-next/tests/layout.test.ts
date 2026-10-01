@@ -1,5 +1,11 @@
 import { describe, expect, test } from 'vitest';
-import { computeLayout, gridToCanvas, canvasToGrid } from '../src/presentation/layout.ts';
+import {
+  computeLayout,
+  gridToCanvas,
+  canvasToGrid,
+  pieceCenterCanvas,
+  pieceRadiusPx,
+} from '../src/presentation/layout.ts';
 import { GRID_WIDTH, GRID_HEIGHT } from '../src/domain/model.ts';
 import { GRID_TOKENS } from '../src/presentation/designTokens.ts';
 
@@ -46,5 +52,39 @@ describe('Layout Metrics Specification', () => {
     // Bàn chứa đúng số nguyên ô lưới hiển thị theo cả hai chiều
     expect(layout.boardBounds.width % displayPx).toBe(0);
     expect(layout.boardBounds.height % displayPx).toBe(0);
+  });
+});
+
+describe('Tâm và bán kính mảnh suy ra từ frameSize', () => {
+  const layout = computeLayout(720, 1280);
+
+  test('tâm mảnh bằng gốc cộng nửa khung, không phải hằng số', () => {
+    // frameSize 48: nửa khung 24 ô logic
+    expect(pieceCenterCanvas(48, 16, 56, layout)).toEqual({
+      x: 40 + (16 + 24) * 5,
+      y: 200 + (56 + 24) * 5,
+    });
+    // frameSize 40: nửa khung 20 ô logic — cùng công thức, khác kết quả
+    expect(pieceCenterCanvas(40, 16, 56, layout)).toEqual({
+      x: 40 + (16 + 20) * 5,
+      y: 200 + (56 + 20) * 5,
+    });
+  });
+
+  test('bán kính vẽ bằng nửa đường chéo thật của mảnh', () => {
+    expect(pieceRadiusPx(48, layout)).toBe(120);
+    expect(pieceRadiusPx(40, layout)).toBe(100);
+  });
+
+  test('với màn 1-1, hai mảnh chạm đỉnh nhau đúng giữa bàn', () => {
+    const left = pieceCenterCanvas(48, 16, 56, layout);
+    const right = pieceCenterCanvas(48, 64, 56, layout);
+    const radius = pieceRadiusPx(48, layout);
+
+    // Đỉnh phải mảnh trái trùng đỉnh trái mảnh phải
+    expect(left.x + radius).toBe(right.x - radius);
+    // Và điểm chạm nằm đúng tâm bàn theo chiều ngang
+    expect(left.x + radius).toBe(layout.boardBounds.x + layout.boardBounds.width / 2);
+    expect(left.y).toBe(right.y);
   });
 });

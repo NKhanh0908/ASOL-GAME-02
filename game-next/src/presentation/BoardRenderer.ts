@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import type { Level, Piece, PieceState } from '../domain/model.ts';
 import type { LayoutMetrics } from './layout.ts';
-import { gridToCanvas, pieceHitbox } from './layout.ts';
+import { gridToCanvas, pieceHitbox, pieceCenterCanvas, pieceRadiusPx } from './layout.ts';
 import type { DragInfo, PlayViewSnapshot } from '../application/playController.ts';
 import { COLOR_NUMBERS, DEPTH_TOKENS } from './designTokens.ts';
 
@@ -196,7 +196,9 @@ export class BoardRenderer {
     delta: number = 16
   ): void {
     const { cellPixel } = this.layout;
-    const radiusPx = 20 * cellPixel; // Bán kính hình thoi = 80px
+    // Bán kính suy ra từ frameSize thật của mảnh, không viết cứng: mọi mảnh
+    // trong một màn dùng chung một khung nên lấy mảnh đầu làm chuẩn.
+    const radiusPx = pieceRadiusPx(level.pieces[0].frameSize, this.layout);
     const draggingPieceId = snapshot.dragInfo?.pieceId ?? null;
 
     // Cập nhật vòng quay thiên văn
@@ -253,7 +255,7 @@ export class BoardRenderer {
           this.drawTrayPiece(piece, pState, i, isSelected, radiusPx);
         } else if (pState.kind === 'temporary') {
           // Trạng thái 4: Mảnh tạm chưa snap
-          this.drawTemporaryPiece(pState, isSelected, radiusPx);
+          this.drawTemporaryPiece(pState, isSelected, radiusPx, piece.frameSize);
         } else if (pState.kind === 'snapped') {
           // Trạng thái 2: Đã snap
           snappedPieces.push({ piece, pState });
@@ -400,9 +402,10 @@ export class BoardRenderer {
   private drawTemporaryPiece(
     pState: Extract<PieceState, { kind: 'temporary' }>,
     isSelected: boolean,
-    radiusPx: number
+    radiusPx: number,
+    frameSize: number
   ): void {
-    const center = gridToCanvas(pState.x + 20, pState.y + 20, this.layout);
+    const center = pieceCenterCanvas(frameSize, pState.x, pState.y, this.layout);
 
     this.drawVectorDiamond(
       this.piecesGraphics,
@@ -433,7 +436,7 @@ export class BoardRenderer {
     const anchor = piece.anchors.find((a) => a.id === pState.anchorId);
     if (!anchor) return;
 
-    const center = gridToCanvas(anchor.x + 20, anchor.y + 20, this.layout);
+    const center = pieceCenterCanvas(piece.frameSize, anchor.x, anchor.y, this.layout);
 
     this.drawVectorDiamond(
       this.piecesGraphics,
@@ -460,7 +463,7 @@ export class BoardRenderer {
     // Nếu trong màn có overlap (như Chương 2), vẽ vùng giao triệt tiêu
     const centers = snapped.map((s) => {
       const anchor = s.piece.anchors.find((a) => a.id === s.pState.anchorId) ?? s.piece.anchors[0];
-      return gridToCanvas(anchor.x + 20, anchor.y + 20, this.layout);
+      return pieceCenterCanvas(s.piece.frameSize, anchor.x, anchor.y, this.layout);
     });
 
     if (centers.length >= 2) {
