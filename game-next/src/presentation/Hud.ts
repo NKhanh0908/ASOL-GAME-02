@@ -1,7 +1,15 @@
 import Phaser from 'phaser';
 import type { PlayViewSnapshot } from '../application/playController.ts';
-import { COLOR_NUMBERS, COLOR_TOKENS, TYPO_TOKENS } from './designTokens.ts';
+import {
+  COLOR_NUMBERS,
+  COLOR_TOKENS,
+  DEPTH_TOKENS,
+  LAYOUT_TOKENS,
+  TYPO_TOKENS,
+} from './designTokens.ts';
 import { TEXTURE_KEYS } from './TextureFactory.ts';
+import { drawJewel } from './JewelShape.ts';
+import { SNAP_HINT_TEXT, formatMatchCount } from './hudText.ts';
 
 export type HudCallbacks = {
   onMenu: () => void;
@@ -28,6 +36,10 @@ export class Hud {
   private rotateLabel: Phaser.GameObjects.Text;
 
   private winContainer: Phaser.GameObjects.Container;
+  private matchBar: Phaser.GameObjects.Container;
+  private matchBarGraphics: Phaser.GameObjects.Graphics;
+  private matchBarText: Phaser.GameObjects.Text;
+  private snapHint: Phaser.GameObjects.Container | null = null;
 
   constructor(scene: Phaser.Scene, title: string, callbacks: HudCallbacks, levelId: string = '1-1') {
     this.scene = scene;
@@ -50,15 +62,16 @@ export class Hud {
 
     // 2. Tiêu đề màn chơi 36px + Dòng phụ Chương 24px (Giữa header: x=360)
     this.titleText = this.scene.add
-      .text(360, 36, levelName, {
+      .text(360, 34, levelName, {
         fontFamily: TYPO_TOKENS.fontFamily.serif,
-        fontSize: '36px',
+        fontSize: TYPO_TOKENS.fontSize.headerTitle,
         color: COLOR_TOKENS.text.primary,
+        fontStyle: 'bold',
       })
       .setOrigin(0.5);
 
     this.subtitleText = this.scene.add
-      .text(360, 72, `${chapterRoman} · Màn ${this.levelId}`, {
+      .text(360, 74, `${chapterRoman} · Màn ${this.levelId}`, {
         fontFamily: TYPO_TOKENS.fontFamily.sans,
         fontSize: '24px',
         color: COLOR_TOKENS.text.secondary,
@@ -129,7 +142,21 @@ export class Hud {
       this.rotateContainer.setVisible(false);
     }
 
-    // 5. Modal Hoàn Thành Chiến Thắng (Celestial Victory Dialog)
+    // 5. Thanh đếm mảnh ở đáy: viên thuốc bo tròn, icon thoi đặc cho mảnh đã
+    // khớp và thoi nét đứt cho mảnh còn lại.
+    const barY = LAYOUT_TOKENS.bottomBar.y + LAYOUT_TOKENS.bottomBar.height / 2;
+    this.matchBar = this.scene.add.container(360, barY).setDepth(DEPTH_TOKENS.hudControls);
+    this.matchBarGraphics = this.scene.add.graphics();
+    this.matchBarText = this.scene.add
+      .text(24, 0, formatMatchCount(0, 2), {
+        fontFamily: TYPO_TOKENS.fontFamily.sans,
+        fontSize: TYPO_TOKENS.fontSize.caption,
+        color: COLOR_TOKENS.text.primary,
+      })
+      .setOrigin(0, 0.5);
+    this.matchBar.add([this.matchBarGraphics, this.matchBarText]);
+
+    // 6. Modal Hoàn Thành Chiến Thắng (Celestial Victory Dialog)
     this.winContainer = this.scene.add.container(360, 640).setDepth(100).setVisible(false);
 
     const winOverlay = this.scene.add.rectangle(0, 0, 720, 1280, COLOR_NUMBERS.navyBackdrop, 0.85);
@@ -223,9 +250,71 @@ export class Hud {
       this.rotateBtnBase.disableInteractive();
     }
 
+    this.drawMatchBar(snapshot.snappedCount, snapshot.totalPieces);
+
     if (snapshot.phase !== 'won') {
       this.winContainer.setVisible(false);
     }
+  }
+
+  /**
+   * Vẽ lại thanh đếm. Chiều rộng viên thuốc co theo độ dài chữ nên số mảnh
+   * đổi thì khung vẫn ôm sát.
+   */
+  private drawMatchBar(matched: number, total: number): void {
+    this.matchBarText.setText(formatMatchCount(matched, total));
+
+    const iconSize = 14;
+    const iconGap = 10;
+    const iconsWidth = total * (iconSize * 2 + iconGap);
+    const padding = 24;
+    const width = iconsWidth + this.matchBarText.width + padding * 2;
+    const height = 56;
+
+    this.matchBar.setX(360);
+    this.matchBarText.setX(-width / 2 + padding + iconsWidth);
+
+    const g = this.matchBarGraphics;
+    g.clear();
+    g.fillStyle(COLOR_NUMBERS.boardSurfaceBottom, 0.6);
+    g.fillRoundedRect(-width / 2, -height / 2, width, height, height / 2);
+    g.lineStyle(1.5, COLOR_NUMBERS.icePrimary, 0.6);
+    g.strokeRoundedRect(-width / 2, -height / 2, width, height, height / 2);
+
+    for (let i = 0; i < total; i++) {
+      const cx = -width / 2 + padding + iconSize + i * (iconSize * 2 + iconGap);
+      drawJewel(g, {
+        cx,
+        cy: 0,
+        radius: iconSize,
+        variant: i < matched ? 'solid' : 'placeholder',
+      });
+    }
+  }
+
+  /** Nhãn nổi cạnh mảnh khi kéo trúng vùng hít. */
+  public showSnapHint(x: number, y: number): void {
+    if (!this.snapHint) {
+      const bg = this.scene.add.graphics();
+      bg.fillStyle(0xfff4d2, 1);
+      bg.fillRoundedRect(-80, -22, 160, 44, 14);
+      const label = this.scene.add
+        .text(0, 0, SNAP_HINT_TEXT, {
+          fontFamily: TYPO_TOKENS.fontFamily.sans,
+          fontSize: '22px',
+          color: COLOR_TOKENS.text.onAmber,
+          fontStyle: 'bold',
+        })
+        .setOrigin(0.5);
+      this.snapHint = this.scene.add
+        .container(0, 0, [bg, label])
+        .setDepth(DEPTH_TOKENS.hudControls);
+    }
+    this.snapHint.setPosition(x, y).setVisible(true);
+  }
+
+  public hideSnapHint(): void {
+    this.snapHint?.setVisible(false);
   }
 
   public showWinModal(): void {
@@ -244,6 +333,8 @@ export class Hud {
   }
 
   public destroy(): void {
+    this.matchBar.destroy();
+    this.snapHint?.destroy();
     this.titleText.destroy();
     this.subtitleText.destroy();
     this.targetButton.destroy();

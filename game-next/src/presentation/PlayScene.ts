@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import type { Level } from '../domain/model.ts';
+import { GRID_WIDTH, GRID_HEIGHT } from '../domain/model.ts';
 import { loadLevel } from '../content/catalog.ts';
 import { campaignManifest } from '../content/manifest.ts';
 import { nextLevelId } from '../domain/campaign.ts';
@@ -7,7 +8,7 @@ import { createProgressRepository } from '../infrastructure/progressRepository.t
 import { PlayController } from '../application/playController.ts';
 import { BoardRenderer } from './BoardRenderer.ts';
 import { Hud } from './Hud.ts';
-import { computeLayout, gridToCanvas } from './layout.ts';
+import { computeLayout, gridToCanvas, pieceRadiusPx } from './layout.ts';
 import type { LayoutMetrics } from './layout.ts';
 
 import { SkyBackdrop } from './SkyBackdrop.ts';
@@ -21,6 +22,7 @@ export class PlayScene extends Phaser.Scene {
   private mode: 'campaign' | 'harness' = 'campaign';
   private controller!: PlayController;
   private boardRenderer!: BoardRenderer;
+  private layout!: LayoutMetrics;
   private targetBadge!: TargetBadge;
   private hud!: Hud;
   private pauseDialog!: PauseDialog;
@@ -50,6 +52,7 @@ export class PlayScene extends Phaser.Scene {
   create(): void {
     TextureFactory.generateAll(this);
     const layout = computeLayout(this.scale.width, this.scale.height);
+    this.layout = layout;
 
     // 1. Nền trời dùng chung
     this.sky = new SkyBackdrop(this, { seed: 2, drift: false });
@@ -172,6 +175,16 @@ export class PlayScene extends Phaser.Scene {
 
     this.boardRenderer.render(this.level, snapshot, puzzleState.pieces);
     this.hud.update(snapshot);
+
+    // Nhãn "Thả để khớp" chỉ hiện khi mảnh đang kéo trúng vùng hít
+    const drag = snapshot.dragInfo;
+    if (drag && drag.snapCandidateId !== null) {
+      const piece = this.level.pieces.find((p) => p.id === drag.pieceId);
+      const radius = piece ? pieceRadiusPx(piece.frameSize, this.layout) : 120;
+      this.hud.showSnapHint(drag.x + radius * 0.8, drag.y + radius * 0.5);
+    } else {
+      this.hud.hideSnapHint();
+    }
   }
 
   private playCelebration(layout: LayoutMetrics): void {
@@ -183,8 +196,8 @@ export class PlayScene extends Phaser.Scene {
     // 1. Ánh chớp sao starlight flash dịu nhẹ
     this.cameras.main.flash(350, 249, 199, 79, false);
 
-    // Tọa độ tâm điểm tiếp giáp 2 hình thoi: (64, 96)
-    const center = gridToCanvas(64, 96, layout);
+    // Tâm bàn, nơi hai hình thoi chạm đỉnh nhau
+    const center = gridToCanvas(GRID_WIDTH / 2, GRID_HEIGHT / 2, layout);
 
     // 2. Vòng sóng năng lượng cổ ngữ (Resonance Shockwave Rings)
     const ringGraphics = this.add.graphics();
