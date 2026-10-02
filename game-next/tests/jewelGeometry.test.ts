@@ -4,12 +4,55 @@ import {
   jewelFaces,
   jewelTable,
   jewelSpineLines,
+  polygonCentroid,
+  polygonFaces,
+  polygonTable,
+  scalePolygon,
+  polygonStrokeOutline,
 } from '../src/presentation/jewelGeometry.ts';
 import { PIECE_TOKENS } from '../src/presentation/designTokens.ts';
 
 const CX = 360;
 const CY = 600;
 const R = 120; // một module
+
+describe('viền trong theo khoảng cách vuông góc', () => {
+  const roof = [{ x: 0, y: 48 }, { x: 48, y: 48 }, { x: 24, y: 24 }];
+
+  test('mái: mỗi cạnh viền cách cạnh ngoài đúng nửa nét', () => {
+    const inner = polygonStrokeOutline(roof, 2);
+    roof.forEach((a, i) => {
+      const b = roof[(i + 1) % roof.length];
+      for (const p of [inner[i], inner[(i + 1) % inner.length]]) {
+        const distance = Math.abs((b.x - a.x) * (p.y - a.y) - (b.y - a.y) * (p.x - a.x)) / Math.hypot(b.x - a.x, b.y - a.y);
+        expect(distance).toBeCloseTo(1, 9);
+      }
+    });
+    expect(inner[0].y).toBe(47);
+    expect(inner[2].y).toBeCloseTo(24 + Math.SQRT2, 9);
+  });
+
+  test('đổi chiều đỉnh giữ nguyên viền trong', () => {
+    const forward = polygonStrokeOutline(roof, 2);
+    const reversed = polygonStrokeOutline([...roof].reverse(), 2).reverse();
+    forward.forEach((p, i) => {
+      expect(reversed[i].x).toBeCloseTo(p.x, 9);
+      expect(reversed[i].y).toBeCloseTo(p.y, 9);
+    });
+  });
+
+  test('vuông: viền co đúng một pixel trên mọi cạnh', () => {
+    expect(polygonStrokeOutline([{ x: 0, y: 0 }, { x: 48, y: 0 }, { x: 48, y: 48 }, { x: 0, y: 48 }], 2)).toEqual([
+      { x: 1, y: 1 }, { x: 47, y: 1 }, { x: 47, y: 47 }, { x: 1, y: 47 },
+    ]);
+  });
+
+  test('thoi giữ nguyên viền cũ cả khi đổi chiều đỉnh', () => {
+    const diamond = jewelOutline(CX, CY, R);
+    expect(polygonStrokeOutline(diamond, 2)).toEqual(jewelOutline(CX, CY, R - 1));
+    expect(polygonStrokeOutline([...diamond].reverse(), 2).reverse()).toEqual(jewelOutline(CX, CY, R - 1));
+  });
+});
 
 describe('jewelGeometry', () => {
   test('viền ngoài là bốn đỉnh, bắt đầu từ Bắc theo chiều kim đồng hồ', () => {
@@ -91,5 +134,62 @@ describe('jewelGeometry', () => {
     for (const p of pts) {
       expect((p.x - 200) % 40 === 0 || (p.y - 400) % 40 === 0).toBe(true);
     }
+  });
+});
+
+describe('mặt vát cho đa giác bất kỳ', () => {
+  const sortedFace = (f: { name: string; color: string; points: Array<{ x: number; y: number }> }) => ({
+    name: f.name,
+    color: f.color,
+    points: [...f.points].sort((a, b) => a.x - b.x || a.y - b.y),
+  });
+
+  test('thoi dựng bằng polygonFaces giống hệt jewelFaces (bỏ qua thứ tự đỉnh)', () => {
+    const generic = polygonFaces(jewelOutline(CX, CY, R)).map(sortedFace);
+    const legacy = jewelFaces(CX, CY, R).map(sortedFace);
+    const byName = (a: { name: string }, b: { name: string }) => a.name.localeCompare(b.name);
+    expect(generic.sort(byName)).toEqual(legacy.sort(byName));
+  });
+
+  test('hình vuông: cạnh trên và trái sáng nhất, phải là Đông, dưới là Tây', () => {
+    const sq = [
+      { x: 0, y: 0 },
+      { x: 10, y: 0 },
+      { x: 10, y: 10 },
+      { x: 0, y: 10 },
+    ];
+    expect(polygonFaces(sq).map((f) => f.name)).toEqual(['north', 'east', 'west', 'north']);
+  });
+
+  test('mái hướng 4: hai cạnh xiên là Bắc và Đông, cạnh huyền ở đáy là Tây', () => {
+    const roof = [
+      { x: 0, y: 48 },
+      { x: 48, y: 48 },
+      { x: 24, y: 24 },
+    ];
+    expect(polygonFaces(roof).map((f) => f.name)).toEqual(['west', 'east', 'north']);
+  });
+
+  test('mặt bàn đa giác trùng mặt bàn thoi cũ', () => {
+    const generic = polygonTable(jewelOutline(CX, CY, R));
+    const legacy = jewelTable(CX, CY, R);
+    generic.forEach((p, i) => {
+      expect(p.x).toBeCloseTo(legacy[i].x, 9);
+      expect(p.y).toBeCloseTo(legacy[i].y, 9);
+    });
+  });
+
+  test('trọng tâm và phép co giãn quanh trọng tâm', () => {
+    const tri = [
+      { x: 0, y: 0 },
+      { x: 30, y: 0 },
+      { x: 0, y: 30 },
+    ];
+    expect(polygonCentroid(tri)).toEqual({ x: 10, y: 10 });
+    expect(scalePolygon(tri, { x: 10, y: 10 }, 0.5)).toEqual([
+      { x: 5, y: 5 },
+      { x: 20, y: 5 },
+      { x: 5, y: 20 },
+    ]);
   });
 });

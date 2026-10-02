@@ -14,6 +14,7 @@ Bản tái thiết (Rebuild) của trò chơi giải đố Mirror theo bộ đ�
 - `npm run dev`: Chạy dev server web cục bộ với Vite
 - `npm run build`: Typecheck và đóng gói web bundle vào thư mục `dist/`
 - `npm run content:validate`: Thẩm định schema và dữ liệu các màn chơi trong campaign
+- `npm run content:author -- <id...> | --all`: Sinh `src/content/levels/<id>.json` từ nguồn `src/content/sources/<id>.ts`, kèm ảnh xem trước `docs/testing/levels/<id>.svg` và báo cáo nghiệm `<id>-report.md`
 - `npm run android:sync`: Đóng gói web bundle và đồng bộ tài nguyên vào dự án Android Capacitor
 - `cmd /c gradlew.bat assembleDebug` (trong thư mục `android/`): Đóng gói Android Debug APK
 

@@ -5,6 +5,7 @@ import { PlayScene } from './presentation/PlayScene.ts';
 import { LevelSelectScene } from './presentation/LevelSelectScene.ts';
 import { FixtureScene } from './presentation/FixtureScene.ts';
 import { setupAndroidLifecycle } from './infrastructure/lifecycle.ts';
+import { resolveLaunch } from './launchParams.ts';
 import './style.css';
 
 window.addEventListener('error', (event) => {
@@ -15,9 +16,7 @@ window.addEventListener('unhandledrejection', (event) => {
   console.error('[UNHANDLED REJECTION]:', event.reason);
 });
 
-const urlParams = new URLSearchParams(window.location.search);
-const initialScene = urlParams.get('scene');
-const initialLevel = urlParams.get('level') ?? '1-1';
+const launch = resolveLaunch(window.location.search, import.meta.env.DEV);
 
 const game = new Phaser.Game({
   type: Phaser.AUTO,
@@ -32,15 +31,14 @@ const game = new Phaser.Game({
   scene: [MenuScene, PlayScene, LevelSelectScene, FixtureScene],
 });
 
-if (initialScene === 'play') {
+if (launch.scene !== 'MenuScene') {
   game.events.once('ready', () => {
     game.scene.stop('MenuScene');
-    game.scene.start('PlayScene', { levelId: initialLevel });
-  });
-} else if (initialScene === 'levelSelect') {
-  game.events.once('ready', () => {
-    game.scene.stop('MenuScene');
-    game.scene.start('LevelSelectScene');
+    if (launch.scene === 'PlayScene') {
+      game.scene.start('PlayScene', { levelId: launch.levelId, mode: launch.mode });
+    } else {
+      game.scene.start('LevelSelectScene');
+    }
   });
 }
 

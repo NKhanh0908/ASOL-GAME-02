@@ -33,7 +33,8 @@ export function beginDrag(
   pointerX: number,
   pointerY: number,
   layout: LayoutMetrics,
-  pieceIndexInTray: number = 0
+  pieceIndexInTray: number = 0,
+  trayCount: number = 2
 ): DragSession {
   const originState = state.pieces[piece.id] ?? { kind: 'tray', turns: 0 };
   let pieceCenterX = pointerX;
@@ -51,7 +52,7 @@ export function beginDrag(
     pieceCenterX = pos.x;
     pieceCenterY = pos.y;
   } else {
-    const hitbox = pieceHitbox(piece, originState, layout, pieceIndexInTray);
+    const hitbox = pieceHitbox(piece, originState, layout, pieceIndexInTray, trayCount);
     pieceCenterX = hitbox.x + hitbox.width / 2;
     pieceCenterY = hitbox.y + hitbox.height / 2;
   }

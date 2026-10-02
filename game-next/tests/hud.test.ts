@@ -1,6 +1,13 @@
 import { describe, expect, test } from 'vitest';
 import { COLOR_TOKENS, LAYOUT_TOKENS, TYPO_TOKENS } from '../src/presentation/designTokens.ts';
-import { SNAP_HINT_TEXT, formatMatchCount } from '../src/presentation/hudText.ts';
+import {
+  HUD_LEVEL_TITLE_MAX_WIDTH,
+  HUD_LEVEL_TITLE_MIN_SIZE,
+  SNAP_HINT_TEXT,
+  VICTORY_VERSE_FONT_SIZE,
+  fitHudTitleFontSize,
+  formatMatchCount,
+} from '../src/presentation/hudText.ts';
 
 describe('Hud Behavioral Logic and Visual Standards', () => {
   test('quy tắc nút Xoay chỉ hiển thị từ Chương 3', () => {
@@ -25,6 +32,8 @@ describe('Hud Behavioral Logic and Visual Standards', () => {
     const isNotAllCaps = sampleTitle !== sampleTitle.toUpperCase();
     expect(isNotAllCaps).toBe(true);
     expect(TYPO_TOKENS.fontFamily.serif).toContain('Playfair Display');
+    expect(TYPO_TOKENS.fontFamily.levelTitle).toContain('Be Vietnam Pro');
+    expect(TYPO_TOKENS.fontFamily.levelTitle).not.toContain('Playfair Display');
   });
 });
 
@@ -45,6 +54,17 @@ describe('HUD theo mockup improve-v1', () => {
     const caption = parseInt(TYPO_TOKENS.fontSize.caption, 10);
     expect(title).toBe(52);
     expect(caption).toBeLessThan(title);
+  });
+
+  test('tên màn dài co vừa vùng an toàn giữa hai nút header', () => {
+    expect(HUD_LEVEL_TITLE_MAX_WIDTH).toBe(448);
+    expect(fitHudTitleFontSize(420)).toBe(52);
+    expect(fitHudTitleFontSize(650)).toBe(35);
+    expect(fitHudTitleFontSize(1200)).toBe(HUD_LEVEL_TITLE_MIN_SIZE);
+  });
+
+  test('câu thơ thắng hai dòng dùng cỡ chữ gọn để không chạm tên màn và hàng nút', () => {
+    expect(VICTORY_VERSE_FONT_SIZE).toBe(18);
   });
 
   test('nút tròn dùng viền băng và nền radial mới', () => {

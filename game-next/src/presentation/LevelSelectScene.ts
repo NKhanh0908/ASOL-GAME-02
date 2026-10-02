@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { campaignManifest } from '../content/manifest.ts';
-import { levelAccess } from '../domain/campaign.ts';
+import { levelAccess, resolveMapCompletedLevels } from '../domain/campaign.ts';
+import type { LevelAccessMode } from '../domain/campaign.ts';
 import { createProgressRepository } from '../infrastructure/progressRepository.ts';
 import type { ProgressRepository } from '../application/progressPort.ts';
 import { ANIM_TOKENS, COLOR_NUMBERS, COLOR_TOKENS, TYPO_TOKENS } from './designTokens.ts';
@@ -25,6 +26,8 @@ export class LevelSelectScene extends Phaser.Scene {
   private toastContainer?: Phaser.GameObjects.Container;
 
   private sky!: SkyBackdrop;
+  private mode: LevelAccessMode = 'campaign';
+  private previewCompletedThrough?: string;
 
   private isDragging = false;
   private dragStartY = 0;
@@ -36,11 +39,24 @@ export class LevelSelectScene extends Phaser.Scene {
     super({ key: 'LevelSelectScene' });
   }
 
+  init(data: { mode?: LevelAccessMode; previewCompletedThrough?: string } = {}): void {
+    this.mode = data.mode ?? 'campaign';
+    this.previewCompletedThrough = this.mode === 'harness'
+      ? data.previewCompletedThrough
+      : undefined;
+  }
+
   create(): void {
     TextureFactory.generateAll(this);
 
     this.progressRepo = createProgressRepository(localStorage, campaignManifest, 'oracle-v1');
     const { progress } = this.progressRepo.read();
+    const mapCompleted = resolveMapCompletedLevels(
+      campaignManifest,
+      progress.completed,
+      this.mode,
+      this.previewCompletedThrough
+    );
 
     // 1. Nền trời dùng chung; màn chọn màn cho sao trôi xuống
     this.sky = new SkyBackdrop(this, { seed: 3, drift: true });
@@ -49,11 +65,11 @@ export class LevelSelectScene extends Phaser.Scene {
     this.mapContainer = this.add.container(0, 0).setDepth(10);
 
     // 3. Dựng chòm sao & đường nối Bezier
-    const currentNode = this.buildConstellation(progress.completed);
+    const currentNode = this.buildConstellation(mapCompleted);
 
     // 4. Header cố định trên đỉnh có thanh tiến độ (Depth 80)
     this.headerContainer = this.add.container(0, 0).setDepth(80);
-    this.buildHeader(progress.completed.length, campaignManifest.length);
+    this.buildHeader(mapCompleted.length, campaignManifest.length);
 
     // 5. Cài đặt cuộn / kéo mượt mà
     this.setupScrolling();
@@ -136,7 +152,7 @@ export class LevelSelectScene extends Phaser.Scene {
 
     for (let i = 0; i < campaignManifest.length; i++) {
       const entry = campaignManifest[i];
-      const access = levelAccess(campaignManifest, completedLevels, entry.id);
+      const access = levelAccess(campaignManifest, completedLevels, entry.id, this.mode);
 
       let state: NodeInfo['state'] = 'locked';
       if (access.completed) {
@@ -386,7 +402,11 @@ export class LevelSelectScene extends Phaser.Scene {
         } else if (!node.available) {
           this.showToast(`Màn ${node.id} đang được tinh chỉnh`);
         } else {
-          this.scene.start('PlayScene', { levelId: node.id });
+          this.scene.start('PlayScene', {
+            levelId: node.id,
+            mode: this.mode,
+            previewCompletedThrough: this.previewCompletedThrough,
+          });
         }
       });
 

@@ -9,7 +9,13 @@ import {
 } from './designTokens.ts';
 import { TEXTURE_KEYS } from './TextureFactory.ts';
 import { drawJewel } from './JewelShape.ts';
-import { SNAP_HINT_TEXT, VICTORY_LABELS, formatMatchCount } from './hudText.ts';
+import {
+  SNAP_HINT_TEXT,
+  VICTORY_LABELS,
+  VICTORY_VERSE_FONT_SIZE,
+  fitHudTitleFontSize,
+  formatMatchCount,
+} from './hudText.ts';
 
 export type HudCallbacks = {
   onMenu: () => void;
@@ -66,12 +72,13 @@ export class Hud {
     // 2. Tiêu đề màn chơi 36px + Dòng phụ Chương 24px (Giữa header: x=360)
     this.titleText = this.scene.add
       .text(360, 34, levelName, {
-        fontFamily: TYPO_TOKENS.fontFamily.serif,
+        fontFamily: TYPO_TOKENS.fontFamily.levelTitle,
         fontSize: TYPO_TOKENS.fontSize.headerTitle,
         color: COLOR_TOKENS.text.primary,
         fontStyle: 'bold',
       })
       .setOrigin(0.5);
+    this.titleText.setFontSize(fitHudTitleFontSize(this.titleText.width));
 
     this.subtitleText = this.scene.add
       .text(360, 74, `${chapterRoman} · Màn ${this.levelId}`, {
@@ -199,8 +206,8 @@ export class Hud {
 
     const winTitle = this.scene.add
       .text(cx, card.y + 79, levelName, {
-        fontFamily: TYPO_TOKENS.fontFamily.serif,
-        fontSize: '40px',
+        fontFamily: TYPO_TOKENS.fontFamily.levelTitle,
+        fontSize: '36px',
         fontStyle: 'bold',
         color: COLOR_TOKENS.text.primary,
       })
@@ -209,7 +216,7 @@ export class Hud {
     const winVerse = this.scene.add
       .text(cx, card.y + 123, '', {
         fontFamily: TYPO_TOKENS.fontFamily.sans,
-        fontSize: '22px',
+        fontSize: `${VICTORY_VERSE_FONT_SIZE}px`,
         color: '#D8E6FF',
         align: 'center',
         wordWrap: { width: card.w - 80, useAdvancedWrap: true },

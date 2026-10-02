@@ -1,6 +1,14 @@
 import Phaser from 'phaser';
 import { PIECE_TOKENS } from './designTokens.ts';
-import { jewelOutline, jewelFaces, jewelTable, jewelSpineLines } from './jewelGeometry.ts';
+import {
+  jewelOutline,
+  polygonCentroid,
+  polygonFaces,
+  polygonSpineLines,
+  polygonStrokeOutline,
+  polygonTable,
+  scalePolygon,
+} from './jewelGeometry.ts';
 import type { Point } from './jewelGeometry.ts';
 
 export type JewelVariant = 'solid' | 'ghost' | 'target' | 'placeholder';
@@ -11,6 +19,13 @@ export type JewelOptions = {
   radius: number;
   variant: JewelVariant;
   alpha?: number;
+};
+
+export type JewelPolygonOptions = {
+  variant: JewelVariant;
+  alpha?: number;
+  /** Nửa cạnh khung mảnh tính bằng pixel — quy mô cho đốm sáng */
+  sizePx: number;
 };
 
 function hex(value: string): number {
@@ -44,24 +59,41 @@ function strokeDashedPolygon(
 }
 
 /**
- * Vẽ một mảnh ngọc thoi.
- *
- * Viền vẽ phía trong mảnh (bán kính trừ nửa độ dày viền) để mép trùng đúng
- * đường kẻ lưới — quy tắc "vẽ đúng đến từng pixel" của GridSpec.
+ * Vẽ một mảnh ngọc thoi. Giữ chữ ký cũ cho HUD và các chỗ chỉ cần thoi.
  */
 export function drawJewel(g: Phaser.GameObjects.Graphics, opts: JewelOptions): void {
-  const { cx, cy, radius, variant } = opts;
+  drawJewelPolygon(g, jewelOutline(opts.cx, opts.cy, opts.radius), {
+    variant: opts.variant,
+    alpha: opts.alpha,
+    sizePx: opts.radius,
+  });
+}
+
+/**
+ * Vẽ mảnh ngọc theo đa giác bất kỳ (vuông, tam giác, thoi).
+ *
+ * Viền vẽ phía trong mảnh: dịch mỗi cạnh vào nửa độ dày viền để mép nét
+ * trùng đúng đường kẻ lưới — quy tắc "vẽ đúng đến từng pixel" của GridSpec.
+ */
+export function drawJewelPolygon(
+  g: Phaser.GameObjects.Graphics,
+  points: readonly Point[],
+  opts: JewelPolygonOptions
+): void {
+  const { variant, sizePx } = opts;
   const alpha = opts.alpha ?? (variant === 'ghost' ? PIECE_TOKENS.ghostAlpha : 1);
+  const outline = [...points];
+  const center = polygonCentroid(outline);
 
   if (variant === 'target') {
     g.fillStyle(hex(PIECE_TOKENS.targetFill.color), PIECE_TOKENS.targetFill.alpha * alpha);
-    g.fillPoints(toGeomPoints(jewelOutline(cx, cy, radius)), true);
+    g.fillPoints(toGeomPoints(outline), true);
     g.lineStyle(
       PIECE_TOKENS.targetStroke.width,
       hex(PIECE_TOKENS.targetStroke.color),
       PIECE_TOKENS.targetStroke.alpha * alpha
     );
-    strokeDashedPolygon(g, jewelOutline(cx, cy, radius), PIECE_TOKENS.targetStroke.dash);
+    strokeDashedPolygon(g, outline, PIECE_TOKENS.targetStroke.dash);
     return;
   }
 
@@ -71,43 +103,42 @@ export function drawJewel(g: Phaser.GameObjects.Graphics, opts: JewelOptions): v
       hex(PIECE_TOKENS.placeholderStroke.color),
       PIECE_TOKENS.placeholderStroke.alpha * alpha
     );
-    strokeDashedPolygon(g, jewelOutline(cx, cy, radius), PIECE_TOKENS.placeholderStroke.dash);
+    strokeDashedPolygon(g, outline, PIECE_TOKENS.placeholderStroke.dash);
     return;
   }
 
-  // Quầng sáng phía sau: các thoi đồng tâm lớn dần, mờ dần. Phaser Graphics
+  // Quầng sáng phía sau: các đa giác đồng tâm lớn dần, mờ dần. Phaser Graphics
   // không có blur nên đây là cách xấp xỉ rẻ nhất mà không phải sinh texture
   // hay thêm GameObject (render chạy mỗi khung hình, thêm object là rò rỉ).
   const glowRings = 6;
   for (let i = glowRings; i > 0; i--) {
     const t = i / glowRings;
     g.fillStyle(hex(PIECE_TOKENS.glow.color), PIECE_TOKENS.glow.alpha * (1 - t) ** 2 * alpha);
-    g.fillPoints(toGeomPoints(jewelOutline(cx, cy, radius * (1 + t * 0.22))), true);
+    g.fillPoints(toGeomPoints(scalePolygon(outline, center, 1 + t * 0.22)), true);
   }
 
-  // solid và ghost: bốn mặt vát, mặt bàn, đoạn nối, viền trong
-  for (const face of jewelFaces(cx, cy, radius)) {
+  // solid và ghost: các mặt vát, mặt bàn, đoạn nối, viền trong
+  for (const face of polygonFaces(outline)) {
     g.fillStyle(hex(face.color), alpha);
     g.fillPoints(toGeomPoints(face.points), true);
   }
 
   g.fillStyle(hex(PIECE_TOKENS.tableStops[1]), 0.6 * alpha);
-  g.fillPoints(toGeomPoints(jewelTable(cx, cy, radius)), true);
+  g.fillPoints(toGeomPoints(polygonTable(outline)), true);
 
   g.lineStyle(1, hex('#FFF7DA'), 0.45 * alpha);
-  for (const line of jewelSpineLines(cx, cy, radius)) {
+  for (const line of polygonSpineLines(outline)) {
     g.lineBetween(line.from.x, line.from.y, line.to.x, line.to.y);
   }
 
-  const inset = PIECE_TOKENS.outlineWidth / 2;
   g.lineStyle(PIECE_TOKENS.outlineWidth, hex(PIECE_TOKENS.outline), alpha);
-  g.strokePoints(toGeomPoints(jewelOutline(cx, cy, radius - inset)), true, true);
+  g.strokePoints(toGeomPoints(polygonStrokeOutline(outline, PIECE_TOKENS.outlineWidth)), true, true);
 
   drawSparkle(
     g,
-    cx + radius * PIECE_TOKENS.sparkle.offsetRatio,
-    cy + radius * PIECE_TOKENS.sparkle.offsetRatio,
-    radius * 0.12,
+    center.x + sizePx * PIECE_TOKENS.sparkle.offsetRatio,
+    center.y + sizePx * PIECE_TOKENS.sparkle.offsetRatio,
+    sizePx * 0.12,
     PIECE_TOKENS.sparkle.alpha * alpha
   );
 }

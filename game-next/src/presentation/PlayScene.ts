@@ -3,10 +3,11 @@ import type { Level } from '../domain/model.ts';
 import { GRID_WIDTH, GRID_HEIGHT } from '../domain/model.ts';
 import { loadLevel } from '../content/catalog.ts';
 import { campaignManifest } from '../content/manifest.ts';
-import { nextLevelId } from '../domain/campaign.ts';
+import { furthestLevelId, nextLevelId } from '../domain/campaign.ts';
 import { createProgressRepository } from '../infrastructure/progressRepository.ts';
 import { PlayController } from '../application/playController.ts';
 import { BoardRenderer } from './BoardRenderer.ts';
+import { maskCentroid } from '../domain/mask.ts';
 import { Hud } from './Hud.ts';
 import {
   computeLayout,
@@ -35,14 +36,22 @@ export class PlayScene extends Phaser.Scene {
   private pauseDialog!: PauseDialog;
   private sky!: SkyBackdrop;
   private celebrationContainer: Phaser.GameObjects.Container | null = null;
+  private previewCompletedThrough?: string;
 
   constructor() {
     super({ key: 'PlayScene' });
   }
 
-  init(data: { levelId?: string; mode?: 'campaign' | 'harness' }): void {
+  init(data: {
+    levelId?: string;
+    mode?: 'campaign' | 'harness';
+    previewCompletedThrough?: string;
+  }): void {
     const levelId = data.levelId ?? '1-1';
     this.mode = data.mode ?? 'campaign';
+    this.previewCompletedThrough = this.mode === 'harness'
+      ? data.previewCompletedThrough
+      : undefined;
     try {
       this.level = loadLevel(levelId, this.mode);
     } catch (err) {
@@ -78,7 +87,7 @@ export class PlayScene extends Phaser.Scene {
       savedProgress.settings.showTarget
     );
 
-    this.boardRenderer = new BoardRenderer(this, layout);
+    this.boardRenderer = new BoardRenderer(this, layout, this.level.pieces.length);
     this.targetBadge = new TargetBadge(this, layout, this.level);
 
     this.pauseDialog = new PauseDialog(this, {
@@ -89,7 +98,7 @@ export class PlayScene extends Phaser.Scene {
         this.refreshView();
       },
       onLevelSelect: () => {
-        this.scene.start('LevelSelectScene');
+        this.openLevelSelect();
       },
     });
 
@@ -119,14 +128,25 @@ export class PlayScene extends Phaser.Scene {
         this.refreshView();
       },
       onLevelSelect: () => {
-        this.scene.start('LevelSelectScene');
+        this.openLevelSelect();
       },
       onNextLevel: () => {
         const nextId = nextLevelId(campaignManifest, this.level.id);
         if (nextId) {
           try {
-            loadLevel(nextId, 'harness');
-            this.scene.start('PlayScene', { levelId: nextId });
+            // Kiểm tra đúng chế độ: campaign về menu nếu màn kế chưa approved.
+            loadLevel(nextId, this.mode);
+            this.scene.start('PlayScene', {
+              levelId: nextId,
+              mode: this.mode,
+              previewCompletedThrough: this.mode === 'harness'
+                ? furthestLevelId(
+                    campaignManifest,
+                    this.previewCompletedThrough,
+                    this.level.id
+                  )
+                : undefined,
+            });
           } catch {
             this.scene.start('MenuScene');
           }
@@ -189,7 +209,7 @@ export class PlayScene extends Phaser.Scene {
   private autosolve(mode: 'win' | 'drag', layout: LayoutMetrics): void {
     const pieces = this.level.pieces;
     pieces.forEach((piece, index) => {
-      const start = pieceHitbox(piece, { kind: 'tray', turns: 0 }, layout, index);
+      const start = pieceHitbox(piece, { kind: 'tray', turns: 0 }, layout, index, pieces.length);
       const anchor = piece.anchors.find((a) => a.id === 'A') ?? piece.anchors[0];
       const target = pieceCenterCanvas(piece.frameSize, anchor.x, anchor.y, layout);
       this.controller.onPointerDown(start.x + start.width / 2, start.y + start.height / 2, layout);
@@ -239,8 +259,9 @@ export class PlayScene extends Phaser.Scene {
     // 1. Ánh chớp sao starlight flash dịu nhẹ
     this.cameras.main.flash(350, 249, 199, 79, false);
 
-    // Tâm bàn, nơi hai hình thoi chạm đỉnh nhau
-    const center = gridToCanvas(GRID_WIDTH / 2, GRID_HEIGHT / 2, layout);
+    // Trọng tâm hình mục tiêu (với 1-1 là tâm bàn, nơi hai thoi chạm đỉnh)
+    const centroid = maskCentroid(this.level.targetMask) ?? { x: GRID_WIDTH / 2, y: GRID_HEIGHT / 2 };
+    const center = gridToCanvas(centroid.x, centroid.y, layout);
 
     // 2. Vòng sóng năng lượng cổ ngữ (Resonance Shockwave Rings)
     const ringGraphics = this.add.graphics();
@@ -342,6 +363,22 @@ export class PlayScene extends Phaser.Scene {
       this.celebrationContainer.destroy();
       this.celebrationContainer = null;
     }
+  }
+
+  private openLevelSelect(): void {
+    const justCompleted = this.controller?.getSnapshot().phase === 'won'
+      ? this.level.id
+      : undefined;
+    this.scene.start('LevelSelectScene', {
+      mode: this.mode,
+      previewCompletedThrough: this.mode === 'harness'
+        ? furthestLevelId(
+            campaignManifest,
+            this.previewCompletedThrough,
+            justCompleted
+          )
+        : undefined,
+    });
   }
 
   public onHardwareBack(): void {

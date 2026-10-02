@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="680" viewBox="0 0 512 680">
+<rect width="512" height="680" fill="#101a4f"/>
+<line x1="0" y1="0" x2="0" y2="640" stroke="#3b56b8" stroke-width="1"/>
+<line x1="32" y1="0" x2="32" y2="640" stroke="#22336f" stroke-width="1"/>
+<line x1="64" y1="0" x2="64" y2="640" stroke="#22336f" stroke-width="1"/>
+<line x1="96" y1="0" x2="96" y2="640" stroke="#3b56b8" stroke-width="1"/>
+<line x1="128" y1="0" x2="128" y2="640" stroke="#22336f" stroke-width="1"/>
+<line x1="160" y1="0" x2="160" y2="640" stroke="#22336f" stroke-width="1"/>
+<line x1="192" y1="0" x2="192" y2="640" stroke="#3b56b8" stroke-width="1"/>
+<line x1="224" y1="0" x2="224" y2="640" stroke="#22336f" stroke-width="1"/>
+<line x1="256" y1="0" x2="256" y2="640" stroke="#22336f" stroke-width="1"/>
+<line x1="288" y1="0" x2="288" y2="640" stroke="#3b56b8" stroke-width="1"/>
+<line x1="320" y1="0" x2="320" y2="640" stroke="#22336f" stroke-width="1"/>
+<line x1="352" y1="0" x2="352" y2="640" stroke="#22336f" stroke-width="1"/>
+<line x1="384" y1="0" x2="384" y2="640" stroke="#3b56b8" stroke-width="1"/>
+<line x1="416" y1="0" x2="416" y2="640" stroke="#22336f" stroke-width="1"/>
+<line x1="448" y1="0" x2="448" y2="640" stroke="#22336f" stroke-width="1"/>
+<line x1="480" y1="0" x2="480" y2="640" stroke="#3b56b8" stroke-width="1"/>
+<line x1="512" y1="0" x2="512" y2="640" stroke="#22336f" stroke-width="1"/>
+<line x1="0" y1="0" x2="512" y2="0" stroke="#3b56b8" stroke-width="1"/>
+<line x1="0" y1="32" x2="512" y2="32" stroke="#22336f" stroke-width="1"/>
+<line x1="0" y1="64" x2="512" y2="64" stroke="#22336f" stroke-width="1"/>
+<line x1="0" y1="96" x2="512" y2="96" stroke="#3b56b8" stroke-width="1"/>
+<line x1="0" y1="128" x2="512" y2="128" stroke="#22336f" stroke-width="1"/>
+<line x1="0" y1="160" x2="512" y2="160" stroke="#22336f" stroke-width="1"/>
+<line x1="0" y1="192" x2="512" y2="192" stroke="#3b56b8" stroke-width="1"/>
+<line x1="0" y1="224" x2="512" y2="224" stroke="#22336f" stroke-width="1"/>
+<line x1="0" y1="256" x2="512" y2="256" stroke="#22336f" stroke-width="1"/>
+<line x1="0" y1="288" x2="512" y2="288" stroke="#3b56b8" stroke-width="1"/>
+<line x1="0" y1="320" x2="512" y2="320" stroke="#22336f" stroke-width="1"/>
+<line x1="0" y1="352" x2="512" y2="352" stroke="#22336f" stroke-width="1"/>
+<line x1="0" y1="384" x2="512" y2="384" stroke="#3b56b8" stroke-width="1"/>
+<line x1="0" y1="416" x2="512" y2="416" stroke="#22336f" stroke-width="1"/>
+<line x1="0" y1="448" x2="512" y2="448" stroke="#22336f" stroke-width="1"/>
+<line x1="0" y1="480" x2="512" y2="480" stroke="#3b56b8" stroke-width="1"/>
+<line x1="0" y1="512" x2="512" y2="512" stroke="#22336f" stroke-width="1"/>
+<line x1="0" y1="544" x2="512" y2="544" stroke="#22336f" stroke-width="1"/>
+<line x1="0" y1="576" x2="512" y2="576" stroke="#3b56b8" stroke-width="1"/>
+<line x1="0" y1="608" x2="512" y2="608" stroke="#22336f" stroke-width="1"/>
+<line x1="0" y1="640" x2="512" y2="640" stroke="#22336f" stroke-width="1"/>
+<path d="M160 132h4v4h-4zM160 136h8v4h-8zM160 140h12v4h-12zM160 144h16v4h-16zM160 148h20v4h-20zM160 152h24v4h-24zM160 156h28v4h-28zM160 160h32v4h-32zM160 164h36v4h-36zM160 168h40v4h-40zM160 172h44v4h-44zM160 176h48v4h-48zM160 180h52v4h-52zM160 184h56v4h-56zM160 188h60v4h-60zM160 192h64v4h-64zM160 196h68v4h-68zM160 200h72v4h-72zM160 204h76v4h-76zM160 208h80v4h-80zM160 212h84v4h-84zM160 216h88v4h-88zM160 220h92v4h-92zM160 224h96v4h-96zM160 228h100v4h-100zM160 232h104v4h-104zM160 236h108v4h-108zM160 240h112v4h-112zM160 244h116v4h-116zM160 248h120v4h-120zM160 252h124v4h-124zM160 256h128v4h-128zM160 260h132v4h-132zM160 264h136v4h-136zM160 268h140v4h-140zM160 272h144v4h-144zM160 276h148v4h-148zM160 280h152v4h-152zM160 284h156v4h-156zM160 288h160v4h-160zM160 292h164v4h-164zM160 296h168v4h-168zM160 300h172v4h-172zM160 304h176v4h-176zM160 308h180v4h-180zM160 312h184v4h-184zM160 316h188v4h-188zM64 320h380v4h-380zM64 324h376v4h-376zM64 328h372v4h-372zM64 332h368v4h-368zM64 336h364v4h-364zM64 340h360v4h-360zM64 344h356v4h-356zM64 348h352v4h-352zM64 352h348v4h-348zM64 356h344v4h-344zM64 360h340v4h-340zM64 364h336v4h-336zM64 368h332v4h-332zM64 372h328v4h-328zM64 376h324v4h-324zM64 380h320v4h-320zM64 384h316v4h-316zM64 388h312v4h-312zM64 392h308v4h-308zM64 396h304v4h-304zM64 400h300v4h-300zM64 404h296v4h-296zM64 408h292v4h-292zM64 412h288v4h-288zM64 416h284v4h-284zM64 420h280v4h-280zM64 424h276v4h-276zM64 428h272v4h-272zM64 432h268v4h-268zM64 436h264v4h-264zM64 440h260v4h-260zM64 444h256v4h-256zM64 448h252v4h-252zM64 452h248v4h-248zM64 456h244v4h-244zM64 460h240v4h-240zM64 464h236v4h-236zM64 468h232v4h-232zM64 472h228v4h-228zM64 476h224v4h-224zM64 480h220v4h-220zM64 484h216v4h-216zM64 488h212v4h-212zM64 492h208v4h-208zM64 496h204v4h-204zM64 500h200v4h-200zM64 504h196v4h-196zM64 508h192v4h-192z" fill="#BFE3FF" fill-opacity="0.35"/>
+<polygon data-piece="S1" points="64,320 256,320 256,512 64,512" fill="none" stroke="#FFC857" stroke-width="3"/>
+<polygon data-piece="P1" points="256,320 448,320 256,512" fill="none" stroke="#7EE0A1" stroke-width="3"/>
+<polygon data-piece="L1" points="160,128 160,320 352,320" fill="none" stroke="#FF8FA3" stroke-width="3"/>
+<polygon points="256,352 448,352 256,544" fill="none" stroke="#7EE0A1" stroke-width="2" stroke-dasharray="8 6" stroke-opacity="0.8"/>
+<polygon points="192,128 192,320 384,320" fill="none" stroke="#FF8FA3" stroke-width="2" stroke-dasharray="8 6" stroke-opacity="0.8"/>
+<circle cx="64" cy="320" r="4" fill="#FFC857"/>
+<text x="70" y="334" fill="#DDF2FF" font-family="sans-serif" font-size="12">S1.A</text>
+<circle cx="256" cy="320" r="4" fill="#7EE0A1"/>
+<text x="262" y="334" fill="#DDF2FF" font-family="sans-serif" font-size="12">P1.A</text>
+<circle cx="256" cy="352" r="4" fill="#7EE0A1"/>
+<text x="262" y="366" fill="#DDF2FF" font-family="sans-serif" font-size="12">P1.B</text>
+<circle cx="160" cy="128" r="4" fill="#FF8FA3"/>
+<text x="166" y="142" fill="#DDF2FF" font-family="sans-serif" font-size="12">L1.A</text>
+<circle cx="192" cy="128" r="4" fill="#FF8FA3"/>
+<text x="198" y="142" fill="#DDF2FF" font-family="sans-serif" font-size="12">L1.B</text>
+<text x="8" y="666" fill="#DDF2FF" font-family="sans-serif" font-size="16">1-5 · Chiếc Thuyền Sao · thuyen-sao-v1</text>
+</svg>

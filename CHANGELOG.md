@@ -4,6 +4,176 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-02 - Approve level 1-6 Vuong Mien Binh Minh
+
+- Set `1-6` to `approved` (`vuong-mien-v1`) in `game-next/src/content/manifest.ts`, added `docs/testing/mirror-rebuild/1-6-content-review.md` and updated `docs/testing/levels/chapter-1-review.md`.
+- Verification: `npm run typecheck`, `npm test` and `npm run content:validate` passed; reviewer approved 1-3 to 1-6 together.
+
+### 2026-10-02 - Approve level 1-5 Chiec Thuyen Sao
+
+- Set `1-5` to `approved` (`thuyen-sao-v1`) in `game-next/src/content/manifest.ts`, added `docs/testing/mirror-rebuild/1-5-content-review.md` and updated `docs/testing/levels/chapter-1-review.md`.
+- Verification: `npm run typecheck`, `npm test` and `npm run content:validate` passed; reviewer approved 1-3 to 1-6 together.
+
+### 2026-10-02 - Approve level 1-4 Ngon Hai Dang
+
+- Set `1-4` to `approved` (`hai-dang-v1`) in `game-next/src/content/manifest.ts`, added `docs/testing/mirror-rebuild/1-4-content-review.md` and updated `docs/testing/levels/chapter-1-review.md`.
+- Verification: `npm run typecheck`, `npm test` and `npm run content:validate` passed; reviewer approved 1-3 to 1-6 together.
+
+### 2026-10-02 - Approve level 1-3 Canh Chim Bao Diem
+
+- Set `1-3` to `approved` (`canh-chim-v1`) in `game-next/src/content/manifest.ts`, added `docs/testing/mirror-rebuild/1-3-content-review.md` and updated `docs/testing/levels/chapter-1-review.md`.
+- Verification: `npm run typecheck`, `npm test` and `npm run content:validate` passed; reviewer approved 1-3 to 1-6 together.
+- Changed `game-next/tests/levelSelect.test.ts` to use a mock manifest with 1-3 as `validated`, so the harness-vs-campaign check no longer depends on real approval statuses.
+
+### 2026-10-02 - Synchronize harness progress with the constellation map
+
+- Added a transient harness preview trail so levels completed while reviewing validated content appear completed on the map and advance the current node.
+- Made validated levels playable from the map only in harness mode, while campaign continues to require approved content and retain its persisted progress unchanged.
+- Preserved the furthest harness preview when replaying an earlier level and forwarded harness mode through map and next-level navigation.
+- Verification: two map synchronization regressions and the replay regression failed before implementation; all 31 focused tests and all 243 tests across 30 files then passed; content validation and production build passed. Chrome snapshots remained unused under the user waiver. Vite retained its existing large-chunk advisory.
+
+### 2026-10-02 - Fix Vietnamese level titles and long HUD text
+
+- Switched level names in the play header and victory card from Playfair Display to a Vietnamese-complete Be Vietnam Pro stack with system fallbacks.
+- Fit long header titles into the 448px safe area between navigation controls, with a 32px minimum size.
+- Reduced victory verse text to 18px so two-line verses retain space from the level title and action buttons.
+- Verification: two HUD regressions failed before implementation, then all 19 focused HUD/token tests and all 240 tests across 30 files passed; typecheck and production build passed. Chrome snapshots remained unused under the user waiver. Vite retained its existing large-chunk advisory.
+
+### 2026-10-02 - Approve level 1-2 Bao Thap Tien Tri
+
+- Promoted `bao-thap-v1` from `validated` to `approved` after direct harness review by NKhanh0908: “ok ngon nha”.
+- Updated campaign navigation and catalog expectations so completing 1-1 unlocks the playable 1-2 successor.
+- Added the 1-2 content review record and updated the Chapter 1 review index.
+- Verification: the four stale pre-approval expectations failed after promotion, then 50 focused tests and all 238 tests across 30 files passed; typecheck and content validation also passed.
+
+### 2026-10-02 - Update GDD chapter 1 level sheets and add review index
+
+- Updated the GDD geometry, anchors, shape orientations and piece lists for Chapter 1 levels 1-1 through 1-6.
+- Added a review index linking every SVG preview, solution report and direct development harness URL.
+- Recorded the user-requested Chrome snapshot waiver; visual acceptance is performed directly in the harness.
+
+### 2026-10-02 - Add level 1-6 Vuong Mien Binh Minh (validated)
+
+- Added the authored source, generated artifacts and content regressions for the two wings and center diamond in level 1-6.
+- Registered `vuong-mien-v1` for harness play in `validated` state.
+- Verification: the focused test first failed because 1-6 had no source; authoring produced 3,456 target cells, one solution and no fewer-piece solution; all six authored levels regenerated successfully; typecheck, all 238 tests across 30 files and content validation passed.
+
+### 2026-10-02 - Add level 1-5 Chiec Thuyen Sao (validated)
+
+- Added the authored source, generated artifacts and content regressions for the square hull, bow and sail in level 1-5.
+- Registered `thuyen-sao-v1` for harness play in `validated` state.
+- Verification: the focused test first failed because 1-5 had no source; authoring produced 4,560 target cells, one solution and no fewer-piece solution; typecheck, all 231 tests across 30 files and content validation passed.
+
+### 2026-10-02 - Add level 1-4 Ngon Hai Dang (validated)
+
+- Added the authored source, generated artifacts and content regressions for the three-tier lighthouse in level 1-4.
+- Registered `hai-dang-v1` for harness play in `validated` state.
+- Verification: the focused test first failed because 1-4 had no source; authoring produced 4,032 target cells, one solution and no fewer-piece solution; typecheck, all 224 tests across 30 files and content validation passed.
+
+### 2026-10-02 - Add level 1-3 Canh Chim Bao Diem (validated)
+
+- Added the authored source, generated artifacts and content regressions for the two mirrored wing triangles in level 1-3.
+- Registered `canh-chim-v1` for harness play in `validated` state.
+- Verification: the focused test first failed because 1-3 had no source; authoring produced 2,304 target cells, one solution and no fewer-piece solution; typecheck, all 217 tests across 30 files and content validation passed.
+
+### 2026-10-02 - Add level 1-2 Bao Thap Tien Tri (validated)
+
+- Added the authored source, generated JSON, SVG preview and solution report for level 1-2 with one square and one roof triangle.
+- Registered `bao-thap-v1` for harness play in `validated` state and added shared Chapter 1 content regressions.
+- Verification: the focused test first failed because 1-2 had no source; authoring produced 2,880 target cells, one solution and no fewer-piece solution; typecheck, all 210 tests across 30 files and content validation passed.
+
+### 2026-10-02 - Add 1-1 renderer evidence screenshots
+
+- Added `docs/testing/levels/screens/1-1-{play,drag,win}.png`, captured with `game-next/scripts/shoot-level.sh` after the polygon renderer, parity overlap and N-slot tray changes (plan phase 2, Task 8 evidence).
+- Verification: reviewed all three captures (target silhouette, tray wells, drag shadow with snap label, victory card); `npm run typecheck`, `npm test` (203 passed), `npm run content:validate` and `npm run build` green.
+
+### 2026-10-02 - Remove the faint victory-center sparkle
+
+- Removed the small four-ray sparkle from `game-next/src/presentation/BoardRenderer.ts` after manual acceptance feedback; the board pulse, camera flash and resonance rings remain.
+- Updated `game-next/tests/boardRendererLayers.test.ts` to reject the removed white sparkle while preserving victory-layer ordering.
+- Verification: focused renderer-layer regression failed before the change and passed afterward; `npm run typecheck`, all 203 tests across 29 files, and `npm run build` passed. Vite retained its existing large-chunk advisory.
+
+### 2026-10-02 - Add dev-only harness mode via URL
+
+- Added a tested launch resolver: URL harness mode is enabled only in development; production launches use campaign mode.
+- Forwarded the launch mode into PlayScene and preserved it for the next level, returning to the menu when the next level is unavailable in that mode.
+- Verification: four resolver tests failed for the missing module, then passed; typecheck, all 203 tests across 29 files, content validation, and production build passed. Chrome snapshots were waived by the user; manual harness acceptance remains pending. Vite retained its existing large-chunk advisory.
+
+### 2026-10-02 - Keep moving pieces above parity overlays and reject missing captures
+
+- Split `game-next/src/presentation/BoardRenderer.ts` into constructor-allocated snapped/parity, temporary, dragging, and victory layers; overlapping snapped pieces no longer cover a third moving piece.
+- Hardened `game-next/scripts/shoot-level.sh`: remove stale output, require a fresh nonempty PNG, preserve Chrome diagnostics, and stop subsequent captures on failure while accepting nonzero Chrome exits that produced an image.
+- Added combined-state draw-order regressions in `game-next/tests/boardRendererLayers.test.ts` and shell-independent capture source checks in `game-next/tests/shootLevel.test.ts`. All three failed before the fixes, then passed; typecheck, all 199 tests across 28 files, content validation, and production build passed. Chrome remained unused under the user's waiver; visual acceptance remains pending.
+
+### 2026-10-02 - Render real piece polygons, exact parity overlap and N-slot tray
+
+- Added `maskCentroid` in `game-next/src/domain/mask.ts` and three tests in `game-next/tests/boardRenderer.test.ts`; victory effects now use the target centroid.
+- Updated `game-next/src/presentation/BoardRenderer.ts`, `TargetBadge.ts`, and `PlayScene.ts` to draw real shape polygons, derive targets from solution placements, apply exact even-odd overlaps, and pass the level piece count through tray rendering and autosolve.
+- Added `game-next/scripts/shoot-level.sh` with the planned play/drag/win capture interface. Chrome snapshots were waived by the user; before/after visual acceptance remains pending manual review, including Task 6 jewel styling.
+- Verification: centroid tests failed for the missing helper before implementation, then all six focused tests and all 196 tests across 26 files passed; `npm run typecheck`, `npm run content:validate`, and `npm run build` passed. Vite reported its existing large-chunk advisory.
+
+### 2026-10-02 - Piece polygons on canvas and N-slot tray
+
+- Added board and centered piece polygons using shared shape orientation, with a diamond fallback for legacy pieces. Added tray slot widths and inset well rectangles, and limited tray hitboxes and piece radii by slot width.
+- Passed the level piece count through pointer selection and drag initialization. Verification: six focused tests failed before implementation; all 19 layout tests, all 193 tests across 26 files, and `npm run typecheck` passed.
+
+### 2026-10-02 - Keep convex jewel outlines inside piece boundaries
+
+- Offset each convex polygon edge inward by half the stroke width and intersect adjacent offset lines, so triangle and square outlines follow their outer edges. Preserve the prior radius-scaled outline only for axis-aligned diamonds with equal diagonals.
+- Added roof edge-distance, square, reversed-winding, and legacy diamond geometry regressions. The old uniform scaling failed three focused tests; the corrected focused suite passed all 17.
+
+### 2026-10-02 - Draw jewel facets for any convex polygon
+
+- Added polygon centroid, scaling, facets, table and spine geometry; added `drawJewelPolygon` and retained the `drawJewel` API through delegation.
+- Verification: five new geometry cases failed for missing functions before implementation, then all 13 focused tests passed; `npm run typecheck` passed; `npm test` passed (182 tests across 26 files). Phaser visual verification is deferred to Task 8's required Chrome before/after screenshots.
+
+### 2026-10-02 - Add convex polygon clipping and parity layers
+
+- Added convex polygon intersection and ordered even-odd parity layers in `game-next/src/presentation/polygonClip.ts`, with seven focused geometry tests.
+- Verification: focused test failed before implementation because the module was missing, then passed (7 tests); `npm run typecheck` passed; `npm test` passed (177 tests across 26 files).
+
+### 2026-10-02 - Add solution search and SVG previews to level authoring
+
+- Added exhaustive anchor/tray solution search, distractor cell differences, Markdown reports and SVG previews in `game-next/src/content/authoringReport.ts`, with five cases in `game-next/tests/authoringReport.test.ts`.
+- Updated `game-next/scripts/author-level.ts` to generate reports and reject fewer-piece solutions; documented `content:author` in `game-next/README.md` and generated `docs/testing/levels/1-1.svg` and `docs/testing/levels/1-1-report.md` without changing level JSON.
+- Verification: focused suite failed for the missing module before implementation, then passed (5 tests); `npm run content:author -- 1-1` passed (2304 target cells, 1 solution, 0 fewer-piece solutions); `npm run typecheck` passed; `npm test` passed (170 tests); `npm run content:validate` passed. SVG XML structure and polygon coordinates inspected; visual rendering unavailable in this session.
+
+### 2026-10-02 - Reject explicit null piece orientation
+
+- Updated `game-next/src/content/validate.ts` to validate supplied orientations directly and default only omitted square or diamond orientations to 0; explicit null now produces `invalid-orientation`.
+- Added a regression in `game-next/tests/content.test.ts` using a triangle with valid orientation 0 cells and explicit null orientation.
+- Verification: regression failed before the fix; `npx vitest run tests/content.test.ts` passed (15 tests); `npm run typecheck` passed; `npm test` passed (165 tests); `npm run content:validate` passed.
+
+### 2026-10-02 - Validate piece shapes, orientations and target placements
+
+- Added optional shape metadata to `Piece` and sample target placements to `Level` in `game-next/src/domain/model.ts`; `game-next/src/content/validate.ts` always fills these fields and rejects invalid shapes, orientations, duplicate cells and cells that differ from the shared shape polygons.
+- Updated `game-next/src/content/fixtures.ts` to generate the adjacent diamond fixture with the top-left boundary rule using independent inequalities (800 cells per diamond); added seven validation cases in `game-next/tests/content.test.ts`.
+- Verification: `npx vitest run tests/content.test.ts` passed (14 tests), following seven expected failures before implementation; `npm run typecheck` passed; `npm test` passed (164 tests); `npm run content:validate` passed.
+
+### 2026-10-02 - Author levels from source files; regenerate 1-1 as song-tinh-v2
+
+- Added optional orientation to `game-next/src/content/document.ts`, authoring geometry checks and document generation in `game-next/src/content/authoring.ts`, sources in `game-next/src/content/sources/`, and coverage in `game-next/tests/authoring.test.ts`.
+- Added `game-next/scripts/author-level.ts` and `content:author` in `game-next/package.json`; removed `game-next/scripts/regen-level-geometry.ts`.
+- Regenerated `game-next/src/content/levels/1-1.json` and updated `game-next/src/content/manifest.ts` to `song-tinh-v2`; recorded human approval in `docs/testing/mirror-rebuild/1-1-content-review.md`. Metadata, anchors and solutions remain unchanged; each diamond has 1,152 cells and the target has 2,304 cells.
+- Verification: `npm run typecheck` passed; `npm test` passed (157 tests); `npm run content:validate` passed; `npm run build` passed with the existing large chunk warning.
+
+### 2026-10-02 - Add shared shape module
+
+- Added `ShapeKind` and `Orientation` in `game-next/src/domain/model.ts`, and shared square, diamond and triangle polygons with top-left-rule cell rasterization in `game-next/src/domain/shapes.ts`; geometry coverage is in `game-next/tests/shapes.test.ts`.
+- Verification: `npm run typecheck` passed; `npm test` passed (150 tests).
+
+### 2026-10-02 - Add chapter 1 implementation plans and spec corrections
+
+- Added `docs/superpowers/plans/2026-10-02-chapter-1-levels-index.md` and three phase plans (`-1-nen-mong`, `-2-renderer`, `-3-noi-dung`) covering 16 tasks: shape module, authoring pipeline, validator, renderer, N-slot tray, harness mode, five levels, GDD update and per-level review.
+- Corrected `docs/superpowers/specs/2026-10-02-chapter-1-levels-design.md`: rotation commitment (CH1-03) stated as boundary-only differences, 1-1 re-approval moved right after regeneration, `TargetBadge` brought into scope, HUD counter icons stay diamonds, translucent target with holes deferred to chapter 2, `Level.targetPlacements` added, M0 fixture regenerated under the new edge rule.
+- Verification: level geometry, solution counts and distractor cell counts computed with an independent scratch prototype; plan self-review against every spec requirement; no runtime code changed.
+
+### 2026-10-02 - Add chapter 1 levels and shared authoring design
+
+- Added `docs/superpowers/specs/2026-10-02-chapter-1-levels-design.md`: shared shape module (square, diamond, right isosceles triangle in 8 orientations, one top-left edge rule for all shapes), authoring script with SVG previews and solution search, renderer changes (per-piece polygons, exact even/odd overlap layering, N-slot tray), five draft levels 1-2 to 1-6, and the per-level review flow.
+- Recorded two deliberate GDD deviations (1-3 wings touch at a vertex; 1-6 crown uses a diamond) and the regeneration of 1-1 as `song-tinh-v2`, which must be re-approved before merging to `main`.
+- Verification: spec self-review for placeholders, consistency and scope; checked every level's coordinates against the 128 x 160 board, the 8-cell anchor grid and the 6-cell snap radius; no runtime code changed.
+
 ### 2026-10-01 - Update UI architecture in Master GDD
 
 - Updated `docs/gdd/master-gdd.md` (v0.2.2) to comprehensively document the Astrological Glass Stele (Tấm Bia Tiên Tri) UI/UX design:

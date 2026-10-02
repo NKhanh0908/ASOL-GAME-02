@@ -91,7 +91,7 @@ export class PlayController {
       const piece = pieceOrder[i];
       const pState = this.puzzleState.pieces[piece.id] ?? { kind: 'tray', turns: 0 };
       const originalIndex = this.level.pieces.indexOf(piece);
-      const hitbox = pieceHitbox(piece, pState, layout, originalIndex);
+      const hitbox = pieceHitbox(piece, pState, layout, originalIndex, this.level.pieces.length);
 
       if (
         pointerX >= hitbox.x &&
@@ -100,7 +100,15 @@ export class PlayController {
         pointerY <= hitbox.y + hitbox.height
       ) {
         this.selectedPieceId = piece.id;
-        this.dragSession = beginDrag(this.puzzleState, piece, pointerX, pointerY, layout, originalIndex);
+        this.dragSession = beginDrag(
+          this.puzzleState,
+          piece,
+          pointerX,
+          pointerY,
+          layout,
+          originalIndex,
+          this.level.pieces.length
+        );
         this.dragUpdate = updateDrag(this.dragSession, this.level, pointerX, pointerY, layout);
         this.dragInfo = {
           pieceId: piece.id,

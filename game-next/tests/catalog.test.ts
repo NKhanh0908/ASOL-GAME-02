@@ -74,8 +74,8 @@ describe('Level 1-1 Song Tinh Content and Catalog Loader', () => {
     expect(harnessLevel.pieces.length).toBe(2);
   });
 
-  test('loadLevel chặn màn 1-2 ở campaign vì status đang là planned', () => {
-    expect(() => loadLevel('1-2', 'campaign')).toThrow('unavailable:1-2');
+  test('loadLevel chặn màn chưa có dữ liệu ở campaign', () => {
+    expect(() => loadLevel('2-1', 'campaign')).toThrow('unavailable:2-1');
   });
 
   test('loadLevel ném lỗi khi id không tồn tại', () => {
@@ -143,11 +143,11 @@ describe('Level 1-1 Song Tinh Content and Catalog Loader', () => {
     expect(repo.read().progress.completed).toEqual([]);
   });
 
-  test('manifest giả định có 1-2 approved xác nhận mở đúng successor, còn production manifest giữ 1-2 planned (unavailable)', () => {
+  test('manifest production và manifest mẫu đều mở successor 1-2 khi approved', () => {
     // Production manifest
     const prodAccess = levelAccess(campaignManifest, ['1-1'], '1-2');
     expect(prodAccess.unlocked).toBe(true);
-    expect(prodAccess.available).toBe(false); // planned
+    expect(prodAccess.available).toBe(true); // 1-2 đã approved
 
     // Mock manifest với 1-2 approved
     const mockManifest: ManifestEntry[] = [

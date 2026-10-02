@@ -4,6 +4,12 @@ export const TOTAL_CELLS = GRID_WIDTH * GRID_HEIGHT;
 
 export type Cell = readonly [number, number];
 export type Turns = 0 | 1 | 2 | 3;
+export type ShapeKind = 'square' | 'triangle' | 'diamond';
+/**
+ * Hướng tam giác vuông cân: 0–3 là góc vuông ở góc khung TL/TR/BR/BL,
+ * 4–7 là mái có cạnh huyền nằm ở đáy/trái/đỉnh/phải khung. Vuông và thoi luôn 0.
+ */
+export type Orientation = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
 export type Anchor = Readonly<{ id: string; x: number; y: number }>;
 
 export type Piece = Readonly<{
@@ -12,6 +18,9 @@ export type Piece = Readonly<{
   cells: readonly Cell[];
   anchors: readonly Anchor[];
   color: 'amber';
+  /** Validator luôn điền; literal viết tay trong test domain có thể bỏ trống (renderer coi là thoi) */
+  shapeKind?: ShapeKind;
+  orientation?: Orientation;
 }>;
 
 export type Level = Readonly<{
@@ -24,6 +33,8 @@ export type Level = Readonly<{
   targetMask: Uint8Array;
   /** Câu thơ hiện ở màn hoàn thành; màn nào không khai báo thì bỏ qua */
   victoryVerse?: string;
+  /** Placement của nghiệm mẫu thứ nhất, để vẽ bóng mục tiêu bằng đa giác thật */
+  targetPlacements?: readonly Placement[];
 }>;
 
 export type Placement = Readonly<{

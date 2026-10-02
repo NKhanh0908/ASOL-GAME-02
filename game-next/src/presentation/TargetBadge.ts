@@ -1,4 +1,6 @@
 import Phaser from 'phaser';
+import { effectiveOrientation, shapePolygon } from '../domain/shapes.ts';
+import { parityLayers } from './polygonClip.ts';
 import type { Level } from '../domain/model.ts';
 import { GRID_WIDTH, GRID_HEIGHT } from '../domain/model.ts';
 import type { LayoutMetrics } from './layout.ts';
@@ -137,68 +139,34 @@ export class TargetBadge {
 
     const w = maxX - minX + 1;
     const h = maxY - minY + 1;
-    const centerX = (minX + maxX) / 2;
-    const centerY = (minY + maxY) / 2;
+    const centerX = (minX + maxX + 1) / 2;
+    const centerY = (minY + maxY + 1) / 2;
 
     // Hình mục tiêu phải nằm gọn trong vòng vàng (bán kính 63px)
     const scale = Math.min(92 / w, 64 / h);
 
-    // Màn toàn hình thoi: vẽ vector sắc nét thay vì tô từng ô của mask. Tâm
-    // và bán kính suy ra từ neo A của từng mảnh — viết cứng thì sai ngay khi
-    // frameSize đổi (đã xảy ra khi mảnh đổi từ 40 sang 48 ô).
-    if (level.pieces.every((p) => p.cells.length > 0) && level.id === '1-1') {
-      for (const piece of level.pieces) {
-        const anchor = piece.anchors.find((a) => a.id === 'A') ?? piece.anchors[0];
-        const half = piece.frameSize / 2;
-        this.drawSolidDiamond(
-          g,
-          (anchor.x + half - centerX) * scale,
-          (anchor.y + half - centerY) * scale,
-          half * scale
-        );
-      }
-      return;
+    // Vẽ vector từ placement của nghiệm mẫu, mọi màn dùng chung một đường:
+    // trước đây 1-1 có nhánh riêng còn màn khác tô từng ô của mask (răng cưa).
+    const polygons = (level.targetPlacements ?? []).flatMap((placement) => {
+      const piece = level.pieces.find((p) => p.id === placement.pieceId);
+      if (!piece) return [];
+      const kind = piece.shapeKind ?? 'diamond';
+      const orientation = effectiveOrientation(kind, piece.orientation ?? 0, placement.turns);
+      return [
+        shapePolygon(kind, orientation, piece.frameSize).map((v) => ({
+          x: (placement.x + v.x - centerX) * scale,
+          y: (placement.y + v.y - centerY) * scale,
+        })),
+      ];
+    });
+
+    for (const layer of parityLayers(polygons)) {
+      g.fillStyle(layer.filled ? COLOR_NUMBERS.amberSolid : COLOR_NUMBERS.boardSurfaceTop, 1);
+      g.fillPoints(
+        layer.points.map((p) => new Phaser.Geom.Point(p.x, p.y)),
+        true
+      );
     }
-
-    // Với các level khác: render từ targetMask
-    g.fillStyle(COLOR_NUMBERS.amberSolid, 1.0);
-    const pixelSize = Math.max(1, Math.round(scale));
-    for (let y = minY; y <= maxY; y++) {
-      for (let x = minX; x <= maxX; x++) {
-        if (level.targetMask[y * GRID_WIDTH + x] > 0) {
-          const drawX = (x - centerX) * scale;
-          const drawY = (y - centerY) * scale;
-          g.fillRect(drawX, drawY, pixelSize, pixelSize);
-        }
-      }
-    }
-  }
-
-  private drawSolidDiamond(
-    g: Phaser.GameObjects.Graphics,
-    cx: number,
-    cy: number,
-    r: number
-  ): void {
-    const pts = [
-      new Phaser.Geom.Point(cx, cy - r),
-      new Phaser.Geom.Point(cx + r, cy),
-      new Phaser.Geom.Point(cx, cy + r),
-      new Phaser.Geom.Point(cx - r, cy),
-    ];
-
-    // Thân vàng đặc
-    g.fillStyle(COLOR_NUMBERS.amberSolid, 1.0);
-    g.fillPoints(pts, true);
-
-    // Viền vàng sáng lấp lánh 1.5px
-    g.lineStyle(1.5, COLOR_NUMBERS.amberGlow, 0.9);
-    g.strokePoints(pts, true);
-
-    // Gân tinh thể trung tâm mờ
-    g.lineStyle(1, COLOR_NUMBERS.amberGlow, 0.35);
-    g.lineBetween(cx, cy - r, cx, cy + r);
-    g.lineBetween(cx - r, cy, cx + r, cy);
   }
 
   private animateZoom(scene: Phaser.Scene): void {

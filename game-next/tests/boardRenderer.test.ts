@@ -1,4 +1,8 @@
 import { describe, expect, test } from 'vitest';
+import { maskCentroid } from '../src/domain/mask.ts';
+import { loadLevel } from '../src/content/catalog.ts';
+import { TOTAL_CELLS, GRID_WIDTH } from '../src/domain/model.ts';
+
 import { computeLayout } from '../src/presentation/layout.ts';
 import { COLOR_NUMBERS, COLOR_TOKENS, LAYOUT_TOKENS } from '../src/presentation/designTokens.ts';
 
@@ -25,5 +29,23 @@ describe('BoardRenderer Astrological Stele Rules', () => {
     expect(layout.trayBounds.y).toBeGreaterThanOrEqual(
       layout.boardBounds.y + layout.boardBounds.height
     );
+  });
+});
+
+describe('maskCentroid', () => {
+  test('mask rỗng không có trọng tâm', () => {
+    expect(maskCentroid(new Uint8Array(TOTAL_CELLS))).toBeNull();
+  });
+
+  test('một ô duy nhất có trọng tâm ở tâm ô', () => {
+    const mask = new Uint8Array(TOTAL_CELLS);
+    mask[10 * GRID_WIDTH + 4] = 1;
+    expect(maskCentroid(mask)).toEqual({ x: 4.5, y: 10.5 });
+  });
+
+  test('mục tiêu 1-1 có trọng tâm sát tâm bàn (64, 80)', () => {
+    const c = maskCentroid(loadLevel('1-1', 'campaign').targetMask)!;
+    expect(c.x).toBeCloseTo(63.5, 6);
+    expect(c.y).toBeCloseTo(80, 6);
   });
 });

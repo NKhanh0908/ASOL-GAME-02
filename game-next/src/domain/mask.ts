@@ -53,3 +53,17 @@ export function matchesTarget(a: Uint8Array, b: Uint8Array): boolean {
   }
   return true;
 }
+
+/** Trọng tâm các ô bật của mask, đơn vị ô logic (tâm ô = toạ độ + 0.5). */
+export function maskCentroid(mask: Uint8Array): { x: number; y: number } | null {
+  let count = 0;
+  let sumX = 0;
+  let sumY = 0;
+  for (let i = 0; i < mask.length; i++) {
+    if (!mask[i]) continue;
+    count++;
+    sumX += (i % GRID_WIDTH) + 0.5;
+    sumY += Math.floor(i / GRID_WIDTH) + 0.5;
+  }
+  return count === 0 ? null : { x: sumX / count, y: sumY / count };
+}
