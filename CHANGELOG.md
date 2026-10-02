@@ -4,6 +4,11 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-02 - Add implementation plans A-D for the level system
+
+- Added `docs/superpowers/plans/2026-10-02-a-shapes-v2.md` (3 tasks), `-b-level-kit-chapters.md` (7 tasks), `-c-chapter-2-hoa-pham-levels.md` (18 tasks) and `-d-free-placement.md` (8 tasks). Execution order: A, B, then C and D in parallel; plan E follows.
+- Verification: cross-checked shared interfaces between plans (kit `concentric` signature extended by D after B, manifest titles and orders identical in B and C, dev-level mechanism from A reused by D); placeholder scan; no runtime code changed.
+
 ### 2026-10-02 - Add level system specs A-E (shapes v2, level kit, chapter 2 + Hoa Pham content, free placement, level studio)
 
 - Added five specs under `docs/superpowers/specs/2026-10-02-{a..e}-*.md`: circle and parallelogram shapes with per-shape frame rules; `content:new` clone command, composition kit and 4-chapter campaign (28 levels); 16 levels for chapter 2 (new 2-5 Dong Ho Cat) and chapter 3 Hoa Pham; free placement mode that snaps to grid intersections with a meet-in-the-middle XOR solver; a dev-only level studio that saves into `src/content/studio/` with an automatic difficulty score.
