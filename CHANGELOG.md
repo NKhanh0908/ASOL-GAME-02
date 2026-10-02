@@ -4,6 +4,12 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-02 - Add partial plan E (level studio), paused
+
+- Added `docs/superpowers/plans/2026-10-02-e-level-studio.md` with header, global constraints, 15 decisions and precomputed difficulty numbers for 22 levels; tasks are not written yet. A placeholder section lists the 13 planned tasks and marks the pause point.
+- Recorded an open issue found while planning: sources 3-5 and 3-6 in spec C have piece frames outside the board, which `checkSourceGeometry` rejects; must be resolved before running plan C.
+- Verification: difficulty thresholds checked against 22 levels with a scratch prototype (all within 1 of the estimate); no runtime code changed.
+
 ### 2026-10-02 - Add implementation plans A-D for the level system
 
 - Added `docs/superpowers/plans/2026-10-02-a-shapes-v2.md` (3 tasks), `-b-level-kit-chapters.md` (7 tasks), `-c-chapter-2-hoa-pham-levels.md` (18 tasks) and `-d-free-placement.md` (8 tasks). Execution order: A, B, then C and D in parallel; plan E follows.
