@@ -4,6 +4,12 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-03 - Add GitNexus workflow to the motion plans index
+
+- Added a GitNexus section to `docs/superpowers/plans/2026-10-03-f-motion-index.md`: `impact` before editing an existing symbol, `detect_changes` before each commit, `analyze` after it, `rename` for renames, and the required `repo: "ASOL-GAME-02"` parameter because several repositories are indexed locally.
+- Recorded the measured CRITICAL risk of `BoardRenderer` (5 direct dependants, 6 `PlayScene` flows), touched by F1 task 9 and rewritten by F2 task 6.
+- Verification: refreshed the index with `node .gitnexus/run.cjs analyze` (3,097 nodes, 7,677 edges, 255 flows) and ran `impact` on `BoardRenderer` through MCP; no runtime code changed.
+
 ### 2026-10-03 - Split motion plans F1 and F2 into phase files and add the F index
 
 - Replaced `docs/superpowers/plans/2026-10-03-f1-scene-transitions.md` with `2026-10-03-f1-1-nen-tang.md` (tasks 1-3), `f1-2-director.md` (4-6) and `f1-3-dan-dung.md` (7-10); replaced `2026-10-03-f2-in-level-game-feel.md` with `f2-1-logic.md` (1-4), `f2-2-renderer.md` (5-7) and `f2-3-phan-hoi.md` (8-10). Each phase file carries its own goal, deliverable, position, global constraints and file map; task numbers are unchanged.

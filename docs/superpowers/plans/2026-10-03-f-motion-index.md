@@ -47,6 +47,27 @@ Nếu chọn chạy thẳng trong một phiên (skill `superpowers:executing-pla
 
 Một task thất bại, hoặc test của task trước bị đỏ, thì dừng luồng và báo người duyệt. Không nhảy sang task sau.
 
+## GitNexus trong mỗi task
+
+Repo được index bằng GitNexus (`CLAUDE.md` ở gốc repo là nguồn quy tắc). Máy có nhiều repo đã index, nên mọi lời gọi MCP phải kèm `repo: "ASOL-GAME-02"`.
+
+| Lúc | Người thực thi làm | Ghi vào báo cáo task |
+|---|---|---|
+| Trước khi sửa một hàm, class hay method có sẵn | `impact({ target, direction: "upstream", repo: "ASOL-GAME-02" })` | Số caller trực tiếp, luồng bị ảnh hưởng, mức rủi ro |
+| Trước khi commit | `detect_changes({ scope: "staged", repo: "ASOL-GAME-02" })` | Các symbol đổi khớp đúng phạm vi task |
+| Sau commit | `node .gitnexus/run.cjs analyze` (từ gốc repo, khoảng 15 s) | — |
+| Đổi tên symbol | `rename`, không tìm-thay thủ công | — |
+
+File mới tạo không cần chạy `impact`. Rủi ro **HIGH** hoặc **CRITICAL**: điều phối báo người duyệt trước khi giao task, trừ khi task đó đã được liệt kê dưới đây và người duyệt đã chấp nhận ở điểm dừng 1.
+
+Rủi ro đã biết khi viết chỉ mục (đo ngày 2026-10-03 tại `f3e03ef`):
+
+| Symbol | Rủi ro | Phạm vi | Task sửa |
+|---|---|---|---|
+| `BoardRenderer` | CRITICAL | 5 phụ thuộc trực tiếp, 6 luồng của `PlayScene` (`create`, `onRotate`, `onReset`, `onRestart`, `onToggleTarget`, `autosolve`) | F1 Task 9, F2 Task 6 (viết lại) |
+
+Các symbol sửa khác (`PlayScene`, `Hud`, `SkyBackdrop`, `progressRepository`, `playController`, `drag`) được đo lại ở đầu task tương ứng.
+
 ## Năm điểm dừng cần người duyệt
 
 1. **Trước bước 1:** duyệt bộ plan này cùng các điều chỉnh spec ghi ở đầu file.
