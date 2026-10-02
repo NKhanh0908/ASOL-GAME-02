@@ -4,6 +4,13 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-02 - Render real piece polygons, exact parity overlap and N-slot tray
+
+- Added `maskCentroid` in `game-next/src/domain/mask.ts` and three tests in `game-next/tests/boardRenderer.test.ts`; victory effects now use the target centroid.
+- Updated `game-next/src/presentation/BoardRenderer.ts`, `TargetBadge.ts`, and `PlayScene.ts` to draw real shape polygons, derive targets from solution placements, apply exact even-odd overlaps, and pass the level piece count through tray rendering and autosolve.
+- Added `game-next/scripts/shoot-level.sh` with the planned play/drag/win capture interface. Chrome snapshots were waived by the user; before/after visual acceptance remains pending manual review, including Task 6 jewel styling.
+- Verification: centroid tests failed for the missing helper before implementation, then all six focused tests and all 196 tests across 26 files passed; `npm run typecheck`, `npm run content:validate`, and `npm run build` passed. Vite reported its existing large-chunk advisory.
+
 ### 2026-10-02 - Piece polygons on canvas and N-slot tray
 
 - Added board and centered piece polygons using shared shape orientation, with a diamond fallback for legacy pieces. Added tray slot widths and inset well rectangles, and limited tray hitboxes and piece radii by slot width.
