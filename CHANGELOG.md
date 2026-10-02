@@ -4,6 +4,12 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-03 - Add implementation plan F1 and correct the next-level timing
+
+- Added `docs/superpowers/plans/2026-10-03-f1-scene-transitions.md` (10 tasks): motion primitives, self-clocked timeline, step-table choreography and route tables, persisted reduced motion, sky moods with a persistent `BackgroundScene`, `SceneDirector` with a source gate on `scene.start`, then menu, map and play choreography.
+- Corrected spec F1 section 3.3: `next-level` now runs its out-phase 0-800 ms and restarts at 800 ms, so the route totals 1500 ms as stated (the first draft shifted the in-phase and summed to 1200 ms).
+- Verification: route milestones recomputed against every step table in the plan; placeholder and type-consistency self-review; no runtime code changed.
+
 ### 2026-10-03 - Add spec F3 (motion acceptance) after approving F1 and F2
 
 - Recorded reviewer approval of specs F1 and F2 by NKhanh0908: "duyeejt spec".

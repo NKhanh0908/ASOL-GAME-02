@@ -117,11 +117,17 @@ Bầu trời: `setMood('play', 1000)` ở mốc 0.
 - **0–450 (Bản đồ ra):** node vừa bấm (`ctx.origin`) scale 1 → 1.4 rồi phát một vòng sáng. Vòng sáng lan từ bán kính 40 đến bao trọn tấm bia. Các node, đường nối và header khác mờ dần, so le theo khoảng cách tới node bấm.
 - **350–1500 (Play vào):** giống mốc 350–1500 của 3.1, nhưng khung bia mọc từ tâm vòng sáng thay vì từ ấn Song Tinh.
 
-### 3.3 `next-level` — 1500 ms, handoff = hết phần ra
+### 3.3 `next-level` — 1500 ms, handoff 800 (= hết phần ra)
 
-- **0–500 (Play cũ ra):** thẻ thắng y +60, alpha → 0. Các mảnh trên bia tan thành tối đa 30 hạt bụi sao (giới hạn trong GDD), bay vào tâm bia. Bóng mục tiêu mờ. Khung bia **giữ nguyên** và lật sáng một nhịp (viền vàng lên sáng nhất rồi về kính xanh).
-- **500 (restart):** `PlayScene` dựng lại. Khung bia, mặt bia và lưới hiện ngay ở trạng thái cuối, không chạy lại.
-- **500–1500 (Play mới vào):** chạy mốc 800–1500 của 3.1, dời sớm 300 ms (bóng mục tiêu, khay và mảnh, HUD).
+- **0–800 (Play cũ ra):**
+  - 0–300: thẻ thắng y +60, alpha → 0.
+  - 100–700: các mảnh trên bia tan thành tối đa 30 hạt bụi sao (giới hạn trong GDD), bay vào tâm bia. Bóng mục tiêu mờ.
+  - 300–760: tiêu đề màn và nút góc trên rút đi.
+  - 500–800: khung bia **giữ nguyên** và lật sáng một nhịp (viền vàng sáng nhất rồi về kính xanh).
+- **800 (restart):** `PlayScene` dựng lại. Khung bia, mặt bia và lưới hiện ngay ở trạng thái cuối, không chạy lại.
+- **800–1500 (Play mới vào):** chạy đúng mốc 800–1500 của 3.1 (bóng mục tiêu, khay và mảnh, HUD).
+
+_Sửa ngày 2026-10-03 khi viết plan: bản đầu ghi "dời sớm 300 ms", khiến tuyến chỉ dài 1200 ms, mâu thuẫn với tổng 1500 ms. Phần ra được kéo tới 800 ms thay vì dời phần vào._
 
 ### 3.4 `play-to-map` và `play-to-menu` — 1000 ms, handoff 400
 
