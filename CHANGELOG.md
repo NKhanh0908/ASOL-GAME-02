@@ -4,6 +4,12 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-02 - Keep moving pieces above parity overlays and reject missing captures
+
+- Split `game-next/src/presentation/BoardRenderer.ts` into constructor-allocated snapped/parity, temporary, dragging, and victory layers; overlapping snapped pieces no longer cover a third moving piece.
+- Hardened `game-next/scripts/shoot-level.sh`: remove stale output, require a fresh nonempty PNG, preserve Chrome diagnostics, and stop subsequent captures on failure while accepting nonzero Chrome exits that produced an image.
+- Added combined-state draw-order regressions in `game-next/tests/boardRendererLayers.test.ts` and shell-independent capture source checks in `game-next/tests/shootLevel.test.ts`. All three failed before the fixes, then passed; typecheck, all 199 tests across 28 files, content validation, and production build passed. Chrome remained unused under the user's waiver; visual acceptance remains pending.
+
 ### 2026-10-02 - Render real piece polygons, exact parity overlap and N-slot tray
 
 - Added `maskCentroid` in `game-next/src/domain/mask.ts` and three tests in `game-next/tests/boardRenderer.test.ts`; victory effects now use the target centroid.

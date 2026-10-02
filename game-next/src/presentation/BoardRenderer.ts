@@ -27,6 +27,9 @@ export class BoardRenderer {
   private bgGraphics: Phaser.GameObjects.Graphics;
   private targetGraphics: Phaser.GameObjects.Graphics;
   private piecesGraphics: Phaser.GameObjects.Graphics;
+  private parityGraphics: Phaser.GameObjects.Graphics;
+  private temporaryGraphics: Phaser.GameObjects.Graphics;
+  private draggingGraphics: Phaser.GameObjects.Graphics;
   private fxGraphics: Phaser.GameObjects.Graphics;
   private gridTexture: Phaser.GameObjects.RenderTexture | null = null;
   private boardFrame: Phaser.GameObjects.Image | null = null;
@@ -49,7 +52,11 @@ export class BoardRenderer {
     this.bgGraphics = scene.add.graphics().setDepth(DEPTH_TOKENS.steleBoard);
     this.targetGraphics = scene.add.graphics().setDepth(DEPTH_TOKENS.targetSilhouette);
     this.piecesGraphics = scene.add.graphics().setDepth(DEPTH_TOKENS.placedPieces);
-    this.fxGraphics = scene.add.graphics().setDepth(DEPTH_TOKENS.temporaryPieces);
+    // Giao chẵn/lẻ chỉ phủ mảnh đã snap; mảnh đang di chuyển luôn nằm trên.
+    this.parityGraphics = scene.add.graphics().setDepth(DEPTH_TOKENS.placedPieces + 1);
+    this.temporaryGraphics = scene.add.graphics().setDepth(DEPTH_TOKENS.temporaryPieces);
+    this.draggingGraphics = scene.add.graphics().setDepth(DEPTH_TOKENS.draggingPiece);
+    this.fxGraphics = scene.add.graphics().setDepth(DEPTH_TOKENS.draggingPiece + 1);
 
     this.drawStaticBoard();
   }
@@ -193,6 +200,9 @@ export class BoardRenderer {
 
     // 2. Vẽ các mảnh ghép
     this.piecesGraphics.clear();
+    this.parityGraphics.clear();
+    this.temporaryGraphics.clear();
+    this.draggingGraphics.clear();
     this.fxGraphics.clear();
 
     const snappedPieces: Array<{ piece: Piece; pState: Extract<PieceState, { kind: 'snapped' }> }> = [];
@@ -274,14 +284,14 @@ export class BoardRenderer {
     const points = piecePolygonAround(piece, turns, dragInfo.x, dragInfo.y, framePx);
 
     // Đổ bóng mềm xuống mặt bàn
-    this.piecesGraphics.fillStyle(0x000000, 0.45);
-    this.piecesGraphics.fillPoints(
+    this.draggingGraphics.fillStyle(0x000000, 0.45);
+    this.draggingGraphics.fillPoints(
       points.map((p) => new Phaser.Geom.Point(p.x + 8, p.y + 12)),
       true
     );
 
     // Thân mảnh vàng hổ phách sáng
-    drawJewelPolygon(this.piecesGraphics, points, {
+    drawJewelPolygon(this.draggingGraphics, points, {
       variant: 'ghost',
       alpha: isHoveringSnap ? 1 : PIECE_TOKENS.ghostAlpha,
       sizePx: framePx / 2,
@@ -321,14 +331,14 @@ export class BoardRenderer {
   ): void {
     const radiusPx = pieceRadiusPx(piece.frameSize, this.layout);
     drawJewelPolygon(
-      this.piecesGraphics,
+      this.temporaryGraphics,
       piecePolygonCanvas(piece, pState.x, pState.y, pState.turns, this.layout),
       { variant: 'ghost', alpha: isSelected ? 0.85 : 0.6, sizePx: radiusPx }
     );
 
     const center = pieceCenterCanvas(piece.frameSize, pState.x, pState.y, this.layout);
-    this.fxGraphics.lineStyle(1, COLOR_NUMBERS.textSecondary, 0.4);
-    this.fxGraphics.strokeCircle(center.x, center.y - radiusPx - 14, 4);
+    this.temporaryGraphics.lineStyle(1, COLOR_NUMBERS.textSecondary, 0.4);
+    this.temporaryGraphics.strokeCircle(center.x, center.y - radiusPx - 14, 4);
   }
 
   /**
@@ -362,14 +372,14 @@ export class BoardRenderer {
       if (layer.depth < 2) continue;
       const pts = layer.points.map((p) => new Phaser.Geom.Point(p.x, p.y));
       if (layer.filled) {
-        this.fxGraphics.fillStyle(COLOR_NUMBERS.amberSolid, 1.0);
-        this.fxGraphics.fillPoints(pts, true);
+        this.parityGraphics.fillStyle(COLOR_NUMBERS.amberSolid, 1.0);
+        this.parityGraphics.fillPoints(pts, true);
       } else {
         // Triệt tiêu quang học về màu mặt bia, rìa trong sáng nhẹ màu vàng nhạt
-        this.fxGraphics.fillStyle(COLOR_NUMBERS.boardSurfaceTop, 1.0);
-        this.fxGraphics.fillPoints(pts, true);
-        this.fxGraphics.lineStyle(1.5, COLOR_NUMBERS.amberGlow, 0.7);
-        this.fxGraphics.strokePoints(pts, true, true);
+        this.parityGraphics.fillStyle(COLOR_NUMBERS.boardSurfaceTop, 1.0);
+        this.parityGraphics.fillPoints(pts, true);
+        this.parityGraphics.lineStyle(1.5, COLOR_NUMBERS.amberGlow, 0.7);
+        this.parityGraphics.strokePoints(pts, true, true);
       }
     }
   }
@@ -423,6 +433,9 @@ export class BoardRenderer {
     this.bgGraphics.destroy();
     this.targetGraphics.destroy();
     this.piecesGraphics.destroy();
+    this.parityGraphics.destroy();
+    this.temporaryGraphics.destroy();
+    this.draggingGraphics.destroy();
     this.fxGraphics.destroy();
   }
 }
