@@ -4,6 +4,13 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-02 - Add level system specs A-E (shapes v2, level kit, chapter 2 + Hoa Pham content, free placement, level studio)
+
+- Added five specs under `docs/superpowers/specs/2026-10-02-{a..e}-*.md`: circle and parallelogram shapes with per-shape frame rules; `content:new` clone command, composition kit and 4-chapter campaign (28 levels); 16 levels for chapter 2 (new 2-5 Dong Ho Cat) and chapter 3 Hoa Pham; free placement mode that snaps to grid intersections with a meet-in-the-middle XOR solver; a dev-only level studio that saves into `src/content/studio/` with an automatic difficulty score.
+- Recorded the decision to keep the even-odd (XOR) visibility rule over an "overlap hides" rule.
+- Added draft previews `docs/testing/levels/drafts/chapter-2-draft.png` and `hoa-pham-draft.png`.
+- Verification: every level coordinate, solution count, hollow and revived cell count computed by an independent scratch prototype (16 levels, each with exactly one solution and up to three decoy anchors per piece); spec self-review for cross-spec consistency; no runtime code changed.
+
 ### 2026-10-02 - Add dev-only harness mode via URL
 
 - Added a tested launch resolver: URL harness mode is enabled only in development; production launches use campaign mode.
