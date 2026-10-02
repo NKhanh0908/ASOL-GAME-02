@@ -8,12 +8,51 @@ import {
   polygonFaces,
   polygonTable,
   scalePolygon,
+  polygonStrokeOutline,
 } from '../src/presentation/jewelGeometry.ts';
 import { PIECE_TOKENS } from '../src/presentation/designTokens.ts';
 
 const CX = 360;
 const CY = 600;
 const R = 120; // một module
+
+describe('viền trong theo khoảng cách vuông góc', () => {
+  const roof = [{ x: 0, y: 48 }, { x: 48, y: 48 }, { x: 24, y: 24 }];
+
+  test('mái: mỗi cạnh viền cách cạnh ngoài đúng nửa nét', () => {
+    const inner = polygonStrokeOutline(roof, 2);
+    roof.forEach((a, i) => {
+      const b = roof[(i + 1) % roof.length];
+      for (const p of [inner[i], inner[(i + 1) % inner.length]]) {
+        const distance = Math.abs((b.x - a.x) * (p.y - a.y) - (b.y - a.y) * (p.x - a.x)) / Math.hypot(b.x - a.x, b.y - a.y);
+        expect(distance).toBeCloseTo(1, 9);
+      }
+    });
+    expect(inner[0].y).toBe(47);
+    expect(inner[2].y).toBeCloseTo(24 + Math.SQRT2, 9);
+  });
+
+  test('đổi chiều đỉnh giữ nguyên viền trong', () => {
+    const forward = polygonStrokeOutline(roof, 2);
+    const reversed = polygonStrokeOutline([...roof].reverse(), 2).reverse();
+    forward.forEach((p, i) => {
+      expect(reversed[i].x).toBeCloseTo(p.x, 9);
+      expect(reversed[i].y).toBeCloseTo(p.y, 9);
+    });
+  });
+
+  test('vuông: viền co đúng một pixel trên mọi cạnh', () => {
+    expect(polygonStrokeOutline([{ x: 0, y: 0 }, { x: 48, y: 0 }, { x: 48, y: 48 }, { x: 0, y: 48 }], 2)).toEqual([
+      { x: 1, y: 1 }, { x: 47, y: 1 }, { x: 47, y: 47 }, { x: 1, y: 47 },
+    ]);
+  });
+
+  test('thoi giữ nguyên viền cũ cả khi đổi chiều đỉnh', () => {
+    const diamond = jewelOutline(CX, CY, R);
+    expect(polygonStrokeOutline(diamond, 2)).toEqual(jewelOutline(CX, CY, R - 1));
+    expect(polygonStrokeOutline([...diamond].reverse(), 2).reverse()).toEqual(jewelOutline(CX, CY, R - 1));
+  });
+});
 
 describe('jewelGeometry', () => {
   test('viền ngoài là bốn đỉnh, bắt đầu từ Bắc theo chiều kim đồng hồ', () => {

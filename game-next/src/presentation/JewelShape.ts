@@ -5,6 +5,7 @@ import {
   polygonCentroid,
   polygonFaces,
   polygonSpineLines,
+  polygonStrokeOutline,
   polygonTable,
   scalePolygon,
 } from './jewelGeometry.ts';
@@ -23,7 +24,7 @@ export type JewelOptions = {
 export type JewelPolygonOptions = {
   variant: JewelVariant;
   alpha?: number;
-  /** Nửa cạnh khung mảnh tính bằng pixel — quy mô cho viền trong và đốm sáng */
+  /** Nửa cạnh khung mảnh tính bằng pixel — quy mô cho đốm sáng */
   sizePx: number;
 };
 
@@ -71,8 +72,8 @@ export function drawJewel(g: Phaser.GameObjects.Graphics, opts: JewelOptions): v
 /**
  * Vẽ mảnh ngọc theo đa giác bất kỳ (vuông, tam giác, thoi).
  *
- * Viền vẽ phía trong mảnh (co đa giác quanh trọng tâm theo nửa độ dày viền)
- * để mép trùng đúng đường kẻ lưới — quy tắc "vẽ đúng đến từng pixel" của GridSpec.
+ * Viền vẽ phía trong mảnh: dịch mỗi cạnh vào nửa độ dày viền để mép nét
+ * trùng đúng đường kẻ lưới — quy tắc "vẽ đúng đến từng pixel" của GridSpec.
  */
 export function drawJewelPolygon(
   g: Phaser.GameObjects.Graphics,
@@ -130,9 +131,8 @@ export function drawJewelPolygon(
     g.lineBetween(line.from.x, line.from.y, line.to.x, line.to.y);
   }
 
-  const inset = PIECE_TOKENS.outlineWidth / 2;
   g.lineStyle(PIECE_TOKENS.outlineWidth, hex(PIECE_TOKENS.outline), alpha);
-  g.strokePoints(toGeomPoints(scalePolygon(outline, center, (sizePx - inset) / sizePx)), true, true);
+  g.strokePoints(toGeomPoints(polygonStrokeOutline(outline, PIECE_TOKENS.outlineWidth)), true, true);
 
   drawSparkle(
     g,
