@@ -1,5 +1,5 @@
 export const GRID_WIDTH = 128;
-export const GRID_HEIGHT = 192;
+export const GRID_HEIGHT = 160;
 export const TOTAL_CELLS = GRID_WIDTH * GRID_HEIGHT;
 
 export type Cell = readonly [number, number];
@@ -22,6 +22,8 @@ export type Level = Readonly<{
   rotationEnabled: boolean;
   pieces: readonly Piece[];
   targetMask: Uint8Array;
+  /** Câu thơ hiện ở màn hoàn thành; màn nào không khai báo thì bỏ qua */
+  victoryVerse?: string;
 }>;
 
 export type Placement = Readonly<{

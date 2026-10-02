@@ -79,16 +79,16 @@ describe('Kernel Geometry and Mask Rules', () => {
   test('kiểm tra fitsBoard và mép biên', () => {
     // Ô hợp lệ ở góc trên trái
     expect(fitsBoard([[0, 0]], 0, 0)).toBe(true);
-    // Ô hợp lệ ở góc dưới phải (127, 191)
-    expect(fitsBoard([[0, 0]], 127, 191)).toBe(true);
+    // Ô hợp lệ ở góc dưới phải (127, 159)
+    expect(fitsBoard([[0, 0]], 127, 159)).toBe(true);
 
     // Vượt biên phải (x + cx >= 128)
     expect(fitsBoard([[0, 0]], 128, 10)).toBe(false);
     expect(fitsBoard([[1, 0]], 127, 10)).toBe(false);
 
-    // Vượt biên dưới (y + cy >= 192)
-    expect(fitsBoard([[0, 0]], 10, 192)).toBe(false);
-    expect(fitsBoard([[0, 1]], 10, 191)).toBe(false);
+    // Vượt biên dưới (y + cy >= 160)
+    expect(fitsBoard([[0, 0]], 10, 160)).toBe(false);
+    expect(fitsBoard([[0, 1]], 10, 159)).toBe(false);
 
     // Tọa độ âm hoặc không phải số nguyên
     expect(fitsBoard([[0, 0]], -1, 0)).toBe(false);

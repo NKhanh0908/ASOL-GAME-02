@@ -5,24 +5,15 @@ import { createProgressRepository } from '../infrastructure/progressRepository.t
 import type { ProgressRepository } from '../application/progressPort.ts';
 import { COLOR_NUMBERS, COLOR_TOKENS, TYPO_TOKENS } from './designTokens.ts';
 import { TEXTURE_KEYS, TextureFactory } from './TextureFactory.ts';
+import { SkyBackdrop } from './SkyBackdrop.ts';
 import { SettingsDialog } from './SettingsDialog.ts';
-
-type StarParticle = {
-  x: number;
-  y: number;
-  r: number;
-  baseAlpha: number;
-  speed: number;
-  phase: number;
-};
 
 export class MenuScene extends Phaser.Scene {
   private progressRepo!: ProgressRepository;
-  private starGraphics!: Phaser.GameObjects.Graphics;
+  private sky!: SkyBackdrop;
   private emblemGraphics!: Phaser.GameObjects.Graphics;
   private uiContainer!: Phaser.GameObjects.Container;
 
-  private stars: StarParticle[] = [];
   private ringAngle1 = 0;
   private ringAngle2 = 0;
   private pulseTime = 0;
@@ -37,19 +28,8 @@ export class MenuScene extends Phaser.Scene {
     this.progressRepo = createProgressRepository(localStorage, campaignManifest, 'oracle-v1');
     const { progress } = this.progressRepo.read();
 
-    // 1. Tạo bầu trời sao li ti (Cosmic Starfield)
-    this.starGraphics = this.add.graphics();
-    this.stars = [];
-    for (let i = 0; i < 35; i++) {
-      this.stars.push({
-        x: Phaser.Math.Between(10, 710),
-        y: Phaser.Math.Between(10, 1270),
-        r: Phaser.Math.FloatBetween(0.8, 2.2),
-        baseAlpha: Phaser.Math.FloatBetween(0.2, 0.75),
-        speed: Phaser.Math.FloatBetween(0.1, 0.25),
-        phase: Phaser.Math.FloatBetween(0, Math.PI * 2),
-      });
-    }
+    // 1. Nền trời dùng chung (gradient, nebula, trăng, trường sao)
+    this.sky = new SkyBackdrop(this, { seed: 1, drift: false });
 
     // 2. Ấn bia cổ ngữ xoay (280px Prophecy Seal)
     this.emblemGraphics = this.add.graphics();
@@ -86,7 +66,7 @@ export class MenuScene extends Phaser.Scene {
     const titleText = this.add
       .text(360, 210, 'M I R R O R', {
         fontFamily: TYPO_TOKENS.fontFamily.serif,
-        fontSize: '46px',
+        fontSize: TYPO_TOKENS.fontSize.heroTitle,
         color: COLOR_TOKENS.amberGold.solidPrimary,
       })
       .setOrigin(0.5);
@@ -95,7 +75,7 @@ export class MenuScene extends Phaser.Scene {
     const reflectionText = this.add
       .text(360, 260, 'M I R R O R', {
         fontFamily: TYPO_TOKENS.fontFamily.serif,
-        fontSize: '46px',
+        fontSize: TYPO_TOKENS.fontSize.heroTitle,
         color: COLOR_TOKENS.iceGlass.bevelShadow,
       })
       .setOrigin(0.5)
@@ -126,7 +106,7 @@ export class MenuScene extends Phaser.Scene {
       .text(btnX, btnY - 12, btnLabelText, {
         fontFamily: TYPO_TOKENS.fontFamily.sans,
         fontSize: '20px',
-        color: COLOR_TOKENS.navy.spaceBackground,
+        color: COLOR_TOKENS.sky.stops[0],
         fontStyle: 'bold',
       })
       .setOrigin(0.5);
@@ -154,7 +134,7 @@ export class MenuScene extends Phaser.Scene {
     // Nút phụ "Chọn màn" (Secondary Button - Viền kính xanh trong suốt)
     const secBtnY = 930;
     const secBtnBg = this.add.graphics();
-    secBtnBg.fillStyle(COLOR_NUMBERS.navyStele, 0.7);
+    secBtnBg.fillStyle(COLOR_NUMBERS.boardSurfaceTop, 0.7);
     secBtnBg.fillRoundedRect(btnX - btnWidth / 2, secBtnY - 28, btnWidth, 56, 18);
     secBtnBg.lineStyle(1.8, COLOR_NUMBERS.icePrimary, 0.85);
     secBtnBg.strokeRoundedRect(btnX - btnWidth / 2, secBtnY - 28, btnWidth, 56, 18);
@@ -209,14 +189,8 @@ export class MenuScene extends Phaser.Scene {
   }
 
   override update(_time: number, delta: number): void {
-    // 1. Sao nhấp nháy nền
-    this.starGraphics.clear();
-    for (const star of this.stars) {
-      star.phase += delta * 0.0015 * star.speed;
-      const alpha = star.baseAlpha + Math.sin(star.phase) * 0.25;
-      this.starGraphics.fillStyle(COLOR_NUMBERS.iceHighlight, Math.max(0.1, Math.min(1, alpha)));
-      this.starGraphics.fillCircle(star.x, star.y, star.r);
-    }
+    // 1. Nền trời
+    this.sky.update(delta);
 
     // 2. Ấn bia cổ ngữ 280px xoay chậm (x=360, y=500)
     this.ringAngle1 += delta * 0.0003;
@@ -232,7 +206,7 @@ export class MenuScene extends Phaser.Scene {
     this.emblemGraphics.strokeCircle(cx, cy, 140);
 
     // Vòng trong vàng (R = 115px)
-    this.emblemGraphics.lineStyle(1.2, COLOR_NUMBERS.amberGrid, 0.35);
+    this.emblemGraphics.lineStyle(1.2, COLOR_NUMBERS.gridModule, 0.35);
     this.emblemGraphics.strokeCircle(cx, cy, 115);
 
     // Các điểm vệ tinh xoay trên vòng ngoài
@@ -251,7 +225,7 @@ export class MenuScene extends Phaser.Scene {
       const y1 = cy + Math.sin(angle) * 95;
       const x2 = cx + Math.cos(angle) * 115;
       const y2 = cy + Math.sin(angle) * 115;
-      this.emblemGraphics.lineStyle(1, COLOR_NUMBERS.amberGrid, 0.4);
+      this.emblemGraphics.lineStyle(1, COLOR_NUMBERS.gridModule, 0.4);
       this.emblemGraphics.lineBetween(x1, y1, x2, y2);
     }
 

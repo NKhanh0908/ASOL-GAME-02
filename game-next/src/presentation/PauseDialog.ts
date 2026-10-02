@@ -32,13 +32,13 @@ export class PauseDialog {
     const modalW = 420;
     const modalH = 360;
     const panel = this.scene.add.graphics();
-    panel.fillStyle(COLOR_NUMBERS.navyStele, 0.98);
+    panel.fillStyle(COLOR_NUMBERS.boardSurfaceTop, 0.98);
     panel.fillRoundedRect(-modalW / 2, -modalH / 2, modalW, modalH, 24);
     panel.lineStyle(4, COLOR_NUMBERS.icePrimary, 0.9);
     panel.strokeRoundedRect(-modalW / 2, -modalH / 2, modalW, modalH, 24);
 
     // Viền vàng mờ bên trong
-    panel.lineStyle(1.2, COLOR_NUMBERS.amberGrid, 0.4);
+    panel.lineStyle(1.2, COLOR_NUMBERS.gridModule, 0.4);
     panel.strokeRoundedRect(-modalW / 2 + 6, -modalH / 2 + 6, modalW - 12, modalH - 12, 18);
 
     // 3. Tiêu đề
@@ -60,7 +60,7 @@ export class PauseDialog {
       .text(0, -12, 'Tiếp tục chơi', {
         fontFamily: TYPO_TOKENS.fontFamily.sans,
         fontSize: '17px',
-        color: COLOR_TOKENS.navy.spaceBackground,
+        color: COLOR_TOKENS.sky.stops[0],
         fontStyle: 'bold',
       })
       .setOrigin(0.5)
@@ -72,7 +72,7 @@ export class PauseDialog {
 
     // B. Nút 2: Chơi lại màn này (Nút viền kính xanh)
     const btn2Bg = this.scene.add.graphics();
-    btn2Bg.fillStyle(COLOR_NUMBERS.navyStele, 0.8);
+    btn2Bg.fillStyle(COLOR_NUMBERS.boardSurfaceTop, 0.8);
     btn2Bg.fillRoundedRect(-150, 40, 300, 50, 16);
     btn2Bg.lineStyle(1.8, COLOR_NUMBERS.icePrimary, 0.85);
     btn2Bg.strokeRoundedRect(-150, 40, 300, 50, 16);

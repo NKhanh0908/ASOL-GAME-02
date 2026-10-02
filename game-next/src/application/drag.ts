@@ -97,9 +97,9 @@ export function updateDrag(
   let best: Anchor | undefined;
   let bestDistance = Infinity;
   for (const anchor of piece.anchors) {
-    const dTopLeft = (anchor.x - grid.x) ** 2 + (anchor.y - grid.y) ** 2;
-    const dCenter = (anchor.x + halfFrame - grid.x) ** 2 + (anchor.y + halfFrame - grid.y) ** 2;
-    const d = Math.min(dTopLeft, dCenter);
+    // `grid` luôn là TÂM mảnh (pointerOffset tính từ tâm trong beginDrag).
+    // So thêm với gốc neo sẽ cho hít nhầm khi tâm mảnh rơi gần gốc neo.
+    const d = (anchor.x + halfFrame - grid.x) ** 2 + (anchor.y + halfFrame - grid.y) ** 2;
 
     if (d <= 36 && d < bestDistance && fitsBoard(rotatedCells, anchor.x, anchor.y)) {
       best = anchor;
@@ -116,14 +116,11 @@ export function updateDrag(
       turns: drag.originState.turns,
     };
   } else {
-    const dCenterToAnchor = Math.min(
-      ...piece.anchors.map((a) => (a.x + halfFrame - grid.x) ** 2 + (a.y + halfFrame - grid.y) ** 2)
-    );
-    const dTopLeftToAnchor = Math.min(
-      ...piece.anchors.map((a) => (a.x - grid.x) ** 2 + (a.y - grid.y) ** 2)
-    );
-    const dropX = dCenterToAnchor <= dTopLeftToAnchor ? Math.round(grid.x - halfFrame) : grid.x;
-    const dropY = dCenterToAnchor <= dTopLeftToAnchor ? Math.round(grid.y - halfFrame) : grid.y;
+    // `grid` là tâm mảnh, nên gốc luôn bằng tâm trừ nửa khung. Trước đây chỗ
+    // này chọn giữa hai cách hiểu và đặt tâm vào vị trí gốc, làm mảnh nhảy
+    // xuống-phải đúng nửa khung.
+    const dropX = Math.round(grid.x - halfFrame);
+    const dropY = Math.round(grid.y - halfFrame);
 
     if (fitsBoard(rotatedCells, dropX, dropY)) {
       previewPlacement = {
@@ -192,9 +189,9 @@ export function finishDrag(
     let best: Anchor | undefined;
     let bestDistance = Infinity;
     for (const anchor of piece.anchors) {
-      const dTopLeft = (anchor.x - grid.x) ** 2 + (anchor.y - grid.y) ** 2;
-      const dCenter = (anchor.x + halfFrame - grid.x) ** 2 + (anchor.y + halfFrame - grid.y) ** 2;
-      const d = Math.min(dTopLeft, dCenter);
+      // `grid` luôn là TÂM mảnh (pointerOffset tính từ tâm trong beginDrag).
+      // So thêm với gốc neo sẽ cho hít nhầm khi tâm mảnh rơi gần gốc neo.
+      const d = (anchor.x + halfFrame - grid.x) ** 2 + (anchor.y + halfFrame - grid.y) ** 2;
 
       if (d <= 36 && d < bestDistance && fitsBoard(rotatedCells, anchor.x, anchor.y)) {
         best = anchor;
@@ -214,15 +211,11 @@ export function finishDrag(
 
     // Nếu không gần neo nhưng vẫn thả trong bàn cờ:
     // Căn chỉnh tọa độ top-left để tâm hình thoi trùng với vị trí chuột thả
-    const dCenterToAnchor = Math.min(
-      ...piece.anchors.map((a) => (a.x + halfFrame - grid.x) ** 2 + (a.y + halfFrame - grid.y) ** 2)
-    );
-    const dTopLeftToAnchor = Math.min(
-      ...piece.anchors.map((a) => (a.x - grid.x) ** 2 + (a.y - grid.y) ** 2)
-    );
-
-    const dropX = dCenterToAnchor <= dTopLeftToAnchor ? Math.round(grid.x - halfFrame) : grid.x;
-    const dropY = dCenterToAnchor <= dTopLeftToAnchor ? Math.round(grid.y - halfFrame) : grid.y;
+    // `grid` là tâm mảnh, nên gốc luôn bằng tâm trừ nửa khung. Trước đây chỗ
+    // này chọn giữa hai cách hiểu và đặt tâm vào vị trí gốc, làm mảnh nhảy
+    // xuống-phải đúng nửa khung.
+    const dropX = Math.round(grid.x - halfFrame);
+    const dropY = Math.round(grid.y - halfFrame);
 
     if (fitsBoard(rotatedCells, dropX, dropY)) {
       return applyCommand(level, drag.committedState, {

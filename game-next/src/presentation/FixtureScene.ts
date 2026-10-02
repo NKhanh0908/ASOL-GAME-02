@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { COLOR_TOKENS } from './designTokens.ts';
 import { runFixtureSolution } from '../application/fixtureRunner.ts';
 import { GRID_HEIGHT, GRID_WIDTH } from '../domain/model.ts';
 
@@ -52,8 +53,8 @@ export class FixtureScene extends Phaser.Scene {
     const rerunButton = this.add.text(360, 1050, '[ Chạy lại nghiệm ]', {
       fontFamily: 'sans-serif',
       fontSize: '22px',
-      color: '#68B8DC',
-      backgroundColor: '#101B32',
+      color: COLOR_TOKENS.iceGlass.primaryBorder,
+      backgroundColor: COLOR_TOKENS.board.surfaceTop,
       padding: { x: 24, y: 12 },
     })
       .setOrigin(0.5)

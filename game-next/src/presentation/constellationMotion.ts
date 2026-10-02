@@ -17,7 +17,8 @@ export function constellationPath(start: Point, end: Point, steps = 12): Point[]
 }
 
 export function parallaxOffset(scrollY: number): number {
-  return -scrollY * 0.35;
+  // Cộng 0 để tránh trả về -0 khi scrollY = 0; -0 và 0 khác nhau với Object.is
+  return -scrollY * 0.35 + 0;
 }
 
 /** Bright ignition, short hold, then a complete fade. */

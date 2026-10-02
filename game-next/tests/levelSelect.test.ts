@@ -1,4 +1,5 @@
 import { describe, expect, test } from 'vitest';
+import { formatProgress } from '../src/presentation/hudText.ts';
 import { campaignManifest } from '../src/content/manifest.ts';
 import { levelAccess } from '../src/domain/campaign.ts';
 
@@ -37,5 +38,22 @@ describe('Constellation Map Layout Generator', () => {
     expect(getNodeState(campaignManifest, ['1-1'], '1-1')).toBe('completed');
     expect(getNodeState(campaignManifest, ['1-1'], '1-2')).toBe('current');
     expect(getNodeState(campaignManifest, ['1-1'], '1-3')).toBe('locked');
+  });
+});
+
+describe('Màn chọn màn theo mockup improve-v1', () => {
+  test('chỉ số tiến độ hiển thị dạng đã hoàn thành trên tổng số màn', () => {
+    expect(formatProgress(0, 18)).toBe('0/18');
+    expect(formatProgress(1, 18)).toBe('1/18');
+    expect(formatProgress(18, 18)).toBe('18/18');
+  });
+
+  test('không còn ký tự trang trí trước con số', () => {
+    expect(formatProgress(1, 18)).not.toContain('✦');
+  });
+
+  test('tổng số màn lấy từ manifest, không viết cứng', () => {
+    expect(campaignManifest.length).toBeGreaterThan(0);
+    expect(formatProgress(0, campaignManifest.length)).toBe(`0/${campaignManifest.length}`);
   });
 });

@@ -1,8 +1,16 @@
 import type Phaser from 'phaser';
-import { COLOR_TOKENS } from './designTokens.ts';
+import { COLOR_TOKENS, GLASS_TOKENS, LAYOUT_TOKENS } from './designTokens.ts';
 
 export const TEXTURE_KEYS = {
   steleBorder: 'stele_border_9slice',
+  glassFrameBoard: 'glass_frame_board',
+  glassFrameTray: 'glass_frame_tray',
+  goldFrameBoard: 'gold_frame_board',
+  victoryCardFrame: 'victory_card_frame',
+  victoryCardSurface: 'victory_card_surface',
+  victoryNextButton: 'victory_next_button',
+  boardSurface: 'board_surface',
+  trayWell: 'tray_well',
   btnCircle112: 'btn_circle_112',
   btnCircle80: 'btn_circle_80',
   btnCircle64: 'btn_circle_64',
@@ -33,12 +41,80 @@ export class TextureFactory {
     const tm = scene.textures;
     if (!tm) return;
 
+    // 0. Khung kính dùng chung cho bàn chơi và khay mảnh
+    TextureFactory.makeGlassFrame(
+      scene,
+      TEXTURE_KEYS.glassFrameBoard,
+      LAYOUT_TOKENS.board.width,
+      LAYOUT_TOKENS.board.height,
+      LAYOUT_TOKENS.board.cornerRadius
+    );
+    // Khung vàng khi thắng màn: cùng hình dạng khung kính, đổi bốn chặng màu
+    TextureFactory.makeGlassFrame(
+      scene,
+      TEXTURE_KEYS.goldFrameBoard,
+      LAYOUT_TOKENS.board.width,
+      LAYOUT_TOKENS.board.height,
+      LAYOUT_TOKENS.board.cornerRadius,
+      ['#FFF6D6', '#FFD86E', '#F2A93B', '#C77A1F']
+    );
+
+    // Thẻ hoàn thành: viền vàng, lòng xanh đậm, nút chính vàng bóng
+    TextureFactory.makeGlassFrame(scene, TEXTURE_KEYS.victoryCardFrame, 660, 262, 40, [
+      '#FFF6D6', '#FFC857', '#E9A240', '#C9842A',
+    ]);
+    TextureFactory.makeSurface(scene, TEXTURE_KEYS.victoryCardSurface, {
+      width: 648,
+      height: 250,
+      radius: 34,
+      stops: [[0, '#24358C'], [1, '#1A2468']],
+    });
+    TextureFactory.makeSurface(scene, TEXTURE_KEYS.victoryNextButton, {
+      width: 346,
+      height: 76,
+      radius: 30,
+      stops: [[0, '#FFE29A'], [0.55, '#FFC857'], [1, '#F0A83A']],
+    });
+
+    // Mặt bàn: gradient xanh đậm kèm quầng sáng nhẹ ở giữa, như mockup
+    TextureFactory.makeSurface(scene, TEXTURE_KEYS.boardSurface, {
+      width: LAYOUT_TOKENS.board.width,
+      height: LAYOUT_TOKENS.board.height,
+      radius: LAYOUT_TOKENS.board.cornerRadius,
+      stops: [
+        [0, COLOR_TOKENS.board.surfaceTop],
+        [1, COLOR_TOKENS.board.surfaceBottom],
+      ],
+      innerGlow: { color: COLOR_TOKENS.board.innerGlow, alpha: 0.3 },
+    });
+
+    // Ô chứa mảnh trong khay: lõm xuống, xanh đậm trong suốt — không phải
+    // hộp đen. Khay có hai ô nên mỗi ô rộng nửa khay trừ khe giữa.
+    TextureFactory.makeSurface(scene, TEXTURE_KEYS.trayWell, {
+      width: LAYOUT_TOKENS.tray.width / 2 - 24,
+      height: LAYOUT_TOKENS.tray.height - 28,
+      radius: 22,
+      stops: [
+        [0, 'rgba(10, 20, 70, 0.70)'],
+        [1, 'rgba(25, 40, 110, 0.55)'],
+      ],
+      innerShadow: true,
+    });
+
+    TextureFactory.makeGlassFrame(
+      scene,
+      TEXTURE_KEYS.glassFrameTray,
+      LAYOUT_TOKENS.tray.width,
+      LAYOUT_TOKENS.tray.height,
+      LAYOUT_TOKENS.tray.cornerRadius
+    );
+
     // 0a. Nút tròn chính 112px (Chuẩn 56dp: Đặt lại, Xoay)
     if (!tm.exists(TEXTURE_KEYS.btnCircle112)) {
       const canvas = tm.createCanvas(TEXTURE_KEYS.btnCircle112, 112, 112);
       if (canvas) {
         const ctx = canvas.context;
-        ctx.fillStyle = COLOR_TOKENS.navy.steleSurface;
+        ctx.fillStyle = COLOR_TOKENS.board.surfaceTop;
         ctx.beginPath();
         ctx.arc(56, 56, 52, 0, Math.PI * 2);
         ctx.fill();
@@ -78,7 +154,7 @@ export class TextureFactory {
       const canvas = tm.createCanvas(TEXTURE_KEYS.btnCircle80, 80, 80);
       if (canvas) {
         const ctx = canvas.context;
-        ctx.fillStyle = COLOR_TOKENS.navy.steleSurface;
+        ctx.fillStyle = COLOR_TOKENS.board.surfaceTop;
         ctx.beginPath();
         ctx.arc(40, 40, 36, 0, Math.PI * 2);
         ctx.fill();
@@ -170,7 +246,7 @@ export class TextureFactory {
       const canvas = tm.createCanvas(TEXTURE_KEYS.btnCircle64, 64, 64);
       if (canvas) {
         const ctx = canvas.context;
-        ctx.fillStyle = COLOR_TOKENS.navy.steleSurface;
+        ctx.fillStyle = COLOR_TOKENS.board.surfaceTop;
         ctx.beginPath();
         ctx.arc(32, 32, 30, 0, Math.PI * 2);
         ctx.fill();
@@ -196,7 +272,7 @@ export class TextureFactory {
       const canvas = tm.createCanvas(TEXTURE_KEYS.btnCircle56, 56, 56);
       if (canvas) {
         const ctx = canvas.context;
-        ctx.fillStyle = COLOR_TOKENS.navy.steleSurface;
+        ctx.fillStyle = COLOR_TOKENS.board.surfaceTop;
         ctx.beginPath();
         ctx.arc(28, 28, 26, 0, Math.PI * 2);
         ctx.fill();
@@ -335,8 +411,7 @@ export class TextureFactory {
       if (canvas) {
         const ctx = canvas.context;
         ctx.fillStyle = COLOR_TOKENS.amberGold.solidPrimary;
-        ctx.beginPath();
-        ctx.arc(36, 36, 32, 0, Math.PI * 2);
+        TextureFactory.diamondPath(ctx, 36, 36, 32);
         ctx.fill();
 
         // Viền sáng vàng lấp lánh
@@ -345,7 +420,7 @@ export class TextureFactory {
         ctx.stroke();
 
         // Dấu checkmark navy đậm
-        ctx.strokeStyle = COLOR_TOKENS.navy.spaceBackground;
+        ctx.strokeStyle = COLOR_TOKENS.sky.stops[0];
         ctx.lineWidth = 4.5;
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
@@ -363,9 +438,8 @@ export class TextureFactory {
       const canvas = tm.createCanvas(TEXTURE_KEYS.nodeCurrent, 72, 72);
       if (canvas) {
         const ctx = canvas.context;
-        ctx.fillStyle = COLOR_TOKENS.navy.steleSurface;
-        ctx.beginPath();
-        ctx.arc(36, 36, 32, 0, Math.PI * 2);
+        ctx.fillStyle = COLOR_TOKENS.board.surfaceTop;
+        TextureFactory.diamondPath(ctx, 36, 36, 32);
         ctx.fill();
 
         // Vành kính xanh
@@ -383,14 +457,12 @@ export class TextureFactory {
         // Vành vàng phát quang bên trong
         ctx.strokeStyle = COLOR_TOKENS.amberGold.glowHighlight;
         ctx.lineWidth = 2.5;
-        ctx.beginPath();
-        ctx.arc(36, 36, 25, 0, Math.PI * 2);
+        TextureFactory.diamondPath(ctx, 36, 36, 25);
         ctx.stroke();
 
         // Lõi vàng đặc radius 21px để hiển thị số màn rõ nét
         ctx.fillStyle = COLOR_TOKENS.amberGold.solidPrimary;
-        ctx.beginPath();
-        ctx.arc(36, 36, 21, 0, Math.PI * 2);
+        TextureFactory.diamondPath(ctx, 36, 36, 21);
         ctx.fill();
         canvas.refresh();
       }
@@ -401,9 +473,8 @@ export class TextureFactory {
       const canvas = tm.createCanvas(TEXTURE_KEYS.nodeUnlocked, 72, 72);
       if (canvas) {
         const ctx = canvas.context;
-        ctx.fillStyle = COLOR_TOKENS.navy.steleSurface;
-        ctx.beginPath();
-        ctx.arc(36, 36, 32, 0, Math.PI * 2);
+        ctx.fillStyle = COLOR_TOKENS.board.surfaceTop;
+        TextureFactory.diamondPath(ctx, 36, 36, 32);
         ctx.fill();
 
         ctx.strokeStyle = COLOR_TOKENS.iceGlass.primaryBorder;
@@ -417,8 +488,7 @@ export class TextureFactory {
         ctx.stroke();
 
         ctx.fillStyle = COLOR_TOKENS.iceGlass.primaryBorder;
-        ctx.beginPath();
-        ctx.arc(36, 36, 7, 0, Math.PI * 2);
+        TextureFactory.diamondPath(ctx, 36, 36, 7);
         ctx.fill();
         canvas.refresh();
       }
@@ -430,8 +500,7 @@ export class TextureFactory {
       if (canvas) {
         const ctx = canvas.context;
         ctx.fillStyle = 'rgba(11, 20, 48, 0.7)';
-        ctx.beginPath();
-        ctx.arc(36, 36, 30, 0, Math.PI * 2);
+        TextureFactory.diamondPath(ctx, 36, 36, 30);
         ctx.fill();
 
         ctx.strokeStyle = 'rgba(157, 175, 199, 0.35)';
@@ -457,7 +526,7 @@ export class TextureFactory {
         ctx.fill();
 
         // Lỗ khóa
-        ctx.fillStyle = COLOR_TOKENS.navy.spaceBackground;
+        ctx.fillStyle = COLOR_TOKENS.sky.stops[0];
         ctx.beginPath();
         ctx.arc(36, 38, 2.5, 0, Math.PI * 2);
         ctx.fill();
@@ -466,5 +535,137 @@ export class TextureFactory {
         canvas.refresh();
       }
     }
+  }
+
+  /**
+   * Khung kính bao quanh bàn chơi và khay mảnh: gradient băng từ trắng xanh
+   * xuống xanh đậm, bo góc, viền tóc trắng mờ ở mép ngoài.
+   *
+   * Khoét lòng khung để chỉ còn lại dải viền, nên một texture dùng được cho
+   * mọi kích thước khung mà không phải vẽ bevel thủ công từng cạnh.
+   */
+  /**
+   * Đường viền hình thoi dùng cho node bản đồ.
+   *
+   * Mockup dùng thoi chứ không dùng tròn: node phải cùng ngôn ngữ hình học
+   * với mảnh ghép trên bàn, nếu không bản đồ trông như game khác.
+   */
+  private static diamondPath(
+    ctx: CanvasRenderingContext2D,
+    cx: number,
+    cy: number,
+    r: number
+  ): void {
+    ctx.beginPath();
+    ctx.moveTo(cx, cy - r);
+    ctx.lineTo(cx + r, cy);
+    ctx.lineTo(cx, cy + r);
+    ctx.lineTo(cx - r, cy);
+    ctx.closePath();
+  }
+
+  public static makeGlassFrame(
+    scene: Phaser.Scene,
+    key: string,
+    width: number,
+    height: number,
+    radius: number,
+    stops: readonly string[] = GLASS_TOKENS.frameStops
+  ): string {
+    const tm = scene.textures;
+    if (!tm || tm.exists(key)) return key;
+
+    const canvas = tm.createCanvas(key, width, height);
+    if (!canvas) return key;
+    const ctx = canvas.context;
+
+    const gradient = ctx.createLinearGradient(0, 0, 0, height);
+    stops.forEach((stop, index) => {
+      gradient.addColorStop(GLASS_TOKENS.frameStopOffsets[index], stop);
+    });
+
+    ctx.fillStyle = gradient;
+    ctx.beginPath();
+    ctx.roundRect(0, 0, width, height, radius);
+    ctx.fill();
+
+    ctx.strokeStyle = `rgba(255, 255, 255, ${GLASS_TOKENS.hairline.alpha})`;
+    ctx.lineWidth = GLASS_TOKENS.hairline.width;
+    ctx.stroke();
+
+    const pad = GLASS_TOKENS.padding;
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.beginPath();
+    ctx.roundRect(pad, pad, width - pad * 2, height - pad * 2, Math.max(0, radius - pad));
+    ctx.fill();
+    ctx.globalCompositeOperation = 'source-over';
+
+    canvas.refresh();
+    return key;
+  }
+
+  /**
+   * Bề mặt bo góc có gradient dọc thật, tuỳ chọn quầng sáng giữa và bóng lõm
+   * ở mép trên. Dùng cho mặt bàn và ô chứa mảnh trong khay.
+   */
+  public static makeSurface(
+    scene: Phaser.Scene,
+    key: string,
+    opts: {
+      width: number;
+      height: number;
+      radius: number;
+      stops: Array<[number, string]>;
+      innerGlow?: { color: string; alpha: number };
+      innerShadow?: boolean;
+    }
+  ): string {
+    const tm = scene.textures;
+    if (!tm || tm.exists(key)) return key;
+    const { width, height, radius } = opts;
+    const canvas = tm.createCanvas(key, width, height);
+    if (!canvas) return key;
+    const ctx = canvas.context;
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.roundRect(0, 0, width, height, radius);
+    ctx.clip();
+
+    const fill = ctx.createLinearGradient(0, 0, 0, height);
+    for (const [offset, color] of opts.stops) fill.addColorStop(offset, color);
+    ctx.fillStyle = fill;
+    ctx.fillRect(0, 0, width, height);
+
+    if (opts.innerGlow) {
+      const { color, alpha } = opts.innerGlow;
+      const r = parseInt(color.slice(1, 3), 16);
+      const g = parseInt(color.slice(3, 5), 16);
+      const b = parseInt(color.slice(5, 7), 16);
+      const glow = ctx.createRadialGradient(
+        width / 2, height / 2, 0,
+        width / 2, height / 2, Math.max(width, height) * 0.55
+      );
+      glow.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${alpha})`);
+      glow.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
+      ctx.fillStyle = glow;
+      ctx.fillRect(0, 0, width, height);
+    }
+
+    if (opts.innerShadow) {
+      // Bóng đổ vào trong ở mép trên tạo cảm giác ô bị lõm xuống
+      const shade = ctx.createLinearGradient(0, 0, 0, 18);
+      shade.addColorStop(0, 'rgba(0, 0, 20, 0.6)');
+      shade.addColorStop(1, 'rgba(0, 0, 20, 0)');
+      ctx.fillStyle = shade;
+      ctx.fillRect(0, 0, width, 18);
+      // Viền sáng mảnh ở mép dưới
+      ctx.fillStyle = 'rgba(160, 220, 255, 0.25)';
+      ctx.fillRect(0, height - 1, width, 1);
+    }
+
+    ctx.restore();
+    canvas.refresh();
+    return key;
   }
 }

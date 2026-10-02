@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import type { Level } from '../domain/model.ts';
+import { GRID_WIDTH, GRID_HEIGHT } from '../domain/model.ts';
 import { loadLevel } from '../content/catalog.ts';
 import { campaignManifest } from '../content/manifest.ts';
 import { nextLevelId } from '../domain/campaign.ts';
@@ -7,33 +8,32 @@ import { createProgressRepository } from '../infrastructure/progressRepository.t
 import { PlayController } from '../application/playController.ts';
 import { BoardRenderer } from './BoardRenderer.ts';
 import { Hud } from './Hud.ts';
-import { computeLayout, gridToCanvas } from './layout.ts';
+import {
+  computeLayout,
+  gridToCanvas,
+  pieceCenterCanvas,
+  pieceHitbox,
+  pieceRadiusPx,
+} from './layout.ts';
 import type { LayoutMetrics } from './layout.ts';
 
+import { SkyBackdrop } from './SkyBackdrop.ts';
+import { COLOR_TOKENS } from './designTokens.ts';
 import { TextureFactory } from './TextureFactory.ts';
 
 import { PauseDialog } from './PauseDialog.ts';
 import { TargetBadge } from './TargetBadge.ts';
-
-type StarParticle = {
-  x: number;
-  y: number;
-  r: number;
-  baseAlpha: number;
-  speed: number;
-  phase: number;
-};
 
 export class PlayScene extends Phaser.Scene {
   private level!: Level;
   private mode: 'campaign' | 'harness' = 'campaign';
   private controller!: PlayController;
   private boardRenderer!: BoardRenderer;
+  private layout!: LayoutMetrics;
   private targetBadge!: TargetBadge;
   private hud!: Hud;
   private pauseDialog!: PauseDialog;
-  private starGraphics!: Phaser.GameObjects.Graphics;
-  private stars: StarParticle[] = [];
+  private sky!: SkyBackdrop;
   private celebrationContainer: Phaser.GameObjects.Container | null = null;
 
   constructor() {
@@ -59,20 +59,10 @@ export class PlayScene extends Phaser.Scene {
   create(): void {
     TextureFactory.generateAll(this);
     const layout = computeLayout(this.scale.width, this.scale.height);
+    this.layout = layout;
 
-    // 1. Sao li ti nền galaxy
-    this.starGraphics = this.add.graphics();
-    this.stars = [];
-    for (let i = 0; i < 30; i++) {
-      this.stars.push({
-        x: Phaser.Math.Between(10, 710),
-        y: Phaser.Math.Between(10, 1270),
-        r: Phaser.Math.FloatBetween(0.8, 2.2),
-        baseAlpha: Phaser.Math.FloatBetween(0.15, 0.6),
-        speed: Phaser.Math.FloatBetween(0.1, 0.3),
-        phase: Phaser.Math.FloatBetween(0, Math.PI * 2),
-      });
-    }
+    // 1. Nền trời dùng chung
+    this.sky = new SkyBackdrop(this, { seed: 2, drift: false });
 
     const progressRepo = createProgressRepository(
       localStorage,
@@ -113,6 +103,8 @@ export class PlayScene extends Phaser.Scene {
       onReset: () => {
         this.controller.onReset();
         this.cleanupCelebration();
+        this.boardRenderer.setVictoryMode(false);
+        this.hud.hideWinModal();
         this.refreshView();
       },
       onRotate: () => {
@@ -125,6 +117,9 @@ export class PlayScene extends Phaser.Scene {
       onToggleTarget: () => {
         this.controller.onToggleTarget();
         this.refreshView();
+      },
+      onLevelSelect: () => {
+        this.scene.start('LevelSelectScene');
       },
       onNextLevel: () => {
         const nextId = nextLevelId(campaignManifest, this.level.id);
@@ -178,21 +173,43 @@ export class PlayScene extends Phaser.Scene {
     this.refreshView();
 
     if (this.controller.getSnapshot().phase === 'won') {
-      this.hud.showWinModal();
+      this.boardRenderer.setVictoryMode(true);
+      this.hud.showWinModal(this.level.victoryVerse);
+    }
+
+    // Chỉ dùng khi phát triển: tự kéo mảnh để chụp ảnh kiểm tra thị giác.
+    // ?autosolve=win  -> đặt đủ mảnh, ra màn hoàn thành
+    // ?autosolve=drag -> mảnh đầu đã khớp, mảnh sau đang được kéo gần đích
+    if (import.meta.env.DEV) {
+      const mode = new URLSearchParams(window.location.search).get('autosolve');
+      if (mode === 'win' || mode === 'drag') this.autosolve(mode, layout);
     }
   }
 
-  update(_time: number, delta: number): void {
-    this.starGraphics.clear();
-    for (const star of this.stars) {
-      star.y += star.speed * (delta / 16);
-      star.phase += 0.02;
-      if (star.y > 1280) star.y = 0;
+  private autosolve(mode: 'win' | 'drag', layout: LayoutMetrics): void {
+    const pieces = this.level.pieces;
+    pieces.forEach((piece, index) => {
+      const start = pieceHitbox(piece, { kind: 'tray', turns: 0 }, layout, index);
+      const anchor = piece.anchors.find((a) => a.id === 'A') ?? piece.anchors[0];
+      const target = pieceCenterCanvas(piece.frameSize, anchor.x, anchor.y, layout);
+      this.controller.onPointerDown(start.x + start.width / 2, start.y + start.height / 2, layout);
 
-      const alpha = star.baseAlpha + Math.sin(star.phase) * 0.2;
-      this.starGraphics.fillStyle(0xffffff, Phaser.Math.Clamp(alpha, 0.08, 0.8));
-      this.starGraphics.fillCircle(star.x, star.y, star.r);
-    }
+      const isLast = index === pieces.length - 1;
+      if (mode === 'drag' && isLast) {
+        // Dừng giữa chừng, lệch nhẹ khỏi đích để còn trong vùng hít
+        this.controller.onPointerMove(target.x + 12, target.y - 12, layout);
+        this.refreshView();
+        return;
+      }
+
+      const transition = this.controller.onPointerUp(target.x, target.y, layout);
+      this.refreshView();
+      if (transition?.becameWon) this.playCelebration(layout);
+    });
+  }
+
+  update(_time: number, delta: number): void {
+    this.sky.update(delta);
   }
 
   private refreshView(): void {
@@ -201,6 +218,16 @@ export class PlayScene extends Phaser.Scene {
 
     this.boardRenderer.render(this.level, snapshot, puzzleState.pieces);
     this.hud.update(snapshot);
+
+    // Nhãn "Thả để khớp" chỉ hiện khi mảnh đang kéo trúng vùng hít
+    const drag = snapshot.dragInfo;
+    if (drag && drag.snapCandidateId !== null) {
+      const piece = this.level.pieces.find((p) => p.id === drag.pieceId);
+      const radius = piece ? pieceRadiusPx(piece.frameSize, this.layout) : 120;
+      this.hud.showSnapHint(drag.x + radius * 0.8, drag.y + radius * 0.5);
+    } else {
+      this.hud.hideSnapHint();
+    }
   }
 
   private playCelebration(layout: LayoutMetrics): void {
@@ -212,8 +239,8 @@ export class PlayScene extends Phaser.Scene {
     // 1. Ánh chớp sao starlight flash dịu nhẹ
     this.cameras.main.flash(350, 249, 199, 79, false);
 
-    // Tọa độ tâm điểm tiếp giáp 2 hình thoi: (64, 96)
-    const center = gridToCanvas(64, 96, layout);
+    // Tâm bàn, nơi hai hình thoi chạm đỉnh nhau
+    const center = gridToCanvas(GRID_WIDTH / 2, GRID_HEIGHT / 2, layout);
 
     // 2. Vòng sóng năng lượng cổ ngữ (Resonance Shockwave Rings)
     const ringGraphics = this.add.graphics();
@@ -302,48 +329,11 @@ export class PlayScene extends Phaser.Scene {
       },
     });
 
-    // 4. Dòng chữ chiêm tinh thức tỉnh
-    const runeText = this.add
-      .text(center.x, center.y - 120, '✦ CỔ NGỮ THỨC TỈNH ✦', {
-        fontFamily: 'system-ui, -apple-system, sans-serif',
-        fontSize: '26px',
-        color: '#FFD166',
-        fontStyle: 'bold',
-        stroke: '#080E24',
-        strokeThickness: 5,
-        shadow: {
-          offsetX: 0,
-          offsetY: 0,
-          color: '#F9C74F',
-          blur: 16,
-          stroke: true,
-          fill: true,
-        },
-      })
-      .setOrigin(0.5)
-      .setScale(0.6)
-      .setAlpha(0);
-
-    celebration.add(runeText);
-
-    this.tweens.add({
-      targets: runeText,
-      scale: 1,
-      alpha: 1,
-      y: center.y - 140,
-      duration: 500,
-      ease: 'Back.easeOut',
-    });
-
-    // 5. Hoãn 1.5s để người chơi tận hưởng khoảnh khắc hoàn thành trước khi mở bảng modal
-    this.time.delayedCall(1500, () => {
-      this.tweens.add({
-        targets: runeText,
-        alpha: 0,
-        duration: 400,
-        ease: 'Linear',
-      });
-      this.hud.showWinModal();
+    // 4. Khung bàn đổi vàng, rồi hiện thẻ hoàn thành sau một nhịp để người
+    // chơi kịp thấy hai mảnh khớp. Thẻ thay chỗ khay, không đè lên bàn.
+    this.boardRenderer.setVictoryMode(true);
+    this.time.delayedCall(700, () => {
+      this.hud.showWinModal(this.level.victoryVerse);
     });
   }
 

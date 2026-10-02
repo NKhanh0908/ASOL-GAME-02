@@ -4,7 +4,7 @@ import { LAYOUT_TOKENS } from './designTokens.ts';
 
 export type LayoutMetrics = {
   boardBounds: { x: number; y: number; width: number; height: number };
-  cellPixel: 4;
+  cellPixel: 5;
   trayBounds: { x: number; y: number; width: number; height: number };
   headerBounds: { y: number; height: number };
   bottomBarBounds: { y: number; height: number };
@@ -17,7 +17,7 @@ const BOARD_X = LAYOUT_TOKENS.board.x;
 const BOARD_Y = LAYOUT_TOKENS.board.y;
 const BOARD_WIDTH = LAYOUT_TOKENS.board.width;
 const BOARD_HEIGHT = LAYOUT_TOKENS.board.height;
-const CELL_PIXEL: 4 = 4;
+const CELL_PIXEL: 5 = 5;
 const TRAY_X = LAYOUT_TOKENS.tray.x;
 const TRAY_Y = LAYOUT_TOKENS.tray.y;
 const TRAY_WIDTH = LAYOUT_TOKENS.tray.width;
@@ -126,4 +126,37 @@ export function pieceHitbox(
     width: size,
     height: size,
   };
+}
+
+/**
+ * Tâm canvas của một mảnh, suy ra từ gốc khung và frameSize.
+ *
+ * Neo là GỐC khung mảnh (góc trên-trái), nên tâm bằng gốc cộng nửa khung.
+ * Viết cứng nửa khung thành hằng số sẽ sai ngay khi frameSize đổi — đó
+ * chính là lỗi đã xảy ra khi mảnh chuyển từ 40 sang 48 ô.
+ */
+export function pieceCenterCanvas(
+  frameSize: number,
+  originX: number,
+  originY: number,
+  layout: LayoutMetrics
+): { x: number; y: number } {
+  const half = frameSize / 2;
+  return gridToCanvas(originX + half, originY + half, layout);
+}
+
+/** Bán kính vẽ hình thoi: nửa đường chéo thật, tính bằng pixel canvas. */
+export function pieceRadiusPx(frameSize: number, layout: LayoutMetrics): number {
+  return (frameSize / 2) * layout.cellPixel;
+}
+
+/**
+ * Bán kính mảnh khi nằm trong khay.
+ *
+ * Khay thấp hơn bàn nhiều nên không dùng chung bán kính được: mảnh 48 ô ở
+ * 5px/ô cao 240px, trong khi khay chỉ cao 160px và sẽ bị tràn. Chừa 16px
+ * đệm trên dưới cho mảnh không chạm mép khung kính.
+ */
+export function trayPieceRadiusPx(layout: LayoutMetrics): number {
+  return layout.trayBounds.height / 2 - 16;
 }

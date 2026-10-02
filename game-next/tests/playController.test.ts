@@ -52,8 +52,8 @@ describe('PlayController Loop and State Coordination', () => {
     );
     expect(hit1).toBe(true);
 
-    // Kéo D1 tới neo A (24, 76)
-    const anchor1Canvas = gridToCanvas(24, 76, layout);
+    // Kéo D1 tới tâm neo A (40, 80)
+    const anchor1Canvas = gridToCanvas(40, 80, layout);
     controller.onPointerMove(anchor1Canvas.x, anchor1Canvas.y, layout);
 
     const snap1 = controller.getSnapshot();
@@ -74,8 +74,8 @@ describe('PlayController Loop and State Coordination', () => {
     );
     expect(hit2).toBe(true);
 
-    // Kéo D2 tới neo A (64, 76)
-    const anchor2Canvas = gridToCanvas(64, 76, layout);
+    // Kéo D2 tới tâm neo A (88, 80)
+    const anchor2Canvas = gridToCanvas(88, 80, layout);
     controller.onPointerMove(anchor2Canvas.x, anchor2Canvas.y, layout);
 
     // Thả D2 -> Thắng!
@@ -111,7 +111,7 @@ describe('PlayController Loop and State Coordination', () => {
     const p1Hitbox = pieceHitbox(pD1, { kind: 'tray', turns: 0 }, layout, 0);
     controller.onPointerDown(p1Hitbox.x + p1Hitbox.width / 2, p1Hitbox.y + p1Hitbox.height / 2, layout);
 
-    const anchor1 = gridToCanvas(24, 76, layout);
+    const anchor1 = gridToCanvas(40, 80, layout);
     controller.onPointerUp(anchor1.x, anchor1.y, layout);
     expect(controller.getSnapshot().snappedCount).toBe(1);
 

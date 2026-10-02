@@ -3,8 +3,10 @@ import { campaignManifest } from '../content/manifest.ts';
 import { levelAccess } from '../domain/campaign.ts';
 import { createProgressRepository } from '../infrastructure/progressRepository.ts';
 import type { ProgressRepository } from '../application/progressPort.ts';
-import { COLOR_NUMBERS, COLOR_TOKENS, TYPO_TOKENS } from './designTokens.ts';
+import { ANIM_TOKENS, COLOR_NUMBERS, COLOR_TOKENS, TYPO_TOKENS } from './designTokens.ts';
 import { TEXTURE_KEYS, TextureFactory } from './TextureFactory.ts';
+import { SkyBackdrop } from './SkyBackdrop.ts';
+import { formatProgress } from './hudText.ts';
 
 type NodeInfo = {
   id: string;
@@ -16,23 +18,13 @@ type NodeInfo = {
   available: boolean;
 };
 
-type StarParticle = {
-  x: number;
-  y: number;
-  r: number;
-  baseAlpha: number;
-  speed: number;
-  phase: number;
-};
-
 export class LevelSelectScene extends Phaser.Scene {
   private progressRepo!: ProgressRepository;
   private mapContainer!: Phaser.GameObjects.Container;
   private headerContainer!: Phaser.GameObjects.Container;
   private toastContainer?: Phaser.GameObjects.Container;
 
-  private starGraphics!: Phaser.GameObjects.Graphics;
-  private stars: StarParticle[] = [];
+  private sky!: SkyBackdrop;
 
   private isDragging = false;
   private dragStartY = 0;
@@ -50,19 +42,8 @@ export class LevelSelectScene extends Phaser.Scene {
     this.progressRepo = createProgressRepository(localStorage, campaignManifest, 'oracle-v1');
     const { progress } = this.progressRepo.read();
 
-    // 1. Nền sao vũ trụ lấp lánh (Đồng nhất với PlayScene)
-    this.starGraphics = this.add.graphics().setDepth(1);
-    this.stars = [];
-    for (let i = 0; i < 40; i++) {
-      this.stars.push({
-        x: Phaser.Math.Between(10, 710),
-        y: Phaser.Math.Between(10, 1270),
-        r: Phaser.Math.FloatBetween(0.8, 2.4),
-        baseAlpha: Phaser.Math.FloatBetween(0.15, 0.65),
-        speed: Phaser.Math.FloatBetween(0.08, 0.25),
-        phase: Phaser.Math.FloatBetween(0, Math.PI * 2),
-      });
-    }
+    // 1. Nền trời dùng chung; màn chọn màn cho sao trôi xuống
+    this.sky = new SkyBackdrop(this, { seed: 3, drift: true });
 
     // 2. Container bản đồ chòm sao có thể cuộn dọc
     this.mapContainer = this.add.container(0, 0).setDepth(10);
@@ -90,29 +71,19 @@ export class LevelSelectScene extends Phaser.Scene {
   }
 
   update(_time: number, delta: number): void {
-    // Chuyển động lấp lánh sao nền
-    this.starGraphics.clear();
-    for (const star of this.stars) {
-      star.y += star.speed * (delta / 16);
-      star.phase += 0.02;
-      if (star.y > 1280) star.y = 0;
-
-      const alpha = star.baseAlpha + Math.sin(star.phase) * 0.2;
-      this.starGraphics.fillStyle(0xffffff, Phaser.Math.Clamp(alpha, 0.1, 0.85));
-      this.starGraphics.fillCircle(star.x, star.y, star.r);
-    }
+    this.sky.update(delta);
   }
 
   private buildHeader(completedCount: number, totalCount: number): void {
     // Nền header mờ dần xuống dưới (Soft gradient fade thay cho kẻ ngang)
     const headerBg = this.add.graphics();
-    headerBg.fillStyle(COLOR_NUMBERS.navySpace, 0.96);
+    headerBg.fillStyle(COLOR_NUMBERS.skyTop, 0.96);
     headerBg.fillRect(0, 0, 720, 96);
 
     // Gradient mờ dần từ y=96 đến y=136
     for (let h = 0; h < 40; h++) {
       const alpha = 0.96 * (1 - h / 40);
-      headerBg.fillStyle(COLOR_NUMBERS.navySpace, alpha);
+      headerBg.fillStyle(COLOR_NUMBERS.skyTop, alpha);
       headerBg.fillRect(0, 96 + h, 720, 1);
     }
 
@@ -138,13 +109,13 @@ export class LevelSelectScene extends Phaser.Scene {
     // Huy hiệu tiến độ tổng ở góc phải (ví dụ: "✦ 1/18")
     const progressPill = this.add.container(640, 56);
     const pillBg = this.add.graphics();
-    pillBg.fillStyle(COLOR_NUMBERS.navyStele, 0.95);
+    pillBg.fillStyle(COLOR_NUMBERS.boardSurfaceTop, 0.95);
     pillBg.fillRoundedRect(-52, -22, 104, 44, 22);
-    pillBg.lineStyle(1.5, COLOR_NUMBERS.amberGrid, 0.65);
+    pillBg.lineStyle(1.5, COLOR_NUMBERS.gridModule, 0.65);
     pillBg.strokeRoundedRect(-52, -22, 104, 44, 22);
 
     const progressText = this.add
-      .text(0, 0, `✦ ${completedCount}/${totalCount}`, {
+      .text(0, 0, formatProgress(completedCount, totalCount), {
         fontFamily: TYPO_TOKENS.fontFamily.sans,
         fontSize: '20px',
         color: COLOR_TOKENS.amberGold.solidPrimary,
@@ -204,18 +175,14 @@ export class LevelSelectScene extends Phaser.Scene {
       currentY += 160;
     }
 
-    // 2. Dải màu chuyển tiếp 3 Chương trên nền bản đồ
+    // 2. Sắc độ riêng cho từng chương, phủ rất nhẹ để nền trời vẫn lộ ra.
+    // Trước đây phủ 98% nên che kín SkyBackdrop và bản đồ trông như cũ.
     const chBackdrop = this.add.graphics();
-    // Chương I (y=0..1160): Navy sâu #080E24
-    chBackdrop.fillStyle(0x080e24, 0.98);
+    chBackdrop.fillStyle(0x7fb8ff, 0.04); // Chương I: xanh trời
     chBackdrop.fillRect(0, 0, 720, 1160);
-
-    // Chương II (y=1160..2200): Tím xanh vũ trụ #0D0B28
-    chBackdrop.fillStyle(0x0d0b28, 0.98);
+    chBackdrop.fillStyle(0xb48cff, 0.06); // Chương II: tím giao thoa
     chBackdrop.fillRect(0, 1160, 720, 1040);
-
-    // Chương III (y=2200..3400): Hổ phách hoàng hôn huyền bí #181220
-    chBackdrop.fillStyle(0x181220, 0.98);
+    chBackdrop.fillStyle(0xffb86b, 0.06); // Chương III: hổ phách hoàng hôn
     chBackdrop.fillRect(0, 2200, 720, 1200);
 
     this.mapContainer.add(chBackdrop);
@@ -251,6 +218,21 @@ export class LevelSelectScene extends Phaser.Scene {
         for (let j = 0; j < points.length - 1; j++) {
           linesGraphics.lineBetween(points[j].x, points[j].y, points[j + 1].x, points[j + 1].y);
         }
+
+        // Đốm sáng chạy dọc đường. Phaser không có stroke-dashoffset như
+        // mockup, nên mô phỏng bằng một chấm tween theo các điểm của đường.
+        const spark = this.add.circle(points[0].x, points[0].y, 4, COLOR_NUMBERS.amberGlow, 0.9);
+        this.mapContainer.add(spark);
+        this.tweens.addCounter({
+          from: 0,
+          to: points.length - 1,
+          duration: ANIM_TOKENS.duration.linkSweepMs,
+          repeat: -1,
+          onUpdate: (tween) => {
+            const point = points[Math.round(tween.getValue() ?? 0)];
+            if (point) spark.setPosition(point.x, point.y);
+          },
+        });
       } else {
         // Đoạn chưa tới: Xanh kính 25% opacity nét đứt
         linesGraphics.lineStyle(2, COLOR_NUMBERS.icePrimary, 0.35);
@@ -262,9 +244,9 @@ export class LevelSelectScene extends Phaser.Scene {
 
     // 4. Tiêu đề phân đoạn Chương (B2: Bỏ thuật ngữ kỹ thuật, banner kính thanh lịch)
     const chapterTitles = [
-      '✦ CHƯƠNG I · KHỞI NGUYÊN ✦',
-      '✦ CHƯƠNG II · GIAO THOA ✦',
-      '✦ CHƯƠNG III · LUÂN CHUYỂN ✦',
+      'Chương I · Khởi Nguyên',
+      'Chương II · Giao Thoa',
+      'Chương III · Luân Chuyển',
     ];
 
     for (let c = 0; c < 3; c++) {
@@ -272,20 +254,22 @@ export class LevelSelectScene extends Phaser.Scene {
       const bannerY = firstNode.y - 85;
 
       const chContainer = this.add.container(360, bannerY);
-      const chBg = this.add.graphics();
-      chBg.fillStyle(COLOR_NUMBERS.navyStele, 0.95);
-      chBg.fillRoundedRect(-180, -22, 360, 44, 22);
-      chBg.lineStyle(1.5, COLOR_NUMBERS.icePrimary, 0.7);
-      chBg.strokeRoundedRect(-180, -22, 360, 44, 22);
-
+      // Mockup dùng chữ serif có hai gạch amber hai bên, không có nền
       const chText = this.add
         .text(0, 0, chapterTitles[c], {
           fontFamily: TYPO_TOKENS.fontFamily.serif,
-          fontSize: '22px',
-          color: COLOR_TOKENS.iceGlass.bevelHighlight,
-          letterSpacing: 1,
+          fontSize: TYPO_TOKENS.fontSize.sectionHeader,
+          color: COLOR_TOKENS.text.primary,
+          fontStyle: 'bold',
         })
         .setOrigin(0.5);
+
+      const chBg = this.add.graphics();
+      chBg.lineStyle(1.5, COLOR_NUMBERS.gridModule, 0.5);
+      const rule = 80;
+      const gap = chText.width / 2 + 24;
+      chBg.lineBetween(-gap - rule, 0, -gap, 0);
+      chBg.lineBetween(gap, 0, gap + rule, 0);
 
       chContainer.add([chBg, chText]);
       this.mapContainer.add(chContainer);
@@ -337,7 +321,7 @@ export class LevelSelectScene extends Phaser.Scene {
           .text(0, 0, node.id, {
             fontFamily: TYPO_TOKENS.fontFamily.sans,
             fontSize: '20px',
-            color: COLOR_TOKENS.navy.spaceBackground,
+            color: COLOR_TOKENS.sky.stops[0],
             fontStyle: 'bold',
           })
           .setOrigin(0.5);
