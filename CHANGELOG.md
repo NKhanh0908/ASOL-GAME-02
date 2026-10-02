@@ -4,6 +4,12 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-02 - Add solution search and SVG previews to level authoring
+
+- Added exhaustive anchor/tray solution search, distractor cell differences, Markdown reports and SVG previews in `game-next/src/content/authoringReport.ts`, with five cases in `game-next/tests/authoringReport.test.ts`.
+- Updated `game-next/scripts/author-level.ts` to generate reports and reject fewer-piece solutions; documented `content:author` in `game-next/README.md` and generated `docs/testing/levels/1-1.svg` and `docs/testing/levels/1-1-report.md` without changing level JSON.
+- Verification: focused suite failed for the missing module before implementation, then passed (5 tests); `npm run content:author -- 1-1` passed (2304 target cells, 1 solution, 0 fewer-piece solutions); `npm run typecheck` passed; `npm test` passed (170 tests); `npm run content:validate` passed. SVG XML structure and polygon coordinates inspected; visual rendering unavailable in this session.
+
 ### 2026-10-02 - Reject explicit null piece orientation
 
 - Updated `game-next/src/content/validate.ts` to validate supplied orientations directly and default only omitted square or diamond orientations to 0; explicit null now produces `invalid-orientation`.
