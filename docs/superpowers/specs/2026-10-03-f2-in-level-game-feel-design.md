@@ -245,7 +245,7 @@ Sau F2, tuyến `menu-to-play` của F1 (mốc 950–1350) cho từng mảnh rơ
 
 ## 9. Điều chỉnh khi viết plan (2026-10-03)
 
-Phát hiện khi đối chiếu với code thật; plan `2026-10-03-f2-in-level-game-feel.md` đã theo các điểm này và thay cho các chỗ tương ứng ở mục 2, 4 và 8.
+Phát hiện khi đối chiếu với code thật; plan F2 (`2026-10-03-f2-1-logic.md`, `f2-2-renderer.md`, `f2-3-phan-hoi.md`) đã theo các điểm này và thay cho các chỗ tương ứng ở mục 2, 4 và 8.
 
 1. **Bộ nhớ đo thật:** mọi mảnh 1-1 → 1-6 có `frameSize` 48 và không màn nào cho xoay; mỗi (mảnh × hướng) tốn 0,742 MiB, màn nặng nhất 2,22 MiB. Ước tính 40 MB ở mục 8 là cho trường hợp giả định khung 64 với 6 mảnh xoay đủ (31,6 MiB, tự hạ độ phân giải 0,75 còn 17,8 MiB, dưới ngưỡng 24 MB của F3).
 2. Không cần texture `ghost` riêng: `ghost` chỉ khác `solid` ở alpha 0.75.

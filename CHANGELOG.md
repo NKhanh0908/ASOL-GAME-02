@@ -4,6 +4,12 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-03 - Split motion plans F1 and F2 into phase files and add the F index
+
+- Replaced `docs/superpowers/plans/2026-10-03-f1-scene-transitions.md` with `2026-10-03-f1-1-nen-tang.md` (tasks 1-3), `f1-2-director.md` (4-6) and `f1-3-dan-dung.md` (7-10); replaced `2026-10-03-f2-in-level-game-feel.md` with `f2-1-logic.md` (1-4), `f2-2-renderer.md` (5-7) and `f2-3-phan-hoi.md` (8-10). Each phase file carries its own goal, deliverable, position, global constraints and file map; task numbers are unchanged.
+- Added `docs/superpowers/plans/2026-10-03-f-motion-index.md`: execution order across F1-F3 with branches, roles (coordinator, per-task implementer subagent, reviewer), main flow, five reviewer stop points, in-phase manual checks, cross-plan interface contracts and precomputed route timings, texture memory and rotation fixture.
+- Verification: every task section in the phase files is byte-identical to the original plans (scripted comparison); references in plan F3 and spec F2 updated to the new file names; no runtime code changed.
+
 ### 2026-10-03 - Add implementation plans F2 and F3 and record plan-time spec corrections
 
 - Added `docs/superpowers/plans/2026-10-03-f2-in-level-game-feel.md` (10 tasks: mask caching, pose smoothing, parity diff and feedback events, haptics 8.0.2, frame-spread texture baking, `PieceView` renderer, overlap and preview effects, `FeedbackDirector`, 1800 ms victory sequence, F1 integration) and `2026-10-03-f3-motion-acceptance.md` (9 tasks: perf stats and recorder, dev tool flags, rotation fixture, director measurement hooks, autosolve scripts, overlay and time scale, demo runner, acceptance records, Claude's automated and desktop pass).

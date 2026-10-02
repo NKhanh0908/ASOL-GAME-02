@@ -25,7 +25,9 @@
 ## Vị trí trong loạt plan
 
 - **Nhánh:** `feat/motion-f3`, tách từ `feat/motion-f2`.
-- **Chạy sau:** plan F1 (`2026-10-03-f1-scene-transitions.md`) và plan F2 (`2026-10-03-f2-in-level-game-feel.md`).
+- **Chạy sau:** F1 (`2026-10-03-f1-1-nen-tang.md` → `f1-2-director.md` → `f1-3-dan-dung.md`) và F2 (`2026-10-03-f2-1-logic.md` → `f2-2-renderer.md` → `f2-3-phan-hoi.md`).
+
+Chỉ mục: `docs/superpowers/plans/2026-10-03-f-motion-index.md`
 - **Dùng từ F1:** `director` với `go`, `boot`, `skip`, `isTransitioning`; `TransitionTimeline`; `TRANSITION_TOKENS`; `RouteId`; `setMotionScale`; `resolveLaunch`.
 - **Dùng từ F2** (tên theo spec F2 mục 2 và 6): `feedbackEvents(prev, transition, level, subject: FeedbackSubject)` trong `src/presentation/feedback/feedbackEvents.ts`, `FeedbackDirector` trong `src/presentation/feedback/FeedbackDirector.ts`, `PieceTextureCache` trong `src/presentation/PieceTextureCache.ts`. Task 4 thêm hook lên hai module sau. **Trước Task 4, đối chiếu tên với plan F2 đã merge.** Nếu F2 đặt tên khác thì giữ tên của F2 và sửa lại các chỗ dùng trong plan này.
 - **Giả định về F2:** `PlayScene.update(_time, delta)` chuyển đúng một biến `delta` cho mọi tick của F2 (`boardRenderer.tick`, timeline của `FeedbackDirector`). Task 6 nhân `delta` với hệ số dev tại đúng dòng đó.
