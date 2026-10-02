@@ -1,5 +1,7 @@
 import type { Piece, PieceState } from '../domain/model.ts';
 import { GRID_HEIGHT, GRID_WIDTH } from '../domain/model.ts';
+import { effectiveOrientation, shapePolygon } from '../domain/shapes.ts';
+import type { Vertex } from '../domain/shapes.ts';
 import { LAYOUT_TOKENS } from './designTokens.ts';
 
 export type LayoutMetrics = {
@@ -88,7 +90,8 @@ export function pieceHitbox(
   piece: Piece,
   state: PieceState,
   layout: LayoutMetrics,
-  pieceIndexInTray: number = 0
+  pieceIndexInTray: number = 0,
+  trayCount: number = 2
 ): { x: number; y: number; width: number; height: number } {
   const rawSize = piece.frameSize * layout.cellPixel;
   const minTouchSize = 48; // Chuẩn tối thiểu 48 dp cho touch target
@@ -115,16 +118,18 @@ export function pieceHitbox(
     };
   }
 
-  // Tray: sắp xếp các mảnh ngang nhau trong khay
-  const slotWidth = layout.trayBounds.width / 2;
+  // Tray: chia đều bề ngang khay theo số mảnh của màn. Hitbox không rộng quá
+  // một ô để mảnh cạnh nhau không giành nhau cú chạm.
+  const slotWidth = traySlotWidth(layout, trayCount);
+  const traySize = Math.max(Math.min(rawSize, slotWidth), minTouchSize);
   const centerX = layout.trayBounds.x + slotWidth * pieceIndexInTray + slotWidth / 2;
   const centerY = layout.trayBounds.y + layout.trayBounds.height / 2;
 
   return {
-    x: centerX - size / 2,
-    y: centerY - size / 2,
-    width: size,
-    height: size,
+    x: centerX - traySize / 2,
+    y: centerY - traySize / 2,
+    width: traySize,
+    height: traySize,
   };
 }
 
@@ -156,7 +161,69 @@ export function pieceRadiusPx(frameSize: number, layout: LayoutMetrics): number 
  * Khay thấp hơn bàn nhiều nên không dùng chung bán kính được: mảnh 48 ô ở
  * 5px/ô cao 240px, trong khi khay chỉ cao 160px và sẽ bị tràn. Chừa 16px
  * đệm trên dưới cho mảnh không chạm mép khung kính.
+ * Khi khay chia nhiều ô, bán kính còn bị giới hạn bởi nửa bề rộng ô.
  */
-export function trayPieceRadiusPx(layout: LayoutMetrics): number {
-  return layout.trayBounds.height / 2 - 16;
+export function trayPieceRadiusPx(layout: LayoutMetrics, trayCount: number = 2): number {
+  return Math.min(
+    layout.trayBounds.height / 2 - 16,
+    traySlotWidth(layout, trayCount) / 2 - 16
+  );
+}
+
+export type CanvasPoint = { x: number; y: number };
+
+/** Đa giác của mảnh sau `turns` nấc xoay; mảnh không ghi hình (test domain) coi là thoi. */
+function pieceVertices(piece: Piece, turns: number): Vertex[] {
+  const kind = piece.shapeKind ?? 'diamond';
+  const orientation = effectiveOrientation(kind, piece.orientation ?? 0, turns);
+  return shapePolygon(kind, orientation, piece.frameSize);
+}
+
+/** Đa giác thật của mảnh trên bàn, gốc khung tại (originX, originY) ô logic. */
+export function piecePolygonCanvas(
+  piece: Piece,
+  originX: number,
+  originY: number,
+  turns: number,
+  layout: LayoutMetrics
+): CanvasPoint[] {
+  return pieceVertices(piece, turns).map((v) => gridToCanvas(originX + v.x, originY + v.y, layout));
+}
+
+/** Cùng hình nhưng đặt tâm khung tại (cx, cy), cạnh khung framePx pixel — cho khay và mảnh đang kéo. */
+export function piecePolygonAround(
+  piece: Piece,
+  turns: number,
+  cx: number,
+  cy: number,
+  framePx: number
+): CanvasPoint[] {
+  const s = piece.frameSize;
+  return pieceVertices(piece, turns).map((v) => ({
+    x: cx + (v.x / s - 0.5) * framePx,
+    y: cy + (v.y / s - 0.5) * framePx,
+  }));
+}
+
+export function traySlotWidth(layout: LayoutMetrics, trayCount: number): number {
+  return layout.trayBounds.width / Math.max(1, trayCount);
+}
+
+/**
+ * Ô lõm trong khay: lề 16px hai bên, khe 16px giữa các ô, đệm 14px trên dưới.
+ * Với 2 ô cho đúng vị trí ô lõm của bản trước.
+ */
+export function trayWellRects(
+  layout: LayoutMetrics,
+  trayCount: number
+): Array<{ x: number; y: number; width: number; height: number }> {
+  const n = Math.max(1, trayCount);
+  const gap = 16;
+  const width = (layout.trayBounds.width - gap * (n + 1)) / n;
+  return Array.from({ length: n }, (_, i) => ({
+    x: layout.trayBounds.x + gap + i * (width + gap),
+    y: layout.trayBounds.y + 14,
+    width,
+    height: layout.trayBounds.height - 28,
+  }));
 }
