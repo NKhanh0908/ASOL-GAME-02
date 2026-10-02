@@ -5,6 +5,9 @@ import { campaignManifest } from '../src/content/manifest.ts';
 import { buildLevelDocument } from '../src/content/authoring.ts';
 import type { LevelSource } from '../src/content/authoring.ts';
 
+/** Các màn đã có dữ liệu ngoài 1-1; trạng thái phải là validated hoặc approved */
+const AUTHORED_LEVELS = new Set(['1-2', '1-3', '1-4', '1-5', '1-6']);
+
 describe('Level Content and Validation', () => {
   test('không đổi target theo nghiệm nhập sai', () => {
     const doc = makeAdjacentFixture();
@@ -84,8 +87,12 @@ describe('Level Content and Validation', () => {
     expect(campaignManifest.length).toBe(18);
     expect(campaignManifest[0].id).toBe('1-1');
     expect(campaignManifest[0].status).toBe('approved');
-    for (let i = 1; i < campaignManifest.length; i++) {
-      expect(campaignManifest[i].status).toBe('planned');
+    for (const entry of campaignManifest.slice(1)) {
+      if (AUTHORED_LEVELS.has(entry.id)) {
+        expect(['validated', 'approved']).toContain(entry.status);
+      } else {
+        expect(entry.status).toBe('planned');
+      }
     }
   });
 });

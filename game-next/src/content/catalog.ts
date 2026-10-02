@@ -1,10 +1,20 @@
 import songTinh from './levels/1-1.json';
+import baoThap from './levels/1-2.json';
+import canhChim from './levels/1-3.json';
+import haiDang from './levels/1-4.json';
+import thuyenSao from './levels/1-5.json';
+import vuongMien from './levels/1-6.json';
 import { campaignManifest } from './manifest.ts';
 import { validateLevel } from './validate.ts';
 import type { Level } from '../domain/model.ts';
 
 const documents: Record<string, unknown> = {
   '1-1': songTinh,
+  '1-2': baoThap,
+  '1-3': canhChim,
+  '1-4': haiDang,
+  '1-5': thuyenSao,
+  '1-6': vuongMien,
 };
 
 /**

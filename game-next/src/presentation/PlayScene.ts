@@ -3,7 +3,7 @@ import type { Level } from '../domain/model.ts';
 import { GRID_WIDTH, GRID_HEIGHT } from '../domain/model.ts';
 import { loadLevel } from '../content/catalog.ts';
 import { campaignManifest } from '../content/manifest.ts';
-import { nextLevelId } from '../domain/campaign.ts';
+import { furthestLevelId, nextLevelId } from '../domain/campaign.ts';
 import { createProgressRepository } from '../infrastructure/progressRepository.ts';
 import { PlayController } from '../application/playController.ts';
 import { BoardRenderer } from './BoardRenderer.ts';
@@ -36,14 +36,22 @@ export class PlayScene extends Phaser.Scene {
   private pauseDialog!: PauseDialog;
   private sky!: SkyBackdrop;
   private celebrationContainer: Phaser.GameObjects.Container | null = null;
+  private previewCompletedThrough?: string;
 
   constructor() {
     super({ key: 'PlayScene' });
   }
 
-  init(data: { levelId?: string; mode?: 'campaign' | 'harness' }): void {
+  init(data: {
+    levelId?: string;
+    mode?: 'campaign' | 'harness';
+    previewCompletedThrough?: string;
+  }): void {
     const levelId = data.levelId ?? '1-1';
     this.mode = data.mode ?? 'campaign';
+    this.previewCompletedThrough = this.mode === 'harness'
+      ? data.previewCompletedThrough
+      : undefined;
     try {
       this.level = loadLevel(levelId, this.mode);
     } catch (err) {
@@ -90,7 +98,7 @@ export class PlayScene extends Phaser.Scene {
         this.refreshView();
       },
       onLevelSelect: () => {
-        this.scene.start('LevelSelectScene');
+        this.openLevelSelect();
       },
     });
 
@@ -120,7 +128,7 @@ export class PlayScene extends Phaser.Scene {
         this.refreshView();
       },
       onLevelSelect: () => {
-        this.scene.start('LevelSelectScene');
+        this.openLevelSelect();
       },
       onNextLevel: () => {
         const nextId = nextLevelId(campaignManifest, this.level.id);
@@ -128,7 +136,17 @@ export class PlayScene extends Phaser.Scene {
           try {
             // Kiểm tra đúng chế độ: campaign về menu nếu màn kế chưa approved.
             loadLevel(nextId, this.mode);
-            this.scene.start('PlayScene', { levelId: nextId, mode: this.mode });
+            this.scene.start('PlayScene', {
+              levelId: nextId,
+              mode: this.mode,
+              previewCompletedThrough: this.mode === 'harness'
+                ? furthestLevelId(
+                    campaignManifest,
+                    this.previewCompletedThrough,
+                    this.level.id
+                  )
+                : undefined,
+            });
           } catch {
             this.scene.start('MenuScene');
           }
@@ -345,6 +363,22 @@ export class PlayScene extends Phaser.Scene {
       this.celebrationContainer.destroy();
       this.celebrationContainer = null;
     }
+  }
+
+  private openLevelSelect(): void {
+    const justCompleted = this.controller?.getSnapshot().phase === 'won'
+      ? this.level.id
+      : undefined;
+    this.scene.start('LevelSelectScene', {
+      mode: this.mode,
+      previewCompletedThrough: this.mode === 'harness'
+        ? furthestLevelId(
+            campaignManifest,
+            this.previewCompletedThrough,
+            justCompleted
+          )
+        : undefined,
+    });
   }
 
   public onHardwareBack(): void {

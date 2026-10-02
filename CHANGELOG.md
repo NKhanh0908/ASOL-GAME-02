@@ -22,6 +22,95 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 - Added draft previews `docs/testing/levels/drafts/chapter-2-draft.png` and `hoa-pham-draft.png`.
 - Verification: every level coordinate, solution count, hollow and revived cell count computed by an independent scratch prototype (16 levels, each with exactly one solution and up to three decoy anchors per piece); spec self-review for cross-spec consistency; no runtime code changed.
 
+### 2026-10-02 - Approve level 1-6 Vuong Mien Binh Minh
+
+- Set `1-6` to `approved` (`vuong-mien-v1`) in `game-next/src/content/manifest.ts`, added `docs/testing/mirror-rebuild/1-6-content-review.md` and updated `docs/testing/levels/chapter-1-review.md`.
+- Verification: `npm run typecheck`, `npm test` and `npm run content:validate` passed; reviewer approved 1-3 to 1-6 together.
+
+### 2026-10-02 - Approve level 1-5 Chiec Thuyen Sao
+
+- Set `1-5` to `approved` (`thuyen-sao-v1`) in `game-next/src/content/manifest.ts`, added `docs/testing/mirror-rebuild/1-5-content-review.md` and updated `docs/testing/levels/chapter-1-review.md`.
+- Verification: `npm run typecheck`, `npm test` and `npm run content:validate` passed; reviewer approved 1-3 to 1-6 together.
+
+### 2026-10-02 - Approve level 1-4 Ngon Hai Dang
+
+- Set `1-4` to `approved` (`hai-dang-v1`) in `game-next/src/content/manifest.ts`, added `docs/testing/mirror-rebuild/1-4-content-review.md` and updated `docs/testing/levels/chapter-1-review.md`.
+- Verification: `npm run typecheck`, `npm test` and `npm run content:validate` passed; reviewer approved 1-3 to 1-6 together.
+
+### 2026-10-02 - Approve level 1-3 Canh Chim Bao Diem
+
+- Set `1-3` to `approved` (`canh-chim-v1`) in `game-next/src/content/manifest.ts`, added `docs/testing/mirror-rebuild/1-3-content-review.md` and updated `docs/testing/levels/chapter-1-review.md`.
+- Verification: `npm run typecheck`, `npm test` and `npm run content:validate` passed; reviewer approved 1-3 to 1-6 together.
+- Changed `game-next/tests/levelSelect.test.ts` to use a mock manifest with 1-3 as `validated`, so the harness-vs-campaign check no longer depends on real approval statuses.
+
+### 2026-10-02 - Synchronize harness progress with the constellation map
+
+- Added a transient harness preview trail so levels completed while reviewing validated content appear completed on the map and advance the current node.
+- Made validated levels playable from the map only in harness mode, while campaign continues to require approved content and retain its persisted progress unchanged.
+- Preserved the furthest harness preview when replaying an earlier level and forwarded harness mode through map and next-level navigation.
+- Verification: two map synchronization regressions and the replay regression failed before implementation; all 31 focused tests and all 243 tests across 30 files then passed; content validation and production build passed. Chrome snapshots remained unused under the user waiver. Vite retained its existing large-chunk advisory.
+
+### 2026-10-02 - Fix Vietnamese level titles and long HUD text
+
+- Switched level names in the play header and victory card from Playfair Display to a Vietnamese-complete Be Vietnam Pro stack with system fallbacks.
+- Fit long header titles into the 448px safe area between navigation controls, with a 32px minimum size.
+- Reduced victory verse text to 18px so two-line verses retain space from the level title and action buttons.
+- Verification: two HUD regressions failed before implementation, then all 19 focused HUD/token tests and all 240 tests across 30 files passed; typecheck and production build passed. Chrome snapshots remained unused under the user waiver. Vite retained its existing large-chunk advisory.
+
+### 2026-10-02 - Approve level 1-2 Bao Thap Tien Tri
+
+- Promoted `bao-thap-v1` from `validated` to `approved` after direct harness review by NKhanh0908: “ok ngon nha”.
+- Updated campaign navigation and catalog expectations so completing 1-1 unlocks the playable 1-2 successor.
+- Added the 1-2 content review record and updated the Chapter 1 review index.
+- Verification: the four stale pre-approval expectations failed after promotion, then 50 focused tests and all 238 tests across 30 files passed; typecheck and content validation also passed.
+
+### 2026-10-02 - Update GDD chapter 1 level sheets and add review index
+
+- Updated the GDD geometry, anchors, shape orientations and piece lists for Chapter 1 levels 1-1 through 1-6.
+- Added a review index linking every SVG preview, solution report and direct development harness URL.
+- Recorded the user-requested Chrome snapshot waiver; visual acceptance is performed directly in the harness.
+
+### 2026-10-02 - Add level 1-6 Vuong Mien Binh Minh (validated)
+
+- Added the authored source, generated artifacts and content regressions for the two wings and center diamond in level 1-6.
+- Registered `vuong-mien-v1` for harness play in `validated` state.
+- Verification: the focused test first failed because 1-6 had no source; authoring produced 3,456 target cells, one solution and no fewer-piece solution; all six authored levels regenerated successfully; typecheck, all 238 tests across 30 files and content validation passed.
+
+### 2026-10-02 - Add level 1-5 Chiec Thuyen Sao (validated)
+
+- Added the authored source, generated artifacts and content regressions for the square hull, bow and sail in level 1-5.
+- Registered `thuyen-sao-v1` for harness play in `validated` state.
+- Verification: the focused test first failed because 1-5 had no source; authoring produced 4,560 target cells, one solution and no fewer-piece solution; typecheck, all 231 tests across 30 files and content validation passed.
+
+### 2026-10-02 - Add level 1-4 Ngon Hai Dang (validated)
+
+- Added the authored source, generated artifacts and content regressions for the three-tier lighthouse in level 1-4.
+- Registered `hai-dang-v1` for harness play in `validated` state.
+- Verification: the focused test first failed because 1-4 had no source; authoring produced 4,032 target cells, one solution and no fewer-piece solution; typecheck, all 224 tests across 30 files and content validation passed.
+
+### 2026-10-02 - Add level 1-3 Canh Chim Bao Diem (validated)
+
+- Added the authored source, generated artifacts and content regressions for the two mirrored wing triangles in level 1-3.
+- Registered `canh-chim-v1` for harness play in `validated` state.
+- Verification: the focused test first failed because 1-3 had no source; authoring produced 2,304 target cells, one solution and no fewer-piece solution; typecheck, all 217 tests across 30 files and content validation passed.
+
+### 2026-10-02 - Add level 1-2 Bao Thap Tien Tri (validated)
+
+- Added the authored source, generated JSON, SVG preview and solution report for level 1-2 with one square and one roof triangle.
+- Registered `bao-thap-v1` for harness play in `validated` state and added shared Chapter 1 content regressions.
+- Verification: the focused test first failed because 1-2 had no source; authoring produced 2,880 target cells, one solution and no fewer-piece solution; typecheck, all 210 tests across 30 files and content validation passed.
+
+### 2026-10-02 - Add 1-1 renderer evidence screenshots
+
+- Added `docs/testing/levels/screens/1-1-{play,drag,win}.png`, captured with `game-next/scripts/shoot-level.sh` after the polygon renderer, parity overlap and N-slot tray changes (plan phase 2, Task 8 evidence).
+- Verification: reviewed all three captures (target silhouette, tray wells, drag shadow with snap label, victory card); `npm run typecheck`, `npm test` (203 passed), `npm run content:validate` and `npm run build` green.
+
+### 2026-10-02 - Remove the faint victory-center sparkle
+
+- Removed the small four-ray sparkle from `game-next/src/presentation/BoardRenderer.ts` after manual acceptance feedback; the board pulse, camera flash and resonance rings remain.
+- Updated `game-next/tests/boardRendererLayers.test.ts` to reject the removed white sparkle while preserving victory-layer ordering.
+- Verification: focused renderer-layer regression failed before the change and passed afterward; `npm run typecheck`, all 203 tests across 29 files, and `npm run build` passed. Vite retained its existing large-chunk advisory.
+
 ### 2026-10-02 - Add dev-only harness mode via URL
 
 - Added a tested launch resolver: URL harness mode is enabled only in development; production launches use campaign mode.
