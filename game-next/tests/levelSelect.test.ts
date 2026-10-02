@@ -45,8 +45,13 @@ describe('Constellation Map Layout Generator', () => {
   });
 
   test('harness coi level validated là có thể chơi nhưng campaign thì không', () => {
-    expect(levelAccess(campaignManifest, ['1-1', '1-2'], '1-3', 'campaign').available).toBe(false);
-    expect(levelAccess(campaignManifest, ['1-1', '1-2'], '1-3', 'harness').available).toBe(true);
+    // Manifest giả có 1-3 ở trạng thái validated, để test không phụ thuộc
+    // trạng thái duyệt thật của campaign (1-3 đã approved sau Task 16).
+    const manifest = campaignManifest.map((entry) =>
+      entry.id === '1-3' ? { ...entry, status: 'validated' as const } : entry
+    );
+    expect(levelAccess(manifest, ['1-1', '1-2'], '1-3', 'campaign').available).toBe(false);
+    expect(levelAccess(manifest, ['1-1', '1-2'], '1-3', 'harness').available).toBe(true);
   });
 
   test('bản đồ harness hiển thị tiến độ preview tới màn vừa thắng mà không đổi campaign', () => {

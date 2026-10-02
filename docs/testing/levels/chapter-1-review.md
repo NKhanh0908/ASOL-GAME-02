@@ -8,7 +8,7 @@ Chơi thử trên dev server: `cd game-next && npm run dev`, rồi mở đườn
 |---|---|---|---|---|
 | 1-1 Song Tinh | approved (`song-tinh-v2`) | [1-1.svg](1-1.svg) | [1-1-report.md](1-1-report.md) | [harness](http://localhost:5173/?scene=play&level=1-1&mode=harness) |
 | 1-2 Bảo Tháp Tiên Tri | approved (`bao-thap-v1`) | [1-2.svg](1-2.svg) | [1-2-report.md](1-2-report.md) | [harness](http://localhost:5173/?scene=play&level=1-2&mode=harness) |
-| 1-3 Cánh Chim Báo Điềm | validated | [1-3.svg](1-3.svg) | [1-3-report.md](1-3-report.md) | [harness](http://localhost:5173/?scene=play&level=1-3&mode=harness) |
+| 1-3 Cánh Chim Báo Điềm | approved (`canh-chim-v1`) | [1-3.svg](1-3.svg) | [1-3-report.md](1-3-report.md) | [harness](http://localhost:5173/?scene=play&level=1-3&mode=harness) |
 | 1-4 Ngọn Hải Đăng | validated | [1-4.svg](1-4.svg) | [1-4-report.md](1-4-report.md) | [harness](http://localhost:5173/?scene=play&level=1-4&mode=harness) |
 | 1-5 Chiếc Thuyền Sao | validated | [1-5.svg](1-5.svg) | [1-5-report.md](1-5-report.md) | [harness](http://localhost:5173/?scene=play&level=1-5&mode=harness) |
 | 1-6 Vương Miện Bình Minh | validated | [1-6.svg](1-6.svg) | [1-6-report.md](1-6-report.md) | [harness](http://localhost:5173/?scene=play&level=1-6&mode=harness) |
