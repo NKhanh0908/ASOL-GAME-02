@@ -1,10 +1,7 @@
 import Phaser from 'phaser';
 import type { Level, Piece, PieceState } from '../domain/model.ts';
-import { GRID_WIDTH, GRID_HEIGHT } from '../domain/model.ts';
-import { maskCentroid } from '../domain/mask.ts';
 import type { LayoutMetrics } from './layout.ts';
 import {
-  gridToCanvas,
   pieceHitbox,
   pieceCenterCanvas,
   piecePolygonAround,
@@ -239,7 +236,7 @@ export class BoardRenderer {
     // Trạng thái 5: Hoàn thành (Victory Celebration)
     if (snapshot.phase === 'won') {
       this.victoryPulse += delta * 0.004;
-      this.drawVictoryCelebration(level);
+      this.drawVictoryCelebration();
     }
   }
 
@@ -387,14 +384,7 @@ export class BoardRenderer {
   /**
    * Trạng thái 5: Hoàn thành (Victory Celebration)
    */
-  private drawVictoryCelebration(level: Level): void {
-    // Ngôi sao 4 cánh lấp lánh tại trọng tâm hình mục tiêu
-    const centroid = maskCentroid(level.targetMask) ?? { x: GRID_WIDTH / 2, y: GRID_HEIGHT / 2 };
-    const contact = gridToCanvas(centroid.x, centroid.y, this.layout);
-
-    const sparkleSize = 16 + Math.sin(this.victoryPulse) * 4;
-    this.drawSparkleStar(this.fxGraphics, contact.x, contact.y, sparkleSize, 0xffffff, COLOR_NUMBERS.amberSolid);
-
+  private drawVictoryCelebration(): void {
     // Vệt sáng chạy quanh viền tấm bia
     const { boardBounds } = this.layout;
     this.fxGraphics.lineStyle(2.5, COLOR_NUMBERS.amberGlow, 0.6 + Math.sin(this.victoryPulse) * 0.3);
@@ -405,27 +395,6 @@ export class BoardRenderer {
       boardBounds.height + 4,
       38
     );
-  }
-
-  private drawSparkleStar(
-    g: Phaser.GameObjects.Graphics,
-    x: number,
-    y: number,
-    size: number,
-    coreColor: number,
-    rayColor: number
-  ): void {
-    g.lineStyle(2, rayColor, 0.9);
-    g.lineBetween(x, y - size, x, y + size);
-    g.lineBetween(x - size, y, x + size, y);
-
-    const small = size * 0.5;
-    g.lineStyle(1, rayColor, 0.6);
-    g.lineBetween(x - small, y - small, x + small, y + small);
-    g.lineBetween(x - small, y + small, x + small, y - small);
-
-    g.fillStyle(coreColor, 1);
-    g.fillCircle(x, y, 3.5);
   }
 
   public destroy(): void {

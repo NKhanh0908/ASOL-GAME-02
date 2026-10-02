@@ -4,6 +4,12 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-02 - Remove the faint victory-center sparkle
+
+- Removed the small four-ray sparkle from `game-next/src/presentation/BoardRenderer.ts` after manual acceptance feedback; the board pulse, camera flash and resonance rings remain.
+- Updated `game-next/tests/boardRendererLayers.test.ts` to reject the removed white sparkle while preserving victory-layer ordering.
+- Verification: focused renderer-layer regression failed before the change and passed afterward; `npm run typecheck`, all 203 tests across 29 files, and `npm run build` passed. Vite retained its existing large-chunk advisory.
+
 ### 2026-10-02 - Add dev-only harness mode via URL
 
 - Added a tested launch resolver: URL harness mode is enabled only in development; production launches use campaign mode.

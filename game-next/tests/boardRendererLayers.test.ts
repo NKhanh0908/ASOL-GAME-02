@@ -57,10 +57,11 @@ describe('BoardRenderer thứ tự lớp khi kéo qua vùng giao', () => {
     const moving = mode === 'dragging'
       ? draws.find((draw) => draw.method === 'fillPoints' && draw.color === 0x000000)!
       : draws.find((draw) => draw.method === 'strokeCircle' && draw.args[2] === 4)!;
-    const victory = draws.find((draw) => draw.method === 'fillCircle' && draw.color === 0xffffff)!;
+    const victory = draws.find((draw) => draw.method === 'strokeRoundedRect')!;
     expect(parity).toBeDefined();
     expect(moving).toBeDefined();
     expect(victory).toBeDefined();
+    expect(draws.some((draw) => draw.method === 'fillCircle' && draw.color === 0xffffff)).toBe(false);
     expect(parity.depth).toBeLessThan(moving.depth);
     expect(draws.some((draw) => draw.method === 'fillPoints' &&
       draw.color === COLOR_NUMBERS.jewelFaceNorth && draw.depth === moving.depth)).toBe(true);
