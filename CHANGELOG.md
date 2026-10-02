@@ -4,6 +4,13 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-03 - Add implementation plans F2 and F3 and record plan-time spec corrections
+
+- Added `docs/superpowers/plans/2026-10-03-f2-in-level-game-feel.md` (10 tasks: mask caching, pose smoothing, parity diff and feedback events, haptics 8.0.2, frame-spread texture baking, `PieceView` renderer, overlap and preview effects, `FeedbackDirector`, 1800 ms victory sequence, F1 integration) and `2026-10-03-f3-motion-acceptance.md` (9 tasks: perf stats and recorder, dev tool flags, rotation fixture, director measurement hooks, autosolve scripts, overlay and time scale, demo runner, acceptance records, Claude's automated and desktop pass).
+- Reconciled the plans: F3 alone owns the measurement hooks (`onWindow` on both directors, `pieceTextureBytes.ts`) and calls F2's `handle`, `playVictory` and four-argument `feedbackEvents`.
+- Appended plan-time corrections to specs F2 (measured texture memory 0.74 MiB per piece and orientation, no separate ghost texture, black/white shadow textures instead of `setTintFill`, 25% padding, `feedbackEvents` subject, 600 ms resonance rings) and F3 (1-3 for the overlap demo, three-piece chapter-3 rotation fixture, rotation button driven by `rotationEnabled`, director time scale, harness under `VITE_MOTION_TOOLS`).
+- Verification: texture sizes computed from every `frameSize` in `game-next/src/content/levels/*.json`; `@capacitor/haptics` versions read with `npm view`; cross-plan interface names checked by grep; placeholder scan; no runtime code changed.
+
 ### 2026-10-03 - Add implementation plan F1 and correct the next-level timing
 
 - Added `docs/superpowers/plans/2026-10-03-f1-scene-transitions.md` (10 tasks): motion primitives, self-clocked timeline, step-table choreography and route tables, persisted reduced motion, sky moods with a persistent `BackgroundScene`, `SceneDirector` with a source gate on `scene.start`, then menu, map and play choreography.

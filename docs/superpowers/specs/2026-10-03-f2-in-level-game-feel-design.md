@@ -242,3 +242,18 @@ Sau F2, tuyến `menu-to-play` của F1 (mốc 950–1350) cho từng mảnh rơ
   - Plan phải đo kích thước thật của từng màn trước khi chốt.
 - **`setTintFill` trên Canvas renderer** không hỗ trợ. Bóng đổ và lớp sáng cần texture riêng (đen và trắng), vẽ cùng lúc. Chọn nhánh theo `renderer.type`.
 - **Xem trước vùng giao khi kéo** dùng `parityLayers` trên tối đa 6 đa giác. Chỉ tính lại khi neo ứng viên đổi, nên chi phí mỗi khung gần 0. Nếu đo thấy tốn thì bỏ tính năng này, không ảnh hưởng phần còn lại.
+
+## 9. Điều chỉnh khi viết plan (2026-10-03)
+
+Phát hiện khi đối chiếu với code thật; plan `2026-10-03-f2-in-level-game-feel.md` đã theo các điểm này và thay cho các chỗ tương ứng ở mục 2, 4 và 8.
+
+1. **Bộ nhớ đo thật:** mọi mảnh 1-1 → 1-6 có `frameSize` 48 và không màn nào cho xoay; mỗi (mảnh × hướng) tốn 0,742 MiB, màn nặng nhất 2,22 MiB. Ước tính 40 MB ở mục 8 là cho trường hợp giả định khung 64 với 6 mảnh xoay đủ (31,6 MiB, tự hạ độ phân giải 0,75 còn 17,8 MiB, dưới ngưỡng 24 MB của F3).
+2. Không cần texture `ghost` riêng: `ghost` chỉ khác `solid` ở alpha 0.75.
+3. Bóng đổ và lớp chớp sáng là texture đen/trắng vẽ ở nửa độ phân giải cho cả WebGL lẫn Canvas, nên không dùng `setTintFill` và không rẽ nhánh theo `renderer.type`.
+4. Lề texture là 25% mỗi phía (không phải 22%): hào quang phóng 1,22 lần quanh trọng tâm tràn khoảng 0,165 cạnh khung với tam giác vuông.
+5. Texture không vẽ trong `create()`: `update()` vẽ một mảnh mỗi khung, xong trước mốc 950 ms khi mảnh rơi vào khay (giữ ngưỡng P-04 của F3).
+6. `feedbackEvents` nhận thêm `subject: { command: 'move' | 'rotate' | 'reset'; pieceId: string | null }`, vì lệnh xoay bị từ chối không mang id mảnh.
+7. Vòng cộng hưởng lúc thắng rút còn 600 ms để chuỗi kết thúc đúng 1800 ms.
+8. Vệt sáng lúc thắng chạy quanh từng placement của nghiệm mẫu (chưa có phép hợp đa giác); ở Chương 1 kết quả như nhau.
+9. Bóng đổ alpha 0 khi không nhấc (thay vì 0.2), để không làm tối mép vùng giao.
+10. `@capacitor/haptics` chọn bản 8.0.2 (peer `@capacitor/core >=8.0.0`).

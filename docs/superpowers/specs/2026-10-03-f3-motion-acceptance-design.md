@@ -26,7 +26,7 @@ Mọi tham số chỉ có hiệu lực khi `import.meta.env.DEV`, được đọ
 | `demo=<route>` | Sau khi khởi động, tự chạy một tuyến của F1 (`menu-to-play`, `map-to-play`, `next-level`, `play-to-map`, `play-to-menu`, `menu-to-map`, `map-to-menu`) |
 | `loop=1` | Đi cùng `demo`: chạy xong thì quay về cảnh nguồn không animation, nghỉ 600 ms rồi lặp lại |
 | `autosolve=<kịch bản>` | Mở rộng `win` và `drag` hiện có: thêm `snap`, `return`, `rotate`, `rotate-blocked`, `overlap-hollow`, `overlap-revive`, `reset`. Mỗi kịch bản là chuỗi pointer giả cách nhau 400 ms, chạy trên màn trong `level`. `rotate` và `rotate-blocked` cần `level=fixture-rotate` |
-| `level=fixture-rotate` | Màn fixture chỉ có ở dev (`makeRotationFixture()` trong `content/fixtures.ts`): `rotationEnabled: true`, hai tam giác. Một tam giác có neo sát mép phải bia, nên xoay ở neo đó bị `out-of-bounds`. Lý do: cả 6 màn Chương 1 đều có `rotationEnabled: false`, nên không kiểm được T2-08 và T2-09 trên màn thật. Fixture không vào `campaignManifest` và bị chặn ở build thường (R-04) |
+| `level=fixture-rotate` | Màn fixture chỉ có ở dev (`makeRotationFixture()` trong `content/fixtures.ts`): Chương 3, `rotationEnabled: true`, hai tam giác và một hình vuông (khung 32). Một tam giác có neo sát mép phải bia, nên xoay ở neo đó bị `out-of-bounds`; hình vuông có neo tạo giao 3 lớp cho T2-10. Lý do: cả 6 màn Chương 1 đều có `rotationEnabled: false`, nên không kiểm được T2-08 và T2-09 trên màn thật. Fixture không vào `campaignManifest` và bị chặn ở build thường (R-04) |
 | `perf=1` | Ghi thời gian từng khung trong mỗi cửa sổ hiệu ứng: từ lúc tuyến hoặc sự kiện bắt đầu tới khi tween cuối xong. Hết cửa sổ thì in một dòng JSON ra console và đẩy vào `window.__motionPerf` |
 
 Dòng JSON của `perf=1`:
@@ -42,7 +42,7 @@ Phần tính toán nằm trong `src/presentation/dev/perfStats.ts` (logic thuầ
 - Soi chuyển cảnh chậm: `/?demo=menu-to-play&loop=1&motion=0.25`
 - Đo chuyển cảnh: `/?demo=menu-to-play&loop=1&perf=1&fps=1`
 - Đo chuỗi thắng: `/?scene=play&level=1-6&mode=harness&autosolve=win&perf=1&fps=1`
-- Soi vùng giao: `/?scene=play&level=1-1&mode=harness&autosolve=overlap-hollow&motion=0.25`
+- Soi vùng giao: `/?scene=play&level=1-3&mode=harness&autosolve=overlap-hollow&motion=0.25`
 
 ## 3. Ngưỡng hiệu năng
 
@@ -189,3 +189,17 @@ Quy tắc:
 - `launchParams.test.ts`: tham số dev có hiệu lực khi `DEV` hoặc `VITE_MOTION_TOOLS`, bị bỏ qua ở build thường. `motion` ngoài [0, 4] bị kẹp về khoảng hợp lệ.
 - `autosolveScripts.test.ts`: chạy mỗi kịch bản trên `PlayController` thật (không cần Phaser) và kiểm `feedbackEvents` sinh ra đúng sự kiện mà kịch bản nhắm tới, ví dụ `rotate-blocked` trên `fixture-rotate` sinh `rotate-blocked`.
 - `content.test.ts`: `makeRotationFixture()` qua validator, và xoay ở neo sát mép trả `out-of-bounds`.
+
+## 9. Điều chỉnh khi viết plan (2026-10-03)
+
+Phát hiện khi đối chiếu với code thật; plan `2026-10-03-f3-motion-acceptance.md` đã theo các điểm này.
+
+1. Màn 1-1 không có neo nào làm hai mảnh chồng nhau, nên đường dẫn mẫu soi vùng giao dùng 1-3 (mục 2 đã sửa).
+2. Không màn Chương 1 nào có giao 3 lớp. `fixture-rotate` có thêm một hình vuông để kiểm T2-10 (mục 2 đã sửa).
+3. Validator cấm `rotationEnabled` ở Chương 1–2 (`chapter-rotation-disabled`), nên fixture thuộc Chương 3 và chỉ nạp ở mode harness.
+4. `Hud` ẩn nút Xoay theo số chương lấy từ id màn. Plan đổi sang đọc `rotationEnabled` của màn, nên `Hud.ts` thuộc danh sách file thay đổi ở mục 7.
+5. `motion=<số>` cần thêm `SceneDirector.setTimeScale` và nhân `delta` ở tick của F2, vì timeline F1 tự giữ đồng hồ, không chịu `tweens.timeScale`.
+6. APK build với `VITE_MOTION_TOOLS=1` vẫn có `DEV = false`, nên `resolveLaunch` nhận cờ công cụ để bật harness.
+7. R-01 → R-04 được chạy ở cả hai hồ sơ F1 và F2.
+8. Overlay `fps=1` dựng bằng DOM để không bị chuyển cảnh che hay mờ theo camera.
+9. Hook đo do plan F3 thêm vào module F1/F2: `SceneDirector.onWindow`, `FeedbackDirector.onWindow` (cửa sổ tên `event.type`, chuỗi thắng tên `won`) và bộ đếm `pieceTextureBytes.ts`.
