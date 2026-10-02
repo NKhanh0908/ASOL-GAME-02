@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="680" viewBox="0 0 512 680">
+<rect width="512" height="680" fill="#101a4f"/>
+<line x1="0" y1="0" x2="0" y2="640" stroke="#3b56b8" stroke-width="1"/>
+<line x1="32" y1="0" x2="32" y2="640" stroke="#22336f" stroke-width="1"/>
+<line x1="64" y1="0" x2="64" y2="640" stroke="#22336f" stroke-width="1"/>
+<line x1="96" y1="0" x2="96" y2="640" stroke="#3b56b8" stroke-width="1"/>
+<line x1="128" y1="0" x2="128" y2="640" stroke="#22336f" stroke-width="1"/>
+<line x1="160" y1="0" x2="160" y2="640" stroke="#22336f" stroke-width="1"/>
+<line x1="192" y1="0" x2="192" y2="640" stroke="#3b56b8" stroke-width="1"/>
+<line x1="224" y1="0" x2="224" y2="640" stroke="#22336f" stroke-width="1"/>
+<line x1="256" y1="0" x2="256" y2="640" stroke="#22336f" stroke-width="1"/>
+<line x1="288" y1="0" x2="288" y2="640" stroke="#3b56b8" stroke-width="1"/>
+<line x1="320" y1="0" x2="320" y2="640" stroke="#22336f" stroke-width="1"/>
+<line x1="352" y1="0" x2="352" y2="640" stroke="#22336f" stroke-width="1"/>
+<line x1="384" y1="0" x2="384" y2="640" stroke="#3b56b8" stroke-width="1"/>
+<line x1="416" y1="0" x2="416" y2="640" stroke="#22336f" stroke-width="1"/>
+<line x1="448" y1="0" x2="448" y2="640" stroke="#22336f" stroke-width="1"/>
+<line x1="480" y1="0" x2="480" y2="640" stroke="#3b56b8" stroke-width="1"/>
+<line x1="512" y1="0" x2="512" y2="640" stroke="#22336f" stroke-width="1"/>
+<line x1="0" y1="0" x2="512" y2="0" stroke="#3b56b8" stroke-width="1"/>
+<line x1="0" y1="32" x2="512" y2="32" stroke="#22336f" stroke-width="1"/>
+<line x1="0" y1="64" x2="512" y2="64" stroke="#22336f" stroke-width="1"/>
+<line x1="0" y1="96" x2="512" y2="96" stroke="#3b56b8" stroke-width="1"/>
+<line x1="0" y1="128" x2="512" y2="128" stroke="#22336f" stroke-width="1"/>
+<line x1="0" y1="160" x2="512" y2="160" stroke="#22336f" stroke-width="1"/>
+<line x1="0" y1="192" x2="512" y2="192" stroke="#3b56b8" stroke-width="1"/>
+<line x1="0" y1="224" x2="512" y2="224" stroke="#22336f" stroke-width="1"/>
+<line x1="0" y1="256" x2="512" y2="256" stroke="#22336f" stroke-width="1"/>
+<line x1="0" y1="288" x2="512" y2="288" stroke="#3b56b8" stroke-width="1"/>
+<line x1="0" y1="320" x2="512" y2="320" stroke="#22336f" stroke-width="1"/>
+<line x1="0" y1="352" x2="512" y2="352" stroke="#22336f" stroke-width="1"/>
+<line x1="0" y1="384" x2="512" y2="384" stroke="#3b56b8" stroke-width="1"/>
+<line x1="0" y1="416" x2="512" y2="416" stroke="#22336f" stroke-width="1"/>
+<line x1="0" y1="448" x2="512" y2="448" stroke="#22336f" stroke-width="1"/>
+<line x1="0" y1="480" x2="512" y2="480" stroke="#3b56b8" stroke-width="1"/>
+<line x1="0" y1="512" x2="512" y2="512" stroke="#22336f" stroke-width="1"/>
+<line x1="0" y1="544" x2="512" y2="544" stroke="#22336f" stroke-width="1"/>
+<line x1="0" y1="576" x2="512" y2="576" stroke="#3b56b8" stroke-width="1"/>
+<line x1="0" y1="608" x2="512" y2="608" stroke="#22336f" stroke-width="1"/>
+<line x1="0" y1="640" x2="512" y2="640" stroke="#22336f" stroke-width="1"/>
+<path d="M252 96h4v4h-4zM248 100h12v4h-12zM244 104h20v4h-20zM240 108h28v4h-28zM236 112h36v4h-36zM232 116h44v4h-44zM228 120h52v4h-52zM224 124h60v4h-60zM220 128h68v4h-68zM216 132h76v4h-76zM212 136h84v4h-84zM208 140h92v4h-92zM204 144h100v4h-100zM200 148h108v4h-108zM196 152h116v4h-116zM192 156h124v4h-124zM188 160h132v4h-132zM184 164h140v4h-140zM180 168h148v4h-148zM176 172h156v4h-156zM172 176h164v4h-164zM168 180h172v4h-172zM164 184h180v4h-180zM160 188h188v4h-188zM252 192h4v4h-4zM248 196h12v4h-12zM244 200h20v4h-20zM240 204h28v4h-28zM236 208h36v4h-36zM232 212h44v4h-44zM228 216h52v4h-52zM224 220h60v4h-60zM220 224h68v4h-68zM216 228h76v4h-76zM212 232h84v4h-84zM208 236h92v4h-92zM204 240h100v4h-100zM200 244h108v4h-108zM196 248h116v4h-116zM192 252h124v4h-124zM188 256h132v4h-132zM184 260h140v4h-140zM180 264h148v4h-148zM176 268h156v4h-156zM172 272h164v4h-164zM168 276h172v4h-172zM164 280h180v4h-180zM160 284h188v4h-188zM160 288h188v4h-188zM164 292h180v4h-180zM168 296h172v4h-172zM172 300h164v4h-164zM176 304h156v4h-156zM180 308h148v4h-148zM184 312h140v4h-140zM188 316h132v4h-132zM192 320h124v4h-124zM196 324h116v4h-116zM200 328h108v4h-108zM204 332h100v4h-100zM208 336h92v4h-92zM212 340h84v4h-84zM216 344h76v4h-76zM220 348h68v4h-68zM224 352h60v4h-60zM228 356h52v4h-52zM232 360h44v4h-44zM236 364h36v4h-36zM240 368h28v4h-28zM244 372h20v4h-20zM248 376h12v4h-12zM252 380h4v4h-4zM160 384h192v4h-192zM160 388h192v4h-192zM160 392h192v4h-192zM160 396h192v4h-192zM160 400h192v4h-192zM160 404h192v4h-192zM160 408h192v4h-192zM160 412h192v4h-192zM160 416h192v4h-192zM160 420h192v4h-192zM160 424h192v4h-192zM160 428h192v4h-192zM160 432h192v4h-192zM160 436h192v4h-192zM160 440h192v4h-192zM160 444h192v4h-192zM160 448h192v4h-192zM160 452h192v4h-192zM160 456h192v4h-192zM160 460h192v4h-192zM160 464h192v4h-192zM160 468h192v4h-192zM160 472h192v4h-192zM160 476h192v4h-192zM160 480h192v4h-192zM160 484h192v4h-192zM160 488h192v4h-192zM160 492h192v4h-192zM160 496h192v4h-192zM160 500h192v4h-192zM160 504h192v4h-192zM160 508h192v4h-192zM160 512h192v4h-192zM160 516h192v4h-192zM160 520h192v4h-192zM160 524h192v4h-192zM160 528h192v4h-192zM160 532h192v4h-192zM160 536h192v4h-192zM160 540h192v4h-192zM160 544h192v4h-192zM160 548h192v4h-192zM160 552h192v4h-192zM160 556h192v4h-192zM160 560h192v4h-192zM160 564h192v4h-192zM160 568h192v4h-192zM160 572h192v4h-192z" fill="#BFE3FF" fill-opacity="0.35"/>
+<polygon data-piece="R1" points="160,192 352,192 256,96" fill="none" stroke="#FFC857" stroke-width="3"/>
+<polygon data-piece="D1" points="256,192 352,288 256,384 160,288" fill="none" stroke="#7EE0A1" stroke-width="3"/>
+<polygon data-piece="S1" points="160,384 352,384 352,576 160,576" fill="none" stroke="#FF8FA3" stroke-width="3"/>
+<polygon points="192,192 384,192 288,96" fill="none" stroke="#FFC857" stroke-width="2" stroke-dasharray="8 6" stroke-opacity="0.8"/>
+<polygon points="288,192 384,288 288,384 192,288" fill="none" stroke="#7EE0A1" stroke-width="2" stroke-dasharray="8 6" stroke-opacity="0.8"/>
+<polygon points="192,384 384,384 384,576 192,576" fill="none" stroke="#FF8FA3" stroke-width="2" stroke-dasharray="8 6" stroke-opacity="0.8"/>
+<circle cx="160" cy="0" r="4" fill="#FFC857"/>
+<text x="166" y="14" fill="#DDF2FF" font-family="sans-serif" font-size="12">R1.A</text>
+<circle cx="192" cy="0" r="4" fill="#FFC857"/>
+<text x="198" y="14" fill="#DDF2FF" font-family="sans-serif" font-size="12">R1.B</text>
+<circle cx="160" cy="192" r="4" fill="#7EE0A1"/>
+<text x="166" y="206" fill="#DDF2FF" font-family="sans-serif" font-size="12">D1.A</text>
+<circle cx="192" cy="192" r="4" fill="#7EE0A1"/>
+<text x="198" y="206" fill="#DDF2FF" font-family="sans-serif" font-size="12">D1.B</text>
+<circle cx="160" cy="384" r="4" fill="#FF8FA3"/>
+<text x="166" y="398" fill="#DDF2FF" font-family="sans-serif" font-size="12">S1.A</text>
+<circle cx="192" cy="384" r="4" fill="#FF8FA3"/>
+<text x="198" y="398" fill="#DDF2FF" font-family="sans-serif" font-size="12">S1.B</text>
+<text x="8" y="666" fill="#DDF2FF" font-family="sans-serif" font-size="16">1-4 · Ngọn Hải Đăng · hai-dang-v1</text>
+</svg>

@@ -4,6 +4,12 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-02 - Add level 1-4 Ngon Hai Dang (validated)
+
+- Added the authored source, generated artifacts and content regressions for the three-tier lighthouse in level 1-4.
+- Registered `hai-dang-v1` for harness play in `validated` state.
+- Verification: the focused test first failed because 1-4 had no source; authoring produced 4,032 target cells, one solution and no fewer-piece solution; typecheck, all 224 tests across 30 files and content validation passed.
+
 ### 2026-10-02 - Add level 1-3 Canh Chim Bao Diem (validated)
 
 - Added the authored source, generated artifacts and content regressions for the two mirrored wing triangles in level 1-3.

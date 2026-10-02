@@ -6,7 +6,7 @@ import { buildLevelDocument } from '../src/content/authoring.ts';
 import type { LevelSource } from '../src/content/authoring.ts';
 
 /** Các màn đã có dữ liệu ngoài 1-1; trạng thái phải là validated hoặc approved */
-const AUTHORED_LEVELS = new Set(['1-2', '1-3']);
+const AUTHORED_LEVELS = new Set(['1-2', '1-3', '1-4']);
 
 describe('Level Content and Validation', () => {
   test('không đổi target theo nghiệm nhập sai', () => {

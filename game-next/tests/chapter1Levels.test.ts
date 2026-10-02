@@ -73,3 +73,4 @@ function checkLevel(e: Expectation): void {
 
 checkLevel({ id: '1-2', pieceCount: 2, targetCells: 2880, distractorCells: [768, 352] });
 checkLevel({ id: '1-3', pieceCount: 2, targetCells: 2304, distractorCells: [2256, 2352] });
+checkLevel({ id: '1-4', pieceCount: 3, targetCells: 4032, distractorCells: [352, 704, 768] });
