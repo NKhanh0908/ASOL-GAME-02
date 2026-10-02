@@ -6,16 +6,19 @@ export type LevelAccessStatus = {
   available: boolean;
 };
 
+export type LevelAccessMode = 'campaign' | 'harness';
+
 /**
  * Xác định quyền truy cập của một màn chơi trong campaign.
  * - unlocked: màn đầu tiên (order 1) luôn mở khóa; các màn sau mở khóa khi màn liền trước đã hoàn thành.
  * - completed: ID đã nằm trong danh sách completed.
- * - available: màn đã được kiểm duyệt nội dung đạt status 'approved'.
+ * - available: campaign cần `approved`; harness dev nhận cả `validated`.
  */
 export function levelAccess(
   manifest: readonly ManifestEntry[],
   completed: readonly string[],
-  id: string
+  id: string,
+  mode: LevelAccessMode = 'campaign'
 ): LevelAccessStatus {
   const entry = manifest.find((e) => e.id === id);
   if (!entry) {
@@ -23,7 +26,7 @@ export function levelAccess(
   }
 
   const isCompleted = completed.includes(id);
-  const isAvailable = entry.status === 'approved';
+  const isAvailable = entry.status === 'approved' || (mode === 'harness' && entry.status === 'validated');
 
   let isUnlocked = false;
   if (entry.order === 1) {
@@ -38,6 +41,43 @@ export function levelAccess(
     completed: isCompleted,
     available: isAvailable,
   };
+}
+
+/**
+ * Tiến độ dùng để vẽ bản đồ. Harness bổ sung tạm các màn authored từ đầu
+ * chiến dịch tới màn vừa thắng, nhưng không ghi chúng vào progress campaign.
+ */
+export function resolveMapCompletedLevels(
+  manifest: readonly ManifestEntry[],
+  campaignCompleted: readonly string[],
+  mode: LevelAccessMode,
+  previewCompletedThrough?: string
+): string[] {
+  const completed = new Set(campaignCompleted);
+  if (mode !== 'harness' || !previewCompletedThrough) return [...completed];
+
+  const through = manifest.find((entry) => entry.id === previewCompletedThrough);
+  if (!through || !['validated', 'approved'].includes(through.status)) return [...completed];
+
+  for (const entry of manifest) {
+    if (entry.order > through.order) continue;
+    if (entry.status === 'validated' || entry.status === 'approved') completed.add(entry.id);
+  }
+  return [...completed];
+}
+
+/** Chọn mốc có order lớn nhất để preview harness không lùi khi chơi lại màn cũ. */
+export function furthestLevelId(
+  manifest: readonly ManifestEntry[],
+  ...ids: Array<string | undefined>
+): string | undefined {
+  let furthest: ManifestEntry | undefined;
+  for (const id of ids) {
+    if (!id) continue;
+    const entry = manifest.find((candidate) => candidate.id === id);
+    if (entry && (!furthest || entry.order > furthest.order)) furthest = entry;
+  }
+  return furthest?.id;
 }
 
 /**

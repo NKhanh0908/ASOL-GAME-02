@@ -4,6 +4,13 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-02 - Synchronize harness progress with the constellation map
+
+- Added a transient harness preview trail so levels completed while reviewing validated content appear completed on the map and advance the current node.
+- Made validated levels playable from the map only in harness mode, while campaign continues to require approved content and retain its persisted progress unchanged.
+- Preserved the furthest harness preview when replaying an earlier level and forwarded harness mode through map and next-level navigation.
+- Verification: two map synchronization regressions and the replay regression failed before implementation; all 31 focused tests and all 243 tests across 30 files then passed; content validation and production build passed. Chrome snapshots remained unused under the user waiver. Vite retained its existing large-chunk advisory.
+
 ### 2026-10-02 - Fix Vietnamese level titles and long HUD text
 
 - Switched level names in the play header and victory card from Playfair Display to a Vietnamese-complete Be Vietnam Pro stack with system fallbacks.

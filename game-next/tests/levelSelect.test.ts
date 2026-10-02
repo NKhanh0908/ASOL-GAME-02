@@ -1,7 +1,11 @@
 import { describe, expect, test } from 'vitest';
 import { formatProgress } from '../src/presentation/hudText.ts';
 import { campaignManifest } from '../src/content/manifest.ts';
-import { levelAccess } from '../src/domain/campaign.ts';
+import {
+  furthestLevelId,
+  levelAccess,
+  resolveMapCompletedLevels,
+} from '../src/domain/campaign.ts';
 
 describe('Constellation Map Layout Generator', () => {
   test('18 màn được gán đúng tọa độ uốn lượn theo trục dọc màn hình', () => {
@@ -38,6 +42,35 @@ describe('Constellation Map Layout Generator', () => {
     expect(getNodeState(campaignManifest, ['1-1'], '1-1')).toBe('completed');
     expect(getNodeState(campaignManifest, ['1-1'], '1-2')).toBe('current');
     expect(getNodeState(campaignManifest, ['1-1'], '1-3')).toBe('locked');
+  });
+
+  test('harness coi level validated là có thể chơi nhưng campaign thì không', () => {
+    expect(levelAccess(campaignManifest, ['1-1', '1-2'], '1-3', 'campaign').available).toBe(false);
+    expect(levelAccess(campaignManifest, ['1-1', '1-2'], '1-3', 'harness').available).toBe(true);
+  });
+
+  test('bản đồ harness hiển thị tiến độ preview tới màn vừa thắng mà không đổi campaign', () => {
+    const campaignCompleted = ['1-1'];
+    const preview = resolveMapCompletedLevels(
+      campaignManifest,
+      campaignCompleted,
+      'harness',
+      '1-3'
+    );
+
+    expect(preview).toEqual(['1-1', '1-2', '1-3']);
+    expect(campaignCompleted).toEqual(['1-1']);
+    expect(resolveMapCompletedLevels(
+      campaignManifest,
+      campaignCompleted,
+      'campaign',
+      '1-3'
+    )).toEqual(['1-1']);
+  });
+
+  test('chơi lại màn cũ trong harness không làm mốc preview lùi lại', () => {
+    expect(furthestLevelId(campaignManifest, '1-5', '1-2')).toBe('1-5');
+    expect(furthestLevelId(campaignManifest, undefined, '1-3')).toBe('1-3');
   });
 });
 
