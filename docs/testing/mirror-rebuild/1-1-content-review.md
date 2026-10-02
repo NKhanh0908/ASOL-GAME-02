@@ -52,3 +52,10 @@
 4. **Kết luận phê duyệt:**
    * Màn chơi đạt toàn bộ tiêu chuẩn LVL-01 $\rightarrow$ LVL-05.
    * Trạng thái manifest được nâng cấp chính thức thành: **`approved`**.
+
+## Duyệt lại `song-tinh-v2` — 2026-10-02
+
+- Người duyệt: NKhanh0908; ngày: 2026-10-02.
+- Nguồn: `game-next/src/content/sources/1-1.ts`, sinh bằng `npm run content:author -- 1-1`.
+- Thay đổi so với v1: quy tắc ô biên trên-trái chung cho mọi hình (spec 2026-10-02, D8). Mỗi thoi 1.200 → 1.152 ô; mục tiêu 2.400 → 2.304 ô. Neo, nghiệm, gây nhiễu, FTUE, câu thơ giữ nguyên.
+- Kết quả: `npm test`, `npm run content:validate` đạt. Trạng thái giữ `approved`.

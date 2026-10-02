@@ -1,4 +1,4 @@
-import type { Cell, Level, Turns } from '../domain/model.ts';
+import type { Cell, Level, Orientation, Turns } from '../domain/model.ts';
 
 export type ManifestEntry = {
   id: string;
@@ -22,6 +22,8 @@ export type LevelDocument = {
   pieces: Array<{
     id: string;
     shapeKind: 'square' | 'triangle' | 'diamond';
+    /** Bắt buộc với tam giác (0–7); vuông và thoi bỏ trống hoặc 0 */
+    orientation?: Orientation;
     frameSize: number;
     cells: Cell[];
     anchors: Array<{ id: string; x: number; y: number }>;
