@@ -4,6 +4,12 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-03 - Add spec F3 (motion acceptance) after approving F1 and F2
+
+- Recorded reviewer approval of specs F1 and F2 by NKhanh0908: "duyeejt spec".
+- Added `docs/superpowers/specs/2026-10-03-f3-motion-acceptance-design.md`: dev-only tools (`fps`, `motion` slow-motion, `demo`/`loop` route replay, extended `autosolve` scripts, `perf` frame-time windows, a `fixture-rotate` level because every Chapter 1 level disables rotation), seven numeric performance thresholds, a 31-item acceptance matrix for F1, F2 and regressions, and per-spec acceptance records under `docs/testing/motion/` that follow the existing content-review format.
+- Verification: checked `launchParams.ts`, `fixtures.ts`, the existing review records and that all six level files set `rotationEnabled: false`; spec self-review; no runtime code changed.
+
 ### 2026-10-03 - Add spec F2 (in-level game feel)
 
 - Added `docs/superpowers/specs/2026-10-03-f2-in-level-game-feel-design.md`: a per-frame render loop, pieces baked once into textures and shown as images with smoothed display poses, pure `feedbackEvents` derived from transitions, effects for lift, drag, magnet, snap, return, rotate, blocked rotation and XOR overlap changes, an 1800 ms skippable victory sequence, haptics through `@capacitor/haptics` with a persisted setting, and removal of redundant mask evaluation while dragging.
