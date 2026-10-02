@@ -4,6 +4,13 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-02 - Fix Vietnamese level titles and long HUD text
+
+- Switched level names in the play header and victory card from Playfair Display to a Vietnamese-complete Be Vietnam Pro stack with system fallbacks.
+- Fit long header titles into the 448px safe area between navigation controls, with a 32px minimum size.
+- Reduced victory verse text to 18px so two-line verses retain space from the level title and action buttons.
+- Verification: two HUD regressions failed before implementation, then all 19 focused HUD/token tests and all 240 tests across 30 files passed; typecheck and production build passed. Chrome snapshots remained unused under the user waiver. Vite retained its existing large-chunk advisory.
+
 ### 2026-10-02 - Approve level 1-2 Bao Thap Tien Tri
 
 - Promoted `bao-thap-v1` from `validated` to `approved` after direct harness review by NKhanh0908: “ok ngon nha”.

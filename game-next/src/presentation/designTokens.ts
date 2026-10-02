@@ -73,6 +73,8 @@ export const TYPO_TOKENS = {
   fontFamily: {
     serif: "'Playfair Display', Georgia, serif",
     sans: "'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+    /** Tên level cần bộ glyph tiếng Việt đầy đủ, kể cả khi webfont chưa tải. */
+    levelTitle: "'Be Vietnam Pro', 'Segoe UI', Arial, sans-serif",
   },
   fontSize: {
     heroTitle: '52px',
