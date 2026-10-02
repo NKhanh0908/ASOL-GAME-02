@@ -4,6 +4,12 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-02 - Add level 1-3 Canh Chim Bao Diem (validated)
+
+- Added the authored source, generated artifacts and content regressions for the two mirrored wing triangles in level 1-3.
+- Registered `canh-chim-v1` for harness play in `validated` state.
+- Verification: the focused test first failed because 1-3 had no source; authoring produced 2,304 target cells, one solution and no fewer-piece solution; typecheck, all 217 tests across 30 files and content validation passed.
+
 ### 2026-10-02 - Add level 1-2 Bao Thap Tien Tri (validated)
 
 - Added the authored source, generated JSON, SVG preview and solution report for level 1-2 with one square and one roof triangle.
