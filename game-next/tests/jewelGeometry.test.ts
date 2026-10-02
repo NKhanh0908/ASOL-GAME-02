@@ -4,6 +4,10 @@ import {
   jewelFaces,
   jewelTable,
   jewelSpineLines,
+  polygonCentroid,
+  polygonFaces,
+  polygonTable,
+  scalePolygon,
 } from '../src/presentation/jewelGeometry.ts';
 import { PIECE_TOKENS } from '../src/presentation/designTokens.ts';
 
@@ -91,5 +95,62 @@ describe('jewelGeometry', () => {
     for (const p of pts) {
       expect((p.x - 200) % 40 === 0 || (p.y - 400) % 40 === 0).toBe(true);
     }
+  });
+});
+
+describe('mặt vát cho đa giác bất kỳ', () => {
+  const sortedFace = (f: { name: string; color: string; points: Array<{ x: number; y: number }> }) => ({
+    name: f.name,
+    color: f.color,
+    points: [...f.points].sort((a, b) => a.x - b.x || a.y - b.y),
+  });
+
+  test('thoi dựng bằng polygonFaces giống hệt jewelFaces (bỏ qua thứ tự đỉnh)', () => {
+    const generic = polygonFaces(jewelOutline(CX, CY, R)).map(sortedFace);
+    const legacy = jewelFaces(CX, CY, R).map(sortedFace);
+    const byName = (a: { name: string }, b: { name: string }) => a.name.localeCompare(b.name);
+    expect(generic.sort(byName)).toEqual(legacy.sort(byName));
+  });
+
+  test('hình vuông: cạnh trên và trái sáng nhất, phải là Đông, dưới là Tây', () => {
+    const sq = [
+      { x: 0, y: 0 },
+      { x: 10, y: 0 },
+      { x: 10, y: 10 },
+      { x: 0, y: 10 },
+    ];
+    expect(polygonFaces(sq).map((f) => f.name)).toEqual(['north', 'east', 'west', 'north']);
+  });
+
+  test('mái hướng 4: hai cạnh xiên là Bắc và Đông, cạnh huyền ở đáy là Tây', () => {
+    const roof = [
+      { x: 0, y: 48 },
+      { x: 48, y: 48 },
+      { x: 24, y: 24 },
+    ];
+    expect(polygonFaces(roof).map((f) => f.name)).toEqual(['west', 'east', 'north']);
+  });
+
+  test('mặt bàn đa giác trùng mặt bàn thoi cũ', () => {
+    const generic = polygonTable(jewelOutline(CX, CY, R));
+    const legacy = jewelTable(CX, CY, R);
+    generic.forEach((p, i) => {
+      expect(p.x).toBeCloseTo(legacy[i].x, 9);
+      expect(p.y).toBeCloseTo(legacy[i].y, 9);
+    });
+  });
+
+  test('trọng tâm và phép co giãn quanh trọng tâm', () => {
+    const tri = [
+      { x: 0, y: 0 },
+      { x: 30, y: 0 },
+      { x: 0, y: 30 },
+    ];
+    expect(polygonCentroid(tri)).toEqual({ x: 10, y: 10 });
+    expect(scalePolygon(tri, { x: 10, y: 10 }, 0.5)).toEqual([
+      { x: 5, y: 5 },
+      { x: 20, y: 5 },
+      { x: 5, y: 20 },
+    ]);
   });
 });

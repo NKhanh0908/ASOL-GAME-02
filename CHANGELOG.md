@@ -4,6 +4,11 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-02 - Draw jewel facets for any convex polygon
+
+- Added polygon centroid, scaling, facets, table and spine geometry; added `drawJewelPolygon` and retained the `drawJewel` API through delegation.
+- Verification: five new geometry cases failed for missing functions before implementation, then all 13 focused tests passed; `npm run typecheck` passed; `npm test` passed (182 tests across 26 files). Phaser visual verification is deferred to Task 8's required Chrome before/after screenshots.
+
 ### 2026-10-02 - Add convex polygon clipping and parity layers
 
 - Added convex polygon intersection and ordered even-odd parity layers in `game-next/src/presentation/polygonClip.ts`, with seven focused geometry tests.
