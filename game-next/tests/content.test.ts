@@ -126,6 +126,15 @@ describe('Hình mảnh, hướng và placement mục tiêu (CH1-04)', () => {
     expect(codes(doc)).toContain('invalid-orientation');
   });
 
+  test('orientation null với cells hướng 0 bị từ chối', () => {
+    const doc = buildLevelDocument({
+      ...triangleSource,
+      pieces: [{ ...triangleSource.pieces[0], orientation: 0 }],
+    });
+    (doc.pieces[0] as unknown as { orientation: null }).orientation = null;
+    expect(codes(doc)).toContain('invalid-orientation');
+  });
+
   test('thoi có orientation khác 0 bị từ chối', () => {
     const doc = makeAdjacentFixture();
     doc.pieces[0].orientation = 3;

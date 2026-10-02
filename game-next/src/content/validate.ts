@@ -100,7 +100,9 @@ export function validateLevel(input: unknown): ValidationResult {
       }
 
       // Hình và hướng: cells phải đúng bằng raster của đa giác chuẩn (LVL-02)
-      const orientation = (p.orientation ?? 0) as Orientation;
+      const orientation = (
+        p.orientation === undefined && p.shapeKind !== 'triangle' ? 0 : p.orientation
+      ) as Orientation;
       const shapeKindValid =
         p.shapeKind === 'square' || p.shapeKind === 'triangle' || p.shapeKind === 'diamond';
       if (!shapeKindValid) {
@@ -151,7 +153,7 @@ export function validateLevel(input: unknown): ValidationResult {
           anchors: p.anchors.map((a) => ({ id: a.id, x: a.x, y: a.y })),
           color: 'amber',
           shapeKind: p.shapeKind,
-          orientation: (p.orientation ?? 0) as Orientation,
+          orientation,
         });
       }
     }
