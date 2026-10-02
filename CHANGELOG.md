@@ -4,6 +4,12 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-02 - Add level 1-2 Bao Thap Tien Tri (validated)
+
+- Added the authored source, generated JSON, SVG preview and solution report for level 1-2 with one square and one roof triangle.
+- Registered `bao-thap-v1` for harness play in `validated` state and added shared Chapter 1 content regressions.
+- Verification: the focused test first failed because 1-2 had no source; authoring produced 2,880 target cells, one solution and no fewer-piece solution; typecheck, all 210 tests across 30 files and content validation passed.
+
 ### 2026-10-02 - Add 1-1 renderer evidence screenshots
 
 - Added `docs/testing/levels/screens/1-1-{play,drag,win}.png`, captured with `game-next/scripts/shoot-level.sh` after the polygon renderer, parity overlap and N-slot tray changes (plan phase 2, Task 8 evidence).

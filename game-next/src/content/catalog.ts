@@ -1,10 +1,12 @@
 import songTinh from './levels/1-1.json';
+import baoThap from './levels/1-2.json';
 import { campaignManifest } from './manifest.ts';
 import { validateLevel } from './validate.ts';
 import type { Level } from '../domain/model.ts';
 
 const documents: Record<string, unknown> = {
   '1-1': songTinh,
+  '1-2': baoThap,
 };
 
 /**
