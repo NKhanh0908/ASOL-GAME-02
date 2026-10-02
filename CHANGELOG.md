@@ -4,6 +4,13 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-02 - Approve level 1-2 Bao Thap Tien Tri
+
+- Promoted `bao-thap-v1` from `validated` to `approved` after direct harness review by NKhanh0908: “ok ngon nha”.
+- Updated campaign navigation and catalog expectations so completing 1-1 unlocks the playable 1-2 successor.
+- Added the 1-2 content review record and updated the Chapter 1 review index.
+- Verification: the four stale pre-approval expectations failed after promotion, then 50 focused tests and all 238 tests across 30 files passed; typecheck and content validation also passed.
+
 ### 2026-10-02 - Update GDD chapter 1 level sheets and add review index
 
 - Updated the GDD geometry, anchors, shape orientations and piece lists for Chapter 1 levels 1-1 through 1-6.

@@ -25,13 +25,13 @@ describe('Menu Campaign Navigation and Chapter Grouping', () => {
     expect(access2.unlocked).toBe(false);
   });
 
-  test('sau khi hoàn thành 1-1: 1-1 là completed, 1-2 là unlocked nhưng available false (đang hoàn thiện)', () => {
+  test('sau khi hoàn thành 1-1: 1-1 là completed, 1-2 mở khoá và sẵn sàng', () => {
     const access1 = levelAccess(campaignManifest, ['1-1'], '1-1');
     expect(access1.completed).toBe(true);
 
     const access2 = levelAccess(campaignManifest, ['1-1'], '1-2');
     expect(access2.unlocked).toBe(true);
-    expect(access2.available).toBe(false); // Vì 1-2 đang ở status 'planned'
+    expect(access2.available).toBe(true); // 1-2 đã approved
   });
 
   test('xác định đúng màn chơi kế tiếp an toàn (chỉ chọn màn approved, không trỏ vào màn planned gây crash)', () => {
@@ -39,10 +39,10 @@ describe('Menu Campaign Navigation and Chapter Grouping', () => {
     expect(res0.level.id).toBe('1-1');
     expect(res0.type).toBe('start');
 
-    // Sau khi đã chơi xong 1-1, vì 1-2 đang ở status 'planned', hệ thống an toàn trỏ về chơi lại 1-1
+    // Sau khi đã chơi xong 1-1, 1-2 đã approved nên được chọn để chơi tiếp
     const res1 = resolveNextCampaignLevel(campaignManifest, ['1-1']);
-    expect(res1.level.id).toBe('1-1');
-    expect(res1.type).toBe('replay');
+    expect(res1.level.id).toBe('1-2');
+    expect(res1.type).toBe('continue');
   });
 });
 
