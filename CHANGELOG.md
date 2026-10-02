@@ -4,6 +4,12 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-02 - Add level 1-6 Vuong Mien Binh Minh (validated)
+
+- Added the authored source, generated artifacts and content regressions for the two wings and center diamond in level 1-6.
+- Registered `vuong-mien-v1` for harness play in `validated` state.
+- Verification: the focused test first failed because 1-6 had no source; authoring produced 3,456 target cells, one solution and no fewer-piece solution; all six authored levels regenerated successfully; typecheck, all 238 tests across 30 files and content validation passed.
+
 ### 2026-10-02 - Add level 1-5 Chiec Thuyen Sao (validated)
 
 - Added the authored source, generated artifacts and content regressions for the square hull, bow and sail in level 1-5.

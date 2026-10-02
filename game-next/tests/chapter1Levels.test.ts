@@ -75,3 +75,4 @@ checkLevel({ id: '1-2', pieceCount: 2, targetCells: 2880, distractorCells: [768,
 checkLevel({ id: '1-3', pieceCount: 2, targetCells: 2304, distractorCells: [2256, 2352] });
 checkLevel({ id: '1-4', pieceCount: 3, targetCells: 4032, distractorCells: [352, 704, 768] });
 checkLevel({ id: '1-5', pieceCount: 3, targetCells: 4560, distractorCells: [696, 696] });
+checkLevel({ id: '1-6', pieceCount: 3, targetCells: 3456, distractorCells: [2256, 2352, 704] });
