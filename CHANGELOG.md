@@ -4,6 +4,12 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-02 - Update GDD chapter 1 level sheets and add review index
+
+- Updated the GDD geometry, anchors, shape orientations and piece lists for Chapter 1 levels 1-1 through 1-6.
+- Added a review index linking every SVG preview, solution report and direct development harness URL.
+- Recorded the user-requested Chrome snapshot waiver; visual acceptance is performed directly in the harness.
+
 ### 2026-10-02 - Add level 1-6 Vuong Mien Binh Minh (validated)
 
 - Added the authored source, generated artifacts and content regressions for the two wings and center diamond in level 1-6.

@@ -258,15 +258,15 @@ Quyết định phạm vi và kiến trúc giao diện đến từ [spec MVP](..
 
 ## Phụ lục A — Level sheet sáu màn Cổ Ngữ Tiên Tri nền tảng
 
-**Cách đọc:** Biểu tượng được thiết kế theo cảm quan Cổ ngữ &amp; Chiêm tinh (Amphoreus / Honkai Star Rail). Chương 1 là **ghép tiếp giáp không xếp chồng**; Chương 2 là **giao thoa triệt tiêu tạo hoa văn rỗng và hồi sinh hạt nhân**. `(x,y)` là neo gốc khung mảnh trên lưới 128 × 192; số trong ngoặc sau tên hình là cạnh khung theo ô. `↻` là số nấc 90° theo chiều kim đồng hồ.
+**Cách đọc:** Biểu tượng được thiết kế theo cảm quan Cổ ngữ &amp; Chiêm tinh (Amphoreus / Honkai Star Rail). Chương 1 là **ghép tiếp giáp không xếp chồng**; Chương 2 là **giao thoa triệt tiêu tạo hoa văn rỗng và hồi sinh hạt nhân**. `(x,y)` là neo gốc khung mảnh trên lưới 128 × 160 (neo là bội của 8); mọi mảnh Chương 1 dùng khung 48 ô. Tam giác là tam giác vuông cân; ô nằm đúng trên cạnh tính theo quy tắc trên-trái chung cho mọi hình (spec 2026-10-02). `↻` là số nấc 90° theo chiều kim đồng hồ.
 
 ![Sáu bóng mục tiêu Cổ Ngữ Tiên Tri mẫu](assets/level-silhouettes.svg)
 
 | Màn / Vai trò | Mảnh | Bóng mục tiêu và mô tả tạo hình | Cơ chế hình học & Điểm nhấn | Khó dự đoán |
 |---|---|---|---|---|
-| **1-1 Song Tinh** *(Twin Stars)* · học kéo/thả, snap lưới | 2: thoi 40, thoi 40 | Hình A1: Hai viên ngọc thoi đặt cạnh nhau, chạm đỉnh tại trục ngang. | **Không xếp chồng.** Tiếp giáp đỉnh `◆◆`. Biểu tượng cân bằng sơ khởi của vũ trụ. | 1/5 |
-| **1-2 Bảo Tháp Tiên Tri** *(Sacred Spire)* · phối hợp hai khối | 1: vuông 48, 1: tam giác 48 | Hình A2: Khối vuông làm chân tháp, tam giác đặt ngay ngắn trên đỉnh. | **Không xếp chồng.** Tiếp giáp cạnh (đáy tam giác = cạnh trên vuông). Ngôi tháp vươn cao. | 1/5 |
-| **1-3 Cánh Chim Báo Điềm** *(Astral Wing)* · đối xứng trục | 2: tam giác 48 | Hình A3: Đôi cánh vút bay hướng thiên đối xứng qua trục dọc. | **Không xếp chồng.** Tiếp giáp cạnh dọc. Người chơi tự so sánh bóng và đặt chuẩn xác. | 2/5 |
+| **1-1 Song Tinh** *(Twin Stars)* · học kéo/thả, snap lưới | 2: thoi 48, thoi 48 | Hình A1: Hai viên ngọc thoi đặt cạnh nhau, chạm đỉnh tại tâm bàn (64, 80). Neo A (16,56) và (64,56). | **Không xếp chồng.** Tiếp giáp đỉnh `◆◆`. Biểu tượng cân bằng sơ khởi của vũ trụ. Revision `song-tinh-v2`. | 1/5 |
+| **1-2 Bảo Tháp Tiên Tri** *(Sacred Spire)* · phối hợp hai khối | 1: vuông 48, 1: tam giác 48 (mái, hướng 4) | Hình A2: Khối vuông (40,64) làm chân tháp, mái (40,16) ngồi trọn trên cạnh trên. | **Không xếp chồng.** Tiếp giáp cạnh (đáy mái = cạnh trên vuông, y = 64). FTUE: "Mỗi mảnh một hình, ghép chúng thành bóng mục tiêu". | 1/5 |
+| **1-3 Cánh Chim Báo Điềm** *(Astral Wing)* · đối xứng trục | 2: tam giác 48 (hướng 3 và 2) | Hình A3: Đôi cánh giương, mũi cánh ở (16,56) và (112,56), hai cạnh huyền dốc vào giữa. | **Không xếp chồng.** Hai cánh chạm tại một đỉnh (64,104), không chung cạnh dọc (chung cạnh dọc chỉ ra một tam giác lớn). Đổi chỗ hai cánh cho ra kim tự tháp, sai bóng. | 2/5 |
 | **2-1 Mũi Tên Chỉ Thiên** *(Vanguard Arrow)* · bước ngoặt xếp chồng | 1: vuông 48, 1: tam giác 48 | Hình A4 (Image 1 HSR): Tam giác lồng sâu vào đỉnh khối vuông. | **Xếp chồng 2 lớp:** Vùng giao biến mất tạo thành **vết khuyết rãnh chevron** trong mũi tên tiên phong. | 2/5 |
 | **2-2 Cánh Bướm Điệp Ảnh** *(Oracle Butterfly)* · tâm rỗng đối xứng | 1: vuông 44 (hoặc 2 tam giác), 2: tam giác 48 | Hình A5 (Image 3 HSR): Khối cánh bướm/nơ cân bằng tuyệt đối. | **Xếp chồng 2 lớp:** Các mảnh lồng qua tâm triệt tiêu lẫn nhau, để lại một **tâm thoi rỗng đối xứng**. | 3/5 |
 | **2-3 Trái Tim Tinh Thể** *(Crystal Core)* · quy tắc 3 lớp hiện lại | 3: mảnh lồng tâm (vuông 48, thoi 48, thoi 24) | Hình A6: Hạt nhân ngọc phát sáng giữa khoảng không rỗng. | **Xếp chồng 3 lớp:** 2 mảnh ngoài tạo khoảng rỗng (2 lớp), mảnh thứ ba ở tâm làm **viên ngọc nhân hiện lại** (3 lớp). | 3/5 |
@@ -279,9 +279,9 @@ Mỗi màn mang một hình tượng cổ ngữ xác định trong vũ trụ chi
 
 | Màn | Tên Biểu Tượng Cổ Ngữ | Vai trò sư phạm & Ràng buộc hình học | Mảnh dự kiến |
 |---|---|---|---|
-| **1-4** | **Ngọn Hải Đăng** *(The Pharos)* | Ghép tiếp giáp 3 khối theo trục đứng: Đế vuông + Thân thoi + Đỉnh tam giác; không xếp chồng | 3: vuông, thoi, tam giác |
-| **1-5** | **Chiếc Thuyền Sao** *(Astral Barque)* | Thân thuyền vuông + 2 tam giác mũi thuyền và cánh buồm tiếp giáp; không xếp chồng | 3: vuông, 2 tam giác |
-| **1-6** | **Vương Miện Bình Minh** *(Crown of Dawn)* | Vương miện 3 đỉnh uy nghi từ khối vuông trung tâm và 2 tam giác chếch góc; kết thúc Chương 1 | 3: vuông, 2 tam giác |
+| **1-4** | **Ngọn Hải Đăng** *(The Pharos)* | Ghép tiếp giáp 3 khối theo trục đứng x = 64: mái (40,0), đèn thoi (40,48), đế vuông (40,96); chạm đỉnh–cạnh, không xếp chồng | 3: tam giác (mái), thoi, vuông |
+| **1-5** | **Chiếc Thuyền Sao** *(Astral Barque)* | Thân vuông (16,80) + mũi tam giác hướng 0 (64,80) áp cạnh phải thân + buồm tam giác hướng 3 (40,32) ngồi trên mép trên; không xếp chồng | 3: vuông, 2 tam giác |
+| **1-6** | **Vương Miện Bình Minh** *(Crown of Dawn)* | Đôi cánh của 1-3 + viên thoi (40,56) lấp vừa khe giữa: ba đỉnh cao bằng nhau tại x = 16, 64, 112; kết thúc Chương 1. Dùng thoi thay vuông vì ba mảnh khung 48 xếp ngang rộng 144 > 128 | 3: 2 tam giác, thoi |
 | **2-4** | **Mắt Tiên Tri** *(Eye of the Oracle)* | Vòng mí mắt rỗng (2 lớp giao) ôm trọn con ngươi phát sáng ở tâm (3 lớp hiện) | 3: 2 thoi, 1 tam giác/vuông |
 | **2-5** | **Chìa Khóa Thời Gian** *(Chrono Key)* | Rãnh răng khóa và tay cầm rỗng được tạo bởi các giao điểm triệt tiêu có tính toán | 3: vuông, thoi, tam giác |
 | **2-6** | **Đại Ấn Hộ Mệnh** *(Grand Sigil)* | Phức hợp cổ ngữ đỉnh cao Chương 2: Kết hợp đa tầng hoa văn chìm (2 lớp rỗng) và ngọc phong ấn (3 lớp) | 3-4 mảnh kết hợp |
