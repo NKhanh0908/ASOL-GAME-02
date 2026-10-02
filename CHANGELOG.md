@@ -4,6 +4,11 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-03 - Note single-repo GitNexus setup in the motion index
+
+- Updated the GitNexus section of `docs/superpowers/plans/2026-10-03-f-motion-index.md`: only this repository is indexed locally now, so the `repo` parameter is optional; examples keep it for safety.
+- Verification: `list_repos` returns only ASOL-GAME-02; no runtime code changed.
+
 ### 2026-10-03 - Add GitNexus workflow to the motion plans index
 
 - Added a GitNexus section to `docs/superpowers/plans/2026-10-03-f-motion-index.md`: `impact` before editing an existing symbol, `detect_changes` before each commit, `analyze` after it, `rename` for renames, and the required `repo: "ASOL-GAME-02"` parameter because several repositories are indexed locally.

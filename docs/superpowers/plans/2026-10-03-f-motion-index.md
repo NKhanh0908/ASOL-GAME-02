@@ -49,7 +49,7 @@ Một task thất bại, hoặc test của task trước bị đỏ, thì dừng
 
 ## GitNexus trong mỗi task
 
-Repo được index bằng GitNexus (`CLAUDE.md` ở gốc repo là nguồn quy tắc). Máy có nhiều repo đã index, nên mọi lời gọi MCP phải kèm `repo: "ASOL-GAME-02"`.
+Repo được index bằng GitNexus (`CLAUDE.md` ở gốc repo là nguồn quy tắc). Hiện chỉ repo này được index, nên tham số `repo` không bắt buộc. Các lệnh mẫu vẫn kèm `repo: "ASOL-GAME-02"` để không hỏng nếu máy index thêm repo khác.
 
 | Lúc | Người thực thi làm | Ghi vào báo cáo task |
 |---|---|---|
