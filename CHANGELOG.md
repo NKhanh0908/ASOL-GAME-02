@@ -4,6 +4,11 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-02 - Add 1-1 renderer evidence screenshots
+
+- Added `docs/testing/levels/screens/1-1-{play,drag,win}.png`, captured with `game-next/scripts/shoot-level.sh` after the polygon renderer, parity overlap and N-slot tray changes (plan phase 2, Task 8 evidence).
+- Verification: reviewed all three captures (target silhouette, tray wells, drag shadow with snap label, victory card); `npm run typecheck`, `npm test` (203 passed), `npm run content:validate` and `npm run build` green.
+
 ### 2026-10-02 - Remove the faint victory-center sparkle
 
 - Removed the small four-ray sparkle from `game-next/src/presentation/BoardRenderer.ts` after manual acceptance feedback; the board pulse, camera flash and resonance rings remain.
