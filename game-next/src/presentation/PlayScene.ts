@@ -126,8 +126,9 @@ export class PlayScene extends Phaser.Scene {
         const nextId = nextLevelId(campaignManifest, this.level.id);
         if (nextId) {
           try {
-            loadLevel(nextId, 'harness');
-            this.scene.start('PlayScene', { levelId: nextId });
+            // Kiểm tra đúng chế độ: campaign về menu nếu màn kế chưa approved.
+            loadLevel(nextId, this.mode);
+            this.scene.start('PlayScene', { levelId: nextId, mode: this.mode });
           } catch {
             this.scene.start('MenuScene');
           }

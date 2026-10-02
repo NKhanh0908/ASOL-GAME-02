@@ -4,6 +4,12 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-02 - Add dev-only harness mode via URL
+
+- Added a tested launch resolver: URL harness mode is enabled only in development; production launches use campaign mode.
+- Forwarded the launch mode into PlayScene and preserved it for the next level, returning to the menu when the next level is unavailable in that mode.
+- Verification: four resolver tests failed for the missing module, then passed; typecheck, all 203 tests across 29 files, content validation, and production build passed. Chrome snapshots were waived by the user; manual harness acceptance remains pending. Vite retained its existing large-chunk advisory.
+
 ### 2026-10-02 - Keep moving pieces above parity overlays and reject missing captures
 
 - Split `game-next/src/presentation/BoardRenderer.ts` into constructor-allocated snapped/parity, temporary, dragging, and victory layers; overlapping snapped pieces no longer cover a third moving piece.
