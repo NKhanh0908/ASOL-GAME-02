@@ -4,6 +4,11 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-02 - Add shared shape module
+
+- Added `ShapeKind` and `Orientation` in `game-next/src/domain/model.ts`, and shared square, diamond and triangle polygons with top-left-rule cell rasterization in `game-next/src/domain/shapes.ts`; geometry coverage is in `game-next/tests/shapes.test.ts`.
+- Verification: `npm run typecheck` passed; `npm test` passed (150 tests).
+
 ### 2026-10-02 - Add chapter 1 implementation plans and spec corrections
 
 - Added `docs/superpowers/plans/2026-10-02-chapter-1-levels-index.md` and three phase plans (`-1-nen-mong`, `-2-renderer`, `-3-noi-dung`) covering 16 tasks: shape module, authoring pipeline, validator, renderer, N-slot tray, harness mode, five levels, GDD update and per-level review.
