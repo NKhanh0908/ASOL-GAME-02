@@ -6,7 +6,7 @@ export const campaignManifest: readonly ManifestEntry[] = [
   { id: '1-3', title: 'Cánh Chim Báo Điềm', chapter: 1, order: 3, contentRevision: 'canh-chim-v1', status: 'approved', dataPath: 'src/content/levels/1-3.json' },
   { id: '1-4', title: 'Ngọn Hải Đăng', chapter: 1, order: 4, contentRevision: 'hai-dang-v1', status: 'approved', dataPath: 'src/content/levels/1-4.json' },
   { id: '1-5', title: 'Chiếc Thuyền Sao', chapter: 1, order: 5, contentRevision: 'thuyen-sao-v1', status: 'approved', dataPath: 'src/content/levels/1-5.json' },
-  { id: '1-6', title: 'Vương Miện Bình Minh', chapter: 1, order: 6, contentRevision: 'vuong-mien-v1', status: 'validated', dataPath: 'src/content/levels/1-6.json' },
+  { id: '1-6', title: 'Vương Miện Bình Minh', chapter: 1, order: 6, contentRevision: 'vuong-mien-v1', status: 'approved', dataPath: 'src/content/levels/1-6.json' },
 
   // Chương 2 — Giao thoa (Bí ẩn vùng giao triệt tiêu & hạt nhân)
   { id: '2-1', title: 'Mũi Tên Chỉ Thiên', chapter: 2, order: 7, contentRevision: 'v0.1', status: 'planned' },
