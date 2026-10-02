@@ -4,6 +4,12 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-03 - Add spec F2 (in-level game feel)
+
+- Added `docs/superpowers/specs/2026-10-03-f2-in-level-game-feel-design.md`: a per-frame render loop, pieces baked once into textures and shown as images with smoothed display poses, pure `feedbackEvents` derived from transitions, effects for lift, drag, magnet, snap, return, rotate, blocked rotation and XOR overlap changes, an 1800 ms skippable victory sequence, haptics through `@capacitor/haptics` with a persisted setting, and removal of redundant mask evaluation while dragging.
+- Depends on spec F1 for `motionScale`, `TransitionTimeline` and the reduced-motion setting.
+- Verification: checked the current renderer, controller, drag and session code paths the spec replaces (unused `previewMask`, frame-independent rings, stub settings toggles); estimated texture memory for a six-piece rotating level; spec self-review; no runtime code changed.
+
 ### 2026-10-03 - Add spec F1 (motion foundation and cinematic scene transitions)
 
 - Added `docs/superpowers/specs/2026-10-03-f1-scene-transitions-design.md`: a persistent `BackgroundScene` owning one sky, a `SceneDirector` that replaces every direct `scene.start`, choreographed in/out timelines for seven routes (1500 ms into play, about 1000 ms elsewhere, always full with tap-to-skip), and a persisted reduced-motion setting that collapses every route to a 150 ms crossfade.
