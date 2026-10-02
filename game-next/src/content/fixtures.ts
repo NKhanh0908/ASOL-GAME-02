@@ -3,6 +3,17 @@ import { GRID_HEIGHT, GRID_WIDTH } from '../domain/model.ts';
 import type { LevelDocument } from './document.ts';
 
 /**
+ * Thoi tâm (cx, cy), nửa đường chéo r, theo quy tắc ô biên trên-trái của
+ * shapes.ts: giữ ô có tâm trên hai cạnh bên trái, bỏ hai cạnh bên phải. Viết
+ * bằng bất đẳng thức riêng để target không phụ thuộc evaluator hay rasterize.
+ */
+function insideDiamond(px: number, py: number, cx: number, cy: number, r: number): boolean {
+  const u = px - cx;
+  const v = py - cy;
+  return -u - v <= r && u - v < r && u + v < r && v - u <= r;
+}
+
+/**
  * Tạo fixture kỹ thuật M0: hai thoi tiếp giáp đỉnh, không xếp chồng.
  * Target được tạo độc lập bằng giải tích hình học, không qua evaluate.
  */
@@ -10,7 +21,7 @@ export function makeAdjacentFixture(): LevelDocument {
   const diamondCells: Cell[] = [];
   for (let y = 0; y < 40; y++) {
     for (let x = 0; x < 40; x++) {
-      if (Math.abs(x + 0.5 - 20) + Math.abs(y + 0.5 - 20) <= 20) {
+      if (insideDiamond(x + 0.5, y + 0.5, 20, 20, 20)) {
         diamondCells.push([x, y]);
       }
     }
@@ -19,8 +30,8 @@ export function makeAdjacentFixture(): LevelDocument {
   const targetCells: Cell[] = [];
   for (let wy = 0; wy < GRID_HEIGHT; wy++) {
     for (let wx = 0; wx < GRID_WIDTH; wx++) {
-      const insideD1 = Math.abs(wx + 0.5 - 44) + Math.abs(wy + 0.5 - 96) <= 20;
-      const insideD2 = Math.abs(wx + 0.5 - 84) + Math.abs(wy + 0.5 - 96) <= 20;
+      const insideD1 = insideDiamond(wx + 0.5, wy + 0.5, 44, 96, 20);
+      const insideD2 = insideDiamond(wx + 0.5, wy + 0.5, 84, 96, 20);
       if (insideD1 || insideD2) {
         targetCells.push([wx, wy]);
       }

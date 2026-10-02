@@ -1,7 +1,8 @@
-import type { Cell, Level, Piece, Placement, Turns } from '../domain/model.ts';
+import type { Cell, Level, Orientation, Piece, Placement, Turns } from '../domain/model.ts';
 import { GRID_HEIGHT, GRID_WIDTH, TOTAL_CELLS } from '../domain/model.ts';
 import { fitsBoard, rotateCells } from '../domain/geometry.ts';
 import { evaluate, matchesTarget } from '../domain/mask.ts';
+import { isValidOrientation, shapeCells } from '../domain/shapes.ts';
 import type { LevelDocument, ValidationIssue, ValidationResult } from './document.ts';
 
 export function validateLevel(input: unknown): ValidationResult {
@@ -75,9 +76,11 @@ export function validateLevel(input: unknown): ValidationResult {
         issues.push({ levelId, field: `${pField}.color`, code: 'invalid-color' });
       }
 
+      let cellsValid = false;
       if (!Array.isArray(p.cells) || p.cells.length === 0) {
         issues.push({ levelId, field: `${pField}.cells`, code: 'empty-cells' });
       } else {
+        cellsValid = true;
         for (const cell of p.cells) {
           if (
             !Array.isArray(cell) ||
@@ -90,8 +93,34 @@ export function validateLevel(input: unknown): ValidationResult {
             cell[1] >= p.frameSize
           ) {
             issues.push({ levelId, field: `${pField}.cells`, code: 'invalid-cell-coordinate' });
+            cellsValid = false;
             break;
           }
+        }
+      }
+
+      // Hình và hướng: cells phải đúng bằng raster của đa giác chuẩn (LVL-02)
+      const orientation = (p.orientation ?? 0) as Orientation;
+      const shapeKindValid =
+        p.shapeKind === 'square' || p.shapeKind === 'triangle' || p.shapeKind === 'diamond';
+      if (!shapeKindValid) {
+        issues.push({ levelId, field: `${pField}.shapeKind`, code: 'invalid-shape-kind' });
+      } else if (
+        (p.shapeKind === 'triangle' && p.orientation === undefined) ||
+        !isValidOrientation(p.shapeKind, orientation)
+      ) {
+        issues.push({ levelId, field: `${pField}.orientation`, code: 'invalid-orientation' });
+      } else if (cellsValid && Number.isInteger(p.frameSize) && p.frameSize > 0) {
+        const expected = new Set(
+          shapeCells(p.shapeKind, orientation, p.frameSize).map(([x, y]) => `${x},${y}`)
+        );
+        const actual = new Set(p.cells.map(([x, y]) => `${x},${y}`));
+        const same =
+          actual.size === p.cells.length &&
+          actual.size === expected.size &&
+          [...actual].every((k) => expected.has(k));
+        if (!same) {
+          issues.push({ levelId, field: `${pField}.cells`, code: 'shape-cells-mismatch' });
         }
       }
 
@@ -121,6 +150,8 @@ export function validateLevel(input: unknown): ValidationResult {
           cells: p.cells.map(([x, y]) => [x, y] as const),
           anchors: p.anchors.map((a) => ({ id: a.id, x: a.x, y: a.y })),
           color: 'amber',
+          shapeKind: p.shapeKind,
+          orientation: (p.orientation ?? 0) as Orientation,
         });
       }
     }
@@ -148,6 +179,8 @@ export function validateLevel(input: unknown): ValidationResult {
       targetMask[cell[1] * GRID_WIDTH + cell[0]] = 1;
     }
   }
+
+  let firstPlacements: Placement[] | undefined;
 
   // Sample solutions validation
   if (!Array.isArray(doc.sampleSolutions) || doc.sampleSolutions.length === 0) {
@@ -235,6 +268,9 @@ export function validateLevel(input: unknown): ValidationResult {
           issues.push({ levelId, field: sField, code: (err as Error).message });
         }
       }
+      if (sIdx === 0 && placements.length === solution.length) {
+        firstPlacements = placements;
+      }
     }
   }
 
@@ -253,6 +289,7 @@ export function validateLevel(input: unknown): ValidationResult {
       pieces: parsedPieces,
       targetMask,
       victoryVerse: doc.victoryVerse,
+      targetPlacements: firstPlacements ?? [],
     },
   };
 }

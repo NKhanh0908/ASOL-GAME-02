@@ -18,6 +18,9 @@ export type Piece = Readonly<{
   cells: readonly Cell[];
   anchors: readonly Anchor[];
   color: 'amber';
+  /** Validator luôn điền; literal viết tay trong test domain có thể bỏ trống (renderer coi là thoi) */
+  shapeKind?: ShapeKind;
+  orientation?: Orientation;
 }>;
 
 export type Level = Readonly<{
@@ -30,6 +33,8 @@ export type Level = Readonly<{
   targetMask: Uint8Array;
   /** Câu thơ hiện ở màn hoàn thành; màn nào không khai báo thì bỏ qua */
   victoryVerse?: string;
+  /** Placement của nghiệm mẫu thứ nhất, để vẽ bóng mục tiêu bằng đa giác thật */
+  targetPlacements?: readonly Placement[];
 }>;
 
 export type Placement = Readonly<{

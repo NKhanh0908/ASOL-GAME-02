@@ -2,6 +2,8 @@ import { describe, expect, test } from 'vitest';
 import { makeAdjacentFixture } from '../src/content/fixtures.ts';
 import { validateLevel } from '../src/content/validate.ts';
 import { campaignManifest } from '../src/content/manifest.ts';
+import { buildLevelDocument } from '../src/content/authoring.ts';
+import type { LevelSource } from '../src/content/authoring.ts';
 
 describe('Level Content and Validation', () => {
   test('không đổi target theo nghiệm nhập sai', () => {
@@ -85,5 +87,66 @@ describe('Level Content and Validation', () => {
     for (let i = 1; i < campaignManifest.length; i++) {
       expect(campaignManifest[i].status).toBe('planned');
     }
+  });
+});
+
+describe('Hình mảnh, hướng và placement mục tiêu (CH1-04)', () => {
+  const triangleSource: LevelSource = {
+    id: 'test-tri', title: 'Tam giác thử', chapter: 1, order: 1,
+    contentRevision: 't1', rotationEnabled: false,
+    pieces: [{ id: 'T1', shapeKind: 'triangle', orientation: 2, frameSize: 48, anchors: [{ id: 'A', x: 40, y: 56 }] }],
+    sampleSolutions: [[{ pieceId: 'T1', anchorId: 'A', turns: 0 }]],
+    learningObjective: 'thử', difficultyEstimate: 1, distractors: [], ftueSteps: [],
+  };
+
+  function codes(doc: unknown): string[] {
+    const result = validateLevel(doc);
+    return result.ok ? [] : result.issues.map((i) => i.code);
+  }
+
+  test('tam giác hợp lệ mang shapeKind, orientation và targetPlacements', () => {
+    const result = validateLevel(buildLevelDocument(triangleSource));
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.level.pieces[0].shapeKind).toBe('triangle');
+      expect(result.level.pieces[0].orientation).toBe(2);
+      expect(result.level.targetPlacements).toEqual([{ pieceId: 'T1', x: 40, y: 56, turns: 0 }]);
+    }
+  });
+
+  test('tam giác thiếu orientation bị từ chối', () => {
+    const doc = buildLevelDocument(triangleSource);
+    delete doc.pieces[0].orientation;
+    expect(codes(doc)).toContain('invalid-orientation');
+  });
+
+  test('orientation ngoài 0–7 bị từ chối', () => {
+    const doc = buildLevelDocument(triangleSource);
+    (doc.pieces[0] as { orientation?: number }).orientation = 9;
+    expect(codes(doc)).toContain('invalid-orientation');
+  });
+
+  test('thoi có orientation khác 0 bị từ chối', () => {
+    const doc = makeAdjacentFixture();
+    doc.pieces[0].orientation = 3;
+    expect(codes(doc)).toContain('invalid-orientation');
+  });
+
+  test('shapeKind lạ bị từ chối', () => {
+    const doc = makeAdjacentFixture() as unknown as { pieces: Array<{ shapeKind: string }> };
+    doc.pieces[0].shapeKind = 'hexagon';
+    expect(codes(doc)).toContain('invalid-shape-kind');
+  });
+
+  test('cells sửa tay lệch khỏi hình bị từ chối', () => {
+    const doc = makeAdjacentFixture();
+    doc.pieces[0].cells = doc.pieces[0].cells.slice(1);
+    expect(codes(doc)).toContain('shape-cells-mismatch');
+  });
+
+  test('fixture kỹ thuật theo quy tắc ô biên mới: 800 ô mỗi thoi, hợp lệ', () => {
+    const doc = makeAdjacentFixture();
+    expect(doc.pieces.map((p) => p.cells.length)).toEqual([800, 800]);
+    expect(validateLevel(doc).ok).toBe(true);
   });
 });

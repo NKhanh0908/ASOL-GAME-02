@@ -4,6 +4,12 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-02 - Validate piece shapes, orientations and target placements
+
+- Added optional shape metadata to `Piece` and sample target placements to `Level` in `game-next/src/domain/model.ts`; `game-next/src/content/validate.ts` always fills these fields and rejects invalid shapes, orientations, duplicate cells and cells that differ from the shared shape polygons.
+- Updated `game-next/src/content/fixtures.ts` to generate the adjacent diamond fixture with the top-left boundary rule using independent inequalities (800 cells per diamond); added seven validation cases in `game-next/tests/content.test.ts`.
+- Verification: `npx vitest run tests/content.test.ts` passed (14 tests), following seven expected failures before implementation; `npm run typecheck` passed; `npm test` passed (164 tests); `npm run content:validate` passed.
+
 ### 2026-10-02 - Author levels from source files; regenerate 1-1 as song-tinh-v2
 
 - Added optional orientation to `game-next/src/content/document.ts`, authoring geometry checks and document generation in `game-next/src/content/authoring.ts`, sources in `game-next/src/content/sources/`, and coverage in `game-next/tests/authoring.test.ts`.
