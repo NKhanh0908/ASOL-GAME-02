@@ -17,7 +17,7 @@ Paths below are relative to `docs/superpowers/`.
 | B | Level kit, `content:new`, 4 chapters / 28 levels | specs/2026-10-02-b-level-kit-chapters-design.md | plans/2026-10-02-b-level-kit-chapters.md | done | Reviewed and merged into `main` at `dee44e5` |
 | C | Chapter 2 + Hoa Pham levels (16) | specs/2026-10-02-c-chapter-2-hoa-pham-levels-design.md | plans/2026-10-02-c-chapter-2-hoa-pham-levels.md | done | All 16 levels approved in campaign order and merged to `main` |
 | BF | Board fit measured by piece cells | none — spec C §4 coordinates and plan D decision 3 | plans/2026-10-03-board-fit-by-cells.md | done | Merged to `main` with plan C |
-| D | Free placement + XOR solver | specs/2026-10-02-d-free-placement-design.md | plans/2026-10-02-d-free-placement.md | approved | Not implemented |
+| D | Free placement + XOR solver | specs/2026-10-02-d-free-placement-design.md | plans/2026-10-02-d-free-placement.md | in-progress | Task 1 completed on feat/free-placement |
 | E | Level studio | specs/2026-10-02-e-level-studio-design.md | plans/2026-10-02-e-level-studio.md (index) | approved | §9 changes need re-review; starts only after A, B, D are green |
 | E1–E3 | Studio phase plans | spec E §8 | plans/2026-10-02-e1-difficulty.md, e2-studio-backend, e3-1-logic, e3-2-board-page, e3-3-check-acceptance | draft | Task skeletons only; run writing-plans on each before executing |
 | F1 | Motion foundation + scene transitions | specs/2026-10-03-f1-scene-transitions-design.md | plans/2026-10-03-f-motion-index.md (read first), f1-1-nen-tang, f1-2-director, f1-3-dan-dung | approved | §3.3 edited after approval; not started |

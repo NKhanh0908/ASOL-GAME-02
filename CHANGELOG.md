@@ -4,6 +4,13 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-04 - Add grid-intersection snapping helper for free placement
+
+- Added `GRID_STEP`, `SNAP_RADIUS_SQ` and `nearestGridOrigin` in `game-next/src/domain/freePlacement.ts` (spec D FP-03): nearest fitting multiple-of-8 origin within 6 cells, ties by smaller y then x.
+- Added `game-next/tests/freePlacement.test.ts` for mid-board, edge, rotated-fit and tie-break cases.
+- Verification: `npx vitest run tests/freePlacement.test.ts` failed before the module existed and passed after; `npm run typecheck` and `npm test` passed.
+
+
 ### 2026-10-03 - Complete Plan C approval gate
 
 - `docs/ai/STATUS.md` and `docs/ai/DOCS-INDEX.md`: marked Plan C complete and recorded its merge to `main`.
