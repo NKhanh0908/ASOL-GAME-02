@@ -24,7 +24,7 @@ export const campaignManifest: readonly ManifestEntry[] = [
   { id: '3-5', title: 'Thuyền Buồm Hoàng Hôn', chapter: 3, order: 17, contentRevision: 'thuyen-buom-v1', status: 'approved', dataPath: 'src/content/levels/3-5.json' },
   { id: '3-6', title: 'Mèo Thần', chapter: 3, order: 18, contentRevision: 'meo-than-v1', status: 'approved', dataPath: 'src/content/levels/3-6.json' },
   { id: '3-7', title: 'Hoa Sen', chapter: 3, order: 19, contentRevision: 'hoa-sen-v1', status: 'approved', dataPath: 'src/content/levels/3-7.json' },
-  { id: '3-8', title: 'Kim Tự Tháp Nhật Thực', chapter: 3, order: 20, contentRevision: 'kim-tu-thap-v1', status: 'validated', dataPath: 'src/content/levels/3-8.json' },
+  { id: '3-8', title: 'Kim Tự Tháp Nhật Thực', chapter: 3, order: 20, contentRevision: 'kim-tu-thap-v1', status: 'approved', dataPath: 'src/content/levels/3-8.json' },
   { id: '3-9', title: 'Sao Bát Phương', chapter: 3, order: 21, contentRevision: 'sao-bat-phuong-v1', status: 'validated', dataPath: 'src/content/levels/3-9.json' },
   { id: '3-10', title: 'Mandala Thiên Cầu', chapter: 3, order: 22, contentRevision: 'mandala-v1', status: 'validated', dataPath: 'src/content/levels/3-10.json' },
 

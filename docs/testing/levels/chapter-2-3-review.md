@@ -17,7 +17,7 @@ Chạy `cd game-next && npm run dev`, rồi mở `http://localhost:5173/?scene=p
 | 3-5 Thuyền Buồm Hoàng Hôn | `approved (thuyen-buom-v1)` | [3-5.svg](3-5.svg) | [3-5-report.md](3-5-report.md) | [chơi](screens/3-5-play.png) · [kéo](screens/3-5-drag.png) · [thắng](screens/3-5-win.png) |
 | 3-6 Mèo Thần | `approved (meo-than-v1)` | [3-6.svg](3-6.svg) | [3-6-report.md](3-6-report.md) | [chơi](screens/3-6-play.png) · [kéo](screens/3-6-drag.png) · [thắng](screens/3-6-win.png) |
 | 3-7 Hoa Sen | `approved (hoa-sen-v1)` | [3-7.svg](3-7.svg) | [3-7-report.md](3-7-report.md) | [chơi](screens/3-7-play.png) · [kéo](screens/3-7-drag.png) · [thắng](screens/3-7-win.png) |
-| 3-8 Kim Tự Tháp Nhật Thực | `validated` | [3-8.svg](3-8.svg) | [3-8-report.md](3-8-report.md) | [chơi](screens/3-8-play.png) · [kéo](screens/3-8-drag.png) · [thắng](screens/3-8-win.png) |
+| 3-8 Kim Tự Tháp Nhật Thực | `approved (kim-tu-thap-v1)` | [3-8.svg](3-8.svg) | [3-8-report.md](3-8-report.md) | [chơi](screens/3-8-play.png) · [kéo](screens/3-8-drag.png) · [thắng](screens/3-8-win.png) |
 | 3-9 Sao Bát Phương | `validated` | [3-9.svg](3-9.svg) | [3-9-report.md](3-9-report.md) | [chơi](screens/3-9-play.png) · [kéo](screens/3-9-drag.png) · [thắng](screens/3-9-win.png) |
 | 3-10 Mandala Thiên Cầu | `validated` | [3-10.svg](3-10.svg) | [3-10-report.md](3-10-report.md) | [chơi](screens/3-10-play.png) · [kéo](screens/3-10-drag.png) · [thắng](screens/3-10-win.png) |
 
