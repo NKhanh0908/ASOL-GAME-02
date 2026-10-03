@@ -15,7 +15,7 @@ Cả ba spec được NKhanh0908 duyệt ngày 2026-10-03. Mục "Điều chỉn
 
 | # | File | Task | Nhánh | Giao được gì |
 |---|---|---|---|---|
-| 1 | `2026-10-03-f1-1-nen-tang.md` | F1 1–3 | `feat/motion-f1` (tách từ `docs/level-system-specs`) | Easing, `TransitionTimeline`, bảng bước 7 tuyến; game chưa đổi |
+| 1 | `2026-10-03-f1-1-nen-tang.md` | F1 1–3 | `feat/motion-f1` (tách từ `main`) | Easing, `TransitionTimeline`, bảng bước 7 tuyến; game chưa đổi |
 | 2 | `2026-10-03-f1-2-director.md` | F1 4–6 | `feat/motion-f1` | Lưu Giảm chuyển động, `BackgroundScene`, `SceneDirector` thay 13 `scene.start` |
 | 3 | `2026-10-03-f1-3-dan-dung.md` | F1 7–10 | `feat/motion-f1` | Dàn dựng Menu, Bản đồ, Play; kiểm tra cuối F1 |
 | 4 | `2026-10-03-f2-1-logic.md` | F2 1–4 | `feat/motion-f2` (tách từ `feat/motion-f1`) | Bỏ mask thừa khi kéo, tư thế mảnh, `feedbackEvents`, rung |
@@ -38,7 +38,7 @@ Nếu chọn chạy thẳng trong một phiên (skill `superpowers:executing-pla
 
 ## Luồng chính
 
-1. Điều phối tạo nhánh `feat/motion-f1` từ `docs/level-system-specs`.
+1. Điều phối tạo nhánh `feat/motion-f1` từ `main` (đã chứa toàn bộ `docs/level-system-specs` từ 2026-10-03).
 2. Chạy lần lượt bước 1 → 3. Hết mỗi giai đoạn chạy `npm run typecheck && npm test`. Hết bước 3 chạy thêm `npm run content:validate && npm run build`.
 3. **Điểm dừng 2.** Không qua thì quay lại task tương ứng của F1.
 4. Tạo `feat/motion-f2` từ `feat/motion-f1`. Chạy bước 4 → 6, với **điểm dừng 3** ở F2 Task 4 và **điểm dừng 4** sau bước 6.

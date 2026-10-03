@@ -4,6 +4,12 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-03 - Merge docs/level-system-specs into main and repoint branch references
+
+- Merged `docs/level-system-specs` into `main` (fast-forward); `game-next` tests 243/243 on the merged result.
+- `docs/ai/STATUS.md`: branch is now `main`; new work branches from `main`. `docs/superpowers/plans/2026-10-03-f-motion-index.md` and `2026-10-03-f1-1-nen-tang.md`: `feat/motion-f1` now branches from `main`.
+- Verification: grep for `level-system-specs` leaves only historical mentions (CHANGELOG, the completed AI onboarding plan, plan E's note); GitNexus MCP unavailable, detect_changes not run; no runtime code changed.
+
 ### 2026-10-03 - Tighten AI onboarding protocol after final review
 
 - `AGENTS.md`: defined "task" and made the controller the only STATUS/DOCS-INDEX writer in subagent runs; start-of-task now checks STATUS against git; GitNexus stats-line changes ride along with the next commit.

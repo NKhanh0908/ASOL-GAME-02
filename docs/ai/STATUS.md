@@ -4,7 +4,7 @@ Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; k
 
 ## Now
 
-- Branch: `docs/level-system-specs` (docs only, not merged into `main`; every `feat/*` branch is merged).
+- Branch: `main` (`docs/level-system-specs` merged on 2026-10-03; every `feat/*` branch is merged). New work branches from `main`.
 - Product state: `game-next/` with chapter 1 (levels 1-1…1-6) approved; 6 of 18 manifest levels approved.
 - Next step: F motion — stop point 1 in `docs/superpowers/plans/2026-10-03-f-motion-index.md`, then create `feat/motion-f1` and run task 1 of `docs/superpowers/plans/2026-10-03-f1-1-nen-tang.md`.
 
