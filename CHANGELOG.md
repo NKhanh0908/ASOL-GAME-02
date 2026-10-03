@@ -4,6 +4,13 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-03 - Approve level 3-2 Den Tien Tri
+
+- `game-next/src/content/manifest.ts`: promoted level `3-2` revision `den-tien-tri-v1` to `approved`, extending the campaign route after `3-1`.
+- Added `docs/testing/mirror-rebuild/3-2-content-review.md` and updated the Chapter 2–3 review index.
+- `game-next/tests/catalog.test.ts`: verified the approved level loads in campaign mode.
+- Verification: typecheck, 420/420 tests and content validation (22 authored levels) pass; GitNexus `detect_changes` reports only the expected manifest symbol with LOW risk.
+
 ### 2026-10-03 - Approve level 3-1 Nhat Nguyet Song Huyen
 
 - `game-next/src/content/manifest.ts`: promoted level `3-1` revision `nhat-nguyet-v1` to `approved`, extending the campaign route after `2-6`.
