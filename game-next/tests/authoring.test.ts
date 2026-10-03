@@ -148,7 +148,7 @@ describe('luật neo nhiễu KIT-03', () => {
     expect(source.pieces[0].anchors).toHaveLength(5);
   });
 
-  test('sau khi lọc chỉ còn một nghiệm; giữ neo trùng thì có nghiệm thứ hai', () => {
+  test('sau khi lọc chỉ còn một nghiệm; giữ neo trùng hai mảnh giống hệt đổi chỗ vẫn chỉ tính một nghiệm (FP-08)', () => {
     const doc = buildLevelDocument(twoCircles());
     expect(validateLevel(doc).ok).toBe(true);
     expect(searchSolutions(doc).solutionCount).toBe(1);
@@ -157,7 +157,7 @@ describe('luật neo nhiễu KIT-03', () => {
     const unsafe = structuredClone(doc);
     unsafe.pieces[0].anchors.push({ id: 'B', x: 88, y: 16 });
     unsafe.pieces[1].anchors.push({ id: 'C', x: 80, y: 16 });
-    expect(searchSolutions(unsafe).solutionCount).toBe(2);
+    expect(searchSolutions(unsafe).solutionCount).toBe(1);
   });
 
   test('bỏ neo nhiễu vượt biên bàn, giữ neo A', () => {

@@ -4,6 +4,14 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-04 - Route authoring reports through the solver and gate unproven levels
+
+- `searchSolutions` in `game-next/src/content/authoringReport.ts` now uses `solveLevel`; `SolutionReport` adds `proven`, `poseCounts` and `elapsedMs`; identical pieces swapping count as one solution (the twins test now expects 1).
+- Free-level reports list pose counts, solve time and proof status; unproven reports carry a warning; free-level SVGs draw only anchor A.
+- Added `releaseBlocker`; `scripts/validate-content.ts --release` rejects unproven levels without `allowUnproven`, and `scripts/author-level.ts` warns but still writes.
+- Verification: the new report tests failed before the change and passed after; typecheck, all tests, `content:validate` and `content:author -- --all` passed with no diff in committed levels or reports.
+
+
 ### 2026-10-04 - Add hashed meet-in-the-middle level solver
 
 - Added `game-next/src/content/solver.ts`: pose spaces for anchor and free levels, 64-bit XOR cell hashing from a fixed seed, balanced split with a 5,000,000 option limit, typed-array hash table, exact mask re-check and canonical keys so identical pieces swapping count once.

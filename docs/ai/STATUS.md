@@ -5,8 +5,8 @@ Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; k
 ## Now
 
 - Branch: `feat/free-placement`.
-- Product state: Plan D Tasks 1–5 complete (hashed meet-in-the-middle level solver); 480/480 tests pass.
-- Next step: Plan D Task 6 — Route authoring reports through the solver and gate unproven levels.
+- Product state: Plan D Tasks 1–6 complete (solver wired to authoring reports and release gate); 484/484 tests pass.
+- Next step: Plan D Task 7 — Skip kit decoys on free-placement pieces (`src/content/kit.ts`).
 
 ## Streams
 
