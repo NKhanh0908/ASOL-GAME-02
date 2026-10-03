@@ -4,6 +4,11 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-03 - Add level 2-6 Dai An Ho Menh (validated)
+
+- Added and registered `2-6` with its generated JSON/SVG/report and locked four-layer parity counts; added play/drag/win screenshots.
+- Verification: authoring reports 2560 target cells, one solution and no fewer-piece solution; typecheck, tests and content validation pass. GitNexus unavailable and skipped per reviewer direction.
+
 ### 2026-10-03 - Add level 2-5 Dong Ho Cat (validated)
 
 - Added and registered the renamed spec-C `2-5` source plus generated JSON/SVG/report; locked the nested hollow and three-layer revival counts in the shared content test.

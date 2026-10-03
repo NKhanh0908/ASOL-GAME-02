@@ -10,6 +10,7 @@ import { canhBuom } from './2-2.ts';
 import { traiTim } from './2-3.ts';
 import { matTienTri } from './2-4.ts';
 import { dongHoCat } from './2-5.ts';
+import { daiAn } from './2-6.ts';
 
 /** Mọi màn có nguồn mô tả. Thêm màn mới: tạo file nguồn rồi đăng ký ở đây. */
 export const LEVEL_SOURCES: Readonly<Record<string, LevelSource>> = {
@@ -24,4 +25,5 @@ export const LEVEL_SOURCES: Readonly<Record<string, LevelSource>> = {
   '2-3': traiTim,
   '2-4': matTienTri,
   '2-5': dongHoCat,
+  '2-6': daiAn,
 };
