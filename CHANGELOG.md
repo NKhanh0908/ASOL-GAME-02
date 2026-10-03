@@ -4,6 +4,11 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-03 - Add level 3-3 Ca Chep Sao (validated)
+
+- Added and registered `3-3` with generated JSON/SVG/report, locked its small-detail hollow count and added play/drag/win screenshots.
+- Verification: authoring reports 2304 target cells, one solution and no fewer-piece solution; typecheck, tests and content validation pass. GitNexus unavailable and skipped per reviewer direction.
+
 ### 2026-10-03 - Add level 3-2 Den Tien Tri (validated)
 
 - Added and registered `3-2` with generated JSON/SVG/report, locked its hollow-detail counts and added play/drag/win screenshots.
