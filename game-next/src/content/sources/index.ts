@@ -14,6 +14,7 @@ import { daiAn } from './2-6.ts';
 import { nhatNguyet } from './3-1.ts';
 import { denTienTri } from './3-2.ts';
 import { caChep } from './3-3.ts';
+import { ngonNen } from './3-4.ts';
 
 /** Mọi màn có nguồn mô tả. Thêm màn mới: tạo file nguồn rồi đăng ký ở đây. */
 export const LEVEL_SOURCES: Readonly<Record<string, LevelSource>> = {
@@ -32,4 +33,5 @@ export const LEVEL_SOURCES: Readonly<Record<string, LevelSource>> = {
   '3-1': nhatNguyet,
   '3-2': denTienTri,
   '3-3': caChep,
+  '3-4': ngonNen,
 };

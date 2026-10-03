@@ -13,6 +13,7 @@ import daiAn from './levels/2-6.json';
 import nhatNguyet from './levels/3-1.json';
 import denTienTri from './levels/3-2.json';
 import caChep from './levels/3-3.json';
+import ngonNen from './levels/3-4.json';
 import { campaignManifest } from './manifest.ts';
 import { validateLevel } from './validate.ts';
 import { DEV_LEVEL_DOCUMENTS } from './devLevels.ts';
@@ -34,6 +35,7 @@ const documents: Record<string, unknown> = {
   '3-1': nhatNguyet,
   '3-2': denTienTri,
   '3-3': caChep,
+  '3-4': ngonNen,
 };
 
 /**
