@@ -4,6 +4,13 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-03 - Add level template and content:new clone command
+
+- Added `game-next/src/content/sources/_template.ts`, a minimal valid source (one 48 square at the board center) with a Vietnamese comment per field; it is not registered in `LEVEL_SOURCES`.
+- Added `game-next/src/content/newLevel.ts` (const name and slug from Vietnamese titles, field rewrite, sorted registration in `sources/index.ts`) and `game-next/scripts/new-level.ts` behind `npm run content:new -- <id> [--from <id>] [--title "<name>"]`; existing ids in `sources/` or `studio/` are refused.
+- Added `game-next/tests/newLevel.test.ts`, which runs the command logic on temporary directories.
+- Verification: the new test failed before the modules existed and passes after (18/18); a trial `content:new` + `content:author` on throwaway id `9-1` passed and all generated artifacts were removed; `npm run typecheck`, `npm test` (301/301), and `npm run content:validate` pass. GitNexus impact and detect-changes were unavailable because no GitNexus tools are exposed in this session.
+
 ### 2026-10-03 - Drop unsafe decoy anchors during authoring
 
 - Added `filterDecoys` to `src/content/authoring.ts`: decoy anchors outside the board, or equal to the A anchor of another piece with the same shape, orientation and frame, are dropped before geometry checks; distractors pointing at dropped anchors are removed (KIT-03).
