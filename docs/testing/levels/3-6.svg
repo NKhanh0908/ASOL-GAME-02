@@ -1,0 +1,121 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="680" viewBox="0 0 512 680">
+<rect width="512" height="680" fill="#101a4f"/>
+<line x1="0" y1="0" x2="0" y2="640" stroke="#3b56b8" stroke-width="1"/>
+<line x1="32" y1="0" x2="32" y2="640" stroke="#22336f" stroke-width="1"/>
+<line x1="64" y1="0" x2="64" y2="640" stroke="#22336f" stroke-width="1"/>
+<line x1="96" y1="0" x2="96" y2="640" stroke="#3b56b8" stroke-width="1"/>
+<line x1="128" y1="0" x2="128" y2="640" stroke="#22336f" stroke-width="1"/>
+<line x1="160" y1="0" x2="160" y2="640" stroke="#22336f" stroke-width="1"/>
+<line x1="192" y1="0" x2="192" y2="640" stroke="#3b56b8" stroke-width="1"/>
+<line x1="224" y1="0" x2="224" y2="640" stroke="#22336f" stroke-width="1"/>
+<line x1="256" y1="0" x2="256" y2="640" stroke="#22336f" stroke-width="1"/>
+<line x1="288" y1="0" x2="288" y2="640" stroke="#3b56b8" stroke-width="1"/>
+<line x1="320" y1="0" x2="320" y2="640" stroke="#22336f" stroke-width="1"/>
+<line x1="352" y1="0" x2="352" y2="640" stroke="#22336f" stroke-width="1"/>
+<line x1="384" y1="0" x2="384" y2="640" stroke="#3b56b8" stroke-width="1"/>
+<line x1="416" y1="0" x2="416" y2="640" stroke="#22336f" stroke-width="1"/>
+<line x1="448" y1="0" x2="448" y2="640" stroke="#22336f" stroke-width="1"/>
+<line x1="480" y1="0" x2="480" y2="640" stroke="#3b56b8" stroke-width="1"/>
+<line x1="512" y1="0" x2="512" y2="640" stroke="#22336f" stroke-width="1"/>
+<line x1="0" y1="0" x2="512" y2="0" stroke="#3b56b8" stroke-width="1"/>
+<line x1="0" y1="32" x2="512" y2="32" stroke="#22336f" stroke-width="1"/>
+<line x1="0" y1="64" x2="512" y2="64" stroke="#22336f" stroke-width="1"/>
+<line x1="0" y1="96" x2="512" y2="96" stroke="#3b56b8" stroke-width="1"/>
+<line x1="0" y1="128" x2="512" y2="128" stroke="#22336f" stroke-width="1"/>
+<line x1="0" y1="160" x2="512" y2="160" stroke="#22336f" stroke-width="1"/>
+<line x1="0" y1="192" x2="512" y2="192" stroke="#3b56b8" stroke-width="1"/>
+<line x1="0" y1="224" x2="512" y2="224" stroke="#22336f" stroke-width="1"/>
+<line x1="0" y1="256" x2="512" y2="256" stroke="#22336f" stroke-width="1"/>
+<line x1="0" y1="288" x2="512" y2="288" stroke="#3b56b8" stroke-width="1"/>
+<line x1="0" y1="320" x2="512" y2="320" stroke="#22336f" stroke-width="1"/>
+<line x1="0" y1="352" x2="512" y2="352" stroke="#22336f" stroke-width="1"/>
+<line x1="0" y1="384" x2="512" y2="384" stroke="#3b56b8" stroke-width="1"/>
+<line x1="0" y1="416" x2="512" y2="416" stroke="#22336f" stroke-width="1"/>
+<line x1="0" y1="448" x2="512" y2="448" stroke="#22336f" stroke-width="1"/>
+<line x1="0" y1="480" x2="512" y2="480" stroke="#3b56b8" stroke-width="1"/>
+<line x1="0" y1="512" x2="512" y2="512" stroke="#22336f" stroke-width="1"/>
+<line x1="0" y1="544" x2="512" y2="544" stroke="#22336f" stroke-width="1"/>
+<line x1="0" y1="576" x2="512" y2="576" stroke="#3b56b8" stroke-width="1"/>
+<line x1="0" y1="608" x2="512" y2="608" stroke="#22336f" stroke-width="1"/>
+<line x1="0" y1="640" x2="512" y2="640" stroke="#22336f" stroke-width="1"/>
+<path d="M284 32h4v4h-4zM160 36h4v4h-4zM280 36h8v4h-8zM160 40h8v4h-8zM276 40h12v4h-12zM160 44h12v4h-12zM272 44h16v4h-16zM160 48h16v4h-16zM268 48h20v4h-20zM160 52h20v4h-20zM264 52h24v4h-24zM160 56h24v4h-24zM260 56h28v4h-28zM160 60h28v4h-28zM256 60h32v4h-32zM160 64h32v4h-32zM252 64h36v4h-36zM160 68h36v4h-36zM248 68h40v4h-40zM160 72h40v4h-40zM244 72h44v4h-44zM160 76h44v4h-44zM240 76h48v4h-48zM160 80h48v4h-48zM236 80h52v4h-52zM160 84h52v4h-52zM232 84h56v4h-56zM160 88h56v4h-56zM228 88h60v4h-60zM160 92h60v4h-60zM224 92h64v4h-64zM160 96h128v4h-128zM160 100h128v4h-128zM160 104h128v4h-128zM160 108h128v4h-128zM160 112h128v4h-128zM160 116h128v4h-128zM160 120h128v4h-128zM160 124h128v4h-128zM160 128h28v4h-28zM192 128h60v4h-60zM256 128h32v4h-32zM160 132h24v4h-24zM196 132h52v4h-52zM260 132h28v4h-28zM160 136h20v4h-20zM200 136h44v4h-44zM264 136h24v4h-24zM160 140h16v4h-16zM204 140h36v4h-36zM268 140h20v4h-20zM160 144h12v4h-12zM208 144h28v4h-28zM272 144h16v4h-16zM160 148h8v4h-8zM212 148h20v4h-20zM276 148h12v4h-12zM160 152h4v4h-4zM216 152h12v4h-12zM280 152h8v4h-8zM220 156h4v4h-4zM284 156h4v4h-4zM220 160h4v4h-4zM284 160h4v4h-4zM160 164h4v4h-4zM216 164h12v4h-12zM280 164h8v4h-8zM160 168h8v4h-8zM212 168h20v4h-20zM276 168h12v4h-12zM160 172h12v4h-12zM208 172h28v4h-28zM272 172h16v4h-16zM160 176h16v4h-16zM204 176h36v4h-36zM268 176h20v4h-20zM160 180h20v4h-20zM200 180h44v4h-44zM264 180h24v4h-24zM160 184h24v4h-24zM196 184h52v4h-52zM260 184h28v4h-28zM160 188h28v4h-28zM192 188h60v4h-60zM256 188h32v4h-32zM160 192h128v4h-128zM160 196h128v4h-128zM160 200h128v4h-128zM160 204h128v4h-128zM160 208h128v4h-128zM160 212h128v4h-128zM160 216h128v4h-128zM160 220h128v4h-128zM220 224h4v4h-4zM216 228h12v4h-12zM416 228h4v4h-4zM212 232h20v4h-20zM416 232h8v4h-8zM208 236h28v4h-28zM416 236h12v4h-12zM204 240h36v4h-36zM416 240h16v4h-16zM200 244h44v4h-44zM416 244h20v4h-20zM196 248h52v4h-52zM416 248h24v4h-24zM192 252h60v4h-60zM416 252h28v4h-28zM188 256h68v4h-68zM416 256h32v4h-32zM184 260h76v4h-76zM416 260h36v4h-36zM180 264h84v4h-84zM416 264h40v4h-40zM176 268h92v4h-92zM416 268h44v4h-44zM172 272h100v4h-100zM416 272h48v4h-48zM168 276h108v4h-108zM416 276h52v4h-52zM164 280h116v4h-116zM416 280h56v4h-56zM160 284h124v4h-124zM416 284h60v4h-60zM156 288h132v4h-132zM416 288h64v4h-64zM152 292h140v4h-140zM416 292h64v4h-64zM148 296h148v4h-148zM416 296h64v4h-64zM144 300h156v4h-156zM416 300h64v4h-64zM140 304h164v4h-164zM416 304h64v4h-64zM136 308h172v4h-172zM416 308h64v4h-64zM132 312h180v4h-180zM416 312h64v4h-64zM128 316h188v4h-188zM416 316h64v4h-64zM124 320h196v4h-196zM416 320h64v4h-64zM120 324h204v4h-204zM416 324h64v4h-64zM116 328h212v4h-212zM416 328h64v4h-64zM112 332h220v4h-220zM416 332h64v4h-64zM108 336h228v4h-228zM416 336h64v4h-64zM104 340h236v4h-236zM416 340h64v4h-64zM100 344h244v4h-244zM416 344h64v4h-64zM96 348h252v4h-252zM416 348h64v4h-64zM92 352h260v4h-260zM416 352h64v4h-64zM88 356h268v4h-268zM420 356h60v4h-60zM84 360h276v4h-276zM424 360h56v4h-56zM80 364h284v4h-284zM428 364h52v4h-52zM76 368h292v4h-292zM432 368h48v4h-48zM72 372h300v4h-300zM436 372h44v4h-44zM68 376h308v4h-308zM440 376h40v4h-40zM64 380h316v4h-316zM444 380h36v4h-36zM60 384h324v4h-324zM448 384h32v4h-32zM56 388h332v4h-332zM452 388h28v4h-28zM52 392h340v4h-340zM456 392h24v4h-24zM48 396h348v4h-348zM460 396h20v4h-20zM44 400h356v4h-356zM464 400h16v4h-16zM40 404h364v4h-364zM468 404h12v4h-12zM36 408h372v4h-372zM472 408h8v4h-8zM32 412h380v4h-380zM476 412h4v4h-4z" fill="#BFE3FF" fill-opacity="0.35"/>
+<polygon data-piece="S1" points="160,96 288,96 288,224 160,224" fill="none" stroke="#FFC857" stroke-width="3"/>
+<polygon data-piece="E1" points="160,32 160,96 224,96" fill="none" stroke="#7EE0A1" stroke-width="3"/>
+<polygon data-piece="E2" points="288,32 288,96 224,96" fill="none" stroke="#FF8FA3" stroke-width="3"/>
+<polygon data-piece="B1" points="32,416 416,416 224,224" fill="none" stroke="#8FB8FF" stroke-width="3"/>
+<polygon data-piece="T1" points="480,288 480,416 416,352 416,224" fill="none" stroke="#FFC857" stroke-width="3"/>
+<polygon data-piece="Y1" points="192,128 224,160 192,192 160,160" fill="none" stroke="#7EE0A1" stroke-width="3"/>
+<polygon data-piece="Y2" points="256,128 288,160 256,192 224,160" fill="none" stroke="#FF8FA3" stroke-width="3"/>
+<polygon points="192,96 320,96 320,224 192,224" fill="none" stroke="#FFC857" stroke-width="2" stroke-dasharray="8 6" stroke-opacity="0.8"/>
+<polygon points="128,96 256,96 256,224 128,224" fill="none" stroke="#FFC857" stroke-width="2" stroke-dasharray="8 6" stroke-opacity="0.8"/>
+<polygon points="160,128 288,128 288,256 160,256" fill="none" stroke="#FFC857" stroke-width="2" stroke-dasharray="8 6" stroke-opacity="0.8"/>
+<polygon points="192,32 192,96 256,96" fill="none" stroke="#7EE0A1" stroke-width="2" stroke-dasharray="8 6" stroke-opacity="0.8"/>
+<polygon points="128,32 128,96 192,96" fill="none" stroke="#7EE0A1" stroke-width="2" stroke-dasharray="8 6" stroke-opacity="0.8"/>
+<polygon points="160,64 160,128 224,128" fill="none" stroke="#7EE0A1" stroke-width="2" stroke-dasharray="8 6" stroke-opacity="0.8"/>
+<polygon points="320,32 320,96 256,96" fill="none" stroke="#FF8FA3" stroke-width="2" stroke-dasharray="8 6" stroke-opacity="0.8"/>
+<polygon points="256,32 256,96 192,96" fill="none" stroke="#FF8FA3" stroke-width="2" stroke-dasharray="8 6" stroke-opacity="0.8"/>
+<polygon points="288,64 288,128 224,128" fill="none" stroke="#FF8FA3" stroke-width="2" stroke-dasharray="8 6" stroke-opacity="0.8"/>
+<polygon points="64,416 448,416 256,224" fill="none" stroke="#8FB8FF" stroke-width="2" stroke-dasharray="8 6" stroke-opacity="0.8"/>
+<polygon points="0,416 384,416 192,224" fill="none" stroke="#8FB8FF" stroke-width="2" stroke-dasharray="8 6" stroke-opacity="0.8"/>
+<polygon points="32,448 416,448 224,256" fill="none" stroke="#8FB8FF" stroke-width="2" stroke-dasharray="8 6" stroke-opacity="0.8"/>
+<polygon points="448,288 448,416 384,352 384,224" fill="none" stroke="#FFC857" stroke-width="2" stroke-dasharray="8 6" stroke-opacity="0.8"/>
+<polygon points="224,128 256,160 224,192 192,160" fill="none" stroke="#7EE0A1" stroke-width="2" stroke-dasharray="8 6" stroke-opacity="0.8"/>
+<polygon points="160,128 192,160 160,192 128,160" fill="none" stroke="#7EE0A1" stroke-width="2" stroke-dasharray="8 6" stroke-opacity="0.8"/>
+<polygon points="192,160 224,192 192,224 160,192" fill="none" stroke="#7EE0A1" stroke-width="2" stroke-dasharray="8 6" stroke-opacity="0.8"/>
+<polygon points="288,128 320,160 288,192 256,160" fill="none" stroke="#FF8FA3" stroke-width="2" stroke-dasharray="8 6" stroke-opacity="0.8"/>
+<polygon points="224,128 256,160 224,192 192,160" fill="none" stroke="#FF8FA3" stroke-width="2" stroke-dasharray="8 6" stroke-opacity="0.8"/>
+<polygon points="256,160 288,192 256,224 224,192" fill="none" stroke="#FF8FA3" stroke-width="2" stroke-dasharray="8 6" stroke-opacity="0.8"/>
+<circle cx="160" cy="96" r="4" fill="#FFC857"/>
+<text x="166" y="110" fill="#DDF2FF" font-family="sans-serif" font-size="12">S1.A</text>
+<circle cx="192" cy="96" r="4" fill="#FFC857"/>
+<text x="198" y="110" fill="#DDF2FF" font-family="sans-serif" font-size="12">S1.B</text>
+<circle cx="128" cy="96" r="4" fill="#FFC857"/>
+<text x="134" y="110" fill="#DDF2FF" font-family="sans-serif" font-size="12">S1.C</text>
+<circle cx="160" cy="128" r="4" fill="#FFC857"/>
+<text x="166" y="142" fill="#DDF2FF" font-family="sans-serif" font-size="12">S1.D</text>
+<circle cx="160" cy="32" r="4" fill="#7EE0A1"/>
+<text x="166" y="46" fill="#DDF2FF" font-family="sans-serif" font-size="12">E1.A</text>
+<circle cx="192" cy="32" r="4" fill="#7EE0A1"/>
+<text x="198" y="46" fill="#DDF2FF" font-family="sans-serif" font-size="12">E1.B</text>
+<circle cx="128" cy="32" r="4" fill="#7EE0A1"/>
+<text x="134" y="46" fill="#DDF2FF" font-family="sans-serif" font-size="12">E1.C</text>
+<circle cx="160" cy="64" r="4" fill="#7EE0A1"/>
+<text x="166" y="78" fill="#DDF2FF" font-family="sans-serif" font-size="12">E1.D</text>
+<circle cx="224" cy="32" r="4" fill="#FF8FA3"/>
+<text x="230" y="46" fill="#DDF2FF" font-family="sans-serif" font-size="12">E2.A</text>
+<circle cx="256" cy="32" r="4" fill="#FF8FA3"/>
+<text x="262" y="46" fill="#DDF2FF" font-family="sans-serif" font-size="12">E2.B</text>
+<circle cx="192" cy="32" r="4" fill="#FF8FA3"/>
+<text x="198" y="46" fill="#DDF2FF" font-family="sans-serif" font-size="12">E2.C</text>
+<circle cx="224" cy="64" r="4" fill="#FF8FA3"/>
+<text x="230" y="78" fill="#DDF2FF" font-family="sans-serif" font-size="12">E2.D</text>
+<circle cx="32" cy="32" r="4" fill="#8FB8FF"/>
+<text x="38" y="46" fill="#DDF2FF" font-family="sans-serif" font-size="12">B1.A</text>
+<circle cx="64" cy="32" r="4" fill="#8FB8FF"/>
+<text x="70" y="46" fill="#DDF2FF" font-family="sans-serif" font-size="12">B1.B</text>
+<circle cx="0" cy="32" r="4" fill="#8FB8FF"/>
+<text x="6" y="46" fill="#DDF2FF" font-family="sans-serif" font-size="12">B1.C</text>
+<circle cx="32" cy="64" r="4" fill="#8FB8FF"/>
+<text x="38" y="78" fill="#DDF2FF" font-family="sans-serif" font-size="12">B1.D</text>
+<circle cx="352" cy="224" r="4" fill="#FFC857"/>
+<text x="358" y="238" fill="#DDF2FF" font-family="sans-serif" font-size="12">T1.A</text>
+<circle cx="320" cy="224" r="4" fill="#FFC857"/>
+<text x="326" y="238" fill="#DDF2FF" font-family="sans-serif" font-size="12">T1.B</text>
+<circle cx="160" cy="128" r="4" fill="#7EE0A1"/>
+<text x="166" y="142" fill="#DDF2FF" font-family="sans-serif" font-size="12">Y1.A</text>
+<circle cx="192" cy="128" r="4" fill="#7EE0A1"/>
+<text x="198" y="142" fill="#DDF2FF" font-family="sans-serif" font-size="12">Y1.B</text>
+<circle cx="128" cy="128" r="4" fill="#7EE0A1"/>
+<text x="134" y="142" fill="#DDF2FF" font-family="sans-serif" font-size="12">Y1.C</text>
+<circle cx="160" cy="160" r="4" fill="#7EE0A1"/>
+<text x="166" y="174" fill="#DDF2FF" font-family="sans-serif" font-size="12">Y1.D</text>
+<circle cx="224" cy="128" r="4" fill="#FF8FA3"/>
+<text x="230" y="142" fill="#DDF2FF" font-family="sans-serif" font-size="12">Y2.A</text>
+<circle cx="256" cy="128" r="4" fill="#FF8FA3"/>
+<text x="262" y="142" fill="#DDF2FF" font-family="sans-serif" font-size="12">Y2.B</text>
+<circle cx="192" cy="128" r="4" fill="#FF8FA3"/>
+<text x="198" y="142" fill="#DDF2FF" font-family="sans-serif" font-size="12">Y2.C</text>
+<circle cx="224" cy="160" r="4" fill="#FF8FA3"/>
+<text x="230" y="174" fill="#DDF2FF" font-family="sans-serif" font-size="12">Y2.D</text>
+<text x="8" y="666" fill="#DDF2FF" font-family="sans-serif" font-size="16">3-6 · Mèo Thần · meo-than-v1</text>
+</svg>

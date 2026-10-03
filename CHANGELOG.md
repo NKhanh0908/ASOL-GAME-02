@@ -4,6 +4,11 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-03 - Add level 3-6 Meo Than (validated)
+
+- Added and registered `3-6` with generated JSON/SVG/report and play/drag/win screenshots; its tail `T1` is a parallelogram whose frame box overhangs the right edge, accepted by the cell-based fit from `fix/board-fit-by-cells`.
+- `game-next/tests/levelContent.test.ts` and `tests/content.test.ts`: locked 3840 target cells, 256 hollow cells (the two diamond eyes), no revived cells.
+- Verification: `content:author -- 3-6` reports 3840 target cells, one solution and no fewer-piece solution — exactly the spec C section 3 numbers; typecheck, 414/414 tests and content validation (21 levels) pass; screenshots re-taken after restarting the dev server and inspected at 720x1280. GitNexus unavailable and skipped.
 ### 2026-10-03 - Add G audio design spec
 
 - Added `docs/superpowers/specs/2026-10-03-g-audio-design.md`: two ambient tracks streamed via `HTMLAudioElement` and crossfaded on F1 routes, WebAudio SFX driven by F2 `FeedbackEvent`s with snap pitches on a major pentatonic scale, `settings.music`/`settings.sfx` toggles, CC0/Pixabay asset manifest with `ffmpeg-static` processing, and a G0 → G1 → G2 rollout with a reviewer listening stop.
