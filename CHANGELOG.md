@@ -4,6 +4,11 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-03 - Add docs registry for AI onboarding
+
+- Added `docs/ai/DOCS-INDEX.md`: every spec and plan in `docs/superpowers/` grouped into 21 rows with a fixed state vocabulary, split into active and history tables, plus one line per other doc folder.
+- Verification: link check passes; every spec and plan file is referenced; state cells counted; no runtime code changed; GitNexus MCP unavailable, detect_changes not run.
+
 ### 2026-10-03 - Add implementation plan for AI onboarding context
 
 - Recorded reviewer approval of `docs/superpowers/specs/2026-10-03-ai-onboarding-context-design.md` by NKhanh0908: "duyệt spec".
