@@ -4,6 +4,11 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-03 - Isolate content:new tests from the live source registry
+
+- `game-next/tests/newLevel.test.ts`: replaced the copied live `sources/index.ts` fixture with a fixed one-level registry so clone tests stay deterministic while plan B acceptance levels are temporarily registered.
+- Verification: the plan B acceptance flow keeps temporary levels `3-11` and `3-12` registered while `npm test` passes; GitNexus unavailable and skipped per reviewer direction.
+
 ### 2026-10-03 - Update GDD for the four-chapter campaign
 
 - `docs/gdd/master-gdd.md`: section 4 now describes four chapters (6 + 6 + 10 + 6 levels) and the 28-level release gate; rotation moves to chapter 4 everywhere (overview, rotation rules, HUD layout, level select).

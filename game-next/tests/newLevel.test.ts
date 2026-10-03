@@ -23,6 +23,16 @@ const MANIFEST = [
   { id: '1-1', title: 'Song Tinh', order: 1 },
   { id: '3-4', title: 'Ngọn Nến', order: 16 },
 ];
+const BASE_INDEX = [
+  "import type { LevelSource } from '../authoring.ts';",
+  "import { songTinh } from './1-1.ts';",
+  '',
+  '/** Mọi màn có nguồn mô tả. */',
+  'export const LEVEL_SOURCES: Readonly<Record<string, LevelSource>> = {',
+  "  '1-1': songTinh,",
+  '};',
+  '',
+].join('\n');
 
 describe('tên hằng, slug và thứ tự id', () => {
   test('bỏ dấu tiếng Việt, camelCase', () => {
@@ -161,9 +171,11 @@ describe('createNewLevel trên thư mục tạm', () => {
     studioDir = join(root, 'studio');
     mkdirSync(sourcesDir);
     mkdirSync(studioDir);
-    for (const file of ['1-1.ts', '_template.ts', 'index.ts']) {
+    for (const file of ['1-1.ts', '_template.ts']) {
       copyFileSync(join(REAL_SOURCES, file), join(sourcesDir, file));
     }
+    // Fixture cố định: test không phụ thuộc các nguồn đang đăng ký trong repo thật.
+    writeFileSync(join(sourcesDir, 'index.ts'), BASE_INDEX, 'utf8');
   });
 
   afterEach(() => {
