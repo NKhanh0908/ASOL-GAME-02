@@ -4,6 +4,14 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-04 - Add hashed meet-in-the-middle level solver
+
+- Added `game-next/src/content/solver.ts`: pose spaces for anchor and free levels, 64-bit XOR cell hashing from a fixed seed, balanced split with a 5,000,000 option limit, typed-array hash table, exact mask re-check and canonical keys so identical pieces swapping count once.
+- Exported `FREE_DEMO_SOURCE` (4 frame-48 pieces, anchor A only) from `game-next/src/content/devLevels.ts` as the shared free-placement fixture.
+- Added `game-next/tests/solver.test.ts` with 1/2/0-solution fixtures, identical-piece swap, fewer-piece case, limit cut-off, a 32x32 brute-force cross-check and a regression over every authored source.
+- Verification: `npx vitest run tests/solver.test.ts` failed before the module existed and passed after with the prototype-computed counts; typecheck and all tests passed.
+
+
 ### 2026-10-04 - Share grid snapping between drag preview, drop and renderer
 
 - `game-next/src/application/drag.ts` resolves the snap target once per call (`snapTarget`): anchors on anchor levels, `nearestGridOrigin` on free levels with `grid:<x>,<y>` candidate ids, so preview and drop always agree.
