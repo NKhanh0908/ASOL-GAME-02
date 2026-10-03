@@ -19,6 +19,6 @@ Chạy `cd game-next && npm run dev`, rồi mở `http://localhost:5173/?scene=p
 | 3-7 Hoa Sen | `approved (hoa-sen-v1)` | [3-7.svg](3-7.svg) | [3-7-report.md](3-7-report.md) | [chơi](screens/3-7-play.png) · [kéo](screens/3-7-drag.png) · [thắng](screens/3-7-win.png) |
 | 3-8 Kim Tự Tháp Nhật Thực | `approved (kim-tu-thap-v1)` | [3-8.svg](3-8.svg) | [3-8-report.md](3-8-report.md) | [chơi](screens/3-8-play.png) · [kéo](screens/3-8-drag.png) · [thắng](screens/3-8-win.png) |
 | 3-9 Sao Bát Phương | `approved (sao-bat-phuong-v1)` | [3-9.svg](3-9.svg) | [3-9-report.md](3-9-report.md) | [chơi](screens/3-9-play.png) · [kéo](screens/3-9-drag.png) · [thắng](screens/3-9-win.png) |
-| 3-10 Mandala Thiên Cầu | `validated` | [3-10.svg](3-10.svg) | [3-10-report.md](3-10-report.md) | [chơi](screens/3-10-play.png) · [kéo](screens/3-10-drag.png) · [thắng](screens/3-10-win.png) |
+| 3-10 Mandala Thiên Cầu | `approved (mandala-v1)` | [3-10.svg](3-10.svg) | [3-10-report.md](3-10-report.md) | [chơi](screens/3-10-play.png) · [kéo](screens/3-10-drag.png) · [thắng](screens/3-10-win.png) |
 
 Mỗi màn có đúng một nghiệm và không có nghiệm dùng ít mảnh hơn. Cột trạng thái được cập nhật khi từng màn được duyệt.
