@@ -9,10 +9,10 @@
 | Câu hỏi | Câu trả lời thiết kế |
 |---|---|
 | Dành cho ai? | Người thích puzzle quan sát, thử nghiệm bằng tay, chơi thư giãn mà không có đồng hồ hay giới hạn lượt. Độ tuổi và thói quen chơi cần xác nhận bằng playtest. |
-| Người chơi làm gì? | Xem bóng mục tiêu, kéo mảnh từ khay vào bàn, thử các vị trí neo, quan sát vùng hiện/trống, rồi từ Chương 3 xoay mảnh từng nấc 90°. |
+| Người chơi làm gì? | Xem bóng mục tiêu, kéo mảnh từ khay vào bàn, thử các vị trí neo, quan sát vùng hiện/trống, rồi ở Chương 4 xoay mảnh từng nấc 90°. |
 | Điểm khác biệt | Người chơi **tạo khoảng trống có chủ đích** bằng giao nhau, thay vì chỉ lấp đầy một khuôn; vùng giao của mảnh cùng màu có thể biến mất rồi hiện lại. |
 | Một phiên chơi | Mục tiêu thiết kế **2–5 phút** cho 1–3 màn đầu; đây là giả thuyết để đo, chưa phải kết quả thực tế. Có thể thoát về menu giữa hai màn. |
-| Quy mô MVP | 18 màn thủ công dự kiến, ba chương × sáu màn; Android dọc, offline, miễn phí, một màu mảnh, không quảng cáo/IAP. |
+| Quy mô MVP | 28 màn thủ công dự kiến, bốn chương (6 + 6 + 10 + 6 màn); Android dọc, offline, miễn phí, một màu mảnh, không quảng cáo/IAP. |
 | Tham chiếu | [Shadowmatic](https://www.shadowmatic.com/) cho cảm giác khám phá bóng hình; [Gorogoa](https://new.annapurnainteractive.com/en/games/gorogoa) cho cách người chơi thử thao tác hình ảnh. Đây là tham chiếu trải nghiệm, không phải mẫu sao chép cơ chế. |
 
 **Định vị:** dùng “puzzle ghép bóng bằng vùng giao” trong mô tả sản phẩm; tránh gọi là “match hình” vì dễ bị hiểu thành match-3 hoặc ghép cặp. Không dùng hình minh họa nhiều màu trong tài liệu MVP: giao nhau giữa **khác màu** chỉ thuộc giai đoạn sau, khi đó mới quyết định pha màu hay hiện màu mảnh trên cùng.
@@ -33,7 +33,15 @@ Vòng chơi: xem bóng mục tiêu → kéo/thả hoặc xoay → so vùng hiệ
 
 ### 1.2. “Vùng” và quy luật giao
 
-Bàn logic là lưới **128 × 192 ô**. Mỗi mảnh là tập các ô nằm trong khung vuông kích thước xác định; nét vẽ có thể mượt hơn nhưng phép chấm dùng ô lưới. Với một ô bất kỳ, đếm các **mảnh đã snap cùng màu** phủ ô đó: 0 mảnh = trống; 1 = hiện; 2 = trống; 3 = hiện. Nếu sau này có 4 mảnh cùng màu, ô lại trống. Chỉ vùng giao bị đổi trạng thái; phần còn lại của mảnh vẫn hiện. Mọi mảnh MVP có cùng một màu vàng cam. Vùng giao khác màu chưa có luật trong MVP và không xuất hiện trong 18 màn.
+Bàn logic là lưới **128 × 160 ô**. Mỗi mảnh là tập các ô nằm trong khung vuông kích thước xác định; nét vẽ có thể mượt hơn nhưng phép chấm dùng ô lưới. Với một ô bất kỳ, đếm các **mảnh đã snap cùng màu** phủ ô đó: 0 mảnh = trống; 1 = hiện; 2 = trống; 3 = hiện. Nếu sau này có 4 mảnh cùng màu, ô lại trống. Chỉ vùng giao bị đổi trạng thái; phần còn lại của mảnh vẫn hiện. Mọi mảnh MVP có cùng một màu vàng cam. Vùng giao khác màu chưa có luật trong MVP và không xuất hiện trong 28 màn.
+
+**Luật chẵn lẻ (chốt cho cả loạt spec A–E):** mặt nạ dùng XOR (`mask[idx] ^= 1` trong `domain/mask.ts`). Ô bị phủ lẻ lần thì hiện, chẵn lần thì ẩn:
+
+| Số lớp phủ một ô | 0 | 1 | 2 | 3 | 4 | 5 |
+|---|---|---|---|---|---|---|
+| Trạng thái | trống | hiện | trống | hiện lại | trống | hiện |
+
+Luật if-else "giao là ẩn" đã bị loại: mỗi mảnh chỉ cần một phép XOR mỗi ô, renderer chồng lớp chẵn/lẻ và bộ giải nghiệm duy nhất đều dựa trên XOR.
 
 **Thắng:** so từng ô của mặt nạ kết quả với mặt nạ mục tiêu. Mọi ô phải khớp trạng thái hiện/trống, không thiếu hoặc thừa. Không bắt buộc dùng một danh sách neo đúng duy nhất. Mảnh đang ở khay hoặc ở vị trí tạm chưa snap không tham gia mặt nạ. Trật tự đặt mảnh không đổi kết quả của MVP một màu.
 
@@ -48,7 +56,7 @@ Bàn logic là lưới **128 × 192 ô**. Mỗi mảnh là tập các ô nằm t
 
 ### 1.4. Xoay
 
-Xoay chỉ mở từ Chương 3. Người chơi chọn mảnh rồi bấm nút **Xoay ↻**; mỗi lần bấm xoay 90° theo chiều kim đồng hồ. Tâm xoay là **tâm khung vuông cục bộ** của mảnh. Với khung cạnh `N`, ô `(x,y)` sau một nấc thành `(N−1−y,x)`. Nếu mảnh đã snap, tọa độ neo/gốc khung **giữ nguyên**; chỉ tập ô phủ thay đổi, rồi game tính lại silhouette ngay. Nếu mảnh ở khay hoặc vị trí tạm, xoay thay đổi hướng xem trước nhưng không tạo placement được chấm. Không dùng cử chỉ xoay đa điểm trong MVP. Một lần xoay khiến ô mảnh vượt biên bàn phải bị từ chối với phản hồi ngắn; không cắt mất phần vượt biên rồi chấm như một hình khác. Quy tắc vượt biên này là thiết kế cần đồng bộ với code trước phát hành.
+Xoay chỉ mở ở Chương 4 (Luân Chuyển). Người chơi chọn mảnh rồi bấm nút **Xoay ↻**; mỗi lần bấm xoay 90° theo chiều kim đồng hồ. Tâm xoay là **tâm khung vuông cục bộ** của mảnh. Với khung cạnh `N`, ô `(x,y)` sau một nấc thành `(N−1−y,x)`. Nếu mảnh đã snap, tọa độ neo/gốc khung **giữ nguyên**; chỉ tập ô phủ thay đổi, rồi game tính lại silhouette ngay. Nếu mảnh ở khay hoặc vị trí tạm, xoay thay đổi hướng xem trước nhưng không tạo placement được chấm. Không dùng cử chỉ xoay đa điểm trong MVP. Một lần xoay khiến ô mảnh vượt biên bàn phải bị từ chối với phản hồi ngắn; không cắt mất phần vượt biên rồi chấm như một hình khác. Quy tắc vượt biên này là thiết kế cần đồng bộ với code trước phát hành.
 
 ### 1.5. Phản hồi và phục hồi
 
@@ -94,17 +102,17 @@ Toàn bộ bố cục màn chơi được chuẩn hóa theo các dải toạ đ�
 | **$96 .. 184\text{ px}$** | $88\text{ px}$ | **Khoảng đệm trên & Huy hiệu Mục tiêu:** Vòng cung trang trí chiêm tinh; **Huy hiệu mục tiêu tròn đường kính $180\text{ px}$** đặt tại $(360, 168)$ chồng nhẹ lên mép trên tấm bia, chạm vào phóng to $1.35\times$ để soi chi tiết bóng cần ghép. |
 | **$184 .. 952\text{ px}$** | $768\text{ px}$ | **Tấm bia thiên văn (Bàn chơi $512 \times 768$):** Tọa độ gốc $(104, 184)$, lưới logic $128 \times 192$ ô ở $4\text{ px/ô}$. Khung ngoài viền kính xanh `#68B8DC` dày $10\text{ px}$ có hiệu ứng vát mép (bevel) và bo góc lớn $36\text{ px}$, đường chỉ viền phụ vàng hổ phách nét đứt `#D4A359`, lưới toạ độ $8\text{ ô}$ ($32\text{ px}$), chấm giao điểm, $4$ ký tự rune phương vị ($0^\circ, 90^\circ, 180^\circ, 270^\circ$) và $2$ vòng thiên văn xoay nền phía sau. |
 | **$968 .. 1108\text{ px}$** | $140\text{ px}$ | **Khay chứa mảnh ($512 \times 140$ tại $x=104$):** Dải đá sẫm bo góc $20\text{ px}$, chia ô lõm viền kính riêng cho từng mảnh cổ ngữ. Mảnh đã đặt lên bàn để lại bóng mờ định vị trong khay. |
-| **$1124 .. 1216\text{ px}$** | $92\text{ px}$ | **Hàng nút điều khiển dưới:** Nút Đặt lại tròn bên trái ($x=168, y=1170$, kích thước $80\text{ px}$, vùng chạm $96\text{ px}$); Nút Xoay ↻ tròn bên phải ($x=552, y=1170$) — **ẩn ở Chương 1 & 2**, chỉ xuất hiện từ Chương 3 (mờ khi chưa chọn mảnh). |
+| **$1124 .. 1216\text{ px}$** | $92\text{ px}$ | **Hàng nút điều khiển dưới:** Nút Đặt lại tròn bên trái ($x=168, y=1170$, kích thước $80\text{ px}$, vùng chạm $96\text{ px}$); Nút Xoay ↻ tròn bên phải ($x=552, y=1170$) — **ẩn ở Chương 1–3**, chỉ xuất hiện ở Chương 4 (mờ khi chưa chọn mảnh). |
 | **$1216 .. 1280\text{ px}$** | $64\text{ px}$ | **Safe Area đáy:** Vùng đệm bảo vệ, tránh xung đột với thanh cử chỉ vuốt (Gesture bar) của hệ điều hành Android/iOS. |
 
 #### 2.2.2. Chi tiết Các Màn hình trong Game
 1. **Màn hình chính (Main Menu):**
    - **Ấn Bia Cổ Ngữ Trung Tâm ($280\text{ px}$):** Hai vòng tròn thiên văn lồng nhau xoay chậm ngược chiều; tâm ấn bia đặt biểu tượng hai viên ngọc thoi chạm đỉnh (*Song Tinh*) phát quang nhịp nhàng.
    - **Logo Game:** Chữ **"MIRROR"** vàng kim sắc nét kèm phụ đề *"Cổ Ngữ Chiêm Tinh"*; phía dưới có **hình ảnh phản chiếu lật ngược (Mirror Reflection)** mờ dần xuống nền xanh đen vũ trụ.
-   - **Nút Hành Động Chính (Primary CTA):** Khối vàng đặc `#FFC857` bo góc $20\text{ px}$ nổi bật; hiển thị nhãn "Tiếp tục" cùng tên màn tiếp theo cần giải (ví dụ: *"Tiếp tục · Màn 1-2 · Bảo Tháp Tiên Tri"*); nếu hoàn thành 18 màn chuyển thành *"Chơi lại từ đầu"*.
+   - **Nút Hành Động Chính (Primary CTA):** Khối vàng đặc `#FFC857` bo góc $20\text{ px}$ nổi bật; hiển thị nhãn "Tiếp tục" cùng tên màn tiếp theo cần giải (ví dụ: *"Tiếp tục · Màn 1-2 · Bảo Tháp Tiên Tri"*); nếu hoàn thành 28 màn chuyển thành *"Chơi lại từ đầu"*.
    - **Nút Phụ & Cài đặt:** Nút "Chọn màn" viền kính xanh trong suốt; nút "Cài đặt" icon bánh răng cổ ngữ tròn ($56\text{ px}$) đặt tại góc trên bên phải.
 2. **Màn hình Chọn Màn (Level Select Screen — Bản đồ Chòm sao):**
-   - **Bố cục Chòm sao:** Phân chia 3 chương (*Khởi Nguyên*, *Giao Thoa*, *Luân Chuyển*). Mười tám màn chơi hiển thị dưới dạng các **node thiên thể tròn** nối kết bởi các đường liên kết sao phát sáng mảnh màu vàng `#D4A359` uốn lượn theo trục dọc màn hình.
+   - **Bố cục Chòm sao:** Phân chia 4 chương (*Khởi Nguyên*, *Giao Thoa*, *Họa Phẩm*, *Luân Chuyển*); số chòm sao và số nút suy ra từ manifest, chòm sao Họa Phẩm 10 nút xếp thành chuỗi đèn lồng (một nút giữa, một cặp hai bên, lặp lại). Hai mươi tám màn chơi hiển thị dưới dạng các **node thiên thể tròn** nối kết bởi các đường liên kết sao phát sáng mảnh màu vàng `#D4A359` uốn lượn theo trục dọc màn hình.
    - **Bốn trạng thái của Node:**
      - *Đã hoàn thành:* Node vàng đặc `#FFC857` có dấu ấn hoàn tất.
      - *Màn hiện tại:* Node có hào quang nhấp nháy êm dịu, nổi bật mời gọi tương tác.
@@ -189,16 +197,19 @@ Trò chơi sử dụng nghiêm ngặt 3 họ màu chủ đạo, tuyệt đối l
 
 ## Chương 4 — Campaign và hệ thống
 
-### 4.1. Cấu trúc 18 màn
+### 4.1. Cấu trúc 28 màn
 
-Ba chương, mỗi chương sáu màn:
+Bốn chương, 6 + 6 + 10 + 6 màn (`game-next/src/content/manifest.ts`, `order` 1 → 28):
 1. **Khởi nguyên — Ghép hình tiếp giáp** (1-1 đến 1-6): Làm quen kéo, thả, snap và giải đố hình học tạo biểu tượng cổ ngữ hoàn chỉnh; các mảnh tiếp giáp cạnh/chạm đỉnh, **hoàn toàn không xếp chồng**.
 2. **Giao thoa — Bí ẩn vùng giao** (2-1 đến 2-6): Giới thiệu cơ chế "phép trừ" và chẵn-lẻ (parity): hai mảnh chồng nhau tạo hoa văn rỗng (2 lớp), ba mảnh chồng nhau làm hạt nhân ngọc hiện lại (3 lớp).
-3. **Luân chuyển — Xoay chuyển định hướng** (3-1 đến 3-6): Mở khóa nút Xoay ↻ 90° kết hợp với quy luật giao thoa để hoàn thiện các đại ấn cổ ngữ đa hướng.
+3. **Họa Phẩm — Tranh ghép nghệ thuật** (3-1 đến 3-10): Tranh kiểu Tangram ghép từ vuông, tam giác lớn/nhỏ, thoi, tròn và bình hành; luật chẵn lẻ tạo chi tiết rỗng (mắt, cửa, vầng sáng) và chi tiết hiện lại. Không xoay.
+4. **Luân chuyển — Xoay chuyển định hướng** (4-1 đến 4-6): Mở khóa nút Xoay ↻ 90° kết hợp với quy luật giao thoa để hoàn thiện các đại ấn cổ ngữ đa hướng. Đổi mã từ 3-1 → 3-6 cũ, giữ tên màn.
 
-1-1 mở sẵn; hoàn thành một màn lưu tiến độ cục bộ và mở màn kế. Người chơi có thể chơi lại màn đã hoàn thành. Không có tài khoản, cloud, leaderboard, quảng cáo, IAP, tiền ảo hoặc booster. Custom Level là tính năng phụ từ prototype, không là điều kiện nghiệm thu campaign; nếu giữ, dữ liệu của nó tách khỏi tiến độ 18 màn.
+Chỉ Chương 4 bật `rotationEnabled`; validator báo `chapter-rotation-disabled` nếu màn chương 1–3 bật xoay và `chapter-rotation-required` nếu màn chương 4 tắt xoay. Bản phát hành (`npm run content:validate -- --release`) cần đủ 28 màn `approved`.
 
-Phụ lục A là **level sheet có hình và định nghĩa tạo hình cho sáu màn nền tảng** theo hệ thống Cổ Ngữ Tiên Tri mới. Phụ lục B là **12 khung thiết kế** mở rộng. Mỗi màn muốn lên bản phát hành phải có một nghiệm hợp lệ, ít nhất một lựa chọn sai có ý nghĩa, bóng mục tiêu giàu tính nghệ thuật biểu tượng và chơi lại được.
+1-1 mở sẵn; hoàn thành một màn lưu tiến độ cục bộ và mở màn kế. Người chơi có thể chơi lại màn đã hoàn thành. Không có tài khoản, cloud, leaderboard, quảng cáo, IAP, tiền ảo hoặc booster. Custom Level là tính năng phụ từ prototype, không là điều kiện nghiệm thu campaign; nếu giữ, dữ liệu của nó tách khỏi tiến độ 28 màn.
+
+Phụ lục A là **level sheet có hình và định nghĩa tạo hình cho sáu màn nền tảng** theo hệ thống Cổ Ngữ Tiên Tri mới. Phụ lục B là **khung thiết kế cho 22 màn** mở rộng (1-4 → 1-6, 2-4 → 2-6, Họa Phẩm 3-1 → 3-10, Luân Chuyển 4-1 → 4-6). Mỗi màn muốn lên bản phát hành phải có một nghiệm hợp lệ, ít nhất một lựa chọn sai có ý nghĩa, bóng mục tiêu giàu tính nghệ thuật biểu tượng và chơi lại được.
 
 ### 4.2. Lưu tiến độ và lỗi
 
@@ -206,7 +217,7 @@ Lưu tối thiểu `version` và danh sách ID màn hoàn thành; màn mở khó
 
 ### 4.3. Ranh giới giai đoạn sau
 
-Chương 4–5, mảnh nhiều màu, quy tắc giao giữa khác màu, tia sáng/pha màu, iOS, tài khoản và dịch vụ trực tuyến nằm ngoài MVP. Với đỏ + xanh giao nhau, hai hướng **pha thành màu mới** hoặc **hiện màu mảnh trên cùng** vẫn chưa được chọn và chỉ xem xét khi thiết kế giai đoạn sau. Quy tắc hai mảnh **cùng màu** làm vùng giao biến mất vẫn là nền tảng cần giữ.
+Chương 5 trở đi, mảnh nhiều màu, quy tắc giao giữa khác màu, tia sáng/pha màu, iOS, tài khoản và dịch vụ trực tuyến nằm ngoài MVP. Với đỏ + xanh giao nhau, hai hướng **pha thành màu mới** hoặc **hiện màu mảnh trên cùng** vẫn chưa được chọn và chỉ xem xét khi thiết kế giai đoạn sau. Quy tắc hai mảnh **cùng màu** làm vùng giao biến mất vẫn là nền tảng cần giữ.
 
 ---
 
@@ -214,7 +225,7 @@ Chương 4–5, mảnh nhiều màu, quy tắc giao giữa khác màu, tia sáng
 
 ### 5.1. Nền tảng và bố cục
 
-Prototype hiện dùng **Phaser 3 + TypeScript + Vite**, đóng gói Android bằng **Capacitor 8**. Canvas logic 720 × 1280 (tỷ lệ 9:16). Bàn chơi (tấm bia) đặt tại tọa độ `(104, 184)` kích thước 512 × 768, tương ứng lưới 128 × 192 ô ở 4 đơn vị canvas/ô; khay mảnh nằm tại `y = 968..1108` (kích thước 512 × 140); hàng nút điều khiển tại `y = 1124..1216` và Safe Area đáy tại `y = 1216..1280`. Ứng dụng khóa dọc và scale giữ tỷ lệ. Android project hiện đặt `minSdkVersion = 24` (Android 7.0), `targetSdkVersion = 36`. **Cấu hình máy tối thiểu để thử** là Android 7, RAM 2 GB và vùng hiển thị khả dụng khoảng 360 × 640 dp; đây là mục tiêu QA đề xuất, chưa phải mức hỗ trợ đã kiểm chứng. Cần test APK offline trên cấu hình đó và ít nhất một máy hiện hành, cả màn 16:9 lẫn màn cao hơn có cutout/thanh cử chỉ. Các nút, mẫu và khay phải nằm trong safe area khả dụng; nền có thể kéo tới mép màn. Không dùng 720 × 1280 như cam kết mọi thiết bị có đúng tỷ lệ đó.
+Prototype hiện dùng **Phaser 3 + TypeScript + Vite**, đóng gói Android bằng **Capacitor 8**. Canvas logic 720 × 1280 (tỷ lệ 9:16). Bàn chơi (tấm bia) đặt tại tọa độ `(104, 184)` kích thước 512 × 768, tương ứng lưới 128 × 160 ô ở 4 đơn vị canvas/ô; khay mảnh nằm tại `y = 968..1108` (kích thước 512 × 140); hàng nút điều khiển tại `y = 1124..1216` và Safe Area đáy tại `y = 1216..1280`. Ứng dụng khóa dọc và scale giữ tỷ lệ. Android project hiện đặt `minSdkVersion = 24` (Android 7.0), `targetSdkVersion = 36`. **Cấu hình máy tối thiểu để thử** là Android 7, RAM 2 GB và vùng hiển thị khả dụng khoảng 360 × 640 dp; đây là mục tiêu QA đề xuất, chưa phải mức hỗ trợ đã kiểm chứng. Cần test APK offline trên cấu hình đó và ít nhất một máy hiện hành, cả màn 16:9 lẫn màn cao hơn có cutout/thanh cử chỉ. Các nút, mẫu và khay phải nằm trong safe area khả dụng; nền có thể kéo tới mép màn. Không dùng 720 × 1280 như cam kết mọi thiết bị có đúng tỷ lệ đó.
 
 ### 5.2. Sự kiện đo lường và KPI
 
@@ -242,7 +253,7 @@ MVP offline: lưu **log playtest cục bộ/ẩn danh** hoặc ghi quan sát th�
 
 | Chủ đề | Quyết định hiện tại / việc cần làm |
 |---|---|
-| 12 màn mở rộng | Chưa duyệt dữ liệu mục tiêu/nghiệm. Hoàn thiện Phụ lục B trước khi gọi campaign 18 màn là hoàn chỉnh. |
+| 22 màn mở rộng | Chưa duyệt dữ liệu mục tiêu/nghiệm. Hoàn thiện Phụ lục B trước khi gọi campaign 28 màn là hoàn chỉnh. |
 | Snap 6 ô | Giá trị hiện có; thử trên máy nhỏ. Nếu nhiều lần thả tạm ngoài ý muốn, tăng vùng hút hoặc cho chỉ báo neo khi kéo. |
 | Hai neo gần bằng nhau | GDD ưu tiên neo đầu trong dữ liệu; code prototype hiện có thể chọn neo sau. Đồng bộ quy tắc trước nghiệm thu. |
 | FTUE | Kiểm tra việc cho thấy vùng giao từ 1-1 có gây rối trước 2-1 không. Nếu có, sửa bố cục/nhịp level. |
@@ -273,7 +284,7 @@ Quyết định phạm vi và kiến trúc giao diện đến từ [spec MVP](..
 
 ---
 
-## Phụ lục B — Khung thiết kế cho 12 màn Cổ Ngữ Tiên Tri mở rộng
+## Phụ lục B — Khung thiết kế cho 22 màn Cổ Ngữ Tiên Tri mở rộng
 
 Mỗi màn mang một hình tượng cổ ngữ xác định trong vũ trụ chiêm tinh, đảm bảo bóng mục tiêu luôn giàu ý nghĩa nghệ thuật:
 
@@ -283,11 +294,35 @@ Mỗi màn mang một hình tượng cổ ngữ xác định trong vũ trụ chi
 | **1-5** | **Chiếc Thuyền Sao** *(Astral Barque)* | Thân vuông (16,80) + mũi tam giác hướng 0 (64,80) áp cạnh phải thân + buồm tam giác hướng 3 (40,32) ngồi trên mép trên; không xếp chồng | 3: vuông, 2 tam giác |
 | **1-6** | **Vương Miện Bình Minh** *(Crown of Dawn)* | Đôi cánh của 1-3 + viên thoi (40,56) lấp vừa khe giữa: ba đỉnh cao bằng nhau tại x = 16, 64, 112; kết thúc Chương 1. Dùng thoi thay vuông vì ba mảnh khung 48 xếp ngang rộng 144 > 128 | 3: 2 tam giác, thoi |
 | **2-4** | **Mắt Tiên Tri** *(Eye of the Oracle)* | Vòng mí mắt rỗng (2 lớp giao) ôm trọn con ngươi phát sáng ở tâm (3 lớp hiện) | 3: 2 thoi, 1 tam giác/vuông |
-| **2-5** | **Chìa Khóa Thời Gian** *(Chrono Key)* | Rãnh răng khóa và tay cầm rỗng được tạo bởi các giao điểm triệt tiêu có tính toán | 3: vuông, thoi, tam giác |
+| **2-5** | **Đồng Hồ Cát** *(Hourglass)* | Vòng tròn rỗng (tròn 64 trừ tròn 48) ôm đồng hồ cát hai mái 32 hiện lại ba lớp. Thay bản Chìa Khóa Thời Gian | 4: tròn 64, tròn 48, 2 mái 32 |
 | **2-6** | **Đại Ấn Hộ Mệnh** *(Grand Sigil)* | Phức hợp cổ ngữ đỉnh cao Chương 2: Kết hợp đa tầng hoa văn chìm (2 lớp rỗng) và ngọc phong ấn (3 lớp) | 3-4 mảnh kết hợp |
-| **3-1** | **La Bàn Gió** *(Anemoi Needle)* | Mở khóa nút Xoay ↻: Xoay tam giác lệch 90° để chỉ đúng hướng gió | 2-3 mảnh, 1 nấc xoay |
-| **3-2** | **Lưỡi Kiếm Thiên Thể** *(Celestial Blade)* | Phân biệt đúng góc xoay với đúng vị trí neo | 3 mảnh, xoay 90°/180° |
-| **3-3** | **Cánh Cung Chiêm Tinh** *(Sagittarius Bow)* | Dùng nhiều nấc xoay để tạo độ cong và dây cung | 3 mảnh |
-| **3-4** | **Bánh Xe Số Phận** *(Rota Fortunae)* | Xoay 4 mảnh quanh tâm tạo bánh xe 4 nan hoa rỗng | 4 mảnh |
-| **3-5** | **Thánh Giá Thiên Cầu** *(Celestial Cross)* | Xoay để tạo vùng giao 3 lớp phát sáng tại tâm chữ thập | 4 mảnh |
-| **3-6** | **Đại Ấn Tiên Tri** *(The Grand Oracle Seal)* | Tổng hợp đỉnh cao: Placement + Xếp chồng 2/3 lớp + Xoay 90°; hoàn tất campaign | 4 mảnh |
+
+### Chương 3 — Họa Phẩm (10 màn)
+
+Tranh nghệ thuật ghép từ vuông, tam giác vuông lớn/nhỏ, thoi, tròn và bình hành, dùng luật chẵn lẻ để tạo chi tiết rỗng. Toạ độ đầy đủ ở spec `2026-10-02-c-chapter-2-hoa-pham-levels-design.md`.
+
+| Màn | Tên | Hình và hiệu ứng bóng | Mảnh |
+|---|---|---|---|
+| **3-1** | Nhật Nguyệt Song Huyền | Hai vầng tròn lồng nhau, thấu kính rỗng, ngôi sao hiện lại | 2 tròn 64, thoi 16 |
+| **3-2** | Đền Tiên Tri | Mái, thân, cửa vuông rỗng, cửa sổ tròn rỗng | mái 96, vuông 64, vuông 32, tròn 16 |
+| **3-3** | Cá Chép Sao | Thân thoi, đuôi, mắt tròn rỗng, miệng rỗng | thoi 64, 2 tam giác, tròn 16 |
+| **3-4** | Ngọn Nến | Quầng sáng tròn ôm ngọn lửa âm bản | 2 vuông 32, thoi 32, tròn 64 |
+| **3-5** | Thuyền Buồm Hoàng Hôn | Mặt trời lặn sau cánh buồm | 3 tam giác, tròn 32 |
+| **3-6** | Mèo Thần | Hai mắt rỗng, đuôi bình hành | 7 mảnh |
+| **3-7** | Hoa Sen | Đường rỗng tách cánh, mặt nước bình hành | thoi 48, 2 tam giác, 2 bình hành |
+| **3-8** | Kim Tự Tháp Nhật Thực | Cửa tam giác rỗng, nhật thực hai tròn | mái 128, mái 32, 2 tròn 32 |
+| **3-9** | Sao Bát Phương | Sao tám cánh, bát giác rỗng, mặt trời hiện lại | vuông 48, thoi 64, tròn 32 |
+| **3-10** | Mandala Thiên Cầu | Năm tầng chẵn lẻ chung tâm; kết chương | 2 tròn, vuông, 2 thoi |
+
+### Chương 4 — Luân Chuyển (6 màn, xoay)
+
+Đổi mã từ 3-1 → 3-6 cũ; tên và vai trò giữ nguyên.
+
+| Màn | Tên Biểu Tượng Cổ Ngữ | Vai trò sư phạm & Ràng buộc hình học | Mảnh dự kiến |
+|---|---|---|---|
+| **4-1** | **La Bàn Gió** *(Anemoi Needle)* | Mở khóa nút Xoay ↻: Xoay tam giác lệch 90° để chỉ đúng hướng gió | 2-3 mảnh, 1 nấc xoay |
+| **4-2** | **Lưỡi Kiếm Thiên Thể** *(Celestial Blade)* | Phân biệt đúng góc xoay với đúng vị trí neo | 3 mảnh, xoay 90°/180° |
+| **4-3** | **Cánh Cung Chiêm Tinh** *(Sagittarius Bow)* | Dùng nhiều nấc xoay để tạo độ cong và dây cung | 3 mảnh |
+| **4-4** | **Bánh Xe Số Phận** *(Rota Fortunae)* | Xoay 4 mảnh quanh tâm tạo bánh xe 4 nan hoa rỗng | 4 mảnh |
+| **4-5** | **Thánh Giá Thiên Cầu** *(Celestial Cross)* | Xoay để tạo vùng giao 3 lớp phát sáng tại tâm chữ thập | 4 mảnh |
+| **4-6** | **Đại Ấn Tiên Tri** *(The Grand Oracle Seal)* | Tổng hợp đỉnh cao: Placement + Xếp chồng 2/3 lớp + Xoay 90°; hoàn tất campaign | 4 mảnh |

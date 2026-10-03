@@ -4,6 +4,13 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-03 - Update GDD for the four-chapter campaign
+
+- `docs/gdd/master-gdd.md`: section 4 now describes four chapters (6 + 6 + 10 + 6 levels) and the 28-level release gate; rotation moves to chapter 4 everywhere (overview, rotation rules, HUD layout, level select).
+- Added the parity (XOR) rule and layer table to section 1.2 and fixed the board size to 128 x 160.
+- Appendix B adds the ten Hoa Pham levels, renames 2-5 to Dong Ho Cat and moves the rotation levels to a chapter 4 table as 4-1 to 4-6.
+- Verification: grep finds no remaining "18 màn", "từ Chương 3" or "3-1 đến 3-6"; appendix B has 10 chapter-3 rows and 6 chapter-4 rows; `npm test` passes. GitNexus was skipped because it is unavailable, as requested.
+
 ### 2026-10-03 - Document the level kit
 
 - Added `docs/content/level-kit.md`: shape table with generated previews, grid and center-to-origin formula, parity table, authoring workflow from `content:new` to `approved`, three annotated sample levels (1-2, 2-3, 3-10) and difficulty tips.
