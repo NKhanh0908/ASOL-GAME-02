@@ -4,6 +4,12 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-03 - Measure board fit by real cells in authoring
+
+- `game-next/src/content/authoring.ts`: added `anchorFitsBoard` checking real cells with `shapeCells` when `rotationEnabled: false` and requiring the whole frame box when `rotationEnabled: true`. Unified `checkSourceGeometry` and `filterDecoys` to use `anchorFitsBoard`.
+- `game-next/tests/authoring.test.ts`: added unit tests verifying `3-5 H1` (triangle o6) and `3-6 T1` (parallelogram o1) fit within board bounds, out-of-bounds cells and negative anchors are rejected, and rotating levels still require full frame box fit.
+- Verification: `npm run typecheck`, `npm test` (324/324 passing), `npm run content:validate` and `npm run content:author -- --all` pass with no level files changed (`git status --short game-next/src/content/levels docs/testing/levels` empty); GitNexus `detect_changes` passed with low risk.
+
 ### 2026-10-03 - Add the board-fit-by-cells plan
 
 - `docs/superpowers/plans/2026-10-03-board-fit-by-cells.md`: two-task plan replacing the frame-box bounds check in `content/authoring.ts` with a cell-based one (`anchorFitsBoard`), keeping the frame rule for `rotationEnabled` levels; no new spec, the authority is spec C §4 coordinates and plan D decision 3.
