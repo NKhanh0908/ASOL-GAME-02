@@ -4,6 +4,12 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-03 - Add implementation plan for AI onboarding context
+
+- Recorded reviewer approval of `docs/superpowers/specs/2026-10-03-ai-onboarding-context-design.md` by NKhanh0908: "duyệt spec".
+- Added `docs/superpowers/plans/2026-10-03-ai-onboarding-context.md` (6 tasks): docs registry `docs/ai/DOCS-INDEX.md` with reviewer confirmation of uncertain states, architecture map `docs/ai/ARCHITECTURE.md` with GitNexus hotspot measurement, `docs/ai/STATUS.md`, shared `AGENTS.md` entry with `CLAUDE.md` import and Antigravity rule, Vietnamese `README.md` rewrite, and a cold-start acceptance test by a fresh subagent.
+- Verification: registry draft dry-run against every spec and plan file (none unlisted, no broken paths, 21 state cells); architecture facts gathered from code by a research pass; GitNexus `analyze` failed (LadybugDB WAL checkpoint) and the MCP server disconnected, so hotspot measurement is deferred to plan task 2; no runtime code changed.
+
 ### 2026-10-03 - Add spec for AI onboarding context
 
 - Added `docs/superpowers/specs/2026-10-03-ai-onboarding-context-design.md`: canonical `AGENTS.md` entry for Claude Code, Codex and Antigravity, plus `docs/ai/STATUS.md`, `docs/ai/ARCHITECTURE.md` and `docs/ai/DOCS-INDEX.md`; agents refresh status at the end of every task; `game/` marked legacy; new specs and plans are written in English.

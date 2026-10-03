@@ -1,7 +1,7 @@
 # AI Onboarding Context — Design
 
 Date: 2026-10-03
-Status: design approved in discussion by NKhanh0908; written spec awaiting review
+Status: approved by NKhanh0908 on 2026-10-03 ("duyệt spec")
 
 ## 1. Problem
 
