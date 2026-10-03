@@ -4,6 +4,13 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-03 - Update GDD for chapter 2 and Hoa Pham, add review index
+
+- `docs/gdd/master-gdd.md`: replaced the remaining draft Chapter 2 rows with the implemented geometry and piece counts; retained the complete ten-level Hoa Pham table.
+- Added `docs/testing/levels/chapter-2-3-review.md`, linking all 16 SVG previews, solver reports and play/drag/win screenshots for the approval gate.
+- `docs/ai/STATUS.md`: recorded Task 17 complete and Task 18 waiting for reviewer approval beginning at 2-1.
+- Verification: docs-only link and table review; all referenced 16 SVG/report files and 48 screenshots exist. GitNexus impact/detect_changes unavailable in this session.
+
 ### 2026-10-03 - Add level 3-10 Mandala Thien Cau (validated)
 
 - Added and registered `3-10` with generated JSON/SVG/report and play/drag/win screenshots; locked its five-layer parity counts in the shared content tests.
