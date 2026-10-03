@@ -4,6 +4,15 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-03 - Add dev-only shapes v2 test level
+
+- `game-next/src/content/devLevels.ts`: defined runtime dev-only harness level `dev-shapes-v2` featuring two overlapping 64-frame circles (lens XOR intersection), a 48-frame parallelogram, and a 24-frame small triangle.
+- `game-next/src/content/catalog.ts`: enabled `loadLevel` to resolve dev levels from `DEV_LEVEL_DOCUMENTS` when `mode === 'harness'` and `import.meta.env.DEV` is active (tree-shaken in production).
+- `game-next/tests/catalog.test.ts`: added test confirming `dev-shapes-v2` loads in harness mode with expected shape kinds/sizes and throws in campaign mode.
+- `game-next/tests/authoringReport.test.ts`: verified SVG preview generation with 32 vertices for circles and 4 for parallelograms.
+- `docs/testing/levels/screens/dev-shapes-v2-{play,drag,win}.png`: captured headless Chrome screenshots verifying bezel rendering, empty XOR lens region on circle overlap, and victory dialog.
+- Verification: `npm run typecheck`, `npm test` (264/264 passing), `npm run content:validate`, `npm run build` all clean; `dev-shapes-v2` verified 0 occurrences in `dist/assets/*.js`; GitNexus `detect_changes` verified changes bounded to `loadLevel`.
+
 ### 2026-10-03 - Validate and author circle and parallelogram pieces
 
 - `game-next/src/content/validate.ts`: updated `validateLevel` to accept `circle` and `parallelogram` pieces, enforce structural frame integrity with `isStructuralFrame`, require `orientation` for triangles and parallelograms, and verify raster cells against `shapeCells`.

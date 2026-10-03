@@ -160,3 +160,19 @@ describe('Level 1-1 Song Tinh Content and Catalog Loader', () => {
   });
 });
 
+describe('Màn dev dùng để thử hình mới (spec A)', () => {
+  test('dev-shapes-v2 nạp được ở harness và có đủ hình tròn, bình hành, tam giác nhỏ', () => {
+    const level = loadLevel('dev-shapes-v2', 'harness');
+    expect(level.pieces.map((p) => [p.shapeKind, p.frameSize])).toEqual([
+      ['circle', 64],
+      ['circle', 64],
+      ['parallelogram', 48],
+      ['triangle', 24],
+    ]);
+  });
+
+  test('màn dev không bao giờ nạp ở campaign', () => {
+    expect(() => loadLevel('dev-shapes-v2', 'campaign')).toThrow('unavailable:dev-shapes-v2');
+  });
+});
+

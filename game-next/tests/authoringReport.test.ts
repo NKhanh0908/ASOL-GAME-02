@@ -1,6 +1,8 @@
 import { describe, expect, test } from 'vitest';
 import { buildLevelDocument } from '../src/content/authoring.ts';
 import type { LevelSource } from '../src/content/authoring.ts';
+import { DEV_LEVEL_DOCUMENTS } from '../src/content/devLevels.ts';
+import type { LevelDocument } from '../src/content/document.ts';
 import {
   renderPreviewSvg,
   renderReportMarkdown,
@@ -71,5 +73,15 @@ describe('renderPreviewSvg và renderReportMarkdown', () => {
     expect(md).toContain('Số nghiệm: 1');
     expect(md).toContain('Nghiệm dùng ít mảnh hơn: 0');
     expect(md).toContain('| D1 | B | Lệch trục ngang | 1280 |');
+  });
+});
+
+describe('ảnh xem trước vẽ được hai hình mới', () => {
+  test('SVG của dev-shapes-v2 có đa giác 32 đỉnh cho hình tròn và 4 đỉnh cho bình hành', () => {
+    const svg = renderPreviewSvg(DEV_LEVEL_DOCUMENTS['dev-shapes-v2'] as LevelDocument);
+    const circle = svg.match(/<polygon data-piece="C1" points="([^"]+)"/)!;
+    expect(circle[1].trim().split(' ')).toHaveLength(32);
+    const para = svg.match(/<polygon data-piece="P1" points="([^"]+)"/)!;
+    expect(para[1].trim().split(' ')).toHaveLength(4);
   });
 });
