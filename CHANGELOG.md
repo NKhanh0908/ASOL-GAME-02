@@ -4,6 +4,12 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-03 - Complete Plan A shapes v2 implementation and update docs
+
+- `docs/ai/DOCS-INDEX.md`: marked row A (`Shapes v2`) as `done`.
+- `docs/ai/STATUS.md`: updated current branch (`feat/shapes-v2`), streams, and next steps for Plan B.
+- Verification: link check clean; `npm run typecheck`, `npm test` (264/264 passing), `npm run content:validate`, `npm run build` all pass.
+
 ### 2026-10-03 - Add dev-only shapes v2 test level
 
 - `game-next/src/content/devLevels.ts`: defined runtime dev-only harness level `dev-shapes-v2` featuring two overlapping 64-frame circles (lens XOR intersection), a 48-frame parallelogram, and a 24-frame small triangle.
