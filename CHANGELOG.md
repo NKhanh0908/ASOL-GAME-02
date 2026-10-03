@@ -4,6 +4,12 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-03 - Commit UI mockups for a next pass and drop unused reference images
+
+- Added `docs/gui/ỉmprove-2/` (`gameplay.png`, `main.png`, `map.png`, `match.png`): mockups for a possible next UI pass, already listed in `docs/ai/DOCS-INDEX.md`; no spec yet.
+- Removed `docs/ref/image.png`, `image copy.png`, `image copy 2.png`, `image copy 3.png` (deleted in the working tree, not referenced by any doc); the two 2026-09-17 screenshots remain.
+- Verification: `git grep` finds no reference to the removed images; no runtime code changed.
+
 ### 2026-10-03 - Merge docs/level-system-specs into main and repoint branch references
 
 - Merged `docs/level-system-specs` into `main` (fast-forward); `game-next` tests 243/243 on the merged result.
