@@ -4,6 +4,11 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-03 - Add spec for AI onboarding context
+
+- Added `docs/superpowers/specs/2026-10-03-ai-onboarding-context-design.md`: canonical `AGENTS.md` entry for Claude Code, Codex and Antigravity, plus `docs/ai/STATUS.md`, `docs/ai/ARCHITECTURE.md` and `docs/ai/DOCS-INDEX.md`; agents refresh status at the end of every task; `game/` marked legacy; new specs and plans are written in English.
+- Verification: placeholder and consistency self-review; no runtime code changed.
+
 ### 2026-10-03 - Note single-repo GitNexus setup in the motion index
 
 - Updated the GitNexus section of `docs/superpowers/plans/2026-10-03-f-motion-index.md`: only this repository is indexed locally now, so the `repo` parameter is optional; examples keep it for safety.
