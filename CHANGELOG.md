@@ -4,6 +4,66 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-03 - Complete Plan B and refresh agent context
+
+- `docs/ai/STATUS.md` and `docs/ai/DOCS-INDEX.md`: marked Plan B complete on `feat/level-kit-chapters`, recorded the reviewer handoff and current 6/28 release state.
+- `docs/ai/ARCHITECTURE.md`: documented `content:new`, level-kit placement, KIT-03 filtering, the 28-level release gate and chapter 4 rotation invariant.
+- Verification: Plan B acceptance cloned/authored temporary levels 3-11 and 3-12 without manual edits, both reports had one solution, and the temporary files were removed; final typecheck, tests, content validation and build pass. GitNexus unavailable and skipped per reviewer direction.
+
+### 2026-10-03 - Isolate content:new tests from the live source registry
+
+- `game-next/tests/newLevel.test.ts`: replaced the copied live `sources/index.ts` fixture with a fixed one-level registry so clone tests stay deterministic while plan B acceptance levels are temporarily registered.
+- Verification: the plan B acceptance flow keeps temporary levels `3-11` and `3-12` registered while `npm test` passes; GitNexus unavailable and skipped per reviewer direction.
+
+### 2026-10-03 - Update GDD for the four-chapter campaign
+
+- `docs/gdd/master-gdd.md`: section 4 now describes four chapters (6 + 6 + 10 + 6 levels) and the 28-level release gate; rotation moves to chapter 4 everywhere (overview, rotation rules, HUD layout, level select).
+- Added the parity (XOR) rule and layer table to section 1.2 and fixed the board size to 128 x 160.
+- Appendix B adds the ten Hoa Pham levels, renames 2-5 to Dong Ho Cat and moves the rotation levels to a chapter 4 table as 4-1 to 4-6.
+- Verification: grep finds no remaining "18 màn", "từ Chương 3" or "3-1 đến 3-6"; appendix B has 10 chapter-3 rows and 6 chapter-4 rows; `npm test` passes. GitNexus was skipped because it is unavailable, as requested.
+
+### 2026-10-03 - Document the level kit
+
+- Added `docs/content/level-kit.md`: shape table with generated previews, grid and center-to-origin formula, parity table, authoring workflow from `content:new` to `approved`, three annotated sample levels (1-2, 2-3, 3-10) and difficulty tips.
+- Added `game-next/scripts/render-kit-gallery.ts` (`npm run content:gallery`) generating `docs/content/kit/*.svg` with `renderPreviewSvg`, and `game-next/tests/levelKitDoc.test.ts` keeping the document in sync with the gallery.
+- Verification: the doc test failed before the gallery script existed and passes after (3/3); `npm run content:gallery` wrote exactly 15 images; the 1-2 kit example matches the committed 1-2 source; `npm run typecheck` and `npm test` pass (319/319). GitNexus impact/detect-changes were unavailable because the index reports an invalid non-absolute `repoPath`.
+
+### 2026-10-03 - Derive the constellation map from the 28-level manifest
+
+- Added `game-next/src/presentation/constellationLayout.ts`: chapters and nodes come from the manifest; six-node chapters keep the previous zigzag, while the ten-node Hoa Pham chapter uses a lantern-chain pattern.
+- `game-next/src/presentation/LevelSelectScene.ts` draws four constellations with per-chapter tints and titles from `chapterLabel`; a dev-only `?scene=levelSelect&focus=<id>` (`game-next/src/launchParams.ts`, `game-next/src/main.ts`) scrolls to any level for screenshots.
+- Added layout overlap and bounds tests to `game-next/tests/levelSelect.test.ts` and screenshots `docs/testing/levels/screens/level-select-{khoi-nguyen,hoa-pham,luan-chuyen}.png`.
+- Verification: the layout tests failed before the module existed and pass after; `npm run typecheck`, `npm test` (316/316) and `npm run build` pass; all three visually inspected headless Chrome shots are 720x1280 and show the requested constellations without overlapping nodes.
+
+### 2026-10-03 - Restructure campaign into four chapters and 28 levels
+
+- Added `Chapter = 1 | 2 | 3 | 4` (`game-next/src/domain/model.ts`, `game-next/src/content/document.ts`) and `game-next/src/content/chapters.ts` (names, roman numerals, rotation rule, `RELEASE_LEVEL_COUNT = 28`, `releaseGate`).
+- `game-next/src/content/manifest.ts` now lists 28 levels: chapter 2 with 2-5 renamed Dong Ho Cat, new chapter 3 Hoa Pham (3-1 to 3-10), and the rotation chapter renumbered 4-1 to 4-6 with its titles kept; chapter 1 entries are unchanged.
+- `game-next/src/content/validate.ts` accepts chapters 1-4, keeps `chapter-rotation-disabled` for chapters 1-3, adds `chapter-rotation-required` for chapter 4 and forbids non-zero turns outside chapter 4.
+- `game-next/scripts/validate-content.ts --release` requires 28 approved levels; `game-next/src/presentation/Hud.ts` shows the rotate button only in chapter 4.
+- Updated manifest-dependent assertions in content, catalog, menu, progress, hud, levelSelect and session tests.
+- Verification: the updated tests failed against the 18-level manifest and pass after; `npm run typecheck`, `npm test` (310/310), `npm run content:validate` and `npm run content:author -- --all` pass with no level data change; `content:validate -- --release` fails as expected with "Required 28 approved levels, found 6"; GitNexus impact/detect-changes were unavailable because the CLI reported no indexed repositories.
+
+### 2026-10-03 - Add level template and content:new clone command
+
+- Added `game-next/src/content/sources/_template.ts`, a minimal valid source (one 48 square at the board center) with a Vietnamese comment per field; it is not registered in `LEVEL_SOURCES`.
+- Added `game-next/src/content/newLevel.ts` (const name and slug from Vietnamese titles, field rewrite, sorted registration in `sources/index.ts`) and `game-next/scripts/new-level.ts` behind `npm run content:new -- <id> [--from <id>] [--title "<name>"]`; existing ids in `sources/` or `studio/` are refused.
+- Added `game-next/tests/newLevel.test.ts`, which runs the command logic on temporary directories.
+- Verification: the new test failed before the modules existed and passes after (18/18); a trial `content:new` + `content:author` on throwaway id `9-1` passed and all generated artifacts were removed; `npm run typecheck`, `npm test` (301/301), and `npm run content:validate` pass. GitNexus impact and detect-changes were unavailable because no GitNexus tools are exposed in this session.
+
+### 2026-10-03 - Drop unsafe decoy anchors during authoring
+
+- Added `filterDecoys` to `src/content/authoring.ts`: decoy anchors outside the board, or equal to the A anchor of another piece with the same shape, orientation and frame, are dropped before geometry checks; distractors pointing at dropped anchors are removed (KIT-03).
+- `renderReportMarkdown` in `src/content/authoringReport.ts` lists dropped anchors; `scripts/author-level.ts` passes them through.
+- Added the 3-8 twin-circle regression to `tests/authoring.test.ts` (one solution after filtering, two without), and kept the existing protected-solution regression explicit in `tests/authoringReport.test.ts`.
+- Verification: the new tests failed before `filterDecoys` existed and pass after; `npm run typecheck`, `npm test` (283/283), `npm run content:author -- --all` and `npm run content:validate` pass with no committed level data or report diff; GitNexus impact and detect-changes were unavailable because the CLI reported no indexed repositories.
+
+### 2026-10-03 - Add level kit placement helpers
+
+- Added `src/content/kit.ts` with `piece` (center-based placement), `mirrorX`, `mirrorY`, `concentric`, `row` and the `NUDGE`/`CROSS` decoy offsets; every helper rejects off-grid origins and frames that fail `isValidFrame`.
+- Added `tests/kit.test.ts` comparing mirrored triangles and parallelograms by cell sets.
+- Verification: `npx vitest run tests/kit.test.ts` failed before the module existed and passes after (13/13); `npm run typecheck` and `npm test` pass (277/277).
+
 ### 2026-10-03 - Review and merge Plan A shapes v2 into main
 
 - Merged `feat/shapes-v2` into `main` (`55da659`, `--no-ff`) after review; both out-of-spec decisions (two-tier frame check `isStructuralFrame`/`isValidFrame`, 1.5% circle intersection tolerance) approved as implemented.

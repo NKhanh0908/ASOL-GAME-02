@@ -4,16 +4,12 @@ import { campaignManifest } from '../src/content/manifest.ts';
 import { levelAccess, resolveNextCampaignLevel } from '../src/domain/campaign.ts';
 
 describe('Menu Campaign Navigation and Chapter Grouping', () => {
-  test('18 màn được phân bố đều vào 3 chương (mỗi chương 6 màn)', () => {
-    const ch1 = campaignManifest.filter((m) => m.chapter === 1);
-    const ch2 = campaignManifest.filter((m) => m.chapter === 2);
-    const ch3 = campaignManifest.filter((m) => m.chapter === 3);
-
-    expect(ch1.length).toBe(6);
-    expect(ch2.length).toBe(6);
-    expect(ch3.length).toBe(6);
-    expect(ch1[0].id).toBe('1-1');
-    expect(ch3[5].id).toBe('3-6');
+  test('28 màn chia vào 4 chương 6/6/10/6', () => {
+    const chapter = (c: number) => campaignManifest.filter((m) => m.chapter === c);
+    expect([1, 2, 3, 4].map((c) => chapter(c).length)).toEqual([6, 6, 10, 6]);
+    expect(chapter(1)[0].id).toBe('1-1');
+    expect(chapter(3)[9].id).toBe('3-10');
+    expect(chapter(4)[5].id).toBe('4-6');
   });
 
   test('trạng thái hiển thị menu trước khi chơi: 1-1 mở, 1-2 chưa mở', () => {

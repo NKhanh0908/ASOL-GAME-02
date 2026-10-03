@@ -167,7 +167,7 @@ describe('Puzzle Session Commands and State Machine', () => {
     const level: Level = {
       id: 'rotate-ch3',
       title: 'Rotate Win',
-      chapter: 3,
+      chapter: 4,
       contentRevision: 'test',
       rotationEnabled: true,
       targetMask,

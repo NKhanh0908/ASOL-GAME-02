@@ -1,7 +1,9 @@
 import { describe, expect, test } from 'vitest';
 import rawSongTinh from '../src/content/levels/1-1.json';
-import { buildLevelDocument, checkSourceGeometry } from '../src/content/authoring.ts';
+import { buildLevelDocument, checkSourceGeometry, filterDecoys } from '../src/content/authoring.ts';
 import type { LevelSource } from '../src/content/authoring.ts';
+import { renderReportMarkdown, searchSolutions } from '../src/content/authoringReport.ts';
+import { CROSS, piece } from '../src/content/kit.ts';
 import { LEVEL_SOURCES } from '../src/content/sources/index.ts';
 import { validateLevel } from '../src/content/validate.ts';
 
@@ -99,5 +101,110 @@ describe('buildLevelDocument', () => {
     const doc = buildLevelDocument(source);
     expect(doc.pieces[0].orientation).toBe(3);
     expect('orientation' in doc.pieces[1]).toBe(false);
+  });
+});
+
+describe('luật neo nhiễu KIT-03', () => {
+  /** Ca 3-8: hai hình tròn giống hệt, neo nhiễu ±8 của mỗi cái trùng neo A của cái kia. */
+  function twoCircles(): LevelSource {
+    return {
+      ...cloneSource(songTinh),
+      id: 'test-kit03',
+      chapter: 3,
+      order: 20,
+      pieces: [
+        piece('C1', 'circle', 32, [96, 32], { decoys: CROSS }),
+        piece('C2', 'circle', 32, [104, 32], { decoys: CROSS }),
+      ],
+      sampleSolutions: [
+        [
+          { pieceId: 'C1', anchorId: 'A', turns: 0 },
+          { pieceId: 'C2', anchorId: 'A', turns: 0 },
+        ],
+      ],
+      distractors: [
+        { pieceId: 'C1', anchorId: 'B', reason: 'Lệch phải 8 ô' },
+        { pieceId: 'C1', anchorId: 'D', reason: 'Lệch xuống 8 ô' },
+        { pieceId: 'C2', anchorId: 'C', reason: 'Lệch trái 8 ô' },
+      ],
+      ftueSteps: [],
+    };
+  }
+
+  test('bỏ neo nhiễu trùng neo A của mảnh cùng hình, cùng hướng, cùng khung', () => {
+    const source = twoCircles();
+    expect(source.pieces[0].anchors[0]).toEqual({ id: 'A', x: 80, y: 16 });
+    expect(source.pieces[1].anchors[0]).toEqual({ id: 'A', x: 88, y: 16 });
+    const { source: filtered, dropped } = filterDecoys(source);
+    expect(dropped).toEqual([
+      { pieceId: 'C1', anchorId: 'B', reason: 'clashes-identical-piece' },
+      { pieceId: 'C2', anchorId: 'C', reason: 'clashes-identical-piece' },
+    ]);
+    expect(filtered.pieces[0].anchors.map((a) => a.id)).toEqual(['A', 'C', 'D', 'E']);
+    expect(filtered.pieces[1].anchors.map((a) => a.id)).toEqual(['A', 'B', 'D', 'E']);
+    // Gây nhiễu trỏ vào neo đã bỏ cũng bị bỏ
+    expect(filtered.distractors).toEqual([{ pieceId: 'C1', anchorId: 'D', reason: 'Lệch xuống 8 ô' }]);
+    // Không sửa nguồn gốc
+    expect(source.pieces[0].anchors).toHaveLength(5);
+  });
+
+  test('sau khi lọc chỉ còn một nghiệm; giữ neo trùng thì có nghiệm thứ hai', () => {
+    const doc = buildLevelDocument(twoCircles());
+    expect(validateLevel(doc).ok).toBe(true);
+    expect(searchSolutions(doc).solutionCount).toBe(1);
+    expect(searchSolutions(doc).fewerPieceSolutions).toBe(0);
+
+    const unsafe = structuredClone(doc);
+    unsafe.pieces[0].anchors.push({ id: 'B', x: 88, y: 16 });
+    unsafe.pieces[1].anchors.push({ id: 'C', x: 80, y: 16 });
+    expect(searchSolutions(unsafe).solutionCount).toBe(2);
+  });
+
+  test('bỏ neo nhiễu vượt biên bàn, giữ neo A', () => {
+    const source: LevelSource = {
+      ...cloneSource(songTinh),
+      pieces: [piece('S1', 'square', 48, [24, 24], { decoys: CROSS })],
+      sampleSolutions: [[{ pieceId: 'S1', anchorId: 'A', turns: 0 }]],
+      distractors: [
+        { pieceId: 'S1', anchorId: 'B', reason: 'Lệch phải 8 ô' },
+        { pieceId: 'S1', anchorId: 'C', reason: 'Lệch trái 8 ô' },
+      ],
+    };
+    const { dropped } = filterDecoys(source);
+    expect(dropped).toEqual([
+      { pieceId: 'S1', anchorId: 'C', reason: 'out-of-bounds' },
+      { pieceId: 'S1', anchorId: 'E', reason: 'out-of-bounds' },
+    ]);
+    const doc = buildLevelDocument(source);
+    expect(doc.pieces[0].anchors.map((a) => a.id)).toEqual(['A', 'B', 'D']);
+    expect(doc.distractors).toEqual([{ pieceId: 'S1', anchorId: 'B', reason: 'Lệch phải 8 ô' }]);
+  });
+
+  test('neo A vượt biên vẫn bị từ chối, không bị lọc', () => {
+    const source: LevelSource = {
+      ...cloneSource(songTinh),
+      pieces: [piece('S1', 'square', 48, [16, 24])],
+      sampleSolutions: [[{ pieceId: 'S1', anchorId: 'A', turns: 0 }]],
+      distractors: [],
+    };
+    expect(filterDecoys(source).dropped).toEqual([]);
+    expect(() => buildLevelDocument(source)).toThrow(/vượt biên/);
+  });
+
+  test('các màn đã có nguồn không mất neo nào', () => {
+    for (const source of Object.values(LEVEL_SOURCES)) {
+      expect(filterDecoys(source).dropped).toEqual([]);
+    }
+  });
+
+  test('báo cáo liệt kê neo đã bỏ; không có neo bỏ thì không thêm mục', () => {
+    const source = twoCircles();
+    const doc = buildLevelDocument(source);
+    const md = renderReportMarkdown(doc, searchSolutions(doc), filterDecoys(source).dropped);
+    expect(md).toContain('## Neo nhiễu đã bỏ (KIT-03)');
+    expect(md).toContain('| C1 | B | Trùng neo A của mảnh cùng hình, cùng hướng, cùng khung |');
+    expect(md).toContain('| C2 | C | Trùng neo A của mảnh cùng hình, cùng hướng, cùng khung |');
+    const plain = buildLevelDocument(songTinh);
+    expect(renderReportMarkdown(plain, searchSolutions(plain))).not.toContain('Neo nhiễu đã bỏ');
   });
 });

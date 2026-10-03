@@ -1,5 +1,6 @@
 import { GRID_HEIGHT, GRID_WIDTH, TOTAL_CELLS } from '../domain/model.ts';
 import { shapePolygon } from '../domain/shapes.ts';
+import type { DroppedDecoy } from './authoring.ts';
 import type { LevelDocument } from './document.ts';
 
 export type SolutionReport = {
@@ -87,7 +88,28 @@ export function searchSolutions(doc: LevelDocument): SolutionReport {
   return { solutionCount, fewerPieceSolutions, distractors };
 }
 
-export function renderReportMarkdown(doc: LevelDocument, report: SolutionReport): string {
+const DROP_REASON_TEXT: Readonly<Record<DroppedDecoy['reason'], string>> = {
+  'out-of-bounds': 'Vượt biên bàn',
+  'clashes-identical-piece': 'Trùng neo A của mảnh cùng hình, cùng hướng, cùng khung',
+};
+
+export function renderReportMarkdown(
+  doc: LevelDocument,
+  report: SolutionReport,
+  dropped: readonly DroppedDecoy[] = []
+): string {
+  // Chỉ thêm mục khi có neo bị bỏ, để báo cáo các màn cũ không đổi
+  const droppedLines =
+    dropped.length === 0
+      ? []
+      : [
+          '## Neo nhiễu đã bỏ (KIT-03)',
+          '',
+          '| Mảnh | Neo | Lý do |',
+          '|---|---|---|',
+          ...dropped.map((d) => `| ${d.pieceId} | ${d.anchorId} | ${DROP_REASON_TEXT[d.reason]} |`),
+          '',
+        ];
   const lines = [
     `# ${doc.id} ${doc.title}`,
     '',
@@ -105,6 +127,7 @@ export function renderReportMarkdown(doc: LevelDocument, report: SolutionReport)
       (d) => `| ${d.pieceId} | ${d.anchorId ?? '—'} | ${d.reason} | ${d.changedCells ?? '—'} |`
     ),
     '',
+    ...droppedLines,
     `Ảnh xem trước: \`${doc.id}.svg\`. Sinh bằng \`npm run content:author -- ${doc.id}\`; không sửa tay.`,
     '',
   ];

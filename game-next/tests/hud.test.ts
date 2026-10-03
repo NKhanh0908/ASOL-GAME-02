@@ -8,18 +8,18 @@ import {
   fitHudTitleFontSize,
   formatMatchCount,
 } from '../src/presentation/hudText.ts';
+import { chapterInfo, chapterOfLevelId } from '../src/content/chapters.ts';
 
 describe('Hud Behavioral Logic and Visual Standards', () => {
-  test('quy tắc nút Xoay chỉ hiển thị từ Chương 3', () => {
-    const isChapter3OrAbove = (levelId: string) => {
-      const chapter = parseInt(levelId.split('-')[0], 10);
-      return chapter >= 3;
-    };
-
-    expect(isChapter3OrAbove('1-1')).toBe(false);
-    expect(isChapter3OrAbove('2-3')).toBe(false);
-    expect(isChapter3OrAbove('3-1')).toBe(true);
-    expect(isChapter3OrAbove('3-6')).toBe(true);
+  test('nút Xoay chỉ hiển thị ở Chương 4 (Luân Chuyển)', () => {
+    const rotates = (levelId: string) => chapterInfo(chapterOfLevelId(levelId) ?? 1)?.rotationEnabled;
+    expect(rotates('1-1')).toBe(false);
+    expect(rotates('2-3')).toBe(false);
+    expect(rotates('3-1')).toBe(false);
+    expect(rotates('3-10')).toBe(false);
+    expect(rotates('4-1')).toBe(true);
+    expect(rotates('4-6')).toBe(true);
+    expect(rotates('dev-shapes-v2')).toBe(false);
   });
 
   test('kích thước nút tròn hành động và điều hướng đạt chuẩn touch target', () => {

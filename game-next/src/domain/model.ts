@@ -24,10 +24,13 @@ export type Piece = Readonly<{
   orientation?: Orientation;
 }>;
 
+/** Bốn chương campaign: 1 Khởi Nguyên, 2 Giao Thoa, 3 Họa Phẩm, 4 Luân Chuyển (xoay). */
+export type Chapter = 1 | 2 | 3 | 4;
+
 export type Level = Readonly<{
   id: string;
   title: string;
-  chapter: 1 | 2 | 3;
+  chapter: Chapter;
   contentRevision: string;
   rotationEnabled: boolean;
   pieces: readonly Piece[];

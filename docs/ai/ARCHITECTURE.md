@@ -33,12 +33,12 @@ Dependency rule: `domain` ← `application` ← `presentation`; `infrastructure`
 
 ## Level content pipeline
 
-1. Write `src/content/sources/<id>.ts` (`LevelSource`; never hand-write cells or target) and register it in `src/content/sources/index.ts`.
-2. `npm run content:author -- <id>` → `src/content/levels/<id>.json`, `../docs/testing/levels/<id>.svg`, `../docs/testing/levels/<id>-report.md`. Anchors must be multiples of `ANCHOR_STEP = 8`; target = XOR of sample solution 1; fails if a fewer-piece solution exists.
+1. Run `npm run content:new -- <id> [--from <id>] [--title "<name>"]`, then edit `src/content/sources/<id>.ts`; the command registers only `sources/index.ts`, never manifest/catalog. Use `src/content/kit.ts` for center-based placement, mirrors, rows and concentric pieces.
+2. `npm run content:author -- <id>` → `src/content/levels/<id>.json`, `../docs/testing/levels/<id>.svg`, `../docs/testing/levels/<id>-report.md`. Before geometry checks, KIT-03 removes unsafe decoy anchors (out of bounds or clashing with an identical piece's A anchor) unless a sample solution protects them. Anchors must be multiples of `ANCHOR_STEP = 8`; target = XOR of sample solution 1; fails if a fewer-piece solution exists.
 3. Register in both `src/content/manifest.ts` (status `validated`) and the `documents` map in `src/content/catalog.ts`.
 4. Reviewer plays `?scene=play&level=<id>&mode=harness` on `npm run dev`.
 5. Approval commit `feat(content): approve level <id> after review`: status `approved` in `manifest.ts`, add `../docs/testing/mirror-rebuild/<id>-content-review.md`, update `../docs/testing/levels/chapter-1-review.md`, CHANGELOG entry.
-6. Verify: `npm run typecheck`, `npm test`, `npm run content:validate`. `--release` needs 18 approved levels, so `build:release` fails today (6/18).
+6. Verify: `npm run typecheck`, `npm test`, `npm run content:validate`. `--release` needs 28 approved levels, so `build:release` fails today (6/28).
 Screenshots: `scripts/shoot-level.sh <id> <outdir>` (headless Chrome, needs the dev server).
 
 ## Invariants
@@ -47,7 +47,7 @@ Screenshots: `scripts/shoot-level.sh <id> <outdir>` (headless Chrome, needs the 
 - Mask: `Uint8Array`, index `y*GRID_WIDTH + x`, `mask[idx] ^= 1` per snapped piece cell.
 - Snap radius d² ≤ 36 logic cells, checked in both `src/domain/session.ts` and `src/application/drag.ts` — change both together.
 - Board 640×800 px (5 px per logic cell); `LAYOUT_TOKENS` in `src/presentation/designTokens.ts`.
-- Validation: chapters 1–2 must not enable rotation; chapter 1 solutions have no turns and no overlap.
+- Validation: chapters 1–3 must not enable rotation and chapter 4 must enable it; chapter 1 solutions have no turns and no overlap.
 - Unlock: `order === 1` always open; otherwise predecessor completed.
 
 ## Persistence

@@ -1,9 +1,10 @@
-import type { Cell, Level, Orientation, Piece, Placement, Turns } from '../domain/model.ts';
+import type { Cell, Chapter, Level, Orientation, Piece, Placement, Turns } from '../domain/model.ts';
 import { GRID_HEIGHT, GRID_WIDTH, TOTAL_CELLS } from '../domain/model.ts';
 import { fitsBoard, rotateCells } from '../domain/geometry.ts';
 import { evaluate, matchesTarget } from '../domain/mask.ts';
 import { isStructuralFrame, isValidOrientation, shapeCells } from '../domain/shapes.ts';
 import type { LevelDocument, ValidationIssue, ValidationResult } from './document.ts';
+import { chapterInfo } from './chapters.ts';
 
 export function validateLevel(input: unknown): ValidationResult {
   const issues: ValidationIssue[] = [];
@@ -24,7 +25,8 @@ export function validateLevel(input: unknown): ValidationResult {
   if (!doc.title || typeof doc.title !== 'string') {
     issues.push({ levelId, field: 'title', code: 'missing-title' });
   }
-  if (![1, 2, 3].includes(doc.chapter as number)) {
+  const chapterRule = chapterInfo(doc.chapter as number);
+  if (!chapterRule) {
     issues.push({ levelId, field: 'chapter', code: 'invalid-chapter' });
   }
   if (typeof doc.order !== 'number' || !Number.isInteger(doc.order) || doc.order < 1) {
@@ -37,9 +39,12 @@ export function validateLevel(input: unknown): ValidationResult {
     issues.push({ levelId, field: 'victoryVerse', code: 'invalid-victory-verse' });
   }
 
-  // Chapter 1 & 2: rotation must not be enabled
-  if ((doc.chapter === 1 || doc.chapter === 2) && doc.rotationEnabled) {
+  // Xoay chỉ mở ở chương xoay (Chương 4 — Luân Chuyển): chương 1–3 cấm bật, chương 4 bắt buộc bật
+  if (chapterRule && !chapterRule.rotationEnabled && doc.rotationEnabled === true) {
     issues.push({ levelId, field: 'rotationEnabled', code: 'chapter-rotation-disabled' });
+  }
+  if (chapterRule && chapterRule.rotationEnabled && doc.rotationEnabled === false) {
+    issues.push({ levelId, field: 'rotationEnabled', code: 'chapter-rotation-required' });
   }
 
   // Pieces validation
@@ -204,7 +209,7 @@ export function validateLevel(input: unknown): ValidationResult {
     const dummyLevel: Level = {
       id: levelId,
       title: doc.title ?? '',
-      chapter: (doc.chapter ?? 1) as 1 | 2 | 3,
+      chapter: (doc.chapter ?? 1) as Chapter,
       contentRevision: doc.contentRevision ?? '',
       rotationEnabled: Boolean(doc.rotationEnabled),
       pieces: parsedPieces,
@@ -242,7 +247,7 @@ export function validateLevel(input: unknown): ValidationResult {
           continue;
         }
 
-        if (doc.chapter === 1 && step.turns !== 0) {
+        if (chapterRule && !chapterRule.rotationEnabled && step.turns !== 0) {
           issues.push({ levelId, field: sField, code: 'solution-rotation-disallowed' });
         }
 
@@ -298,7 +303,7 @@ export function validateLevel(input: unknown): ValidationResult {
     level: {
       id: levelId,
       title: doc.title!,
-      chapter: doc.chapter as 1 | 2 | 3,
+      chapter: doc.chapter as Chapter,
       contentRevision: doc.contentRevision ?? 'v1',
       rotationEnabled: doc.rotationEnabled!,
       pieces: parsedPieces,

@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'vitest';
 import { formatProgress } from '../src/presentation/hudText.ts';
 import { campaignManifest } from '../src/content/manifest.ts';
+import { TEN_NODE_PATTERN, layoutCampaignMap } from '../src/presentation/constellationLayout.ts';
 import {
   furthestLevelId,
   levelAccess,
@@ -8,20 +9,10 @@ import {
 } from '../src/domain/campaign.ts';
 
 describe('Constellation Map Layout Generator', () => {
-  test('18 màn được gán đúng tọa độ uốn lượn theo trục dọc màn hình', () => {
-    const getNodePos = (index: number) => {
-      const x = 360 + Math.sin(index * 0.9) * 120;
-      const y = 180 + index * 56;
-      return { x, y };
-    };
-
-    const first = getNodePos(0);
-    const last = getNodePos(17);
-
-    expect(first.y).toBe(180);
-    expect(last.y).toBe(180 + 17 * 56);
-    expect(first.x).toBeGreaterThan(200);
-    expect(first.x).toBeLessThan(520);
+  test('bố cục suy ra từ manifest: 4 chòm sao 6/6/10/6, đúng thứ tự', () => {
+    const layout = layoutCampaignMap(campaignManifest);
+    expect(layout.chapters.map((c) => [c.chapter, c.nodeCount])).toEqual([[1, 6], [2, 6], [3, 10], [4, 6]]);
+    expect(layout.nodes.map((n) => n.id)).toEqual(campaignManifest.map((e) => e.id));
   });
 
   test('xác định đúng 4 trạng thái node theo tiến trình', () => {
@@ -79,15 +70,75 @@ describe('Constellation Map Layout Generator', () => {
   });
 });
 
+describe('Bố cục bản đồ chòm sao (CH-03)', () => {
+  const layout = layoutCampaignMap(campaignManifest);
+
+  test('chòm sao 6 nút giữ toạ độ zigzag cũ của Chương 1–2', () => {
+    expect(layout.nodes[0]).toMatchObject({ id: '1-1', x: 225, y: 270 });
+    expect(layout.nodes[1]).toMatchObject({ id: '1-2', x: 503, y: 430 });
+    expect(layout.nodes[6]).toMatchObject({ id: '2-1', y: 1330 });
+  });
+
+  test('chòm sao Họa Phẩm dùng mẫu 10 nút', () => {
+    const hoaPham = layout.nodes.filter((n) => n.chapter === 3);
+    const y0 = hoaPham[0].y;
+    expect(y0).toBe(2390);
+    expect(hoaPham.map((n) => [n.x, n.y - y0])).toEqual(TEN_NODE_PATTERN.map(([x, dy]) => [x, dy]));
+    expect(layout.nodes.find((n) => n.id === '4-1')?.y).toBe(3490);
+    expect(layout.totalHeight).toBe(4530);
+  });
+
+  test('không nút nào đè nhau hay tràn khỏi bề ngang 720', () => {
+    for (const n of layout.nodes) {
+      // Huy hiệu tên màn hiện tại rộng 260px, tâm tại x của nút
+      expect(n.x - 130).toBeGreaterThanOrEqual(0);
+      expect(n.x + 130).toBeLessThanOrEqual(720);
+    }
+    for (let i = 0; i < layout.nodes.length; i++) {
+      for (let j = i + 1; j < layout.nodes.length; j++) {
+        const a = layout.nodes[i];
+        const b = layout.nodes[j];
+        const apart = Math.abs(a.y - b.y) >= 130 || Math.abs(a.x - b.x) >= 280;
+        expect(apart, `${a.id} và ${b.id}`).toBe(true);
+      }
+    }
+  });
+
+  test('tiêu đề chương nằm giữa hai chòm sao; dải màu nối liền', () => {
+    layout.chapters.forEach((band, i) => {
+      const own = layout.nodes.filter((n) => n.chapter === band.chapter);
+      expect(Math.min(...own.map((n) => n.y)) - band.bannerY).toBeGreaterThanOrEqual(60);
+      if (i > 0) {
+        const prev = layout.nodes.filter((n) => n.chapter === layout.chapters[i - 1].chapter);
+        expect(band.bannerY - Math.max(...prev.map((n) => n.y))).toBeGreaterThanOrEqual(60);
+        expect(band.top).toBe(layout.chapters[i - 1].bottom);
+      }
+    });
+    expect(layout.chapters[0].top).toBe(0);
+    expect(layout.chapters[layout.chapters.length - 1].bottom).toBe(layout.totalHeight);
+    expect(layout.totalHeight).toBe(layout.nodes[layout.nodes.length - 1].y + 240);
+  });
+
+  test('số chòm sao và số nút không viết cứng', () => {
+    const small = layoutCampaignMap([
+      { id: 'a-1', title: 'A', chapter: 1 },
+      { id: 'a-2', title: 'B', chapter: 1 },
+      { id: 'b-1', title: 'C', chapter: 2 },
+    ]);
+    expect(small.chapters.map((c) => [c.chapter, c.nodeCount])).toEqual([[1, 2], [2, 1]]);
+    expect(small.nodes.map((n) => n.y)).toEqual([270, 430, 690]);
+  });
+});
+
 describe('Màn chọn màn theo mockup improve-v1', () => {
   test('chỉ số tiến độ hiển thị dạng đã hoàn thành trên tổng số màn', () => {
-    expect(formatProgress(0, 18)).toBe('0/18');
-    expect(formatProgress(1, 18)).toBe('1/18');
-    expect(formatProgress(18, 18)).toBe('18/18');
+    expect(formatProgress(0, 28)).toBe('0/28');
+    expect(formatProgress(1, 28)).toBe('1/28');
+    expect(formatProgress(28, 28)).toBe('28/28');
   });
 
   test('không còn ký tự trang trí trước con số', () => {
-    expect(formatProgress(1, 18)).not.toContain('✦');
+    expect(formatProgress(1, 28)).not.toContain('✦');
   });
 
   test('tổng số màn lấy từ manifest, không viết cứng', () => {

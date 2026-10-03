@@ -9,6 +9,7 @@ import {
 } from './designTokens.ts';
 import { TEXTURE_KEYS } from './TextureFactory.ts';
 import { drawJewel } from './JewelShape.ts';
+import { CHAPTERS, chapterInfo, chapterOfLevelId } from '../content/chapters.ts';
 import {
   SNAP_HINT_TEXT,
   VICTORY_LABELS,
@@ -55,8 +56,9 @@ export class Hud {
     this.callbacks = callbacks;
     this.levelId = levelId;
 
-    const chapterNum = parseInt(this.levelId.split('-')[0], 10) || 1;
-    const chapterRoman = chapterNum === 1 ? 'Chương I' : chapterNum === 2 ? 'Chương II' : 'Chương III';
+    // Màn dev (mã không theo "<chương>-<số>") hiển thị như Chương I
+    const chapter = chapterInfo(chapterOfLevelId(this.levelId) ?? 1) ?? CHAPTERS[0];
+    const chapterRoman = `Chương ${chapter.roman}`;
     const levelName = title.includes('·') ? title.split('·')[1].trim() : title;
 
     // 1. Nút Menu tròn 80px (Vùng chạm 96px, Góc trên trái: x=56, y=56)
@@ -101,10 +103,10 @@ export class Hud {
     });
     this.targetButton.add([targetBtnBase, this.targetIcon]);
 
-    // 4. Hàng nút dưới cùng: Đặt lại ở góc trái, Xoay ở góc phải (từ Chương
-    // 3), thanh đếm mảnh ở giữa — theo mockup. Trước đây nút Đặt lại nằm
+    // 4. Hàng nút dưới cùng: Đặt lại ở góc trái, Xoay ở góc phải (chỉ Chương
+    // 4 — Luân Chuyển), thanh đếm mảnh ở giữa — theo mockup. Trước đây nút Đặt lại nằm
     // giữa màn, ngay chỗ khay và thanh đếm, nên bị cả hai che.
-    const isChapter3Plus = chapterNum >= 3;
+    const rotationChapter = chapter.rotationEnabled;
     const bottomRowY = LAYOUT_TOKENS.bottomBar.y + 44;
     const buttonScale = 0.8; // 112px -> ~90px, vẫn trên chuẩn chạm tối thiểu
 
@@ -131,7 +133,7 @@ export class Hud {
     });
     this.resetContainer.add([resetBtnBase, resetIcon, resetLabel]);
 
-    // B. Nút Xoay tròn 112px (Chỉ hiện từ Chương 3)
+    // B. Nút Xoay tròn 112px (chỉ hiện ở Chương 4)
     this.rotateContainer = this.scene.add
       .container(636, bottomRowY)
       .setDepth(DEPTH_TOKENS.hudControls);
@@ -154,8 +156,8 @@ export class Hud {
     });
     this.rotateContainer.add([this.rotateBtnBase, this.rotateIcon, this.rotateLabel]);
 
-    this.rotateAllowed = isChapter3Plus;
-    if (!isChapter3Plus) {
+    this.rotateAllowed = rotationChapter;
+    if (!rotationChapter) {
       this.rotateContainer.setVisible(false);
     }
 

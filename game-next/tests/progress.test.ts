@@ -35,7 +35,9 @@ describe('Campaign Progress and Persistence', () => {
 
   test('nextLevelId trả đúng ID màn tiếp theo hoặc null ở màn cuối', () => {
     expect(nextLevelId(campaignManifest, '1-1')).toBe('1-2');
-    expect(nextLevelId(campaignManifest, '3-6')).toBeNull();
+    expect(nextLevelId(campaignManifest, '3-6')).toBe('3-7');
+    expect(nextLevelId(campaignManifest, '3-10')).toBe('4-1');
+    expect(nextLevelId(campaignManifest, '4-6')).toBeNull();
     expect(nextLevelId(campaignManifest, 'nonexistent')).toBeNull();
   });
 

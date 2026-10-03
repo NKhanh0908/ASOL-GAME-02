@@ -1,6 +1,6 @@
 export type LaunchTarget =
   | { scene: 'MenuScene' }
-  | { scene: 'LevelSelectScene' }
+  | { scene: 'LevelSelectScene'; focusLevelId?: string }
   | { scene: 'PlayScene'; levelId: string; mode: 'campaign' | 'harness' };
 
 /**
@@ -16,7 +16,9 @@ export function resolveLaunch(search: string, isDev: boolean): LaunchTarget {
     return { scene: 'PlayScene', levelId, mode };
   }
   if (scene === 'levelSelect') {
-    return { scene: 'LevelSelectScene' };
+    // focus chỉ dùng ở dev để chụp ảnh một chòm sao bất kỳ
+    const focus = params.get('focus');
+    return isDev && focus ? { scene: 'LevelSelectScene', focusLevelId: focus } : { scene: 'LevelSelectScene' };
   }
   return { scene: 'MenuScene' };
 }
