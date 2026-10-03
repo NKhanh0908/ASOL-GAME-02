@@ -4,6 +4,13 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-03 - Add level 2-1 Mui Ten Chi Thien (validated)
+
+- `game-next/src/content/sources/2-1.ts`, generated level JSON/SVG/report and three 720×1280 screenshots: added the two-piece chapter-2 parity introduction with the spec-C coordinates and FTUE copy.
+- Registered 2-1 in `sources/index.ts`, `catalog.ts`, `manifest.ts` and the authored-level coverage; added the shared `tests/levelContent.test.ts` contract for Plan C levels.
+- `docs/ai/STATUS.md` and `docs/ai/DOCS-INDEX.md`: started Plan C on `feat/chapter-2-hoa-pham` and confirmed 2-5 as Đồng Hồ Cát.
+- Verification: `content:author -- 2-1` reports 1728 target cells, one solution and no fewer-piece solution; typecheck, level-content tests and content validation pass; play/drag/win screenshots inspected at 720×1280. GitNexus unavailable and skipped per reviewer direction.
+
 ### 2026-10-03 - Review and merge Plan B into main
 
 - Merged `feat/level-kit-chapters` into `main` (`dee44e5`, `--no-ff`) after review; the three out-of-spec decisions (`chapter-rotation-required`, rotate button driven by `chapters.ts` instead of the chapter number, sample-solution anchors protected from KIT-03) approved as implemented.

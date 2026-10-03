@@ -4,6 +4,7 @@ import canhChim from './levels/1-3.json';
 import haiDang from './levels/1-4.json';
 import thuyenSao from './levels/1-5.json';
 import vuongMien from './levels/1-6.json';
+import muiTen from './levels/2-1.json';
 import { campaignManifest } from './manifest.ts';
 import { validateLevel } from './validate.ts';
 import { DEV_LEVEL_DOCUMENTS } from './devLevels.ts';
@@ -16,6 +17,7 @@ const documents: Record<string, unknown> = {
   '1-4': haiDang,
   '1-5': thuyenSao,
   '1-6': vuongMien,
+  '2-1': muiTen,
 };
 
 /**
