@@ -4,6 +4,12 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-03 - Add G audio implementation plans
+
+- Added `docs/superpowers/plans/2026-10-03-g-audio-index.md` (order, branches, five stop points, contracts, nine spec departures) and phase plans `2026-10-03-g0-audio-assets.md` (Tasks 1–2), `2026-10-03-g1-audio-foundation.md` (Tasks 3–9) and `2026-10-03-g2-audio-cues.md` (Tasks 10–12).
+- Updated row G in `docs/ai/DOCS-INDEX.md` and the G stream in `docs/ai/STATUS.md`.
+- Verification: docs-only; plans self-reviewed against every spec G section and against the F1/F2 plan interfaces they consume (`SceneDirector`, `BackgroundScene`, `FeedbackDirector`, settings). GitNexus impact not needed for docs.
+
 ### 2026-10-03 - Add level 3-6 Meo Than (validated)
 
 - `docs/ai/STATUS.md`: plan C tasks 11–12 done, next step is Task 16.
