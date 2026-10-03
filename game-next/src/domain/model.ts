@@ -4,10 +4,11 @@ export const TOTAL_CELLS = GRID_WIDTH * GRID_HEIGHT;
 
 export type Cell = readonly [number, number];
 export type Turns = 0 | 1 | 2 | 3;
-export type ShapeKind = 'square' | 'triangle' | 'diamond';
+export type ShapeKind = 'square' | 'triangle' | 'diamond' | 'circle' | 'parallelogram';
 /**
- * Hướng tam giác vuông cân: 0–3 là góc vuông ở góc khung TL/TR/BR/BL,
- * 4–7 là mái có cạnh huyền nằm ở đáy/trái/đỉnh/phải khung. Vuông và thoi luôn 0.
+ * Hướng mảnh. Tam giác vuông cân: 0–3 là góc vuông ở góc khung TL/TR/BR/BL,
+ * 4–7 là mái có cạnh huyền nằm ở đáy/trái/đỉnh/phải khung. Bình hành: 0 nằm
+ * nghiêng phải, 1 đứng, 2 nằm nghiêng trái, 3 đứng. Vuông, thoi, tròn luôn 0.
  */
 export type Orientation = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
 export type Anchor = Readonly<{ id: string; x: number; y: number }>;

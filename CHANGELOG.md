@@ -4,6 +4,14 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-03 - Add circle and parallelogram shapes with per-shape frame rules
+
+- `game-next/src/domain/model.ts`: added `circle` and `parallelogram` to `ShapeKind`, updated `Orientation` JSDoc.
+- `game-next/src/domain/shapes.ts`: implemented 32-segment regular polygon `circle` and 4-orientation `parallelogram`, added `isValidFrame` (spec A section 3 grid snapping) and `isStructuralFrame` (validator integer-vertex & board checks), added `mirrorOrientation` across x and y axes, and added `CIRCLE_SEGMENTS` constant.
+- `game-next/src/content/document.ts`: typed `LevelDocument.pieces[].shapeKind` as `ShapeKind`.
+- `game-next/tests/shapes.test.ts`: added test coverage for polygon generation, cell count verification (208, 812, 3196 for circle; 512 for parallelogram), mirroring, rotation, and frame rules.
+- Verification: `npm run typecheck` clean; `npm test` 254/254 passing; GitNexus `detect_changes` verified changes bounded to shapes symbols.
+
 ### 2026-10-03 - Commit UI mockups for a next pass and drop unused reference images
 
 - Added `docs/gui/ỉmprove-2/` (`gameplay.png`, `main.png`, `map.png`, `match.png`): mockups for a possible next UI pass, already listed in `docs/ai/DOCS-INDEX.md`; no spec yet.

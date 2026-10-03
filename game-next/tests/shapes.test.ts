@@ -1,7 +1,11 @@
 import { describe, expect, test } from 'vitest';
 import {
+  CIRCLE_SEGMENTS,
   effectiveOrientation,
+  isStructuralFrame,
+  isValidFrame,
   isValidOrientation,
+  mirrorOrientation,
   shapeCells,
   shapePolygon,
 } from '../src/domain/shapes.ts';
@@ -141,5 +145,139 @@ describe('isValidOrientation', () => {
     expect(isValidOrientation('square', 0)).toBe(true);
     expect(isValidOrientation('square', 1)).toBe(false);
     expect(isValidOrientation('diamond', 2)).toBe(false);
+  });
+});
+
+describe('hình tròn và hình bình hành (spec A)', () => {
+  test('hình tròn là đa giác đều 32 cạnh nội tiếp khung', () => {
+    const poly = shapePolygon('circle', 0, 64);
+    expect(CIRCLE_SEGMENTS).toBe(32);
+    expect(poly).toHaveLength(32);
+    expect(poly[0].x).toBeCloseTo(64, 9);
+    expect(poly[0].y).toBeCloseTo(32, 9);
+    for (const p of poly) {
+      expect(Math.hypot(p.x - 32, p.y - 32)).toBeCloseTo(32, 9);
+    }
+  });
+
+  test('số ô hình tròn khung 16/32/64 (số tính bằng prototype)', () => {
+    expect(shapeCells('circle', 0, 16)).toHaveLength(208);
+    expect(shapeCells('circle', 0, 32)).toHaveLength(812);
+    expect(shapeCells('circle', 0, 64)).toHaveLength(3196);
+  });
+
+  test('bình hành khung 48 theo bảng đỉnh và 512 ô mỗi hướng', () => {
+    expect(shapePolygon('parallelogram', 0, 48)).toEqual([
+      { x: 16, y: 16 },
+      { x: 48, y: 16 },
+      { x: 32, y: 32 },
+      { x: 0, y: 32 },
+    ]);
+    expect(shapePolygon('parallelogram', 3, 48)).toEqual([
+      { x: 32, y: 0 },
+      { x: 32, y: 32 },
+      { x: 16, y: 48 },
+      { x: 16, y: 16 },
+    ]);
+    for (const o of [0, 1, 2, 3] as Orientation[]) {
+      expect(shapeCells('parallelogram', o, 48)).toHaveLength(512);
+    }
+  });
+
+  test('bình hành 0 và 2 là ảnh gương; chỉ khác ở ô có tâm trên viền', () => {
+    const mirrored = new Set(shapeCells('parallelogram', 0, S).map(([x, y]) => `${S - 1 - x},${y}`));
+    const direct = new Set(shapeCells('parallelogram', 2, S).map(key));
+    const polygon = shapePolygon('parallelogram', 2, S);
+    const diff = [
+      ...[...mirrored].filter((k) => !direct.has(k)),
+      ...[...direct].filter((k) => !mirrored.has(k)),
+    ];
+    expect(diff).toHaveLength(32);
+    for (const k of diff) {
+      const [x, y] = k.split(',').map(Number);
+      expect(onOutline(polygon, x + 0.5, y + 0.5)).toBe(true);
+    }
+  });
+
+  test('xoay bình hành: hướng hiệu dụng quay vòng trong họ, chỉ khác ô trên viền', () => {
+    expect([0, 1, 2, 3].map((t) => effectiveOrientation('parallelogram', 0, t))).toEqual([0, 1, 0, 1]);
+    expect([0, 1, 2, 3].map((t) => effectiveOrientation('parallelogram', 3, t))).toEqual([3, 2, 3, 2]);
+    const rotated = new Set(rotateCells(shapeCells('parallelogram', 0, S), S, 1).map(key));
+    const direct = new Set(shapeCells('parallelogram', 1, S).map(key));
+    const polygon = shapePolygon('parallelogram', 1, S);
+    const diff = [
+      ...[...rotated].filter((k) => !direct.has(k)),
+      ...[...direct].filter((k) => !rotated.has(k)),
+    ];
+    expect(diff).toHaveLength(32);
+    for (const k of diff) {
+      const [x, y] = k.split(',').map(Number);
+      expect(onOutline(polygon, x + 0.5, y + 0.5)).toBe(true);
+    }
+  });
+
+  test('hình tròn bất biến khi xoay', () => {
+    expect(effectiveOrientation('circle', 0, 3)).toBe(0);
+    const cells = shapeCells('circle', 0, 64);
+    const rotated = new Set(rotateCells(cells, 64, 1).map(key));
+    expect(rotated.size).toBe(cells.length);
+    for (const c of cells) expect(rotated.has(key(c))).toBe(true);
+  });
+
+  test('isValidOrientation cho hai hình mới', () => {
+    expect(isValidOrientation('circle', 0)).toBe(true);
+    expect(isValidOrientation('circle', 1)).toBe(false);
+    expect(isValidOrientation('parallelogram', 3)).toBe(true);
+    expect(isValidOrientation('parallelogram', 4)).toBe(false);
+  });
+});
+
+describe('quy tắc khung và lật gương', () => {
+  test('isValidFrame đúng bảng bám lưới của spec A mục 3', () => {
+    expect(isValidFrame('square', 0, 24)).toBe(true);
+    expect(isValidFrame('square', 0, 12)).toBe(false);
+    expect(isValidFrame('triangle', 0, 24)).toBe(true);
+    expect(isValidFrame('triangle', 4, 24)).toBe(false);
+    expect(isValidFrame('triangle', 4, 32)).toBe(true);
+    expect(isValidFrame('diamond', 0, 24)).toBe(false);
+    expect(isValidFrame('diamond', 0, 48)).toBe(true);
+    expect(isValidFrame('circle', 0, 16)).toBe(true);
+    expect(isValidFrame('circle', 0, 40)).toBe(false);
+    expect(isValidFrame('parallelogram', 0, 48)).toBe(true);
+    expect(isValidFrame('parallelogram', 0, 32)).toBe(false);
+    expect(isValidFrame('parallelogram', 0, 96)).toBe(true);
+    expect(isValidFrame('square', 0, 136)).toBe(false);
+  });
+
+  test('isStructuralFrame chỉ đòi đỉnh nguyên và khung vừa bàn', () => {
+    // Fixture kỹ thuật M0 dùng thoi khung 40: hợp lệ về cấu trúc dù không bám lưới
+    expect(isStructuralFrame('diamond', 0, 40)).toBe(true);
+    expect(isStructuralFrame('diamond', 0, 25)).toBe(false);
+    expect(isStructuralFrame('circle', 0, 15)).toBe(false);
+    expect(isStructuralFrame('parallelogram', 0, 32)).toBe(false);
+    expect(isStructuralFrame('parallelogram', 0, 45)).toBe(true);
+    expect(isStructuralFrame('square', 0, 129)).toBe(false);
+  });
+
+  test('mirrorOrientation theo bảng của spec A và B', () => {
+    expect([0, 1, 2, 3, 4, 5, 6, 7].map((o) => mirrorOrientation('triangle', o as Orientation, 'x'))).toEqual([1, 0, 3, 2, 4, 7, 6, 5]);
+    expect([0, 1, 2, 3, 4, 5, 6, 7].map((o) => mirrorOrientation('triangle', o as Orientation, 'y'))).toEqual([3, 2, 1, 0, 6, 5, 4, 7]);
+    expect([0, 1, 2, 3].map((o) => mirrorOrientation('parallelogram', o as Orientation, 'x'))).toEqual([2, 3, 0, 1]);
+    expect([0, 1, 2, 3].map((o) => mirrorOrientation('parallelogram', o as Orientation, 'y'))).toEqual([2, 3, 0, 1]);
+    expect(mirrorOrientation('circle', 0, 'x')).toBe(0);
+    expect(mirrorOrientation('diamond', 0, 'y')).toBe(0);
+  });
+
+  test('lật gương tam giác theo trục dọc khớp tập ô (trừ ô trên viền)', () => {
+    for (const o of [0, 1, 2, 3, 4, 5, 6, 7] as Orientation[]) {
+      const m = mirrorOrientation('triangle', o, 'x');
+      const mirrored = new Set(shapeCells('triangle', o, S).map(([x, y]) => `${S - 1 - x},${y}`));
+      const direct = new Set(shapeCells('triangle', m, S).map(key));
+      const polygon = shapePolygon('triangle', m, S);
+      for (const k of [...mirrored].filter((c) => !direct.has(c))) {
+        const [x, y] = k.split(',').map(Number);
+        expect(onOutline(polygon, x + 0.5, y + 0.5)).toBe(true);
+      }
+    }
   });
 });
