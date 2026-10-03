@@ -4,7 +4,7 @@ Chạy `cd game-next && npm run dev`, rồi mở `http://localhost:5173/?scene=p
 
 | Màn | Trạng thái | Xem trước | Báo cáo nghiệm | Ảnh màn chơi |
 |---|---|---|---|---|
-| 2-1 Mũi Tên Chỉ Thiên | `validated` | [2-1.svg](2-1.svg) | [2-1-report.md](2-1-report.md) | [chơi](screens/2-1-play.png) · [kéo](screens/2-1-drag.png) · [thắng](screens/2-1-win.png) |
+| 2-1 Mũi Tên Chỉ Thiên | `approved (mui-ten-v1)` | [2-1.svg](2-1.svg) | [2-1-report.md](2-1-report.md) | [chơi](screens/2-1-play.png) · [kéo](screens/2-1-drag.png) · [thắng](screens/2-1-win.png) |
 | 2-2 Cánh Bướm Điệp Ảnh | `validated` | [2-2.svg](2-2.svg) | [2-2-report.md](2-2-report.md) | [chơi](screens/2-2-play.png) · [kéo](screens/2-2-drag.png) · [thắng](screens/2-2-win.png) |
 | 2-3 Trái Tim Tinh Thể | `validated` | [2-3.svg](2-3.svg) | [2-3-report.md](2-3-report.md) | [chơi](screens/2-3-play.png) · [kéo](screens/2-3-drag.png) · [thắng](screens/2-3-win.png) |
 | 2-4 Mắt Tiên Tri | `validated` | [2-4.svg](2-4.svg) | [2-4-report.md](2-4-report.md) | [chơi](screens/2-4-play.png) · [kéo](screens/2-4-drag.png) · [thắng](screens/2-4-win.png) |

@@ -74,8 +74,12 @@ describe('Level 1-1 Song Tinh Content and Catalog Loader', () => {
     expect(harnessLevel.pieces.length).toBe(2);
   });
 
-  test('loadLevel chặn màn chưa có dữ liệu ở campaign', () => {
-    expect(() => loadLevel('2-1', 'campaign')).toThrow('unavailable:2-1');
+  test('loadLevel cho phép toàn bộ Chương 2 và Họa Phẩm đã duyệt trong campaign', () => {
+    const approvedIds = ['2-1'];
+
+    for (const id of approvedIds) {
+      expect(loadLevel(id, 'campaign').id).toBe(id);
+    }
   });
 
   test('loadLevel ném lỗi khi id không tồn tại', () => {

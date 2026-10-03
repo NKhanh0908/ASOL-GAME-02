@@ -9,7 +9,7 @@ export const campaignManifest: readonly ManifestEntry[] = [
   { id: '1-6', title: 'Vương Miện Bình Minh', chapter: 1, order: 6, contentRevision: 'vuong-mien-v1', status: 'approved', dataPath: 'src/content/levels/1-6.json' },
 
   // Chương 2 — Giao Thoa (vùng giao triệt tiêu và hạt nhân hiện lại)
-  { id: '2-1', title: 'Mũi Tên Chỉ Thiên', chapter: 2, order: 7, contentRevision: 'mui-ten-v1', status: 'validated', dataPath: 'src/content/levels/2-1.json' },
+  { id: '2-1', title: 'Mũi Tên Chỉ Thiên', chapter: 2, order: 7, contentRevision: 'mui-ten-v1', status: 'approved', dataPath: 'src/content/levels/2-1.json' },
   { id: '2-2', title: 'Cánh Bướm Điệp Ảnh', chapter: 2, order: 8, contentRevision: 'canh-buom-v1', status: 'validated', dataPath: 'src/content/levels/2-2.json' },
   { id: '2-3', title: 'Trái Tim Tinh Thể', chapter: 2, order: 9, contentRevision: 'trai-tim-v1', status: 'validated', dataPath: 'src/content/levels/2-3.json' },
   { id: '2-4', title: 'Mắt Tiên Tri', chapter: 2, order: 10, contentRevision: 'mat-tien-tri-v1', status: 'validated', dataPath: 'src/content/levels/2-4.json' },

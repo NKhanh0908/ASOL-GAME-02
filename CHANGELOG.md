@@ -4,6 +4,13 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-03 - Approve level 2-1 Mui Ten Chi Thien
+
+- `game-next/src/content/manifest.ts`: promoted level `2-1` revision `mui-ten-v1` to `approved`, making it available in the campaign after `1-6`.
+- Added `docs/testing/mirror-rebuild/2-1-content-review.md` and updated the Chapter 2–3 review index.
+- `game-next/tests/catalog.test.ts`: verified the approved level loads in campaign mode.
+- Verification: typecheck, 420/420 tests and content validation (22 authored levels) pass; GitNexus reports LOW impact for `campaignManifest`.
+
 ### 2026-10-03 - Update GDD for chapter 2 and Hoa Pham, add review index
 
 - `docs/gdd/master-gdd.md`: replaced the remaining draft Chapter 2 rows with the implemented geometry and piece counts; retained the complete ten-level Hoa Pham table.
