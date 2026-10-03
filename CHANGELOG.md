@@ -4,6 +4,12 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-03 - Add shared AGENTS.md entry point for Claude Code, Codex and Antigravity
+
+- Rewrote `AGENTS.md` as the canonical agent entry: project summary, where to work (`game-next/` vs legacy `game/`), start- and end-of-task protocols, commands, rules (English specs and plans, CHANGELOG per commit, level approval flow), with the GitNexus block kept unchanged.
+- `CLAUDE.md` now imports `@AGENTS.md`; added `.agent/rules/agents.md` for Antigravity; committed `.claude/skills/gitnexus/`; ignored `.shots/`.
+- Verification: link check passes; `AGENTS.md` within 120 lines outside the GitNexus block; GitNexus blocks byte-identical to the previous version; `.shots/` ignored; GitNexus MCP unavailable, detect_changes not run.
+
 ### 2026-10-03 - Add current status file for agents
 
 - Added `docs/ai/STATUS.md`: branch, product state, next step, streams with entry docs, open decisions and recent gotchas; overwritten at the end of every task.

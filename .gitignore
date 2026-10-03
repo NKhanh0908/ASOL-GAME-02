@@ -6,3 +6,4 @@ game/android/build/
 game/android/app/build/
 game/android/local.properties
 *.log
+.shots/
