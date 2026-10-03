@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="680" viewBox="0 0 512 680">
+<rect width="512" height="680" fill="#101a4f"/>
+<line x1="0" y1="0" x2="0" y2="640" stroke="#3b56b8" stroke-width="1"/>
+<line x1="32" y1="0" x2="32" y2="640" stroke="#22336f" stroke-width="1"/>
+<line x1="64" y1="0" x2="64" y2="640" stroke="#22336f" stroke-width="1"/>
+<line x1="96" y1="0" x2="96" y2="640" stroke="#3b56b8" stroke-width="1"/>
+<line x1="128" y1="0" x2="128" y2="640" stroke="#22336f" stroke-width="1"/>
+<line x1="160" y1="0" x2="160" y2="640" stroke="#22336f" stroke-width="1"/>
+<line x1="192" y1="0" x2="192" y2="640" stroke="#3b56b8" stroke-width="1"/>
+<line x1="224" y1="0" x2="224" y2="640" stroke="#22336f" stroke-width="1"/>
+<line x1="256" y1="0" x2="256" y2="640" stroke="#22336f" stroke-width="1"/>
+<line x1="288" y1="0" x2="288" y2="640" stroke="#3b56b8" stroke-width="1"/>
+<line x1="320" y1="0" x2="320" y2="640" stroke="#22336f" stroke-width="1"/>
+<line x1="352" y1="0" x2="352" y2="640" stroke="#22336f" stroke-width="1"/>
+<line x1="384" y1="0" x2="384" y2="640" stroke="#3b56b8" stroke-width="1"/>
+<line x1="416" y1="0" x2="416" y2="640" stroke="#22336f" stroke-width="1"/>
+<line x1="448" y1="0" x2="448" y2="640" stroke="#22336f" stroke-width="1"/>
+<line x1="480" y1="0" x2="480" y2="640" stroke="#3b56b8" stroke-width="1"/>
+<line x1="512" y1="0" x2="512" y2="640" stroke="#22336f" stroke-width="1"/>
+<line x1="0" y1="0" x2="512" y2="0" stroke="#3b56b8" stroke-width="1"/>
+<line x1="0" y1="32" x2="512" y2="32" stroke="#22336f" stroke-width="1"/>
+<line x1="0" y1="64" x2="512" y2="64" stroke="#22336f" stroke-width="1"/>
+<line x1="0" y1="96" x2="512" y2="96" stroke="#3b56b8" stroke-width="1"/>
+<line x1="0" y1="128" x2="512" y2="128" stroke="#22336f" stroke-width="1"/>
+<line x1="0" y1="160" x2="512" y2="160" stroke="#22336f" stroke-width="1"/>
+<line x1="0" y1="192" x2="512" y2="192" stroke="#3b56b8" stroke-width="1"/>
+<line x1="0" y1="224" x2="512" y2="224" stroke="#22336f" stroke-width="1"/>
+<line x1="0" y1="256" x2="512" y2="256" stroke="#22336f" stroke-width="1"/>
+<line x1="0" y1="288" x2="512" y2="288" stroke="#3b56b8" stroke-width="1"/>
+<line x1="0" y1="320" x2="512" y2="320" stroke="#22336f" stroke-width="1"/>
+<line x1="0" y1="352" x2="512" y2="352" stroke="#22336f" stroke-width="1"/>
+<line x1="0" y1="384" x2="512" y2="384" stroke="#3b56b8" stroke-width="1"/>
+<line x1="0" y1="416" x2="512" y2="416" stroke="#22336f" stroke-width="1"/>
+<line x1="0" y1="448" x2="512" y2="448" stroke="#22336f" stroke-width="1"/>
+<line x1="0" y1="480" x2="512" y2="480" stroke="#3b56b8" stroke-width="1"/>
+<line x1="0" y1="512" x2="512" y2="512" stroke="#22336f" stroke-width="1"/>
+<line x1="0" y1="544" x2="512" y2="544" stroke="#22336f" stroke-width="1"/>
+<line x1="0" y1="576" x2="512" y2="576" stroke="#3b56b8" stroke-width="1"/>
+<line x1="0" y1="608" x2="512" y2="608" stroke="#22336f" stroke-width="1"/>
+<line x1="0" y1="640" x2="512" y2="640" stroke="#22336f" stroke-width="1"/>
+<path d="M188 192h4v4h-4zM316 192h4v4h-4zM184 196h12v4h-12zM312 196h12v4h-12zM180 200h20v4h-20zM308 200h20v4h-20zM176 204h28v4h-28zM304 204h28v4h-28zM172 208h36v4h-36zM300 208h36v4h-36zM168 212h44v4h-44zM296 212h44v4h-44zM164 216h52v4h-52zM292 216h52v4h-52zM160 220h60v4h-60zM288 220h60v4h-60zM156 224h68v4h-68zM284 224h68v4h-68zM152 228h76v4h-76zM280 228h76v4h-76zM148 232h84v4h-84zM276 232h84v4h-84zM144 236h92v4h-92zM272 236h92v4h-92zM140 240h100v4h-100zM268 240h100v4h-100zM136 244h108v4h-108zM264 244h108v4h-108zM132 248h116v4h-116zM260 248h116v4h-116zM128 252h124v4h-124zM256 252h124v4h-124zM124 256h128v4h-128zM256 256h128v4h-128zM120 260h128v4h-128zM260 260h128v4h-128zM116 264h128v4h-128zM264 264h128v4h-128zM112 268h128v4h-128zM268 268h128v4h-128zM108 272h128v4h-128zM272 272h128v4h-128zM104 276h128v4h-128zM276 276h128v4h-128zM100 280h128v4h-128zM280 280h128v4h-128zM96 284h128v4h-128zM284 284h128v4h-128zM92 288h128v4h-128zM252 288h4v4h-4zM288 288h128v4h-128zM88 292h128v4h-128zM248 292h12v4h-12zM292 292h128v4h-128zM84 296h128v4h-128zM244 296h20v4h-20zM296 296h128v4h-128zM80 300h128v4h-128zM240 300h28v4h-28zM300 300h128v4h-128zM76 304h128v4h-128zM236 304h36v4h-36zM304 304h128v4h-128zM72 308h128v4h-128zM232 308h44v4h-44zM308 308h128v4h-128zM68 312h128v4h-128zM228 312h52v4h-52zM312 312h128v4h-128zM64 316h128v4h-128zM224 316h60v4h-60zM316 316h128v4h-128zM64 320h128v4h-128zM224 320h60v4h-60zM316 320h128v4h-128zM68 324h128v4h-128zM228 324h52v4h-52zM312 324h128v4h-128zM72 328h128v4h-128zM232 328h44v4h-44zM308 328h128v4h-128zM76 332h128v4h-128zM236 332h36v4h-36zM304 332h128v4h-128zM80 336h128v4h-128zM240 336h28v4h-28zM300 336h128v4h-128zM84 340h128v4h-128zM244 340h20v4h-20zM296 340h128v4h-128zM88 344h128v4h-128zM248 344h12v4h-12zM292 344h128v4h-128zM92 348h128v4h-128zM252 348h4v4h-4zM288 348h128v4h-128zM96 352h128v4h-128zM284 352h128v4h-128zM100 356h128v4h-128zM280 356h128v4h-128zM104 360h128v4h-128zM276 360h128v4h-128zM108 364h128v4h-128zM272 364h128v4h-128zM112 368h128v4h-128zM268 368h128v4h-128zM116 372h128v4h-128zM264 372h128v4h-128zM120 376h128v4h-128zM260 376h128v4h-128zM124 380h128v4h-128zM256 380h128v4h-128zM128 384h124v4h-124zM256 384h124v4h-124zM132 388h116v4h-116zM260 388h116v4h-116zM136 392h108v4h-108zM264 392h108v4h-108zM140 396h100v4h-100zM268 396h100v4h-100zM144 400h92v4h-92zM272 400h92v4h-92zM148 404h84v4h-84zM276 404h84v4h-84zM152 408h76v4h-76zM280 408h76v4h-76zM156 412h68v4h-68zM284 412h68v4h-68zM160 416h60v4h-60zM288 416h60v4h-60zM164 420h52v4h-52zM292 420h52v4h-52zM168 424h44v4h-44zM296 424h44v4h-44zM172 428h36v4h-36zM300 428h36v4h-36zM176 432h28v4h-28zM304 432h28v4h-28zM180 436h20v4h-20zM308 436h20v4h-20zM184 440h12v4h-12zM312 440h12v4h-12zM188 444h4v4h-4zM316 444h4v4h-4z" fill="#BFE3FF" fill-opacity="0.35"/>
+<polygon data-piece="D1" points="192,192 320,320 192,448 64,320" fill="none" stroke="#FFC857" stroke-width="3"/>
+<polygon data-piece="D2" points="320,192 448,320 320,448 192,320" fill="none" stroke="#7EE0A1" stroke-width="3"/>
+<polygon data-piece="P1" points="256,288 288,320 256,352 224,320" fill="none" stroke="#FF8FA3" stroke-width="3"/>
+<polygon points="224,192 352,320 224,448 96,320" fill="none" stroke="#FFC857" stroke-width="2" stroke-dasharray="8 6" stroke-opacity="0.8"/>
+<polygon points="160,192 288,320 160,448 32,320" fill="none" stroke="#FFC857" stroke-width="2" stroke-dasharray="8 6" stroke-opacity="0.8"/>
+<polygon points="192,224 320,352 192,480 64,352" fill="none" stroke="#FFC857" stroke-width="2" stroke-dasharray="8 6" stroke-opacity="0.8"/>
+<polygon points="352,192 480,320 352,448 224,320" fill="none" stroke="#7EE0A1" stroke-width="2" stroke-dasharray="8 6" stroke-opacity="0.8"/>
+<polygon points="288,192 416,320 288,448 160,320" fill="none" stroke="#7EE0A1" stroke-width="2" stroke-dasharray="8 6" stroke-opacity="0.8"/>
+<polygon points="320,224 448,352 320,480 192,352" fill="none" stroke="#7EE0A1" stroke-width="2" stroke-dasharray="8 6" stroke-opacity="0.8"/>
+<polygon points="288,288 320,320 288,352 256,320" fill="none" stroke="#FF8FA3" stroke-width="2" stroke-dasharray="8 6" stroke-opacity="0.8"/>
+<polygon points="224,288 256,320 224,352 192,320" fill="none" stroke="#FF8FA3" stroke-width="2" stroke-dasharray="8 6" stroke-opacity="0.8"/>
+<polygon points="256,320 288,352 256,384 224,352" fill="none" stroke="#FF8FA3" stroke-width="2" stroke-dasharray="8 6" stroke-opacity="0.8"/>
+<circle cx="64" cy="192" r="4" fill="#FFC857"/>
+<text x="70" y="206" fill="#DDF2FF" font-family="sans-serif" font-size="12">D1.A</text>
+<circle cx="96" cy="192" r="4" fill="#FFC857"/>
+<text x="102" y="206" fill="#DDF2FF" font-family="sans-serif" font-size="12">D1.B</text>
+<circle cx="32" cy="192" r="4" fill="#FFC857"/>
+<text x="38" y="206" fill="#DDF2FF" font-family="sans-serif" font-size="12">D1.C</text>
+<circle cx="64" cy="224" r="4" fill="#FFC857"/>
+<text x="70" y="238" fill="#DDF2FF" font-family="sans-serif" font-size="12">D1.D</text>
+<circle cx="192" cy="192" r="4" fill="#7EE0A1"/>
+<text x="198" y="206" fill="#DDF2FF" font-family="sans-serif" font-size="12">D2.A</text>
+<circle cx="224" cy="192" r="4" fill="#7EE0A1"/>
+<text x="230" y="206" fill="#DDF2FF" font-family="sans-serif" font-size="12">D2.B</text>
+<circle cx="160" cy="192" r="4" fill="#7EE0A1"/>
+<text x="166" y="206" fill="#DDF2FF" font-family="sans-serif" font-size="12">D2.C</text>
+<circle cx="192" cy="224" r="4" fill="#7EE0A1"/>
+<text x="198" y="238" fill="#DDF2FF" font-family="sans-serif" font-size="12">D2.D</text>
+<circle cx="224" cy="288" r="4" fill="#FF8FA3"/>
+<text x="230" y="302" fill="#DDF2FF" font-family="sans-serif" font-size="12">P1.A</text>
+<circle cx="256" cy="288" r="4" fill="#FF8FA3"/>
+<text x="262" y="302" fill="#DDF2FF" font-family="sans-serif" font-size="12">P1.B</text>
+<circle cx="192" cy="288" r="4" fill="#FF8FA3"/>
+<text x="198" y="302" fill="#DDF2FF" font-family="sans-serif" font-size="12">P1.C</text>
+<circle cx="224" cy="320" r="4" fill="#FF8FA3"/>
+<text x="230" y="334" fill="#DDF2FF" font-family="sans-serif" font-size="12">P1.D</text>
+<text x="8" y="666" fill="#DDF2FF" font-family="sans-serif" font-size="16">2-4 · Mắt Tiên Tri · mat-tien-tri-v1</text>
+</svg>
