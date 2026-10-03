@@ -1,4 +1,4 @@
-# Status — updated 2026-10-03 by Antigravity
+# Status — updated 2026-10-03 by Claude Code
 
 Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; keep this file ≤ 60 lines.
 
@@ -15,6 +15,7 @@ Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; k
 | Level system A → B → C/D → E | A and B merged to `main`; C in progress; D/E pending | `docs/ai/DOCS-INDEX.md` rows A–E |
 | F motion (F1 → F2 → F3) | specs approved, plans ready, not started | `docs/superpowers/plans/2026-10-03-f-motion-index.md` |
 | C chapter 2 + Hoa Pham | in progress; Tasks 1–10 and 13–15 complete, 11–12 unblocked | `docs/superpowers/plans/2026-10-02-c-chapter-2-hoa-pham-levels.md` |
+| G audio (G0 → G1 → G2) | spec written, awaiting review; no plan yet | `docs/superpowers/specs/2026-10-03-g-audio-design.md` |
 | BF board-fit-by-cells | complete, merged into `feat/chapter-2-hoa-pham` (not yet on `main`) | `docs/superpowers/plans/2026-10-03-board-fit-by-cells.md` |
 
 ## Open decisions / blockers
@@ -24,6 +25,7 @@ Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; k
 - C: closed — the `3-5` and `3-6` frame overhang is unblocked by the cell-based fit in `fix/board-fit-by-cells`.
 - E: spec §9 changes (c6d083e) need re-review; E1–E3 plans are skeletons and need writing-plans.
 - F1 §3.3 edited after approval; F2 plans list 7 spec departures — review at F stop point 1.
+- G: spec awaiting review. After approval, G0 (shortlist CC0/Pixabay candidates, reviewer listens and picks) can start before F1/F2; adding `ffmpeg-static` devDependency was agreed in brainstorming.
 
 ## Gotchas learned recently
 

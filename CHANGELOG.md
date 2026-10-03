@@ -4,6 +4,12 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-03 - Add G audio design spec
+
+- Added `docs/superpowers/specs/2026-10-03-g-audio-design.md`: two ambient tracks streamed via `HTMLAudioElement` and crossfaded on F1 routes, WebAudio SFX driven by F2 `FeedbackEvent`s with snap pitches on a major pentatonic scale, `settings.music`/`settings.sfx` toggles, CC0/Pixabay asset manifest with `ffmpeg-static` processing, and a G0 → G1 → G2 rollout with a reviewer listening stop.
+- Registered stream G in `docs/ai/DOCS-INDEX.md` and `docs/ai/STATUS.md`.
+- Verification: docs-only change; spec self-reviewed for placeholders and consistency with F1/F2 specs. No code touched, so GitNexus impact analysis was not needed.
+
 ### 2026-10-03 - Add level 3-5 Thuyen Buom Hoang Hon (validated)
 
 - Added and registered `3-5` with generated JSON/SVG/report and play/drag/win screenshots; its hull `H1` is the first piece whose frame box overhangs the board, accepted by the cell-based fit from `fix/board-fit-by-cells`.
