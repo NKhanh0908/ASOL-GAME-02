@@ -4,6 +4,12 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-03 - Review and merge Plan A shapes v2 into main
+
+- Merged `feat/shapes-v2` into `main` (`55da659`, `--no-ff`) after review; both out-of-spec decisions (two-tier frame check `isStructuralFrame`/`isValidFrame`, 1.5% circle intersection tolerance) approved as implemented.
+- `docs/ai/STATUS.md`: branch back to `main`, A stream marked merged, A decision closed; added gotchas for the parallelogram frame palette (48/96 only) and the WSL/CRLF + Windows `node_modules` workflow.
+- Verification: on `main` after merge, `npm run typecheck` clean, `npm test` 264/264 passing, `npm run content:validate` PASS (6 levels + fixture), `npm run build` clean with `grep -c dev-shapes-v2 dist/assets/*.js` = 0; `git diff --check` clean.
+
 ### 2026-10-03 - Complete Plan A shapes v2 implementation and update docs
 
 - `docs/ai/DOCS-INDEX.md`: marked row A (`Shapes v2`) as `done`.
