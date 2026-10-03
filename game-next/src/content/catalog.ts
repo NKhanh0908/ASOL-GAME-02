@@ -8,6 +8,7 @@ import muiTen from './levels/2-1.json';
 import canhBuom from './levels/2-2.json';
 import traiTim from './levels/2-3.json';
 import matTienTri from './levels/2-4.json';
+import dongHoCat from './levels/2-5.json';
 import { campaignManifest } from './manifest.ts';
 import { validateLevel } from './validate.ts';
 import { DEV_LEVEL_DOCUMENTS } from './devLevels.ts';
@@ -24,6 +25,7 @@ const documents: Record<string, unknown> = {
   '2-2': canhBuom,
   '2-3': traiTim,
   '2-4': matTienTri,
+  '2-5': dongHoCat,
 };
 
 /**
