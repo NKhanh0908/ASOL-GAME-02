@@ -76,6 +76,27 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 - `docs/ai/STATUS.md` and `docs/ai/DOCS-INDEX.md`: started Plan C on `feat/chapter-2-hoa-pham` and confirmed 2-5 as Đồng Hồ Cát.
 - Verification: `content:author -- 2-1` reports 1728 target cells, one solution and no fewer-piece solution; typecheck, level-content tests and content validation pass; play/drag/win screenshots inspected at 720×1280. GitNexus unavailable and skipped per reviewer direction.
 
+### 2026-10-03 - Record the cell-based board-fit invariant
+
+- `docs/ai/ARCHITECTURE.md`: documented that board fit is measured by real piece cells, not the frame box (`fitsBoard` and `anchorFitsBoard` share the same semantics), with rotating levels requiring the full frame box.
+- `docs/ai/STATUS.md`: closed blocker C (frame overhang of 3-5 and 3-6) and recorded plan C tasks 11–12 unblocked; updated active branch and stream.
+- `docs/ai/DOCS-INDEX.md`: marked row BF (`plans/2026-10-03-board-fit-by-cells.md`) as `done`.
+- `docs/superpowers/plans/2026-10-02-d-free-placement.md`: noted in decision 3 that `authoring.ts` now matches `fitsBoard` cell-based fit semantics.
+- Verification: `npm run typecheck`, `npm test` (324/324 passing) and `npm run content:validate` pass; documentation files updated within guidelines.
+
+### 2026-10-03 - Measure board fit by real cells in authoring
+
+- `game-next/src/content/authoring.ts`: added `anchorFitsBoard` checking real cells with `shapeCells` when `rotationEnabled: false` and requiring the whole frame box when `rotationEnabled: true`. Unified `checkSourceGeometry` and `filterDecoys` to use `anchorFitsBoard`.
+- `game-next/tests/authoring.test.ts`: added unit tests verifying `3-5 H1` (triangle o6) and `3-6 T1` (parallelogram o1) fit within board bounds, out-of-bounds cells and negative anchors are rejected, and rotating levels still require full frame box fit.
+- Verification: `npm run typecheck`, `npm test` (324/324 passing), `npm run content:validate` and `npm run content:author -- --all` pass with no level files changed (`git status --short game-next/src/content/levels docs/testing/levels` empty); GitNexus `detect_changes` passed with low risk.
+
+### 2026-10-03 - Add the board-fit-by-cells plan
+
+- `docs/superpowers/plans/2026-10-03-board-fit-by-cells.md`: two-task plan replacing the frame-box bounds check in `content/authoring.ts` with a cell-based one (`anchorFitsBoard`), keeping the frame rule for `rotationEnabled` levels; no new spec, the authority is spec C §4 coordinates and plan D decision 3.
+- `docs/ai/DOCS-INDEX.md`: added row BF, moved C to `in-progress` with the real blocker, corrected B to merged.
+- Rationale: `fitsBoard` already measures real cells, so only authoring rejects `3-5 H1` (triangle o6 frame 64 at `(24, 104)`, cells reach y=135 of 160) and `3-6 T1` (parallelogram o1 frame 48 at `(88, 56)`, cells reach x=119 of 128).
+- Verification: coordinates and cell extents computed with `shapeCells` on `main` at `1f7777b`; no code changed by this commit.
+
 ### 2026-10-03 - Review and merge Plan B into main
 
 - Merged `feat/level-kit-chapters` into `main` (`dee44e5`, `--no-ff`) after review; the three out-of-spec decisions (`chapter-rotation-required`, rotate button driven by `chapters.ts` instead of the chapter number, sample-solution anchors protected from KIT-03) approved as implemented.

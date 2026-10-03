@@ -208,3 +208,55 @@ describe('luật neo nhiễu KIT-03', () => {
     expect(renderReportMarkdown(plain, searchSolutions(plain))).not.toContain('Neo nhiễu đã bỏ');
   });
 });
+
+describe('vừa bàn tính theo ô thật', () => {
+  function sourceWith(piece: LevelSource['pieces'][number], rotationEnabled = false): LevelSource {
+    return {
+      ...cloneSource(songTinh),
+      rotationEnabled,
+      pieces: [piece],
+      sampleSolutions: [[{ pieceId: piece.id, anchorId: 'A', turns: 0 }]],
+      distractors: [],
+    };
+  }
+
+  const thuyenBuomHull: LevelSource['pieces'][number] = {
+    id: 'H1',
+    shapeKind: 'triangle',
+    orientation: 6,
+    frameSize: 64,
+    anchors: [{ id: 'A', x: 24, y: 104 }],
+  };
+
+  const meoThanTail: LevelSource['pieces'][number] = {
+    id: 'T1',
+    shapeKind: 'parallelogram',
+    orientation: 1,
+    frameSize: 48,
+    anchors: [{ id: 'A', x: 88, y: 56 }],
+  };
+
+  test('mái hướng 6 có khung thò dưới đáy nhưng ô thật trong bàn: nhận', () => {
+    expect(checkSourceGeometry(sourceWith(thuyenBuomHull))).toEqual([]);
+  });
+
+  test('bình hành hướng 1 có khung thò phải nhưng ô thật trong bàn: nhận', () => {
+    expect(checkSourceGeometry(sourceWith(meoThanTail))).toEqual([]);
+  });
+
+  test('ô thật vượt biên vẫn bị từ chối', () => {
+    const overflow = { ...thuyenBuomHull, orientation: 4 as const };
+    expect(checkSourceGeometry(sourceWith(overflow)).join('\n')).toMatch(/vượt biên bàn/);
+  });
+
+  test('màn bật xoay vẫn đòi cả hộp khung vừa bàn', () => {
+    expect(checkSourceGeometry(sourceWith(thuyenBuomHull, true)).join('\n')).toMatch(
+      /vượt biên bàn khi xoay/
+    );
+  });
+
+  test('neo âm vẫn bị từ chối', () => {
+    const negative = { ...meoThanTail, anchors: [{ id: 'A', x: -8, y: 56 }] };
+    expect(checkSourceGeometry(sourceWith(negative)).join('\n')).toMatch(/vượt biên bàn/);
+  });
+});

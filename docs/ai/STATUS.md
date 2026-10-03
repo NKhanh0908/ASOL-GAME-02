@@ -1,12 +1,12 @@
-# Status — updated 2026-10-03 by Sunny
+# Status — updated 2026-10-03 by Antigravity
 
 Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; keep this file ≤ 60 lines.
 
 ## Now
 
-- Branch: `feat/chapter-2-hoa-pham` (branched from reviewed Plan B on `main`).
+- Branch: `feat/chapter-2-hoa-pham` (branched from reviewed Plan B on `main`; `fix/board-fit-by-cells` merged in).
 - Product state: level kit and `content:new`; KIT-03 decoy filtering; 28-level / 4-chapter manifest; four-constellation map; 15-image authoring guide; six chapter-1 levels remain approved.
-- Next step: continue plan C at Task 16 (`3-10`); Tasks 11–12 (`3-5`, `3-6`) remain intentionally skipped and planned by reviewer direction.
+- Next step: plan C tasks 11–12 (`3-5`, `3-6`) are unblocked now that board fit is measured by piece cells; then Task 16 (`3-10`) and Task 17.
 
 ## Streams
 
@@ -14,13 +14,14 @@ Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; k
 |--------|-------|-----------|
 | Level system A → B → C/D → E | A and B merged to `main`; C in progress; D/E pending | `docs/ai/DOCS-INDEX.md` rows A–E |
 | F motion (F1 → F2 → F3) | specs approved, plans ready, not started | `docs/superpowers/plans/2026-10-03-f-motion-index.md` |
-| C chapter 2 + Hoa Pham | in progress; Tasks 1–10 and 13–15 complete | `docs/superpowers/plans/2026-10-02-c-chapter-2-hoa-pham-levels.md` |
+| C chapter 2 + Hoa Pham | in progress; Tasks 1–10 and 13–15 complete, 11–12 unblocked | `docs/superpowers/plans/2026-10-02-c-chapter-2-hoa-pham-levels.md` |
+| BF board-fit-by-cells | complete, merged into `feat/chapter-2-hoa-pham` (not yet on `main`) | `docs/superpowers/plans/2026-10-03-board-fit-by-cells.md` |
 
 ## Open decisions / blockers
 
 - A: closed — both out-of-spec decisions approved at review (two-tier frame check `isStructuralFrame`/`isValidFrame`; 1.5% tolerance for circle intersection area).
 - B: closed — `chapter-rotation-required`, rotate button only in chapter 4, and protected sample-solution anchors in KIT-03 all approved at review. Plan C confirms the `2-5` rename to Đồng Hồ Cát.
-- C: piece frames in sources 3-5 and 3-6 leave the board — needs a reviewer decision.
+- C: closed — the `3-5` and `3-6` frame overhang is unblocked by the cell-based fit in `fix/board-fit-by-cells`.
 - E: spec §9 changes (c6d083e) need re-review; E1–E3 plans are skeletons and need writing-plans.
 - F1 §3.3 edited after approval; F2 plans list 7 spec departures — review at F stop point 1.
 

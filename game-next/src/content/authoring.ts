@@ -24,6 +24,36 @@ export type LevelSource = Omit<LevelDocument, 'schemaVersion' | 'board' | 'piece
   pieces: PieceSource[];
 };
 
+/**
+ * Mảnh đặt ở neo này có nằm trong bàn không.
+ *
+ * Màn không xoay: chỉ cần mọi **ô thật** của mảnh trong bàn — hộp khung được
+ * phép thò ra, vì tam giác mái và bình hành không lấp kín khung (ví dụ `3-5
+ * H1` và `3-6 T1` của spec C). Cùng ngữ nghĩa với `fitsBoard` lúc chơi.
+ *
+ * Màn bật xoay: đòi cả hộp khung vừa bàn, vì bốn nấc xoay quay trong khung
+ * nên ô ở nấc khác có thể chạm tới mép khung.
+ *
+ * Gốc khung âm luôn bị từ chối: renderer đặt khung từ gốc này.
+ */
+export function anchorFitsBoard(
+  piece: PieceSource,
+  anchor: { x: number; y: number },
+  rotationEnabled: boolean
+): boolean {
+  if (anchor.x < 0 || anchor.y < 0) return false;
+  if (rotationEnabled) {
+    return anchor.x + piece.frameSize <= GRID_WIDTH && anchor.y + piece.frameSize <= GRID_HEIGHT;
+  }
+  return shapeCells(piece.shapeKind, piece.orientation, piece.frameSize).every(
+    ([cx, cy]) =>
+      anchor.x + cx >= 0 &&
+      anchor.y + cy >= 0 &&
+      anchor.x + cx < GRID_WIDTH &&
+      anchor.y + cy < GRID_HEIGHT
+  );
+}
+
 export function checkSourceGeometry(source: LevelSource): string[] {
   const problems: string[] = [];
   for (const piece of source.pieces) {
@@ -37,13 +67,12 @@ export function checkSourceGeometry(source: LevelSource): string[] {
       if (anchor.x % ANCHOR_STEP !== 0 || anchor.y % ANCHOR_STEP !== 0) {
         problems.push(`${label}: neo không phải bội của ${ANCHOR_STEP}`);
       }
-      if (
-        anchor.x < 0 ||
-        anchor.y < 0 ||
-        anchor.x + piece.frameSize > GRID_WIDTH ||
-        anchor.y + piece.frameSize > GRID_HEIGHT
-      ) {
-        problems.push(`${label}: khung mảnh vượt biên bàn`);
+      if (!anchorFitsBoard(piece, anchor, source.rotationEnabled)) {
+        problems.push(
+          source.rotationEnabled
+            ? `${label}: khung mảnh vượt biên bàn khi xoay`
+            : `${label}: mảnh vượt biên bàn`
+        );
       }
     }
   }
@@ -79,11 +108,7 @@ export function filterDecoys(source: LevelSource): { source: LevelSource; droppe
       if (anchor.id === TRUE_ANCHOR_ID || usedBySolution.has(`${piece.id}.${anchor.id}`)) {
         return true;
       }
-      const outside =
-        anchor.x < 0 ||
-        anchor.y < 0 ||
-        anchor.x + piece.frameSize > GRID_WIDTH ||
-        anchor.y + piece.frameSize > GRID_HEIGHT;
+      const outside = !anchorFitsBoard(piece, anchor, source.rotationEnabled);
       if (outside) {
         dropped.push({ pieceId: piece.id, anchorId: anchor.id, reason: 'out-of-bounds' });
         return false;
