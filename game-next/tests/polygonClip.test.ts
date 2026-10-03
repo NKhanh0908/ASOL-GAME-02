@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'vitest';
 import { clipConvex, parityLayers, polygonArea } from '../src/presentation/polygonClip.ts';
 import type { Pt } from '../src/presentation/polygonClip.ts';
+import { shapePolygon } from '../src/domain/shapes.ts';
 
 function square(x: number, y: number, s: number): Pt[] {
   return [
@@ -87,5 +88,19 @@ describe('parityLayers', () => {
       { x: 20, y: 0 },
     ];
     expect(parityLayers([flat])).toEqual([]);
+  });
+});
+
+describe('vùng giao hai hình tròn', () => {
+  test('thấu kính của hai tròn khung 64 lệch tâm 32 gần đúng công thức hình tròn', () => {
+    const a = shapePolygon('circle', 0, 64).map((p) => ({ x: p.x, y: p.y }));
+    const b = a.map((p) => ({ x: p.x + 32, y: p.y }));
+    const lens = polygonArea(clipConvex(a, b));
+    const r = 32;
+    const d = 32;
+    const exact = 2 * r * r * Math.acos(d / (2 * r)) - (d / 2) * Math.sqrt(4 * r * r - d * d);
+    // Đa giác 32 cạnh nội tiếp nhỏ hơn hình tròn thật: prototype đo được 1244,31 so với 1257,85 (1,08%)
+    expect(lens).toBeCloseTo(1244.31, 1);
+    expect(Math.abs(lens - exact) / exact).toBeLessThan(0.015);
   });
 });

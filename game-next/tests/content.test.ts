@@ -166,3 +166,64 @@ describe('Hình mảnh, hướng và placement mục tiêu (CH1-04)', () => {
     expect(validateLevel(doc).ok).toBe(true);
   });
 });
+
+describe('Hình tròn, bình hành và khung theo loại hình (spec A)', () => {
+  function oneShape(
+    shapeKind: LevelSource['pieces'][number]['shapeKind'],
+    orientation: LevelSource['pieces'][number]['orientation'],
+    frameSize: number
+  ): LevelSource {
+    return {
+      id: 'test-shape',
+      title: 'Hình thử',
+      chapter: 2,
+      order: 7,
+      contentRevision: 't1',
+      rotationEnabled: false,
+      pieces: [{ id: 'P1', shapeKind, orientation, frameSize, anchors: [{ id: 'A', x: 32, y: 48 }] }],
+      sampleSolutions: [[{ pieceId: 'P1', anchorId: 'A', turns: 0 }]],
+      learningObjective: 'thử',
+      difficultyEstimate: 1,
+      distractors: [],
+      ftueSteps: [],
+    };
+  }
+
+  function codes(doc: unknown): string[] {
+    const result = validateLevel(doc);
+    return result.ok ? [] : result.issues.map((i) => i.code);
+  }
+
+  test('hình tròn và bình hành hợp lệ mang đúng shapeKind/orientation', () => {
+    const circle = validateLevel(buildLevelDocument(oneShape('circle', 0, 64)));
+    expect(circle.ok).toBe(true);
+    const para = validateLevel(buildLevelDocument(oneShape('parallelogram', 2, 48)));
+    expect(para.ok).toBe(true);
+    if (para.ok) {
+      expect(para.level.pieces[0].shapeKind).toBe('parallelogram');
+      expect(para.level.pieces[0].orientation).toBe(2);
+    }
+  });
+
+  test('bình hành thiếu orientation bị từ chối; hình tròn hướng 1 bị từ chối', () => {
+    const para = buildLevelDocument(oneShape('parallelogram', 1, 48));
+    delete para.pieces[0].orientation;
+    expect(codes(para)).toContain('invalid-orientation');
+    const circle = buildLevelDocument(oneShape('circle', 0, 32));
+    (circle.pieces[0] as { orientation?: number }).orientation = 1;
+    expect(codes(circle)).toContain('invalid-orientation');
+  });
+
+  test('khung sai cấu trúc bị từ chối với invalid-frame-for-shape', () => {
+    const para = buildLevelDocument(oneShape('parallelogram', 0, 48));
+    para.pieces[0].frameSize = 32;
+    expect(codes(para)).toContain('invalid-frame-for-shape');
+    const circle = buildLevelDocument(oneShape('circle', 0, 16));
+    circle.pieces[0].frameSize = 15;
+    expect(codes(circle)).toContain('invalid-frame-for-shape');
+  });
+
+  test('fixture kỹ thuật thoi khung 40 vẫn hợp lệ (khung đúng cấu trúc)', () => {
+    expect(validateLevel(makeAdjacentFixture()).ok).toBe(true);
+  });
+});

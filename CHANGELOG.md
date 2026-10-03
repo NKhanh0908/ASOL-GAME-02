@@ -4,6 +4,38 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-03 - Complete Plan A shapes v2 implementation and update docs
+
+- `docs/ai/DOCS-INDEX.md`: marked row A (`Shapes v2`) as `done`.
+- `docs/ai/STATUS.md`: updated current branch (`feat/shapes-v2`), streams, and next steps for Plan B.
+- Verification: link check clean; `npm run typecheck`, `npm test` (264/264 passing), `npm run content:validate`, `npm run build` all pass.
+
+### 2026-10-03 - Add dev-only shapes v2 test level
+
+- `game-next/src/content/devLevels.ts`: defined runtime dev-only harness level `dev-shapes-v2` featuring two overlapping 64-frame circles (lens XOR intersection), a 48-frame parallelogram, and a 24-frame small triangle.
+- `game-next/src/content/catalog.ts`: enabled `loadLevel` to resolve dev levels from `DEV_LEVEL_DOCUMENTS` when `mode === 'harness'` and `import.meta.env.DEV` is active (tree-shaken in production).
+- `game-next/tests/catalog.test.ts`: added test confirming `dev-shapes-v2` loads in harness mode with expected shape kinds/sizes and throws in campaign mode.
+- `game-next/tests/authoringReport.test.ts`: verified SVG preview generation with 32 vertices for circles and 4 for parallelograms.
+- `docs/testing/levels/screens/dev-shapes-v2-{play,drag,win}.png`: captured headless Chrome screenshots verifying bezel rendering, empty XOR lens region on circle overlap, and victory dialog.
+- Verification: `npm run typecheck`, `npm test` (264/264 passing), `npm run content:validate`, `npm run build` all clean; `dev-shapes-v2` verified 0 occurrences in `dist/assets/*.js`; GitNexus `detect_changes` verified changes bounded to `loadLevel`.
+
+### 2026-10-03 - Validate and author circle and parallelogram pieces
+
+- `game-next/src/content/validate.ts`: updated `validateLevel` to accept `circle` and `parallelogram` pieces, enforce structural frame integrity with `isStructuralFrame`, require `orientation` for triangles and parallelograms, and verify raster cells against `shapeCells`.
+- `game-next/src/content/authoring.ts`: added grid-snapping frame checks in `checkSourceGeometry` via `isValidFrame`, and preserved `orientation` for parallelograms in `buildLevelDocument`.
+- `game-next/tests/content.test.ts`: added test coverage for valid circle/parallelogram pieces, missing orientation rejection, and structural frame rejection.
+- `game-next/tests/authoring.test.ts`: added tests for frame rejection on non-grid frames and orientation persistence for parallelograms.
+- `game-next/tests/polygonClip.test.ts`: added test for lens intersection area of overlapping circles matching theoretical formula within 1.5% tolerance.
+- Verification: `npm run typecheck` clean; `npm test` 261/261 passing; `content:validate` and `content:author -- --all` green with no JSON diffs; GitNexus `detect_changes` verified changes in validate and authoring.
+
+### 2026-10-03 - Add circle and parallelogram shapes with per-shape frame rules
+
+- `game-next/src/domain/model.ts`: added `circle` and `parallelogram` to `ShapeKind`, updated `Orientation` JSDoc.
+- `game-next/src/domain/shapes.ts`: implemented 32-segment regular polygon `circle` and 4-orientation `parallelogram`, added `isValidFrame` (spec A section 3 grid snapping) and `isStructuralFrame` (validator integer-vertex & board checks), added `mirrorOrientation` across x and y axes, and added `CIRCLE_SEGMENTS` constant.
+- `game-next/src/content/document.ts`: typed `LevelDocument.pieces[].shapeKind` as `ShapeKind`.
+- `game-next/tests/shapes.test.ts`: added test coverage for polygon generation, cell count verification (208, 812, 3196 for circle; 512 for parallelogram), mirroring, rotation, and frame rules.
+- Verification: `npm run typecheck` clean; `npm test` 254/254 passing; GitNexus `detect_changes` verified changes bounded to shapes symbols.
+
 ### 2026-10-03 - Commit UI mockups for a next pass and drop unused reference images
 
 - Added `docs/gui/ỉmprove-2/` (`gameplay.png`, `main.png`, `map.png`, `match.png`): mockups for a possible next UI pass, already listed in `docs/ai/DOCS-INDEX.md`; no spec yet.

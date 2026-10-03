@@ -6,6 +6,7 @@ import thuyenSao from './levels/1-5.json';
 import vuongMien from './levels/1-6.json';
 import { campaignManifest } from './manifest.ts';
 import { validateLevel } from './validate.ts';
+import { DEV_LEVEL_DOCUMENTS } from './devLevels.ts';
 import type { Level } from '../domain/model.ts';
 
 const documents: Record<string, unknown> = {
@@ -23,6 +24,15 @@ const documents: Record<string, unknown> = {
  * - harness: cho phép màn có status 'validated' hoặc 'approved'.
  */
 export function loadLevel(id: string, mode: 'campaign' | 'harness'): Level {
+  // Màn dev (thử hình, sau này là màn studio): chỉ ở harness trên dev server
+  if (mode === 'harness' && import.meta.env.DEV && id in DEV_LEVEL_DOCUMENTS) {
+    const result = validateLevel(DEV_LEVEL_DOCUMENTS[id]);
+    if (!result.ok) {
+      throw new Error(`validation-failed:${id} -> ${JSON.stringify(result.issues)}`);
+    }
+    return result.level;
+  }
+
   const entry = campaignManifest.find((e) => e.id === id);
   if (
     !entry ||
