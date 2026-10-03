@@ -15,6 +15,7 @@ import denTienTri from './levels/3-2.json';
 import caChep from './levels/3-3.json';
 import ngonNen from './levels/3-4.json';
 import hoaSen from './levels/3-7.json';
+import kimTuThap from './levels/3-8.json';
 import { campaignManifest } from './manifest.ts';
 import { validateLevel } from './validate.ts';
 import { DEV_LEVEL_DOCUMENTS } from './devLevels.ts';
@@ -38,6 +39,7 @@ const documents: Record<string, unknown> = {
   '3-3': caChep,
   '3-4': ngonNen,
   '3-7': hoaSen,
+  '3-8': kimTuThap,
 };
 
 /**

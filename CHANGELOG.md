@@ -4,6 +4,11 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-03 - Add level 3-8 Kim Tu Thap Nhat Thuc (validated)
+
+- Added and registered `3-8` with generated JSON/SVG/report, locked its pyramid/eclipsed-circle parity counts and added play/drag/win screenshots; `3-5` and `3-6` remain planned by reviewer direction.
+- Verification: authoring reports 4352 target cells, one solution and no fewer-piece solution; typecheck, tests and content validation pass. GitNexus unavailable and skipped per reviewer direction.
+
 ### 2026-10-03 - Add level 3-7 Hoa Sen (validated)
 
 - Added and registered `3-7` with generated JSON/SVG/report, locked its parity counts and added play/drag/win screenshots; `3-5` and `3-6` remain planned by reviewer direction.
