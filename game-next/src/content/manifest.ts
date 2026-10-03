@@ -17,7 +17,7 @@ export const campaignManifest: readonly ManifestEntry[] = [
   { id: '2-6', title: 'Đại Ấn Hộ Mệnh', chapter: 2, order: 12, contentRevision: 'dai-an-v1', status: 'validated', dataPath: 'src/content/levels/2-6.json' },
 
   // Chương 3 — Họa Phẩm (tranh ghép nghệ thuật, không xoay)
-  { id: '3-1', title: 'Nhật Nguyệt Song Huyền', chapter: 3, order: 13, contentRevision: 'v0.1', status: 'planned' },
+  { id: '3-1', title: 'Nhật Nguyệt Song Huyền', chapter: 3, order: 13, contentRevision: 'nhat-nguyet-v1', status: 'validated', dataPath: 'src/content/levels/3-1.json' },
   { id: '3-2', title: 'Đền Tiên Tri', chapter: 3, order: 14, contentRevision: 'v0.1', status: 'planned' },
   { id: '3-3', title: 'Cá Chép Sao', chapter: 3, order: 15, contentRevision: 'v0.1', status: 'planned' },
   { id: '3-4', title: 'Ngọn Nến', chapter: 3, order: 16, contentRevision: 'v0.1', status: 'planned' },
