@@ -4,6 +4,14 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-03 - Record the cell-based board-fit invariant
+
+- `docs/ai/ARCHITECTURE.md`: documented that board fit is measured by real piece cells, not the frame box (`fitsBoard` and `anchorFitsBoard` share the same semantics), with rotating levels requiring the full frame box.
+- `docs/ai/STATUS.md`: closed blocker C (frame overhang of 3-5 and 3-6) and recorded plan C tasks 11–12 unblocked; updated active branch and stream.
+- `docs/ai/DOCS-INDEX.md`: marked row BF (`plans/2026-10-03-board-fit-by-cells.md`) as `done`.
+- `docs/superpowers/plans/2026-10-02-d-free-placement.md`: noted in decision 3 that `authoring.ts` now matches `fitsBoard` cell-based fit semantics.
+- Verification: `npm run typecheck`, `npm test` (324/324 passing) and `npm run content:validate` pass; documentation files updated within guidelines.
+
 ### 2026-10-03 - Measure board fit by real cells in authoring
 
 - `game-next/src/content/authoring.ts`: added `anchorFitsBoard` checking real cells with `shapeCells` when `rotationEnabled: false` and requiring the whole frame box when `rotationEnabled: true`. Unified `checkSourceGeometry` and `filterDecoys` to use `anchorFitsBoard`.
