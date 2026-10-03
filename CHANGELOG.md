@@ -4,6 +4,11 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-03 - Add current status file for agents
+
+- Added `docs/ai/STATUS.md`: branch, product state, next step, streams with entry docs, open decisions and recent gotchas; overwritten at the end of every task.
+- Verification: link check passes; 60-line limit respected; no runtime code changed; GitNexus MCP unavailable, detect_changes not run.
+
 ### 2026-10-03 - Add game-next architecture map for agents
 
 - Added `docs/ai/ARCHITECTURE.md`: layers with known dependency exceptions, boot and scene flow with line references, gameplay flow, level content pipeline and review flow, invariants, localStorage keys, GitNexus hotspots, test conventions.
