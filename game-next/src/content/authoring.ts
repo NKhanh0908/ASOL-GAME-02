@@ -1,7 +1,7 @@
 import type { Cell, Orientation, ShapeKind } from '../domain/model.ts';
 import { GRID_HEIGHT, GRID_WIDTH, TOTAL_CELLS } from '../domain/model.ts';
 import { rotateCells } from '../domain/geometry.ts';
-import { shapeCells } from '../domain/shapes.ts';
+import { isValidFrame, shapeCells } from '../domain/shapes.ts';
 import type { LevelDocument } from './document.ts';
 
 /** Neo phải rơi vào giao điểm lưới hiển thị: 1 ô hiển thị = 8 ô logic. */
@@ -27,6 +27,11 @@ export type LevelSource = Omit<LevelDocument, 'schemaVersion' | 'board' | 'piece
 export function checkSourceGeometry(source: LevelSource): string[] {
   const problems: string[] = [];
   for (const piece of source.pieces) {
+    if (!isValidFrame(piece.shapeKind, piece.orientation, piece.frameSize)) {
+      problems.push(
+        `${piece.id}: khung ${piece.frameSize} không hợp lệ cho ${piece.shapeKind} hướng ${piece.orientation}`
+      );
+    }
     for (const anchor of piece.anchors) {
       const label = `${piece.id}.${anchor.id} tại (${anchor.x}, ${anchor.y})`;
       if (anchor.x % ANCHOR_STEP !== 0 || anchor.y % ANCHOR_STEP !== 0) {
@@ -54,7 +59,9 @@ export function buildLevelDocument(source: LevelSource): LevelDocument {
   const pieces: LevelDocument['pieces'] = source.pieces.map((p) => ({
     id: p.id,
     shapeKind: p.shapeKind,
-    ...(p.shapeKind === 'triangle' ? { orientation: p.orientation } : {}),
+    ...(p.shapeKind === 'triangle' || p.shapeKind === 'parallelogram'
+      ? { orientation: p.orientation }
+      : {}),
     frameSize: p.frameSize,
     cells: shapeCells(p.shapeKind, p.orientation, p.frameSize),
     anchors: p.anchors.map((a) => ({ id: a.id, x: a.x, y: a.y })),

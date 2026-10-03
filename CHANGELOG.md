@@ -4,6 +4,15 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-03 - Validate and author circle and parallelogram pieces
+
+- `game-next/src/content/validate.ts`: updated `validateLevel` to accept `circle` and `parallelogram` pieces, enforce structural frame integrity with `isStructuralFrame`, require `orientation` for triangles and parallelograms, and verify raster cells against `shapeCells`.
+- `game-next/src/content/authoring.ts`: added grid-snapping frame checks in `checkSourceGeometry` via `isValidFrame`, and preserved `orientation` for parallelograms in `buildLevelDocument`.
+- `game-next/tests/content.test.ts`: added test coverage for valid circle/parallelogram pieces, missing orientation rejection, and structural frame rejection.
+- `game-next/tests/authoring.test.ts`: added tests for frame rejection on non-grid frames and orientation persistence for parallelograms.
+- `game-next/tests/polygonClip.test.ts`: added test for lens intersection area of overlapping circles matching theoretical formula within 1.5% tolerance.
+- Verification: `npm run typecheck` clean; `npm test` 261/261 passing; `content:validate` and `content:author -- --all` green with no JSON diffs; GitNexus `detect_changes` verified changes in validate and authoring.
+
 ### 2026-10-03 - Add circle and parallelogram shapes with per-shape frame rules
 
 - `game-next/src/domain/model.ts`: added `circle` and `parallelogram` to `ShapeKind`, updated `Orientation` JSDoc.

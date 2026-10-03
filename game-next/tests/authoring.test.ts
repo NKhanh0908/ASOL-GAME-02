@@ -71,4 +71,33 @@ describe('buildLevelDocument', () => {
     bad.sampleSolutions[0][0].anchorId = 'Z';
     expect(() => buildLevelDocument(bad)).toThrow(/không tồn tại/);
   });
+
+  test('từ chối khung không bám lưới theo loại hình', () => {
+    const diamond24 = cloneSource(songTinh);
+    diamond24.pieces[0].frameSize = 24;
+    expect(() => buildLevelDocument(diamond24)).toThrow(/khung 24 không hợp lệ cho diamond/);
+    const square12 = cloneSource(songTinh);
+    square12.pieces[0] = { ...square12.pieces[0], shapeKind: 'square', frameSize: 12 };
+    expect(() => buildLevelDocument(square12)).toThrow(/khung 12 không hợp lệ cho square/);
+  });
+
+  test('bình hành ghi orientation, hình tròn thì không', () => {
+    const source: LevelSource = {
+      ...cloneSource(songTinh),
+      pieces: [
+        { id: 'P1', shapeKind: 'parallelogram', orientation: 3, frameSize: 48, anchors: [{ id: 'A', x: 16, y: 56 }] },
+        { id: 'C1', shapeKind: 'circle', orientation: 0, frameSize: 32, anchors: [{ id: 'A', x: 72, y: 64 }] },
+      ],
+      sampleSolutions: [
+        [
+          { pieceId: 'P1', anchorId: 'A', turns: 0 },
+          { pieceId: 'C1', anchorId: 'A', turns: 0 },
+        ],
+      ],
+      distractors: [],
+    };
+    const doc = buildLevelDocument(source);
+    expect(doc.pieces[0].orientation).toBe(3);
+    expect('orientation' in doc.pieces[1]).toBe(false);
+  });
 });

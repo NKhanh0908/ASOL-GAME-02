@@ -2,7 +2,7 @@ import type { Cell, Level, Orientation, Piece, Placement, Turns } from '../domai
 import { GRID_HEIGHT, GRID_WIDTH, TOTAL_CELLS } from '../domain/model.ts';
 import { fitsBoard, rotateCells } from '../domain/geometry.ts';
 import { evaluate, matchesTarget } from '../domain/mask.ts';
-import { isValidOrientation, shapeCells } from '../domain/shapes.ts';
+import { isStructuralFrame, isValidOrientation, shapeCells } from '../domain/shapes.ts';
 import type { LevelDocument, ValidationIssue, ValidationResult } from './document.ts';
 
 export function validateLevel(input: unknown): ValidationResult {
@@ -99,19 +99,32 @@ export function validateLevel(input: unknown): ValidationResult {
         }
       }
 
-      // Hình và hướng: cells phải đúng bằng raster của đa giác chuẩn (LVL-02)
+      // Hình và hướng: cells phải đúng bằng raster của đa giác chuẩn (LVL-02).
+      // Tam giác và bình hành bắt buộc ghi hướng; vuông, thoi, tròn bỏ trống là 0.
+      const needsOrientation = p.shapeKind === 'triangle' || p.shapeKind === 'parallelogram';
       const orientation = (
-        p.orientation === undefined && p.shapeKind !== 'triangle' ? 0 : p.orientation
+        p.orientation === undefined && !needsOrientation ? 0 : p.orientation
       ) as Orientation;
       const shapeKindValid =
-        p.shapeKind === 'square' || p.shapeKind === 'triangle' || p.shapeKind === 'diamond';
+        p.shapeKind === 'square' ||
+        p.shapeKind === 'triangle' ||
+        p.shapeKind === 'diamond' ||
+        p.shapeKind === 'circle' ||
+        p.shapeKind === 'parallelogram';
       if (!shapeKindValid) {
         issues.push({ levelId, field: `${pField}.shapeKind`, code: 'invalid-shape-kind' });
       } else if (
-        (p.shapeKind === 'triangle' && p.orientation === undefined) ||
+        (needsOrientation && p.orientation === undefined) ||
         !isValidOrientation(p.shapeKind, orientation)
       ) {
         issues.push({ levelId, field: `${pField}.orientation`, code: 'invalid-orientation' });
+      } else if (
+        typeof p.frameSize === 'number' &&
+        !isStructuralFrame(p.shapeKind, orientation, p.frameSize)
+      ) {
+        // Luật bám lưới (spec A mục 3) kiểm ở authoring; validator chỉ chặn
+        // khung làm đỉnh lệch khỏi ô nguyên hoặc không vừa bàn.
+        issues.push({ levelId, field: `${pField}.frameSize`, code: 'invalid-frame-for-shape' });
       } else if (cellsValid && Number.isInteger(p.frameSize) && p.frameSize > 0) {
         const expected = new Set(
           shapeCells(p.shapeKind, orientation, p.frameSize).map(([x, y]) => `${x},${y}`)
