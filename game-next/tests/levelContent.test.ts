@@ -91,3 +91,4 @@ checkLevel({ id: '3-1', pieceCount: 3, targetCells: 4032, hollowCells: 1116, rev
 checkLevel({ id: '3-2', pieceCount: 4, targetCells: 5168, hollowCells: 1232, revivedCells: 0 });
 checkLevel({ id: '3-3', pieceCount: 4, targetCells: 2304, hollowCells: 312, revivedCells: 0 });
 checkLevel({ id: '3-4', pieceCount: 4, targetCells: 4316, hollowCells: 720, revivedCells: 0 });
+checkLevel({ id: '3-7', pieceCount: 5, targetCells: 3904, hollowCells: 288, revivedCells: 0 });
