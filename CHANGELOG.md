@@ -4,6 +4,12 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-03 - Complete Plan C approval gate
+
+- `docs/ai/STATUS.md` and `docs/ai/DOCS-INDEX.md`: marked Plan C complete and recorded its merge to `main`.
+- `docs/ai/ARCHITECTURE.md`: updated the release-gate count to 22 approved campaign levels.
+- Verification: typecheck, 420/420 tests, content validation (22 authored levels) and production build pass; GitNexus `detect_changes` reports only low-risk documentation sections and no affected execution flows.
+
 ### 2026-10-03 - Approve level 3-10 Mandala Thien Cau
 
 - `game-next/src/content/manifest.ts`: promoted level `3-10` revision `mandala-v1` to `approved`, extending the campaign route after `3-9`.

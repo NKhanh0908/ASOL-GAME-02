@@ -38,7 +38,7 @@ Dependency rule: `domain` ← `application` ← `presentation`; `infrastructure`
 3. Register in both `src/content/manifest.ts` (status `validated`) and the `documents` map in `src/content/catalog.ts`.
 4. Reviewer plays `?scene=play&level=<id>&mode=harness` on `npm run dev`.
 5. Approval commit `feat(content): approve level <id> after review`: status `approved` in `manifest.ts`, add `../docs/testing/mirror-rebuild/<id>-content-review.md`, update `../docs/testing/levels/chapter-1-review.md`, CHANGELOG entry.
-6. Verify: `npm run typecheck`, `npm test`, `npm run content:validate`. `--release` needs 28 approved levels, so `build:release` fails today (6/28).
+6. Verify: `npm run typecheck`, `npm test`, `npm run content:validate`. `--release` needs 28 approved levels, so `build:release` fails today (22/28; Chapter 4 remains planned).
 Screenshots: `scripts/shoot-level.sh <id> <outdir>` (headless Chrome, needs the dev server).
 - "Vừa bàn" luôn tính theo **ô thật** của mảnh, không theo hộp khung: `fitsBoard` (`domain/geometry.ts`) và `anchorFitsBoard` (`content/authoring.ts`) phải cùng ngữ nghĩa. Ngoại lệ duy nhất là màn `rotationEnabled: true`, nơi hộp khung phải vừa bàn vì bốn nấc xoay quay trong khung.
 

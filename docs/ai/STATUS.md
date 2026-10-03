@@ -1,22 +1,22 @@
-# Status — updated 2026-10-03 by Claude Code
+# Status — updated 2026-10-03 by Codex
 
 Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; keep this file ≤ 60 lines.
 
 ## Now
 
-- Branch: `feat/chapter-2-hoa-pham` (branched from reviewed Plan B on `main`; `fix/board-fit-by-cells` merged in).
-- Product state: level kit and `content:new`; KIT-03 decoy filtering; 28-level / 4-chapter manifest; four-constellation map; 15-image authoring guide; six chapter-1 levels remain approved.
-- Next step: plan C Task 18 approval gate; ask the reviewer to play and approve each level in campaign order, starting with `2-1`.
+- Branch: `main` after local merge of completed Plan C.
+- Product state: level kit and `content:new`; KIT-03 decoy filtering; 28-level / 4-chapter manifest; four-constellation map; 15-image authoring guide; Chapters 1–3 provide 22 approved campaign levels.
+- Next step: choose the next implementation stream; F1 is the first unstarted dependency for the motion/audio path.
 
 ## Streams
 
 | Stream | State | Entry doc |
 |--------|-------|-----------|
-| Level system A → B → C/D → E | A and B merged to `main`; C in progress; D/E pending | `docs/ai/DOCS-INDEX.md` rows A–E |
+| Level system A → B → C/D → E | A, B and C merged to `main`; D/E pending | `docs/ai/DOCS-INDEX.md` rows A–E |
 | F motion (F1 → F2 → F3) | specs approved, plans ready, not started | `docs/superpowers/plans/2026-10-03-f-motion-index.md` |
-| C chapter 2 + Hoa Pham | in progress; Tasks 1–17 complete, Task 18 approval gate waiting for reviewer | `docs/superpowers/plans/2026-10-02-c-chapter-2-hoa-pham-levels.md` |
+| C chapter 2 + Hoa Pham | complete; all 16 levels approved and available in campaign order | `docs/superpowers/plans/2026-10-02-c-chapter-2-hoa-pham-levels.md` |
 | G audio (G0 → G1 → G2) | spec approved, plans written, not started | `docs/superpowers/plans/2026-10-03-g-audio-index.md` |
-| BF board-fit-by-cells | complete, merged into `feat/chapter-2-hoa-pham` (not yet on `main`) | `docs/superpowers/plans/2026-10-03-board-fit-by-cells.md` |
+| BF board-fit-by-cells | complete, merged to `main` with Plan C | `docs/superpowers/plans/2026-10-03-board-fit-by-cells.md` |
 
 ## Open decisions / blockers
 
@@ -32,7 +32,7 @@ Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; k
 - `dev-shapes-v2` is only loadable in harness mode under dev; Vite tree-shakes it out of production build (0 occurrences in `dist/assets/`).
 - Chrome headless screenshot on Windows requires absolute output path.
 - `BoardRenderer` is CRITICAL in GitNexus (6 `PlayScene` flows); F1 task 9 and F2 task 6 touch it.
-- `build:release` fails by design until all 28 levels are approved (currently 6).
+- `build:release` fails by design until all 28 levels are approved (currently 22; Chapter 4 has six planned levels).
 - `newLevel.test.ts` uses a fixed one-level index fixture; copying the live registry breaks tests while acceptance levels 3-11/3-12 are temporarily registered.
 - `isValidFrame` allows only 48 and 96 for parallelograms (multiple of 48, ≤ 128) — a constraint for level design.
 - `Hud` reads the rotate-button rule from the chapter (`chapters.ts`), not from the level's own `rotationEnabled`; plans D/E need the level flag instead if a rotating level ever lives outside chapter 4.
