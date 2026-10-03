@@ -4,6 +4,13 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-03 - Drop unsafe decoy anchors during authoring
+
+- Added `filterDecoys` to `src/content/authoring.ts`: decoy anchors outside the board, or equal to the A anchor of another piece with the same shape, orientation and frame, are dropped before geometry checks; distractors pointing at dropped anchors are removed (KIT-03).
+- `renderReportMarkdown` in `src/content/authoringReport.ts` lists dropped anchors; `scripts/author-level.ts` passes them through.
+- Added the 3-8 twin-circle regression to `tests/authoring.test.ts` (one solution after filtering, two without), and kept the existing protected-solution regression explicit in `tests/authoringReport.test.ts`.
+- Verification: the new tests failed before `filterDecoys` existed and pass after; `npm run typecheck`, `npm test` (283/283), `npm run content:author -- --all` and `npm run content:validate` pass with no committed level data or report diff; GitNexus impact and detect-changes were unavailable because the CLI reported no indexed repositories.
+
 ### 2026-10-03 - Add level kit placement helpers
 
 - Added `src/content/kit.ts` with `piece` (center-based placement), `mirrorX`, `mirrorY`, `concentric`, `row` and the `NUDGE`/`CROSS` decoy offsets; every helper rejects off-grid origins and frames that fail `isValidFrame`.

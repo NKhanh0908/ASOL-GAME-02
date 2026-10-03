@@ -50,7 +50,70 @@ export function checkSourceGeometry(source: LevelSource): string[] {
   return problems;
 }
 
-export function buildLevelDocument(source: LevelSource): LevelDocument {
+/** Neo bị luật KIT-03 bỏ, liệt kê trong báo cáo `<id>-report.md`. */
+export type DroppedDecoy = {
+  pieceId: string;
+  anchorId: string;
+  reason: 'out-of-bounds' | 'clashes-identical-piece';
+};
+
+/** Neo đúng của mỗi mảnh; không bao giờ bị lọc. */
+export const TRUE_ANCHOR_ID = 'A';
+
+/**
+ * Luật neo nhiễu KIT-03, chạy trước kiểm hình học:
+ * - bỏ neo nhiễu có khung vượt biên bàn;
+ * - bỏ neo nhiễu trùng neo A của một mảnh khác cùng hình, cùng hướng, cùng
+ *   khung (hai mảnh giống hệt đổi chỗ được sẽ sinh nghiệm thứ hai — lỗi gặp ở
+ *   bản nháp 3-8).
+ * Neo A và neo mà nghiệm mẫu trỏ tới luôn được giữ. Gây nhiễu trỏ vào neo bị
+ * bỏ cũng bị bỏ. Không sửa `source`.
+ */
+export function filterDecoys(source: LevelSource): { source: LevelSource; dropped: DroppedDecoy[] } {
+  const usedBySolution = new Set(
+    source.sampleSolutions.flat().map((step) => `${step.pieceId}.${step.anchorId}`)
+  );
+  const dropped: DroppedDecoy[] = [];
+  const pieces = source.pieces.map((piece) => {
+    const anchors = piece.anchors.filter((anchor) => {
+      if (anchor.id === TRUE_ANCHOR_ID || usedBySolution.has(`${piece.id}.${anchor.id}`)) {
+        return true;
+      }
+      const outside =
+        anchor.x < 0 ||
+        anchor.y < 0 ||
+        anchor.x + piece.frameSize > GRID_WIDTH ||
+        anchor.y + piece.frameSize > GRID_HEIGHT;
+      if (outside) {
+        dropped.push({ pieceId: piece.id, anchorId: anchor.id, reason: 'out-of-bounds' });
+        return false;
+      }
+      const clashes = source.pieces.some(
+        (other) =>
+          other !== piece &&
+          other.shapeKind === piece.shapeKind &&
+          other.orientation === piece.orientation &&
+          other.frameSize === piece.frameSize &&
+          other.anchors.some((a) => a.id === TRUE_ANCHOR_ID && a.x === anchor.x && a.y === anchor.y)
+      );
+      if (clashes) {
+        dropped.push({ pieceId: piece.id, anchorId: anchor.id, reason: 'clashes-identical-piece' });
+        return false;
+      }
+      return true;
+    });
+    return { ...piece, anchors: anchors.map((a) => ({ ...a })) };
+  });
+  const droppedKeys = new Set(dropped.map((d) => `${d.pieceId}.${d.anchorId}`));
+  const distractors = source.distractors.filter(
+    (d) => d.anchorId === undefined || !droppedKeys.has(`${d.pieceId}.${d.anchorId}`)
+  );
+  return { source: { ...source, pieces, distractors }, dropped };
+}
+
+export function buildLevelDocument(input: LevelSource): LevelDocument {
+  // KIT-03 chạy trước kiểm hình học: neo nhiễu vượt biên bị bỏ thay vì báo lỗi
+  const { source } = filterDecoys(input);
   const problems = checkSourceGeometry(source);
   if (problems.length > 0) {
     throw new Error(`authoring:${source.id}\n${problems.join('\n')}`);

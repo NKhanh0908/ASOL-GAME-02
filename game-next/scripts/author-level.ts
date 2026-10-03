@@ -10,7 +10,7 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { buildLevelDocument, serializeLevelDocument } from '../src/content/authoring.ts';
+import { buildLevelDocument, filterDecoys, serializeLevelDocument } from '../src/content/authoring.ts';
 import { renderPreviewSvg, renderReportMarkdown, searchSolutions } from '../src/content/authoringReport.ts';
 import type { LevelDocument } from '../src/content/document.ts';
 import { LEVEL_SOURCES } from '../src/content/sources/index.ts';
@@ -47,7 +47,11 @@ function authorOne(id: string): boolean {
   writeFileSync(resolve(LEVELS_DIR, `${id}.json`), serializeLevelDocument(doc), 'utf8');
   mkdirSync(REPORT_DIR, { recursive: true });
   writeFileSync(resolve(REPORT_DIR, `${id}.svg`), renderPreviewSvg(doc), 'utf8');
-  writeFileSync(resolve(REPORT_DIR, `${id}-report.md`), renderReportMarkdown(doc, report), 'utf8');
+  const { dropped } = filterDecoys(source);
+  writeFileSync(resolve(REPORT_DIR, `${id}-report.md`), renderReportMarkdown(doc, report, dropped), 'utf8');
+  if (dropped.length > 0) {
+    console.log(`[author-level] ${id}: bỏ ${dropped.length} neo nhiễu theo KIT-03 (xem ${id}-report.md)`);
+  }
 
   console.log(
     `[author-level] ${id}: ${doc.targetCells.length} ô mục tiêu, ${report.solutionCount} nghiệm, ` +

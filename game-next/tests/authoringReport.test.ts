@@ -33,6 +33,10 @@ describe('searchSolutions', () => {
           { pieceId: 'S1', anchorId: 'A', turns: 0 },
           { pieceId: 'S2', anchorId: 'A', turns: 0 },
         ],
+        [
+          { pieceId: 'S1', anchorId: 'B', turns: 0 },
+          { pieceId: 'S2', anchorId: 'B', turns: 0 },
+        ],
       ],
       distractors: [],
     };
