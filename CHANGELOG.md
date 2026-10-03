@@ -4,6 +4,12 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-03 - Add level 3-9 Sao Bat Phuong (validated)
+
+- Added and registered `3-9` with generated JSON/SVG/report, locked its hollow and three-layer revival counts and added play/drag/win screenshots; `3-5` and `3-6` remain planned by reviewer direction.
+- Updated `docs/ai/STATUS.md` to record Tasks 13–15 complete and Task 16 as the next Plan C step.
+- Verification: authoring reports 1580 target cells, one solution and no fewer-piece solution; typecheck, tests and content validation pass. GitNexus unavailable and skipped per reviewer direction.
+
 ### 2026-10-03 - Add level 3-8 Kim Tu Thap Nhat Thuc (validated)
 
 - Added and registered `3-8` with generated JSON/SVG/report, locked its pyramid/eclipsed-circle parity counts and added play/drag/win screenshots; `3-5` and `3-6` remain planned by reviewer direction.

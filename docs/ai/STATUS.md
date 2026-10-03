@@ -6,7 +6,7 @@ Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; k
 
 - Branch: `feat/chapter-2-hoa-pham` (branched from reviewed Plan B on `main`).
 - Product state: level kit and `content:new`; KIT-03 decoy filtering; 28-level / 4-chapter manifest; four-constellation map; 15-image authoring guide; six chapter-1 levels remain approved.
-- Next step: execute plan C (`2026-10-02-c-chapter-2-hoa-pham-levels.md`) through the 16 validated levels, then stop at the per-level reviewer gate.
+- Next step: continue plan C at Task 16 (`3-10`); Tasks 11–12 (`3-5`, `3-6`) remain intentionally skipped and planned by reviewer direction.
 
 ## Streams
 
@@ -14,7 +14,7 @@ Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; k
 |--------|-------|-----------|
 | Level system A → B → C/D → E | A and B merged to `main`; C in progress; D/E pending | `docs/ai/DOCS-INDEX.md` rows A–E |
 | F motion (F1 → F2 → F3) | specs approved, plans ready, not started | `docs/superpowers/plans/2026-10-03-f-motion-index.md` |
-| C chapter 2 + Hoa Pham | in progress | `docs/superpowers/plans/2026-10-02-c-chapter-2-hoa-pham-levels.md` |
+| C chapter 2 + Hoa Pham | in progress; Tasks 1–10 and 13–15 complete | `docs/superpowers/plans/2026-10-02-c-chapter-2-hoa-pham-levels.md` |
 
 ## Open decisions / blockers
 
