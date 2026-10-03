@@ -4,6 +4,12 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-03 - Add level 2-3 Trai Tim Tinh The (validated)
+
+- Added and registered the spec-C source plus generated JSON/SVG/report for `2-3`; locked its three-layer parity counts in `tests/levelContent.test.ts`.
+- Added 720×1280 play/drag/win screenshots.
+- Verification: `content:author -- 2-3` reports 3712 target cells, one solution and no fewer-piece solution; typecheck, tests and content validation pass. GitNexus unavailable and skipped per reviewer direction.
+
 ### 2026-10-03 - Add level 2-2 Canh Buom Diep Anh (validated)
 
 - Added the spec-C source and generated JSON/SVG/report for `2-2`, registered it as `validated`, and extended the shared content contract with its locked parity counts.

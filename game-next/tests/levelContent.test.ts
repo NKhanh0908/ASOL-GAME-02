@@ -83,3 +83,4 @@ function checkLevel(e: ContentExpectation): void {
 
 checkLevel({ id: '2-1', pieceCount: 2, targetCells: 1728, hollowCells: 576, revivedCells: 0 });
 checkLevel({ id: '2-2', pieceCount: 2, targetCells: 3584, hollowCells: 512, revivedCells: 0 });
+checkLevel({ id: '2-3', pieceCount: 3, targetCells: 3712, hollowCells: 384, revivedCells: 128 });
