@@ -260,3 +260,23 @@ describe('vừa bàn tính theo ô thật', () => {
     expect(checkSourceGeometry(sourceWith(negative)).join('\n')).toMatch(/vượt biên bàn/);
   });
 });
+
+describe('buildLevelDocument chép chế độ đặt (spec D)', () => {
+  test('chép placement và allowUnproven; màn neo không sinh khoá placement', () => {
+    const free: LevelSource = {
+      ...cloneSource(songTinh),
+      id: 'test-free-copy',
+      placement: 'free',
+      allowUnproven: { reason: 'thử' },
+      pieces: cloneSource(songTinh).pieces.map((p) => ({ ...p, anchors: p.anchors.slice(0, 1) })),
+      distractors: [],
+    };
+    const doc = buildLevelDocument(free);
+    expect(doc.placement).toBe('free');
+    expect(doc.allowUnproven).toEqual({ reason: 'thử' });
+    const anchors = buildLevelDocument(cloneSource(songTinh));
+    expect('placement' in anchors).toBe(false);
+    expect('allowUnproven' in anchors).toBe(false);
+  });
+});
+

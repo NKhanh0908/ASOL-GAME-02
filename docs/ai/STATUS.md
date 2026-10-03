@@ -5,8 +5,8 @@ Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; k
 ## Now
 
 - Branch: `feat/free-placement`.
-- Product state: Plan D Task 1 complete (`nearestGridOrigin` grid snapping helper); 428/428 tests pass.
-- Next step: Plan D Task 2 — level data and validator receive `placement` mode (`anchors` | `free`).
+- Product state: Plan D Task 2 complete (`placement` mode in `Level`/`LevelDocument`, validation and authoring pass); 436/436 tests pass.
+- Next step: Plan D Task 3 — `placed` piece state in session, hit test and piece counting.
 
 ## Streams
 

@@ -1,4 +1,4 @@
-import type { Cell, Chapter, Level, Orientation, ShapeKind, Turns } from '../domain/model.ts';
+import type { Cell, Chapter, Level, Orientation, PlacementMode, ShapeKind, Turns } from '../domain/model.ts';
 
 export type ManifestEntry = {
   id: string;
@@ -19,6 +19,10 @@ export type LevelDocument = {
   contentRevision: string;
   board: { width: 128; height: 160 };
   rotationEnabled: boolean;
+  /** Chế độ đặt mảnh (spec D, FP-01). Thiếu thì là 'anchors'; màn neo không ghi khoá này. */
+  placement?: PlacementMode;
+  /** Người review cho phát hành dù bộ giải chưa chứng minh nghiệm duy nhất (FP-09) */
+  allowUnproven?: { reason: string };
   pieces: Array<{
     id: string;
     shapeKind: ShapeKind;

@@ -4,6 +4,14 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-04 - Add placement mode to level data and validator
+
+- Added `PlacementMode` and required `Level.placement` in `game-next/src/domain/model.ts`; optional `placement` and `allowUnproven` in `game-next/src/content/document.ts`.
+- `game-next/src/content/validate.ts` defaults `placement` to `anchors` and rejects `invalid-placement`, `free-placement-extra-anchor`, `free-placement-off-grid`, `free-placement-distractors` and `invalid-allow-unproven`.
+- `buildLevelDocument` copies both fields only when present, so committed anchor-mode JSON is unchanged.
+- Verification: the new content and authoring tests failed before the change and passed after; typecheck, all tests, `content:validate` and `content:author -- --all` passed with no JSON diff.
+
+
 ### 2026-10-04 - Add grid-intersection snapping helper for free placement
 
 - Added `GRID_STEP`, `SNAP_RADIUS_SQ` and `nearestGridOrigin` in `game-next/src/domain/freePlacement.ts` (spec D FP-03): nearest fitting multiple-of-8 origin within 6 cells, ties by smaller y then x.

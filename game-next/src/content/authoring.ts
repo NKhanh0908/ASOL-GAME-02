@@ -197,6 +197,13 @@ export function buildLevelDocument(input: LevelSource): LevelDocument {
   if (source.victoryVerse !== undefined) {
     doc.victoryVerse = source.victoryVerse;
   }
+  // Chỉ ghi khi có, để JSON của các màn neo đã commit không đổi
+  if (source.placement !== undefined) {
+    doc.placement = source.placement;
+  }
+  if (source.allowUnproven !== undefined) {
+    doc.allowUnproven = { reason: source.allowUnproven.reason };
+  }
   return doc;
 }
 

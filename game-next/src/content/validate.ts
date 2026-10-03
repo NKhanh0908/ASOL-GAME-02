@@ -1,8 +1,9 @@
-import type { Cell, Chapter, Level, Orientation, Piece, Placement, Turns } from '../domain/model.ts';
+import type { Cell, Chapter, Level, Orientation, Piece, Placement, PlacementMode, Turns } from '../domain/model.ts';
 import { GRID_HEIGHT, GRID_WIDTH, TOTAL_CELLS } from '../domain/model.ts';
 import { fitsBoard, rotateCells } from '../domain/geometry.ts';
 import { evaluate, matchesTarget } from '../domain/mask.ts';
 import { isStructuralFrame, isValidOrientation, shapeCells } from '../domain/shapes.ts';
+import { GRID_STEP } from '../domain/freePlacement.ts';
 import type { LevelDocument, ValidationIssue, ValidationResult } from './document.ts';
 import { chapterInfo } from './chapters.ts';
 
@@ -45,6 +46,27 @@ export function validateLevel(input: unknown): ValidationResult {
   }
   if (chapterRule && chapterRule.rotationEnabled && doc.rotationEnabled === false) {
     issues.push({ levelId, field: 'rotationEnabled', code: 'chapter-rotation-required' });
+  }
+
+  // Chế độ đặt (FP-01): thiếu thì là 'anchors'
+  const rawPlacement: unknown = doc.placement;
+  const placement: PlacementMode = rawPlacement === 'free' ? 'free' : 'anchors';
+  if (rawPlacement !== undefined && rawPlacement !== 'anchors' && rawPlacement !== 'free') {
+    issues.push({ levelId, field: 'placement', code: 'invalid-placement' });
+  }
+  // Màn đặt tự do: mọi giao điểm lưới đã là neo nhiễu nên distractors phải rỗng (FP-02)
+  if (placement === 'free' && Array.isArray(doc.distractors) && doc.distractors.length > 0) {
+    issues.push({ levelId, field: 'distractors', code: 'free-placement-distractors' });
+  }
+  const allow: unknown = doc.allowUnproven;
+  if (
+    allow !== undefined &&
+    (typeof allow !== 'object' ||
+      allow === null ||
+      typeof (allow as { reason?: unknown }).reason !== 'string' ||
+      (allow as { reason: string }).reason.trim() === '')
+  ) {
+    issues.push({ levelId, field: 'allowUnproven', code: 'invalid-allow-unproven' });
   }
 
   // Pieces validation
@@ -161,6 +183,22 @@ export function validateLevel(input: unknown): ValidationResult {
             issues.push({ levelId, field: `${pField}.anchors`, code: 'invalid-anchor-coord' });
           }
         }
+
+        // Màn đặt tự do: mỗi mảnh đúng một neo A, nằm trên giao điểm lưới (FP-02)
+        if (placement === 'free') {
+          if (p.anchors.length !== 1 || p.anchors[0].id !== 'A') {
+            issues.push({ levelId, field: `${pField}.anchors`, code: 'free-placement-extra-anchor' });
+          }
+          const offGrid = p.anchors.some(
+            (a) =>
+              Number.isInteger(a.x) &&
+              Number.isInteger(a.y) &&
+              (a.x % GRID_STEP !== 0 || a.y % GRID_STEP !== 0)
+          );
+          if (offGrid) {
+            issues.push({ levelId, field: `${pField}.anchors`, code: 'free-placement-off-grid' });
+          }
+        }
       }
 
       if (p.id && Array.isArray(p.cells) && Array.isArray(p.anchors)) {
@@ -212,6 +250,7 @@ export function validateLevel(input: unknown): ValidationResult {
       chapter: (doc.chapter ?? 1) as Chapter,
       contentRevision: doc.contentRevision ?? '',
       rotationEnabled: Boolean(doc.rotationEnabled),
+      placement,
       pieces: parsedPieces,
       targetMask,
     };
@@ -306,6 +345,7 @@ export function validateLevel(input: unknown): ValidationResult {
       chapter: doc.chapter as Chapter,
       contentRevision: doc.contentRevision ?? 'v1',
       rotationEnabled: doc.rotationEnabled!,
+      placement,
       pieces: parsedPieces,
       targetMask,
       victoryVerse: doc.victoryVerse,

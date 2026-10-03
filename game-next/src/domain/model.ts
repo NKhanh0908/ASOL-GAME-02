@@ -27,12 +27,17 @@ export type Piece = Readonly<{
 /** Bốn chương campaign: 1 Khởi Nguyên, 2 Giao Thoa, 3 Họa Phẩm, 4 Luân Chuyển (xoay). */
 export type Chapter = 1 | 2 | 3 | 4;
 
+/** Chế độ đặt mảnh: 'anchors' hít vào neo tác giả đặt; 'free' hít vào mọi giao điểm lưới (spec D) */
+export type PlacementMode = 'anchors' | 'free';
+
 export type Level = Readonly<{
   id: string;
   title: string;
   chapter: Chapter;
   contentRevision: string;
   rotationEnabled: boolean;
+  /** Validator luôn điền; thiếu trong tài liệu thì là 'anchors' */
+  placement: PlacementMode;
   pieces: readonly Piece[];
   targetMask: Uint8Array;
   /** Câu thơ hiện ở màn hoàn thành; màn nào không khai báo thì bỏ qua */
