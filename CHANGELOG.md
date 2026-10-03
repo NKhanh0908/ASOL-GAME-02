@@ -4,6 +4,12 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-03 - Add level 2-2 Canh Buom Diep Anh (validated)
+
+- Added the spec-C source and generated JSON/SVG/report for `2-2`, registered it as `validated`, and extended the shared content contract with its locked parity counts.
+- Added play/drag/win screenshots for visual review.
+- Verification: `content:author -- 2-2` reports 3584 target cells, one solution and no fewer-piece solution; full checks and screenshot inspection recorded before commit. GitNexus unavailable and skipped per reviewer direction.
+
 ### 2026-10-03 - Add level 2-1 Mui Ten Chi Thien (validated)
 
 - `game-next/src/content/sources/2-1.ts`, generated level JSON/SVG/report and three 720×1280 screenshots: added the two-piece chapter-2 parity introduction with the spec-C coordinates and FTUE copy.
