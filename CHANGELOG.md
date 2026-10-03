@@ -4,6 +4,13 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-03 - Approve level 3-6 Meo Than
+
+- `game-next/src/content/manifest.ts`: promoted level `3-6` revision `meo-than-v1` to `approved`, extending the campaign route after `3-5`.
+- Added `docs/testing/mirror-rebuild/3-6-content-review.md` and updated the Chapter 2–3 review index.
+- `game-next/tests/catalog.test.ts`: verified the approved level loads in campaign mode.
+- Verification: typecheck, 420/420 tests and content validation (22 authored levels) pass; GitNexus `detect_changes` reports only the expected manifest symbol with LOW risk.
+
 ### 2026-10-03 - Approve level 3-5 Thuyen Buom Hoang Hon
 
 - `game-next/src/content/manifest.ts`: promoted level `3-5` revision `thuyen-buom-v1` to `approved`, extending the campaign route after `3-4`.
