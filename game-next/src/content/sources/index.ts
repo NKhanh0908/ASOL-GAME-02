@@ -12,6 +12,7 @@ import { matTienTri } from './2-4.ts';
 import { dongHoCat } from './2-5.ts';
 import { daiAn } from './2-6.ts';
 import { nhatNguyet } from './3-1.ts';
+import { mandala } from './3-10.ts';
 import { denTienTri } from './3-2.ts';
 import { caChep } from './3-3.ts';
 import { ngonNen } from './3-4.ts';
@@ -36,6 +37,7 @@ export const LEVEL_SOURCES: Readonly<Record<string, LevelSource>> = {
   '2-5': dongHoCat,
   '2-6': daiAn,
   '3-1': nhatNguyet,
+  '3-10': mandala,
   '3-2': denTienTri,
   '3-3': caChep,
   '3-4': ngonNen,

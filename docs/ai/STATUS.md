@@ -6,7 +6,7 @@ Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; k
 
 - Branch: `feat/chapter-2-hoa-pham` (branched from reviewed Plan B on `main`; `fix/board-fit-by-cells` merged in).
 - Product state: level kit and `content:new`; KIT-03 decoy filtering; 28-level / 4-chapter manifest; four-constellation map; 15-image authoring guide; six chapter-1 levels remain approved.
-- Next step: plan C Task 16 (`3-10`) then Task 17; Task 18 is the per-level approval gate and needs the reviewer to play each level.
+- Next step: plan C Task 17 (GDD + review index); Task 18 is the per-level approval gate and needs the reviewer to play each level.
 
 ## Streams
 
@@ -14,7 +14,7 @@ Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; k
 |--------|-------|-----------|
 | Level system A → B → C/D → E | A and B merged to `main`; C in progress; D/E pending | `docs/ai/DOCS-INDEX.md` rows A–E |
 | F motion (F1 → F2 → F3) | specs approved, plans ready, not started | `docs/superpowers/plans/2026-10-03-f-motion-index.md` |
-| C chapter 2 + Hoa Pham | in progress; Tasks 1–15 complete, 16–18 left | `docs/superpowers/plans/2026-10-02-c-chapter-2-hoa-pham-levels.md` |
+| C chapter 2 + Hoa Pham | in progress; Tasks 1–16 complete, 17–18 left | `docs/superpowers/plans/2026-10-02-c-chapter-2-hoa-pham-levels.md` |
 | G audio (G0 → G1 → G2) | spec approved, plans written, not started | `docs/superpowers/plans/2026-10-03-g-audio-index.md` |
 | BF board-fit-by-cells | complete, merged into `feat/chapter-2-hoa-pham` (not yet on `main`) | `docs/superpowers/plans/2026-10-03-board-fit-by-cells.md` |
 

@@ -4,6 +4,12 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-03 - Add level 3-10 Mandala Thien Cau (validated)
+
+- Added and registered `3-10` with generated JSON/SVG/report and play/drag/win screenshots; locked its five-layer parity counts in the shared content tests.
+- `docs/ai/STATUS.md`: recorded Task 16 complete and Task 17 as the next plan step.
+- Verification: authoring reports 4468 target cells, one solution and no fewer-piece solution; typecheck, 420/420 tests and content validation (22 authored levels) pass; all three 720x1280 screenshots were visually inspected. GitNexus impact/detect_changes unavailable in this session.
+
 ### 2026-10-03 - Add G audio implementation plans
 
 - Added `docs/superpowers/plans/2026-10-03-g-audio-index.md` (order, branches, five stop points, contracts, nine spec departures) and phase plans `2026-10-03-g0-audio-assets.md` (Tasks 1–2), `2026-10-03-g1-audio-foundation.md` (Tasks 3–9) and `2026-10-03-g2-audio-cues.md` (Tasks 10–12).
