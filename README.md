@@ -1,75 +1,30 @@
-# ASOL Game 02 — Mirror Prototype
+# ASOL Game 02 — Mirror
 
-Mirror là prototype game giải đố kéo thả dành cho Android và web. Người chơi đặt các mảnh vuông, tam giác và hình thoi lên lưới để tạo ra đúng hình bóng mục tiêu. Vùng chồng được tính theo quy luật chẵn/lẻ: lớp phủ chẵn biến mất, lớp phủ lẻ hiện lại.
+Mirror là game giải đố kéo thả cho Android (màn hình dọc) và web. Người chơi đặt các mảnh hình lên lưới để tạo đúng hình bóng mục tiêu. Vùng chồng tính theo quy luật chẵn/lẻ: lớp phủ chẵn biến mất, lớp phủ lẻ hiện lại.
 
-Prototype hiện có sáu màn, chia thành hai chương. Bản chơi mở thẳng vào màn 1-1, không có tài khoản, máy chủ hay lưu tiến độ. Web và Android dùng chung mã gameplay.
+## Trạng thái
 
-## Trạng thái hiện tại
-
-- Công nghệ: Phaser, TypeScript, Vite và Capacitor Android.
-- Nền tảng kiểm chứng: trình duyệt web và Android màn hình dọc.
-- Gameplay: menu chọn màn (6 màn chính + level mới), một màu vàng cam, bóng mục tiêu mờ luôn hiển thị, mảnh có thể kéo lại hoặc kéo xuống khay để gỡ.
-- Custom Level Editor: kéo các mảnh lên bàn để XOR hiện tại trở thành bóng mục tiêu; hỗ trợ sửa level cũ, tạo level mới, khôi phục bản gốc và lưu cục bộ bằng `localStorage` (`mirror.custom-levels.v1`).
-- Logic: lưới 128 × 192 ô, vùng hít 6 ô, chỉ mảnh đã snap mới được tính vào hình kết quả.
-- Kiểm thử hiện tại: 41 unit test đã đạt (domain, UI helpers, level editor, repository); browser flow tạo/sửa/khôi phục đã kiểm tra; web build đã đạt.
-- Việc còn lại: playtest trên thiết bị Android thật và playtest với người chơi chưa biết luật.
-
-
-## Cấu trúc repository
-
-```text
-docs/
-  concept/       Ý tưởng, phạm vi và đánh giá công nghệ
-  ref/           Ảnh tham khảo giao diện và trải nghiệm
-  superpowers/   Spec và plan của prototype
-game/
-  src/domain/    Luật lưới, dữ liệu level và session
-  src/ui/        Phaser scene và phần vẽ
-  android/       Dự án Capacitor Android
-CHANGELOG.md     Nhật ký thay đổi bắt buộc của repository
-```
+- Bản đang phát triển: `game-next/` (tái thiết từ 2026-09-30) — Phaser 3.90, TypeScript, Vite, Capacitor 8 Android.
+- Nội dung: chương 1 (màn 1-1 đến 1-6) đã duyệt; manifest dự kiến 18 màn.
+- `game/` là prototype cũ, chỉ giữ để tham khảo, không phát triển tiếp.
+- Tình hình mới nhất và việc kế tiếp: [`docs/ai/STATUS.md`](docs/ai/STATUS.md).
 
 ## Chạy bản web
 
-Yêu cầu Node.js 22 trở lên.
+Yêu cầu Node.js `>=24.13.1 <25`.
 
 ```powershell
-cd game
+cd game-next
 npm ci
 npm run dev
 ```
 
-Mở địa chỉ Vite in ra, thường là `http://localhost:5173`.
+Mở địa chỉ Vite in ra (thường là `http://localhost:5173`). Mở thẳng một màn để duyệt: `?scene=play&level=1-3&mode=harness`.
 
-Các lệnh kiểm tra:
-
-```powershell
-npm test
-npm run build
-```
-
-## Build Android debug
-
-Cần Android SDK. Trên Windows, có thể tạo `game/android/local.properties` như sau:
+Kiểm tra trước khi push:
 
 ```powershell
-cd game
-Set-Content -LiteralPath android/local.properties -Value "sdk.dir=$(($env:LOCALAPPDATA + '/Android/Sdk').Replace('\','/'))" -Encoding ascii
-npm run android:sync
-cd android
-.\gradlew.bat assembleDebug
-```
-
-APK nằm tại `game/android/app/build/outputs/apk/debug/app-debug.apk`. Để cài lên điện thoại đã bật USB debugging, chạy `npx cap run android` từ thư mục `game` sau bước đồng bộ.
-
-## Quy trình commit và push
-
-Mọi thay đổi về code, tài liệu, cấu hình hoặc level phải được ghi vào [CHANGELOG.md](CHANGELOG.md) trong cùng commit. Mỗi mục cần có ngày, loại thay đổi, phạm vi file và kết quả kiểm tra.
-
-Trước khi push:
-
-```powershell
-cd game
+cd game-next
 npm test
 npm run build
 cd ..
@@ -77,24 +32,33 @@ git diff --check
 git status
 ```
 
-Commit dùng dạng ngắn, mô tả bằng tiếng Anh để dễ lọc bằng công cụ:
+## Build Android debug
 
-```text
-feat: add target silhouette hint
-fix: keep free piece position after drop
-docs: update prototype rules
-chore: refresh Android build setup
+Cần Android SDK và tệp `game-next/android/local.properties` trỏ tới SDK.
+
+```powershell
+cd game-next
+npm run android:sync
+cd android
+cmd /c gradlew.bat assembleDebug
 ```
 
-Không commit `game/node_modules`, `game/dist`, `game/android/local.properties` hoặc thư mục build Android. Không sửa lịch sử commit đã push nếu không có quyết định rõ ràng của nhóm.
+## Cấu trúc repository
 
-## Tài liệu chính
+```text
+game-next/     Bản đang phát triển (domain, application, infrastructure, content, presentation)
+game/          Prototype cũ (legacy)
+docs/ai/       Ngữ cảnh cho AI: trạng thái, danh mục spec/plan, sơ đồ kiến trúc
+docs/superpowers/  Spec và plan
+docs/gdd/      Game design document
+docs/testing/  Bằng chứng kiểm thử và hồ sơ duyệt màn
+AGENTS.md      Hướng dẫn chung cho mọi AI agent (Claude Code, Codex, Antigravity)
+CHANGELOG.md   Nhật ký thay đổi bắt buộc
+```
 
-- [Idea sheet](docs/concept/idea-sheet.md)
-- [Idea gate](docs/concept/idea-gate.md)
-- [Đánh giá kỹ thuật](docs/concept/technical-assessment.md)
-- [Spec prototype](docs/superpowers/specs/2026-09-17-mirror-android-prototype-design.md)
-- [Plan triển khai](docs/superpowers/plans/2026-09-17-mirror-android-prototype.md)
-- [Spec editable level](docs/superpowers/specs/2026-09-18-custom-level-editor-design.md)
-- [Plan editable level](docs/superpowers/plans/2026-09-18-custom-level-editor.md)
-- [Nhật ký thay đổi](CHANGELOG.md)
+## Quy trình làm việc
+
+- Mọi commit thay đổi code, tài liệu, cấu hình hoặc level phải kèm mục trong [CHANGELOG.md](CHANGELOG.md).
+- Commit message, spec và plan viết bằng tiếng Anh; dạng `type(scope): summary`.
+- Không commit `node_modules`, `dist`, thư mục build Android, `local.properties`.
+- Quy tắc đầy đủ cho AI và người: [AGENTS.md](AGENTS.md). Danh mục tài liệu: [`docs/ai/DOCS-INDEX.md`](docs/ai/DOCS-INDEX.md).

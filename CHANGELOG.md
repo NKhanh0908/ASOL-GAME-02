@@ -4,6 +4,11 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-03 - Rewrite README for the game-next rebuild
+
+- Rewrote `README.md` (Vietnamese): `game-next/` as the active product with Node 24 commands and Android build, `game/` marked legacy, links to `AGENTS.md`, `docs/ai/STATUS.md` and `docs/ai/DOCS-INDEX.md`.
+- Verification: link check passes; no runtime code changed; GitNexus MCP unavailable, detect_changes not run.
+
 ### 2026-10-03 - Add shared AGENTS.md entry point for Claude Code, Codex and Antigravity
 
 - Rewrote `AGENTS.md` as the canonical agent entry: project summary, where to work (`game-next/` vs legacy `game/`), start- and end-of-task protocols, commands, rules (English specs and plans, CHANGELOG per commit, level approval flow), with the GitNexus block kept unchanged.
