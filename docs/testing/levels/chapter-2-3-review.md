@@ -8,7 +8,7 @@ Chạy `cd game-next && npm run dev`, rồi mở `http://localhost:5173/?scene=p
 | 2-2 Cánh Bướm Điệp Ảnh | `approved (canh-buom-v1)` | [2-2.svg](2-2.svg) | [2-2-report.md](2-2-report.md) | [chơi](screens/2-2-play.png) · [kéo](screens/2-2-drag.png) · [thắng](screens/2-2-win.png) |
 | 2-3 Trái Tim Tinh Thể | `approved (trai-tim-v1)` | [2-3.svg](2-3.svg) | [2-3-report.md](2-3-report.md) | [chơi](screens/2-3-play.png) · [kéo](screens/2-3-drag.png) · [thắng](screens/2-3-win.png) |
 | 2-4 Mắt Tiên Tri | `approved (mat-tien-tri-v1)` | [2-4.svg](2-4.svg) | [2-4-report.md](2-4-report.md) | [chơi](screens/2-4-play.png) · [kéo](screens/2-4-drag.png) · [thắng](screens/2-4-win.png) |
-| 2-5 Đồng Hồ Cát | `validated` | [2-5.svg](2-5.svg) | [2-5-report.md](2-5-report.md) | [chơi](screens/2-5-play.png) · [kéo](screens/2-5-drag.png) · [thắng](screens/2-5-win.png) |
+| 2-5 Đồng Hồ Cát | `approved (dong-ho-cat-v1)` | [2-5.svg](2-5.svg) | [2-5-report.md](2-5-report.md) | [chơi](screens/2-5-play.png) · [kéo](screens/2-5-drag.png) · [thắng](screens/2-5-win.png) |
 | 2-6 Đại Ấn Hộ Mệnh | `validated` | [2-6.svg](2-6.svg) | [2-6-report.md](2-6-report.md) | [chơi](screens/2-6-play.png) · [kéo](screens/2-6-drag.png) · [thắng](screens/2-6-win.png) |
 | 3-1 Nhật Nguyệt Song Huyền | `validated` | [3-1.svg](3-1.svg) | [3-1-report.md](3-1-report.md) | [chơi](screens/3-1-play.png) · [kéo](screens/3-1-drag.png) · [thắng](screens/3-1-win.png) |
 | 3-2 Đền Tiên Tri | `validated` | [3-2.svg](3-2.svg) | [3-2-report.md](3-2-report.md) | [chơi](screens/3-2-play.png) · [kéo](screens/3-2-drag.png) · [thắng](screens/3-2-win.png) |
