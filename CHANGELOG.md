@@ -6,6 +6,7 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ### 2026-10-03 - Add level 3-6 Meo Than (validated)
 
+- `docs/ai/STATUS.md`: plan C tasks 11–12 done, next step is Task 16.
 - Added and registered `3-6` with generated JSON/SVG/report and play/drag/win screenshots; its tail `T1` is a parallelogram whose frame box overhangs the right edge, accepted by the cell-based fit from `fix/board-fit-by-cells`.
 - `game-next/tests/levelContent.test.ts` and `tests/content.test.ts`: locked 3840 target cells, 256 hollow cells (the two diamond eyes), no revived cells.
 - Verification: `content:author -- 3-6` reports 3840 target cells, one solution and no fewer-piece solution — exactly the spec C section 3 numbers; typecheck, 414/414 tests and content validation (21 levels) pass; screenshots re-taken after restarting the dev server and inspected at 720x1280. GitNexus unavailable and skipped.
