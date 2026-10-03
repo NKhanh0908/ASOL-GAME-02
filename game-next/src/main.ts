@@ -37,7 +37,7 @@ if (launch.scene !== 'MenuScene') {
     if (launch.scene === 'PlayScene') {
       game.scene.start('PlayScene', { levelId: launch.levelId, mode: launch.mode });
     } else {
-      game.scene.start('LevelSelectScene');
+      game.scene.start('LevelSelectScene', launch.focusLevelId ? { focusLevelId: launch.focusLevelId } : undefined);
     }
   });
 }

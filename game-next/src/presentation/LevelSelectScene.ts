@@ -1,13 +1,16 @@
 import Phaser from 'phaser';
 import { campaignManifest } from '../content/manifest.ts';
+import { chapterLabel } from '../content/chapters.ts';
 import { levelAccess, resolveMapCompletedLevels } from '../domain/campaign.ts';
 import type { LevelAccessMode } from '../domain/campaign.ts';
+import type { Chapter } from '../domain/model.ts';
 import { createProgressRepository } from '../infrastructure/progressRepository.ts';
 import type { ProgressRepository } from '../application/progressPort.ts';
 import { ANIM_TOKENS, COLOR_NUMBERS, COLOR_TOKENS, TYPO_TOKENS } from './designTokens.ts';
 import { TEXTURE_KEYS, TextureFactory } from './TextureFactory.ts';
 import { SkyBackdrop } from './SkyBackdrop.ts';
 import { formatProgress } from './hudText.ts';
+import { layoutCampaignMap } from './constellationLayout.ts';
 
 type NodeInfo = {
   id: string;
@@ -19,11 +22,20 @@ type NodeInfo = {
   available: boolean;
 };
 
+/** Sắc độ nền từng chương, phủ rất nhẹ để nền trời vẫn lộ ra. */
+const CHAPTER_TINTS: Readonly<Record<Chapter, { color: number; alpha: number }>> = {
+  1: { color: 0x7fb8ff, alpha: 0.04 }, // Khởi Nguyên: xanh trời
+  2: { color: 0xb48cff, alpha: 0.06 }, // Giao Thoa: tím giao thoa
+  3: { color: 0x7ee0c8, alpha: 0.05 }, // Họa Phẩm: ngọc bích
+  4: { color: 0xffb86b, alpha: 0.06 }, // Luân Chuyển: hổ phách hoàng hôn
+};
+
 export class LevelSelectScene extends Phaser.Scene {
   private progressRepo!: ProgressRepository;
   private mapContainer!: Phaser.GameObjects.Container;
   private headerContainer!: Phaser.GameObjects.Container;
   private toastContainer?: Phaser.GameObjects.Container;
+  private focusLevelId?: string;
 
   private sky!: SkyBackdrop;
   private mode: LevelAccessMode = 'campaign';
@@ -39,11 +51,12 @@ export class LevelSelectScene extends Phaser.Scene {
     super({ key: 'LevelSelectScene' });
   }
 
-  init(data: { mode?: LevelAccessMode; previewCompletedThrough?: string } = {}): void {
+  init(data: { mode?: LevelAccessMode; previewCompletedThrough?: string; focusLevelId?: string } = {}): void {
     this.mode = data.mode ?? 'campaign';
     this.previewCompletedThrough = this.mode === 'harness'
       ? data.previewCompletedThrough
       : undefined;
+    this.focusLevelId = data.focusLevelId;
   }
 
   create(): void {
@@ -144,16 +157,10 @@ export class LevelSelectScene extends Phaser.Scene {
   }
 
   private buildConstellation(completedLevels: readonly string[]): NodeInfo | null {
-    const nodes: NodeInfo[] = [];
-    let currentNode: NodeInfo | null = null;
-
-    // 1. Phân bổ tọa độ hình zigzag rộng (Biên độ x: 195px .. 525px, khoảng cách y: 160px)
-    let currentY = 270;
-
-    for (let i = 0; i < campaignManifest.length; i++) {
-      const entry = campaignManifest[i];
-      const access = levelAccess(campaignManifest, completedLevels, entry.id, this.mode);
-
+    // 1. Toạ độ nút và dải chương suy ra từ manifest (constellationLayout.ts)
+    const layout = layoutCampaignMap(campaignManifest);
+    const nodes: NodeInfo[] = layout.nodes.map((mapNode) => {
+      const access = levelAccess(campaignManifest, completedLevels, mapNode.id, this.mode);
       let state: NodeInfo['state'] = 'locked';
       if (access.completed) {
         state = 'completed';
@@ -163,44 +170,25 @@ export class LevelSelectScene extends Phaser.Scene {
         state = 'unlocked';
       }
 
-      // Thêm khoảng đệm cho tiêu đề phân đoạn Chương 2 & 3
-      if (i === 6 || i === 12) {
-        currentY += 100;
-      }
-
-      // Zigzag tự nhiên chiếm ~46% bề ngang màn hình: x in [195, 525]
-      const dir = i % 2 === 0 ? -1 : 1;
-      const x = 360 + dir * (135 + ((i * 43) % 35));
-      const y = currentY;
-
-      const node: NodeInfo = {
-        id: entry.id,
-        title: entry.title,
-        chapter: entry.chapter,
-        x,
-        y,
+      return {
+        id: mapNode.id,
+        title: mapNode.title,
+        chapter: mapNode.chapter,
+        x: mapNode.x,
+        y: mapNode.y,
         state,
         available: access.available,
       };
+    });
+    const currentNode = nodes.find((n) => n.state === 'current') ?? null;
 
-      nodes.push(node);
-      if (state === 'current' && !currentNode) {
-        currentNode = node;
-      }
-
-      currentY += 160;
-    }
-
-    // 2. Sắc độ riêng cho từng chương, phủ rất nhẹ để nền trời vẫn lộ ra.
-    // Trước đây phủ 98% nên che kín SkyBackdrop và bản đồ trông như cũ.
+    // 2. Sắc độ riêng cho từng chương theo dải của bố cục
     const chBackdrop = this.add.graphics();
-    chBackdrop.fillStyle(0x7fb8ff, 0.04); // Chương I: xanh trời
-    chBackdrop.fillRect(0, 0, 720, 1160);
-    chBackdrop.fillStyle(0xb48cff, 0.06); // Chương II: tím giao thoa
-    chBackdrop.fillRect(0, 1160, 720, 1040);
-    chBackdrop.fillStyle(0xffb86b, 0.06); // Chương III: hổ phách hoàng hôn
-    chBackdrop.fillRect(0, 2200, 720, 1200);
-
+    for (const band of layout.chapters) {
+      const tint = CHAPTER_TINTS[band.chapter];
+      chBackdrop.fillStyle(tint.color, tint.alpha);
+      chBackdrop.fillRect(0, band.top, 720, band.bottom - band.top);
+    }
     this.mapContainer.add(chBackdrop);
 
     // 3. Vẽ các đường cong Bezier mềm mại kết nối chòm sao (B3)
@@ -259,20 +247,11 @@ export class LevelSelectScene extends Phaser.Scene {
     }
 
     // 4. Tiêu đề phân đoạn Chương (B2: Bỏ thuật ngữ kỹ thuật, banner kính thanh lịch)
-    const chapterTitles = [
-      'Chương I · Khởi Nguyên',
-      'Chương II · Giao Thoa',
-      'Chương III · Luân Chuyển',
-    ];
-
-    for (let c = 0; c < 3; c++) {
-      const firstNode = nodes[c * 6];
-      const bannerY = firstNode.y - 85;
-
-      const chContainer = this.add.container(360, bannerY);
+    for (const band of layout.chapters) {
+      const chContainer = this.add.container(360, band.bannerY);
       // Mockup dùng chữ serif có hai gạch amber hai bên, không có nền
       const chText = this.add
-        .text(0, 0, chapterTitles[c], {
+        .text(0, 0, chapterLabel(band.chapter), {
           fontFamily: TYPO_TOKENS.fontFamily.serif,
           fontSize: TYPO_TOKENS.fontSize.sectionHeader,
           color: COLOR_TOKENS.text.primary,
@@ -414,10 +393,11 @@ export class LevelSelectScene extends Phaser.Scene {
     }
 
     // Giới hạn cuộn cho bản đồ
-    const totalHeight = nodes[nodes.length - 1].y + 240;
-    this.minY = Math.min(0, 1280 - totalHeight);
+    this.minY = Math.min(0, 1280 - layout.totalHeight);
 
-    return currentNode;
+    // Dev có thể cuộn tới màn bất kỳ qua ?focus=<id>; mặc định là màn hiện tại
+    const focusNode = this.focusLevelId ? nodes.find((n) => n.id === this.focusLevelId) : undefined;
+    return focusNode ?? currentNode;
   }
 
   private setupScrolling(): void {

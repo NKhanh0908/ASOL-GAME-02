@@ -23,4 +23,10 @@ describe('resolveLaunch', () => {
   test('mở thẳng màn chọn màn', () => {
     expect(resolveLaunch('?scene=levelSelect', false)).toEqual({ scene: 'LevelSelectScene' });
   });
+
+  test('focus cuộn bản đồ tới một màn, chỉ ở dev', () => {
+    expect(resolveLaunch('?scene=levelSelect&focus=3-4', true)).toEqual({ scene: 'LevelSelectScene', focusLevelId: '3-4' });
+    expect(resolveLaunch('?scene=levelSelect&focus=3-4', false)).toEqual({ scene: 'LevelSelectScene' });
+    expect(resolveLaunch('?scene=levelSelect', true)).toEqual({ scene: 'LevelSelectScene' });
+  });
 });

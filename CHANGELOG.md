@@ -4,6 +4,13 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-03 - Derive the constellation map from the 28-level manifest
+
+- Added `game-next/src/presentation/constellationLayout.ts`: chapters and nodes come from the manifest; six-node chapters keep the previous zigzag, while the ten-node Hoa Pham chapter uses a lantern-chain pattern.
+- `game-next/src/presentation/LevelSelectScene.ts` draws four constellations with per-chapter tints and titles from `chapterLabel`; a dev-only `?scene=levelSelect&focus=<id>` (`game-next/src/launchParams.ts`, `game-next/src/main.ts`) scrolls to any level for screenshots.
+- Added layout overlap and bounds tests to `game-next/tests/levelSelect.test.ts` and screenshots `docs/testing/levels/screens/level-select-{khoi-nguyen,hoa-pham,luan-chuyen}.png`.
+- Verification: the layout tests failed before the module existed and pass after; `npm run typecheck`, `npm test` (316/316) and `npm run build` pass; all three visually inspected headless Chrome shots are 720x1280 and show the requested constellations without overlapping nodes.
+
 ### 2026-10-03 - Restructure campaign into four chapters and 28 levels
 
 - Added `Chapter = 1 | 2 | 3 | 4` (`game-next/src/domain/model.ts`, `game-next/src/content/document.ts`) and `game-next/src/content/chapters.ts` (names, roman numerals, rotation rule, `RELEASE_LEVEL_COUNT = 28`, `releaseGate`).
