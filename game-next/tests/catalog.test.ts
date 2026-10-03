@@ -75,7 +75,7 @@ describe('Level 1-1 Song Tinh Content and Catalog Loader', () => {
   });
 
   test('loadLevel cho phép toàn bộ Chương 2 và Họa Phẩm đã duyệt trong campaign', () => {
-    const approvedIds = ['2-1'];
+    const approvedIds = ['2-1', '2-2'];
 
     for (const id of approvedIds) {
       expect(loadLevel(id, 'campaign').id).toBe(id);
