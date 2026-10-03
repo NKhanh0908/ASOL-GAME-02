@@ -4,6 +4,12 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-03 - Document the level kit
+
+- Added `docs/content/level-kit.md`: shape table with generated previews, grid and center-to-origin formula, parity table, authoring workflow from `content:new` to `approved`, three annotated sample levels (1-2, 2-3, 3-10) and difficulty tips.
+- Added `game-next/scripts/render-kit-gallery.ts` (`npm run content:gallery`) generating `docs/content/kit/*.svg` with `renderPreviewSvg`, and `game-next/tests/levelKitDoc.test.ts` keeping the document in sync with the gallery.
+- Verification: the doc test failed before the gallery script existed and passes after (3/3); `npm run content:gallery` wrote exactly 15 images; the 1-2 kit example matches the committed 1-2 source; `npm run typecheck` and `npm test` pass (319/319). GitNexus impact/detect-changes were unavailable because the index reports an invalid non-absolute `repoPath`.
+
 ### 2026-10-03 - Derive the constellation map from the 28-level manifest
 
 - Added `game-next/src/presentation/constellationLayout.ts`: chapters and nodes come from the manifest; six-node chapters keep the previous zigzag, while the ten-node Hoa Pham chapter uses a lantern-chain pattern.
