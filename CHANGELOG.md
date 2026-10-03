@@ -4,6 +4,12 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-03 - Add level 3-5 Thuyen Buom Hoang Hon (validated)
+
+- Added and registered `3-5` with generated JSON/SVG/report and play/drag/win screenshots; its hull `H1` is the first piece whose frame box overhangs the board, accepted by the cell-based fit from `fix/board-fit-by-cells`.
+- `game-next/tests/levelContent.test.ts` and `tests/content.test.ts`: locked 3946 target cells, 217 hollow cells, no revived cells.
+- Verification: `content:author -- 3-5` reports 3946 target cells, one solution and no fewer-piece solution — exactly the spec C section 3 numbers; typecheck, 408/408 tests and content validation (20 levels) pass; screenshots inspected at 720x1280. GitNexus unavailable and skipped.
+
 ### 2026-10-03 - Add level 3-9 Sao Bat Phuong (validated)
 
 - Added and registered `3-9` with generated JSON/SVG/report, locked its hollow and three-layer revival counts and added play/drag/win screenshots; `3-5` and `3-6` remain planned by reviewer direction.
