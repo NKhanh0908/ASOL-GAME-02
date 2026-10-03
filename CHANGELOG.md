@@ -4,6 +4,11 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-03 - Add game-next architecture map for agents
+
+- Added `docs/ai/ARCHITECTURE.md`: layers with known dependency exceptions, boot and scene flow with line references, gameplay flow, level content pipeline and review flow, invariants, localStorage keys, GitNexus hotspots, test conventions.
+- Verification: link check and `game-next/`-relative path check pass; grid size, storage keys and test count checked against code; hotspots measured with GitNexus `impact`; GitNexus MCP unavailable, detect_changes not run.
+
 ### 2026-10-03 - Add docs registry for AI onboarding
 
 - Added `docs/ai/DOCS-INDEX.md`: every spec and plan in `docs/superpowers/` grouped into 21 rows with a fixed state vocabulary, split into active and history tables, plus one line per other doc folder.
