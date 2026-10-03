@@ -70,3 +70,43 @@ describe('BoardRenderer thứ tự lớp khi kéo qua vùng giao', () => {
     renderer.destroy();
   });
 });
+
+describe('BoardRenderer vẽ mảnh placed như mảnh đã khớp (FP-05)', () => {
+  test('mảnh placed trùng chỗ mảnh snapped tạo vùng triệt tiêu chẵn/lẻ', () => {
+    const draws: Array<{ method: string; color: number | null }> = [];
+    const scene = { add: { graphics: () => {
+      let color: number | null = null;
+      const graphics: object = new Proxy({}, { get: (_, method: string) => (...args: unknown[]) => {
+        if (method === 'fillStyle') color = args[0] as number;
+        draws.push({ method, color });
+        return graphics;
+      } });
+      return graphics;
+    } } } as unknown as Phaser.Scene;
+    const staticBoard = vi.spyOn(BoardRenderer.prototype, 'drawStaticBoard').mockImplementation(() => {});
+    const renderer = new BoardRenderer(scene, computeLayout(720, 1280), 2);
+    staticBoard.mockRestore();
+    const original = loadLevel('1-1', 'campaign');
+    const piece = original.pieces[0];
+    const level = {
+      ...original,
+      placement: 'free' as const,
+      pieces: ['P1', 'P2'].map((id) => ({ ...piece, id })),
+    };
+    const states: Record<string, PieceState> = {
+      P1: { kind: 'snapped', anchorId: 'A', turns: 0 },
+      P2: { kind: 'placed', x: piece.anchors[0].x, y: piece.anchors[0].y, turns: 0 },
+    };
+    const snapshot: PlayViewSnapshot = {
+      levelId: level.id, phase: 'playing', showTarget: false, snappedCount: 2, totalPieces: 2,
+      canRotate: false, selectedPieceId: null, dragPreviewMask: null, snapCandidateId: null,
+      dragInfo: null, committedMask: level.targetMask,
+    };
+    renderer.render(level, snapshot, states);
+    expect(
+      draws.some((d) => d.method === 'fillPoints' && d.color === COLOR_NUMBERS.boardSurfaceTop)
+    ).toBe(true);
+    renderer.destroy();
+  });
+});
+

@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import type { Level, Piece, PieceState } from '../domain/model.ts';
 import type { LayoutMetrics } from './layout.ts';
 import {
+  pieceBoardOrigin,
   pieceHitbox,
   pieceCenterCanvas,
   piecePolygonAround,
@@ -16,6 +17,9 @@ import { parityLayers } from './polygonClip.ts';
 import type { DragInfo, PlayViewSnapshot } from '../application/playController.ts';
 import { ANIM_TOKENS, COLOR_NUMBERS, DEPTH_TOKENS, LAYOUT_TOKENS, PIECE_TOKENS } from './designTokens.ts';
 import { TEXTURE_KEYS } from './TextureFactory.ts';
+
+/** Mảnh đã khớp trên bàn (neo hoặc giao điểm lưới), quy về gốc khung chung. */
+type BoardPiece = { piece: Piece; x: number; y: number; turns: number };
 
 export class BoardRenderer {
   private readonly scene: Phaser.Scene;
@@ -202,7 +206,7 @@ export class BoardRenderer {
     this.draggingGraphics.clear();
     this.fxGraphics.clear();
 
-    const snappedPieces: Array<{ piece: Piece; pState: Extract<PieceState, { kind: 'snapped' }> }> = [];
+    const boardPieces: BoardPiece[] = [];
 
     for (let i = 0; i < level.pieces.length; i++) {
       const piece = level.pieces[i];
@@ -222,15 +226,17 @@ export class BoardRenderer {
         // Trạng thái 4: Mảnh tạm chưa snap
         this.drawTemporaryPiece(piece, pState, isSelected);
       } else {
-        // Trạng thái 2: Đã snap
-        snappedPieces.push({ piece, pState });
-        this.drawSnappedPiece(piece, pState);
+        // Trạng thái 2: Đã khớp — neo (màn neo) hoặc giao điểm lưới (màn đặt tự do)
+        const origin = pieceBoardOrigin(piece, pState);
+        if (!origin) continue;
+        boardPieces.push({ piece, x: origin.x, y: origin.y, turns: pState.turns });
+        this.drawSnappedPiece(piece, origin.x, origin.y, pState.turns);
       }
     }
 
     // Trạng thái 3: Vùng chồng lớp theo luật chẵn/lẻ
-    if (snappedPieces.length >= 2) {
-      this.drawOverlapInversion(snappedPieces);
+    if (boardPieces.length >= 2) {
+      this.drawOverlapInversion(boardPieces);
     }
 
     // Trạng thái 5: Hoàn thành (Victory Celebration)
@@ -253,12 +259,16 @@ export class BoardRenderer {
     for (const placement of level.targetPlacements ?? []) {
       const piece = level.pieces.find((p) => p.id === placement.pieceId);
       if (!piece) continue;
-      const anchor = piece.anchors.find((a) => a.x === placement.x && a.y === placement.y);
+      // Màn đặt tự do đánh dấu ứng viên bằng giao điểm; màn neo bằng id neo
+      const candidateId =
+        level.placement === 'free'
+          ? `grid:${placement.x},${placement.y}`
+          : piece.anchors.find((a) => a.x === placement.x && a.y === placement.y)?.id;
       const isHovered =
         drag !== null &&
         drag.pieceId === piece.id &&
-        anchor !== undefined &&
-        drag.snapCandidateId === anchor.id;
+        candidateId !== undefined &&
+        drag.snapCandidateId === candidateId;
 
       drawJewelPolygon(
         this.targetGraphics,
@@ -341,13 +351,10 @@ export class BoardRenderer {
   /**
    * Trạng thái 2: Đã snap (Snapped)
    */
-  private drawSnappedPiece(piece: Piece, pState: Extract<PieceState, { kind: 'snapped' }>): void {
-    const anchor = piece.anchors.find((a) => a.id === pState.anchorId);
-    if (!anchor) return;
-
+  private drawSnappedPiece(piece: Piece, x: number, y: number, turns: number): void {
     drawJewelPolygon(
       this.piecesGraphics,
-      piecePolygonCanvas(piece, anchor.x, anchor.y, pState.turns, this.layout),
+      piecePolygonCanvas(piece, x, y, turns, this.layout),
       { variant: 'solid', sizePx: pieceRadiusPx(piece.frameSize, this.layout) }
     );
   }
@@ -357,13 +364,10 @@ export class BoardRenderer {
    * Lớp đơn đã được vẽ ở drawSnappedPiece; ở đây chỉ phủ các giao từ hai lớp
    * trở lên: lớp chẵn về màu mặt bàn (vùng biến mất), lớp lẻ về màu mảnh.
    */
-  private drawOverlapInversion(
-    snapped: Array<{ piece: Piece; pState: Extract<PieceState, { kind: 'snapped' }> }>
-  ): void {
-    const polygons = snapped.flatMap(({ piece, pState }) => {
-      const anchor = piece.anchors.find((a) => a.id === pState.anchorId);
-      return anchor ? [piecePolygonCanvas(piece, anchor.x, anchor.y, pState.turns, this.layout)] : [];
-    });
+  private drawOverlapInversion(boardPieces: BoardPiece[]): void {
+    const polygons = boardPieces.map(({ piece, x, y, turns }) =>
+      piecePolygonCanvas(piece, x, y, turns, this.layout)
+    );
 
     for (const layer of parityLayers(polygons)) {
       if (layer.depth < 2) continue;

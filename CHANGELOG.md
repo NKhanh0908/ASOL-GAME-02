@@ -4,6 +4,19 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-04 - Share grid snapping between drag preview, drop and renderer
+
+- `game-next/src/application/drag.ts` resolves the snap target once per call (`snapTarget`): anchors on anchor levels, `nearestGridOrigin` on free levels with `grid:<x>,<y>` candidate ids, so preview and drop always agree.
+- `game-next/src/presentation/BoardRenderer.ts` draws placed pieces like snapped ones, includes them in parity layers and highlights the target silhouette by grid candidate on free levels.
+- Verification: the drag sweep test and renderer parity test failed before the change and passed after; typecheck and all tests passed.
+
+### 2026-10-04 - Snap free-placement drops to grid intersections in the session
+
+- Added the `placed` piece state in `game-next/src/domain/model.ts`; `game-next/src/domain/session.ts` snaps drops on free levels through `nearestGridOrigin`, rotates placed pieces in place and rejects out-of-bounds rotations.
+- Added `pieceBoardOrigin` in `game-next/src/presentation/layout.ts` and used it for hit testing; `snappedCount` in `game-next/src/application/playController.ts` counts placed pieces.
+- Verification: the new session and hitbox tests in `tests/freePlacement.test.ts` failed before the change and passed after; typecheck and all tests passed.
+
+
 ### 2026-10-04 - Add placement mode to level data and validator
 
 - Added `PlacementMode` and required `Level.placement` in `game-next/src/domain/model.ts`; optional `placement` and `allowUnproven` in `game-next/src/content/document.ts`.

@@ -56,7 +56,9 @@ export type Placement = Readonly<{
 export type PieceState =
   | Readonly<{ kind: 'tray'; turns: Turns }>
   | Readonly<{ kind: 'temporary'; x: number; y: number; turns: Turns }>
-  | Readonly<{ kind: 'snapped'; anchorId: string; turns: Turns }>;
+  | Readonly<{ kind: 'snapped'; anchorId: string; turns: Turns }>
+  /** Chỉ ở màn placement 'free': đã hít vào giao điểm lưới (x, y) */
+  | Readonly<{ kind: 'placed'; x: number; y: number; turns: Turns }>;
 
 export type PuzzleState = Readonly<{
   levelId: string;

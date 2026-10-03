@@ -5,8 +5,8 @@ Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; k
 ## Now
 
 - Branch: `feat/free-placement`.
-- Product state: Plan D Task 2 complete (`placement` mode in `Level`/`LevelDocument`, validation and authoring pass); 436/436 tests pass.
-- Next step: Plan D Task 3 — `placed` piece state in session, hit test and piece counting.
+- Product state: Plan D Tasks 1–4 complete (`placed` piece state, session/drag/renderer grid snapping unified); 445/445 tests pass.
+- Next step: Plan D Task 5 — Meet-in-the-middle unique solution solver (`src/content/solver.ts`).
 
 ## Streams
 

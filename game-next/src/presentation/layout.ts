@@ -86,6 +86,19 @@ export function gridToCanvas(
   };
 }
 
+/**
+ * Gốc khung của mảnh đang nằm trên bàn: neo đã khớp, giao điểm lưới (màn
+ * đặt tự do) hoặc vị trí tạm. Null khi mảnh ở khay.
+ */
+export function pieceBoardOrigin(piece: Piece, state: PieceState): { x: number; y: number } | null {
+  if (state.kind === 'tray') return null;
+  if (state.kind === 'snapped') {
+    const anchor = piece.anchors.find((a) => a.id === state.anchorId) ?? piece.anchors[0];
+    return { x: anchor.x, y: anchor.y };
+  }
+  return { x: state.x, y: state.y };
+}
+
 export function pieceHitbox(
   piece: Piece,
   state: PieceState,
@@ -97,19 +110,9 @@ export function pieceHitbox(
   const minTouchSize = 48; // Chuẩn tối thiểu 48 dp cho touch target
   const size = Math.max(rawSize, minTouchSize);
 
-  if (state.kind === 'snapped') {
-    const anchor = piece.anchors.find((a) => a.id === state.anchorId) ?? piece.anchors[0];
-    const pos = gridToCanvas(anchor.x, anchor.y, layout);
-    return {
-      x: pos.x,
-      y: pos.y,
-      width: size,
-      height: size,
-    };
-  }
-
-  if (state.kind === 'temporary') {
-    const pos = gridToCanvas(state.x, state.y, layout);
+  const origin = pieceBoardOrigin(piece, state);
+  if (origin) {
+    const pos = gridToCanvas(origin.x, origin.y, layout);
     return {
       x: pos.x,
       y: pos.y,
