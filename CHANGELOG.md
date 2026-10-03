@@ -4,6 +4,12 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-03 - Add level kit placement helpers
+
+- Added `src/content/kit.ts` with `piece` (center-based placement), `mirrorX`, `mirrorY`, `concentric`, `row` and the `NUDGE`/`CROSS` decoy offsets; every helper rejects off-grid origins and frames that fail `isValidFrame`.
+- Added `tests/kit.test.ts` comparing mirrored triangles and parallelograms by cell sets.
+- Verification: `npx vitest run tests/kit.test.ts` failed before the module existed and passes after (13/13); `npm run typecheck` and `npm test` pass (277/277).
+
 ### 2026-10-03 - Review and merge Plan A shapes v2 into main
 
 - Merged `feat/shapes-v2` into `main` (`55da659`, `--no-ff`) after review; both out-of-spec decisions (two-tier frame check `isStructuralFrame`/`isValidFrame`, 1.5% circle intersection tolerance) approved as implemented.
