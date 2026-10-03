@@ -4,7 +4,12 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
-### 2026-10-03 - Review and merge Plan B into main
+### 2026-10-03 - Add the board-fit-by-cells plan
+
+- `docs/superpowers/plans/2026-10-03-board-fit-by-cells.md`: two-task plan replacing the frame-box bounds check in `content/authoring.ts` with a cell-based one (`anchorFitsBoard`), keeping the frame rule for `rotationEnabled` levels; no new spec, the authority is spec C §4 coordinates and plan D decision 3.
+- `docs/ai/DOCS-INDEX.md`: added row BF, moved C to `in-progress` with the real blocker, corrected B to merged.
+- Rationale: `fitsBoard` already measures real cells, so only authoring rejects `3-5 H1` (triangle o6 frame 64 at `(24, 104)`, cells reach y=135 of 160) and `3-6 T1` (parallelogram o1 frame 48 at `(88, 56)`, cells reach x=119 of 128).
+- Verification: coordinates and cell extents computed with `shapeCells` on `main` at `1f7777b`; no code changed by this commit.
 
 - Merged `feat/level-kit-chapters` into `main` (`dee44e5`, `--no-ff`) after review; the three out-of-spec decisions (`chapter-rotation-required`, rotate button driven by `chapters.ts` instead of the chapter number, sample-solution anchors protected from KIT-03) approved as implemented.
 - `docs/ai/STATUS.md`: branch back to `main`, B stream marked merged, B decisions closed with the `2-5` rename left as a plan C follow-up; added the gotcha that `Hud` reads the rotate rule from the chapter, not from `level.rotationEnabled`.
