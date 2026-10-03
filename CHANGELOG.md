@@ -4,6 +4,12 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-03 - Tighten AI onboarding protocol after final review
+
+- `AGENTS.md`: defined "task" and made the controller the only STATUS/DOCS-INDEX writer in subagent runs; start-of-task now checks STATUS against git; GitNexus stats-line changes ride along with the next commit.
+- `docs/ai/STATUS.md`: next step links the F1-1 phase plan; E1–E3 skeleton note; removed a rule duplicated from `AGENTS.md`. `docs/ai/ARCHITECTURE.md`: documented the fixture runner under Tests.
+- Verification: link check passes (expected branch-name line only); `AGENTS.md` within 120 lines outside the GitNexus block; `STATUS.md` within 60 lines; GitNexus MCP unavailable, detect_changes not run; no runtime code changed.
+
 ### 2026-10-03 - Pass the AI onboarding cold-start test
 
 - A fresh subagent reading only `AGENTS.md` and `docs/ai/*` answered the five spec questions correctly without opening `docs/superpowers/`; marked row `AI` done in `docs/ai/DOCS-INDEX.md` and refreshed `docs/ai/STATUS.md`.

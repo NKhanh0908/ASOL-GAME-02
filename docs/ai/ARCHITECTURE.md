@@ -73,6 +73,7 @@ Measured LOW (not listed): `PlayScene`, `loadLevel`, `computeLayout`, `campaignM
 ## Tests
 
 - `tests/*.test.ts` (30 files, flat), Vitest defaults, node environment; no `vitest.config`. Run `npm test` from `game-next/`.
+- `src/application/fixtureRunner.ts` (`runFixtureSolution`) solves the M0 technical fixture (`src/content/fixtures.ts`); covered by `tests/harness.test.ts`. `FixtureScene` renders it but is unreachable at runtime.
 - Prefer testing Phaser-free modules; only `tests/boardRendererLayers.test.ts` mocks Phaser.
 - In-memory `StoragePort` fakes with revision `'oracle-v1'` in `catalog`, `progress`, `playController` tests.
 - No `VITE_*` env vars; the only dev gate is `import.meta.env.DEV`.

@@ -6,14 +6,14 @@ Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; k
 
 - Branch: `docs/level-system-specs` (docs only, not merged into `main`; every `feat/*` branch is merged).
 - Product state: `game-next/` with chapter 1 (levels 1-1…1-6) approved; 6 of 18 manifest levels approved.
-- Next step: F motion — stop point 1 in `docs/superpowers/plans/2026-10-03-f-motion-index.md`, then create `feat/motion-f1` and run F1-1 task 1.
+- Next step: F motion — stop point 1 in `docs/superpowers/plans/2026-10-03-f-motion-index.md`, then create `feat/motion-f1` and run task 1 of `docs/superpowers/plans/2026-10-03-f1-1-nen-tang.md`.
 
 ## Streams
 
 | Stream | State | Entry doc |
 |--------|-------|-----------|
 | F motion (F1 → F2 → F3) | specs approved, plans ready, not started | `docs/superpowers/plans/2026-10-03-f-motion-index.md` |
-| Level system A → B → D → E | specs approved, plans written, not started | `docs/ai/DOCS-INDEX.md` rows A–E |
+| Level system A → B → D → E | specs approved, plans written (E1–E3 skeletons), not started | `docs/ai/DOCS-INDEX.md` rows A–E |
 | C chapter 2 + Hoa Pham | blocked | `docs/superpowers/plans/2026-10-02-c-chapter-2-hoa-pham-levels.md` |
 
 ## Open decisions / blockers
@@ -26,5 +26,4 @@ Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; k
 
 - `BoardRenderer` is CRITICAL in GitNexus (6 `PlayScene` flows); F1 task 9 and F2 task 6 touch it.
 - `build:release` fails by design until 18 levels are approved.
-- Specs and plans from now on are written in English; older ones are Vietnamese and stay that way.
 - GitNexus MCP can fail to connect; the CLI works: `node .gitnexus/run.cjs analyze` and `node .gitnexus/run.cjs impact` (used on 2026-10-03).

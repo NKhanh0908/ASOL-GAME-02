@@ -15,13 +15,15 @@ Mirror is a drag-and-drop puzzle game for Android (portrait) and web. Players pl
 
 ## Start of task
 
-1. Read `docs/ai/STATUS.md` (current branch, next step, open decisions).
+1. Read `docs/ai/STATUS.md` (current branch, next step, open decisions). Check it against `git branch --show-current` and `git log --oneline -5`; if a human merged or switched branches since, correct STATUS first.
 2. Find the relevant row in `docs/ai/DOCS-INDEX.md`; open only the spec/plan that row points to.
 3. Before touching code, read the relevant sections of `docs/ai/ARCHITECTURE.md` (check its Hotspots table).
 4. Read only the 3–5 newest entries of `CHANGELOG.md`; it is long.
 5. Do not re-read every spec or plan. If these files disagree with the code, trust the code and fix the file.
 
 ## End of task
+
+A task is one user request or one plan task. In subagent-driven runs only the controller (main session) updates STATUS.md and DOCS-INDEX.md; implementer subagents only add their CHANGELOG entry.
 
 Before the final commit of a task:
 
@@ -61,7 +63,7 @@ Before pushing: `npm test`, `npm run build`, then `git diff --check` and `git st
 
 ## Code intelligence
 
-GitNexus indexes this repo as `ASOL-GAME-02`; the rules below the marker are generated and mandatory. If the MCP server is unavailable, say so in the CHANGELOG verification bullet instead of skipping silently.
+GitNexus indexes this repo as `ASOL-GAME-02`; the rules below the marker are generated and mandatory. If the MCP server is unavailable, say so in the CHANGELOG verification bullet instead of skipping silently. `gitnexus analyze` rewrites the stats line inside the markers in AGENTS.md and CLAUDE.md; commit that change together with your next task's commit, it needs no CHANGELOG entry of its own.
 
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
