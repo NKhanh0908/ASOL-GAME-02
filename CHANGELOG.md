@@ -4,6 +4,11 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-03 - Add level 3-2 Den Tien Tri (validated)
+
+- Added and registered `3-2` with generated JSON/SVG/report, locked its hollow-detail counts and added play/drag/win screenshots.
+- Verification: authoring reports 5168 target cells, one solution and no fewer-piece solution; typecheck, tests and content validation pass. GitNexus unavailable and skipped per reviewer direction.
+
 ### 2026-10-03 - Add level 3-1 Nhat Nguyet Song Huyen (validated)
 
 - Added and registered `3-1` with generated JSON/SVG/report, locked curved-overlap parity counts and added play/drag/win screenshots.
