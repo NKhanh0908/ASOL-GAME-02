@@ -4,6 +4,15 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-03 - Restructure campaign into four chapters and 28 levels
+
+- Added `Chapter = 1 | 2 | 3 | 4` (`game-next/src/domain/model.ts`, `game-next/src/content/document.ts`) and `game-next/src/content/chapters.ts` (names, roman numerals, rotation rule, `RELEASE_LEVEL_COUNT = 28`, `releaseGate`).
+- `game-next/src/content/manifest.ts` now lists 28 levels: chapter 2 with 2-5 renamed Dong Ho Cat, new chapter 3 Hoa Pham (3-1 to 3-10), and the rotation chapter renumbered 4-1 to 4-6 with its titles kept; chapter 1 entries are unchanged.
+- `game-next/src/content/validate.ts` accepts chapters 1-4, keeps `chapter-rotation-disabled` for chapters 1-3, adds `chapter-rotation-required` for chapter 4 and forbids non-zero turns outside chapter 4.
+- `game-next/scripts/validate-content.ts --release` requires 28 approved levels; `game-next/src/presentation/Hud.ts` shows the rotate button only in chapter 4.
+- Updated manifest-dependent assertions in content, catalog, menu, progress, hud, levelSelect and session tests.
+- Verification: the updated tests failed against the 18-level manifest and pass after; `npm run typecheck`, `npm test` (310/310), `npm run content:validate` and `npm run content:author -- --all` pass with no level data change; `content:validate -- --release` fails as expected with "Required 28 approved levels, found 6"; GitNexus impact/detect-changes were unavailable because the CLI reported no indexed repositories.
+
 ### 2026-10-03 - Add level template and content:new clone command
 
 - Added `game-next/src/content/sources/_template.ts`, a minimal valid source (one 48 square at the board center) with a Vietnamese comment per field; it is not registered in `LEVEL_SOURCES`.

@@ -81,13 +81,13 @@ describe('Constellation Map Layout Generator', () => {
 
 describe('Màn chọn màn theo mockup improve-v1', () => {
   test('chỉ số tiến độ hiển thị dạng đã hoàn thành trên tổng số màn', () => {
-    expect(formatProgress(0, 18)).toBe('0/18');
-    expect(formatProgress(1, 18)).toBe('1/18');
-    expect(formatProgress(18, 18)).toBe('18/18');
+    expect(formatProgress(0, 28)).toBe('0/28');
+    expect(formatProgress(1, 28)).toBe('1/28');
+    expect(formatProgress(28, 28)).toBe('28/28');
   });
 
   test('không còn ký tự trang trí trước con số', () => {
-    expect(formatProgress(1, 18)).not.toContain('✦');
+    expect(formatProgress(1, 28)).not.toContain('✦');
   });
 
   test('tổng số màn lấy từ manifest, không viết cứng', () => {

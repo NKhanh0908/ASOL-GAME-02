@@ -1,9 +1,9 @@
-import type { Cell, Level, Orientation, ShapeKind, Turns } from '../domain/model.ts';
+import type { Cell, Chapter, Level, Orientation, ShapeKind, Turns } from '../domain/model.ts';
 
 export type ManifestEntry = {
   id: string;
   title: string;
-  chapter: 1 | 2 | 3;
+  chapter: Chapter;
   order: number;
   contentRevision: string;
   status: 'planned' | 'authored' | 'validated' | 'approved';
@@ -14,7 +14,7 @@ export type LevelDocument = {
   schemaVersion: 1;
   id: string;
   title: string;
-  chapter: 1 | 2 | 3;
+  chapter: Chapter;
   order: number;
   contentRevision: string;
   board: { width: 128; height: 160 };

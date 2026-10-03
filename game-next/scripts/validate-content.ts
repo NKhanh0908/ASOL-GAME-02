@@ -3,6 +3,7 @@ import { resolve } from 'node:path';
 import { campaignManifest } from '../src/content/manifest.ts';
 import { validateLevel } from '../src/content/validate.ts';
 import { makeAdjacentFixture } from '../src/content/fixtures.ts';
+import { releaseGate } from '../src/content/chapters.ts';
 
 const isReleaseMode = process.argv.includes('--release');
 
@@ -37,12 +38,12 @@ for (const entry of campaignManifest) {
   }
 }
 
-// 3. Nếu là Release mode: yêu cầu toàn bộ 18 màn phải có status 'approved'
+// 3. Release mode: cần đủ RELEASE_LEVEL_COUNT (28) màn 'approved' (CH-04)
 if (isReleaseMode) {
-  const approvedCount = campaignManifest.filter((e) => e.status === 'approved').length;
-  if (approvedCount < 18) {
+  const gate = releaseGate(campaignManifest);
+  if (!gate.ok) {
     console.error(
-      `[validate-content] GATE FAIL: campaign-incomplete. Required 18 approved levels, found ${approvedCount}.`
+      `[validate-content] GATE FAIL: campaign-incomplete. Required ${gate.required} approved levels, found ${gate.approved}.`
     );
     process.exit(1);
   }

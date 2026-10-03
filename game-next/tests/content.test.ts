@@ -4,6 +4,7 @@ import { validateLevel } from '../src/content/validate.ts';
 import { campaignManifest } from '../src/content/manifest.ts';
 import { buildLevelDocument } from '../src/content/authoring.ts';
 import type { LevelSource } from '../src/content/authoring.ts';
+import { CHAPTERS, RELEASE_LEVEL_COUNT, chapterInfo, chapterLabel, chapterOfLevelId, releaseGate } from '../src/content/chapters.ts';
 
 /** Các màn đã có dữ liệu ngoài 1-1; trạng thái phải là validated hoặc approved */
 const AUTHORED_LEVELS = new Set(['1-2', '1-3', '1-4', '1-5', '1-6']);
@@ -83,8 +84,14 @@ describe('Level Content and Validation', () => {
     }
   });
 
-  test('campaignManifest chứa đủ 18 màn', () => {
-    expect(campaignManifest.length).toBe(18);
+  test('manifest 28 màn, order 1..28, chương 6/6/10/6; màn chưa có dữ liệu là planned', () => {
+    expect(campaignManifest).toHaveLength(28);
+    expect(campaignManifest.map((e) => e.order)).toEqual(Array.from({ length: 28 }, (_, i) => i + 1));
+    const ids = (chapter: number) => campaignManifest.filter((e) => e.chapter === chapter).map((e) => e.id);
+    expect(ids(1)).toEqual(['1-1', '1-2', '1-3', '1-4', '1-5', '1-6']);
+    expect(ids(2)).toEqual(['2-1', '2-2', '2-3', '2-4', '2-5', '2-6']);
+    expect(ids(3)).toEqual(['3-1', '3-2', '3-3', '3-4', '3-5', '3-6', '3-7', '3-8', '3-9', '3-10']);
+    expect(ids(4)).toEqual(['4-1', '4-2', '4-3', '4-4', '4-5', '4-6']);
     expect(campaignManifest[0].id).toBe('1-1');
     expect(campaignManifest[0].status).toBe('approved');
     for (const entry of campaignManifest.slice(1)) {
@@ -94,6 +101,83 @@ describe('Level Content and Validation', () => {
         expect(entry.status).toBe('planned');
       }
     }
+  });
+
+  test('tên màn chương 2–4 theo spec B (CH-02)', () => {
+    const titles = (chapter: number) => campaignManifest.filter((e) => e.chapter === chapter).map((e) => e.title);
+    expect(titles(2)).toEqual([
+      'Mũi Tên Chỉ Thiên', 'Cánh Bướm Điệp Ảnh', 'Trái Tim Tinh Thể', 'Mắt Tiên Tri', 'Đồng Hồ Cát', 'Đại Ấn Hộ Mệnh',
+    ]);
+    expect(titles(3)).toEqual([
+      'Nhật Nguyệt Song Huyền', 'Đền Tiên Tri', 'Cá Chép Sao', 'Ngọn Nến', 'Thuyền Buồm Hoàng Hôn',
+      'Mèo Thần', 'Hoa Sen', 'Kim Tự Tháp Nhật Thực', 'Sao Bát Phương', 'Mandala Thiên Cầu',
+    ]);
+    expect(campaignManifest.filter((e) => e.chapter === 4).map((e) => [e.id, e.title, e.order])).toEqual([
+      ['4-1', 'La Bàn Gió', 23], ['4-2', 'Lưỡi Kiếm Thiên Thể', 24], ['4-3', 'Cánh Cung Chiêm Tinh', 25],
+      ['4-4', 'Bánh Xe Số Phận', 26], ['4-5', 'Thánh Giá Thiên Cầu', 27], ['4-6', 'Đại Ấn Tiên Tri', 28],
+    ]);
+  });
+});
+
+describe('Bốn chương và luật xoay (CH-01, CH-04)', () => {
+  const codes = (r: ReturnType<typeof validateLevel>) => (r.ok ? [] : r.issues.map((i) => i.code));
+
+  test('bảng chương: tên, số La Mã, chỉ chương 4 xoay', () => {
+    expect(CHAPTERS.map((c) => [c.chapter, c.roman, c.name, c.rotationEnabled])).toEqual([
+      [1, 'I', 'Khởi Nguyên', false], [2, 'II', 'Giao Thoa', false],
+      [3, 'III', 'Họa Phẩm', false], [4, 'IV', 'Luân Chuyển', true],
+    ]);
+    expect(chapterInfo(5)).toBeUndefined();
+    expect(chapterOfLevelId('3-10')).toBe(3);
+    expect(chapterOfLevelId('4-1')).toBe(4);
+    expect(chapterOfLevelId('dev-shapes-v2')).toBeUndefined();
+    expect(chapterLabel(3)).toBe('Chương III · Họa Phẩm');
+  });
+
+  test('chương 4 bật xoay thì hợp lệ', () => {
+    const doc = makeAdjacentFixture();
+    doc.chapter = 4;
+    doc.rotationEnabled = true;
+    const result = validateLevel(doc);
+    expect(result.ok).toBe(true);
+    if (result.ok) expect(result.level.chapter).toBe(4);
+  });
+
+  test('chương 1–3 bật xoay báo chapter-rotation-disabled', () => {
+    for (const chapter of [1, 2, 3] as const) {
+      const doc = makeAdjacentFixture();
+      doc.chapter = chapter;
+      doc.rotationEnabled = true;
+      expect(codes(validateLevel(doc))).toContain('chapter-rotation-disabled');
+    }
+  });
+
+  test('chương 4 tắt xoay báo chapter-rotation-required', () => {
+    const doc = makeAdjacentFixture();
+    doc.chapter = 4;
+    doc.rotationEnabled = false;
+    expect(codes(validateLevel(doc))).toContain('chapter-rotation-required');
+  });
+
+  test('chương ngoài 1–4 báo invalid-chapter; turns ≠ 0 ở chương 2–3 bị cấm', () => {
+    const bad = makeAdjacentFixture() as unknown as { chapter: number };
+    bad.chapter = 5;
+    expect(codes(validateLevel(bad))).toContain('invalid-chapter');
+    const turned = makeAdjacentFixture();
+    turned.chapter = 3;
+    turned.sampleSolutions[0][0].turns = 1;
+    expect(codes(validateLevel(turned))).toContain('solution-rotation-disallowed');
+  });
+
+  test('cổng release cần đủ 28 màn approved', () => {
+    expect(RELEASE_LEVEL_COUNT).toBe(28);
+    expect(campaignManifest).toHaveLength(RELEASE_LEVEL_COUNT);
+    const gate = releaseGate(campaignManifest);
+    expect(gate.required).toBe(28);
+    expect(gate.ok).toBe(false);
+    const allApproved = campaignManifest.map((e) => ({ ...e, status: 'approved' as const }));
+    expect(releaseGate(allApproved)).toEqual({ ok: true, approved: 28, required: 28 });
+    expect(releaseGate(allApproved.slice(0, 18)).ok).toBe(false);
   });
 });
 

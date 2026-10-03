@@ -176,3 +176,18 @@ describe('Màn dev dùng để thử hình mới (spec A)', () => {
   });
 });
 
+describe('Manifest 28 màn trong catalog (CH-02)', () => {
+  test('màn planned ở mọi chương không nạp được ở cả hai chế độ', () => {
+    for (const e of campaignManifest.filter((m) => m.status === 'planned')) {
+      expect(() => loadLevel(e.id, 'harness')).toThrow(`unavailable:${e.id}`);
+      expect(() => loadLevel(e.id, 'campaign')).toThrow(`unavailable:${e.id}`);
+    }
+  });
+
+  test('mã 3-x giờ là Họa Phẩm; chương xoay đổi sang 4-1 → 4-6, giữ tên', () => {
+    expect(campaignManifest.find((e) => e.id === '3-1')).toMatchObject({ title: 'Nhật Nguyệt Song Huyền', chapter: 3, order: 13 });
+    expect(campaignManifest.find((e) => e.id === '3-10')).toMatchObject({ title: 'Mandala Thiên Cầu', chapter: 3, order: 22 });
+    expect(campaignManifest.find((e) => e.id === '4-1')).toMatchObject({ title: 'La Bàn Gió', chapter: 4, order: 23 });
+    expect(() => loadLevel('4-1', 'harness')).toThrow('unavailable:4-1');
+  });
+});
