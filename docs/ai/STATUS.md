@@ -4,22 +4,22 @@ Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; k
 
 ## Now
 
-- Branch: `feat/level-kit-chapters` (Plan B implemented in eight commits after `main`; awaiting review).
+- Branch: `main` (Plans A and B reviewed and merged; `main`, `feat/shapes-v2` and `feat/level-kit-chapters` all pushed to `origin`).
 - Product state: level kit and `content:new`; KIT-03 decoy filtering; 28-level / 4-chapter manifest; four-constellation map; 15-image authoring guide; six chapter-1 levels remain approved.
-- Next step: reviewer checks Plan B screenshots and out-of-spec decisions, then merges `feat/level-kit-chapters` into `main`.
+- Next step: start plan C (`2026-10-02-c-chapter-2-hoa-pham-levels.md`) or plan D (`2026-10-02-d-free-placement.md`) on a branch off `main`; they can run in parallel.
 
 ## Streams
 
 | Stream | State | Entry doc |
 |--------|-------|-----------|
-| Level system A → B → D → E | A merged; B complete on feature branch; C/D/E pending | `docs/ai/DOCS-INDEX.md` rows A–E |
+| Level system A → B → D → E | A and B merged to `main`; C/D/E pending | `docs/ai/DOCS-INDEX.md` rows A–E |
 | F motion (F1 → F2 → F3) | specs approved, plans ready, not started | `docs/superpowers/plans/2026-10-03-f-motion-index.md` |
 | C chapter 2 + Hoa Pham | blocked | `docs/superpowers/plans/2026-10-02-c-chapter-2-hoa-pham-levels.md` |
 
 ## Open decisions / blockers
 
 - A: closed — both out-of-spec decisions approved at review (two-tier frame check `isStructuralFrame`/`isValidFrame`; 1.5% tolerance for circle intersection area).
-- B review: confirm `chapter-rotation-required`, rotate button only in chapter 4, protected sample-solution anchors in KIT-03, and the Hoa Pham GDD table pre-written for plan C.
+- B: closed — `chapter-rotation-required`, rotate button only in chapter 4, and protected sample-solution anchors in KIT-03 all approved at review. Open follow-up: `2-5` was renamed Chìa Khóa Thời Gian → Đồng Hồ Cát ahead of plan C — confirm when plan C starts.
 - C: piece frames in sources 3-5 and 3-6 leave the board — needs a reviewer decision.
 - E: spec §9 changes (c6d083e) need re-review; E1–E3 plans are skeletons and need writing-plans.
 - F1 §3.3 edited after approval; F2 plans list 7 spec departures — review at F stop point 1.
@@ -31,5 +31,6 @@ Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; k
 - `BoardRenderer` is CRITICAL in GitNexus (6 `PlayScene` flows); F1 task 9 and F2 task 6 touch it.
 - `build:release` fails by design until all 28 levels are approved (currently 6).
 - `newLevel.test.ts` uses a fixed one-level index fixture; copying the live registry breaks tests while acceptance levels 3-11/3-12 are temporarily registered.
-- `isValidFrame` allows only 48 and 96 for parallelograms (multiple of 48, ≤ 128) — a constraint for Plan B level design.
+- `isValidFrame` allows only 48 and 96 for parallelograms (multiple of 48, ≤ 128) — a constraint for level design.
+- `Hud` reads the rotate-button rule from the chapter (`chapters.ts`), not from the level's own `rotationEnabled`; plans D/E need the level flag instead if a rotating level ever lives outside chapter 4.
 - Working from WSL: `node_modules/` is a Windows install (`@rollup/rollup-win32-*` only) and every tracked file reads as modified (CRLF). Run git with `-c core.autocrlf=input`; add the linux rollup/esbuild binaries with `--no-save` to run `npm test`.

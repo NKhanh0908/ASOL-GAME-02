@@ -4,6 +4,13 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-03 - Review and merge Plan B into main
+
+- Merged `feat/level-kit-chapters` into `main` (`dee44e5`, `--no-ff`) after review; the three out-of-spec decisions (`chapter-rotation-required`, rotate button driven by `chapters.ts` instead of the chapter number, sample-solution anchors protected from KIT-03) approved as implemented.
+- `docs/ai/STATUS.md`: branch back to `main`, B stream marked merged, B decisions closed with the `2-5` rename left as a plan C follow-up; added the gotcha that `Hud` reads the rotate rule from the chapter, not from `level.rotationEnabled`.
+- Pushed `main`, `feat/shapes-v2` and `feat/level-kit-chapters` to `origin`.
+- Verification: on `main` after merge, `npm run typecheck` clean, `npm test` 319/319 passing, `npm run content:validate` PASS (6 levels + fixture), `npm run build` clean; `content:validate -- --release` fails as designed (28 required, 6 approved); `content:new 3-11 --from 1-2` plus `content:author -- 3-11` PASS with one solution, temporary files removed.
+
 ### 2026-10-03 - Complete Plan B and refresh agent context
 
 - `docs/ai/STATUS.md` and `docs/ai/DOCS-INDEX.md`: marked Plan B complete on `feat/level-kit-chapters`, recorded the reviewer handoff and current 6/28 release state.
