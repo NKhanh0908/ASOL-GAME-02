@@ -4,6 +4,12 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-03 - Complete Plan B and refresh agent context
+
+- `docs/ai/STATUS.md` and `docs/ai/DOCS-INDEX.md`: marked Plan B complete on `feat/level-kit-chapters`, recorded the reviewer handoff and current 6/28 release state.
+- `docs/ai/ARCHITECTURE.md`: documented `content:new`, level-kit placement, KIT-03 filtering, the 28-level release gate and chapter 4 rotation invariant.
+- Verification: Plan B acceptance cloned/authored temporary levels 3-11 and 3-12 without manual edits, both reports had one solution, and the temporary files were removed; final typecheck, tests, content validation and build pass. GitNexus unavailable and skipped per reviewer direction.
+
 ### 2026-10-03 - Isolate content:new tests from the live source registry
 
 - `game-next/tests/newLevel.test.ts`: replaced the copied live `sources/index.ts` fixture with a fixed one-level registry so clone tests stay deterministic while plan B acceptance levels are temporarily registered.
