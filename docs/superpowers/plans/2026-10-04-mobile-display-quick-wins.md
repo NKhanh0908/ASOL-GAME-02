@@ -59,9 +59,32 @@ No new Capacitor plugin. The cutout mode is set from Java rather than from the t
 
 **Verification:** load with the network disabled in DevTools and confirm both faces still render.
 
+
+## Tier 2 — elastic vertical layout (added 2026-10-04, after the Tier 0 play-test)
+
+The Tier 0 play-test (`docs/screenshots/mobile/m0/`) confirmed immersive mode, crisp text and the Cormorant switch. It also showed two things worth fixing and one thing Tier 0 was never going to fix.
+
+### T6 — Remove the backdrop seam
+
+`bleedSky` filled the overflow with the raw first and last gradient stop. That was wrong: the pink nebula at (648, 966) with radius 360 reaches y=1326, so the frame edge is never the bare stop colour, and the joint always stepped. `paintSky` now renders the gradient canvas at the real visible height with the nebulae offset by the frame origin; a canvas gradient clamps outside its endpoints, so there is no boundary left to mismatch. `bleedSky` is deleted.
+
+### T7 — Dialog overlays cover the whole view
+
+`SettingsDialog` and `PauseDialog` sized their dimming rectangle to 720x1280 and centred their container on (360, 640), so the overflow stayed bright on a tall screen. Both now read `designViewBounds`.
+
+### T8 — Elastic layout
+
+`computeLayout(designWidth, designHeight, safeArea)` distributes vertically: header below the top inset, bottom bar above the bottom inset, tray above the bar, board centred in what remains and clamped so the target badge never rides over the chapter subtitle. `Hud`, `TargetBadge`, `MenuScene` and `LevelSelectScene` anchor to it instead of to fixed offsets.
+
+The board stays 640x800 and `cellPixel` stays 5, so grid maths, hit testing and `BoardRenderer` (CRITICAL) are untouched.
+
+**Verification:** `tests/layoutElastic.test.ts` covers 9:16, 9:19.5 and 9:21 with and without insets. The key assertion is that the 9:16 case reproduces the original artboard exactly (board y=200, tray y=1016, bottom bar y=1164) - that is the no-regression guarantee.
+
 ## Reviewer stop point
 
-After T5: build the debug APK, hand it to the reviewer (NKhanh0908) to play on a real device. The reviewer decides whether Tier 2 (elastic height, safe-area redistribution) is still needed. Do not start Tier 2 without that decision.
+After T5: done. The reviewer played the build and the result scoped Tier 2 (T6-T8).
+
+After T8: build the debug APK again and hand it over. If the layout reads right on hardware, the branch merges. The open question for that pass is whether buttons, icons and the grid texture still look soft - that is the deferred `TextureFactory`/`GridPainter` work, and it is the only part of the original blur diagnosis left unaddressed.
 
 ## Blast radius
 

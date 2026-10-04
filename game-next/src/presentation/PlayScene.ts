@@ -9,8 +9,7 @@ import { PlayController } from '../application/playController.ts';
 import { BoardRenderer } from './BoardRenderer.ts';
 import { maskCentroid } from '../domain/mask.ts';
 import { Hud } from './Hud.ts';
-import { applyDesignViewport } from './designViewport.ts';
-import { DESIGN_HEIGHT, DESIGN_WIDTH } from './viewport.ts';
+import { applyDesignViewport, designSafeArea, designViewBounds } from './designViewport.ts';
 import {
   computeLayout,
   gridToCanvas,
@@ -71,7 +70,9 @@ export class PlayScene extends Phaser.Scene {
     applyDesignViewport(this);
     TextureFactory.generateAll(this);
     // Hệ toạ độ thiết kế, không phải kích thước bộ đệm: camera zoom đã quy đổi.
-    const layout = computeLayout(DESIGN_WIDTH, DESIGN_HEIGHT);
+    // Chiều cao chạy theo máy thật nên bố cục dọc giãn ra lấp kín màn hình.
+    const view = designViewBounds(this);
+    const layout = computeLayout(view.width, view.height, designSafeArea(this));
     this.layout = layout;
 
     // 1. Nền trời dùng chung
@@ -158,7 +159,7 @@ export class PlayScene extends Phaser.Scene {
           this.scene.start('MenuScene');
         }
       },
-    }, this.level.id);
+    }, this.level.id, layout);
 
     // Pointer events
     this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {

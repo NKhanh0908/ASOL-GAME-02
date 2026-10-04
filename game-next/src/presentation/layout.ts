@@ -10,6 +10,12 @@ export type LayoutMetrics = {
   trayBounds: { x: number; y: number; width: number; height: number };
   headerBounds: { y: number; height: number };
   bottomBarBounds: { y: number; height: number };
+  /** Tâm huy hiệu mục tiêu, bám mép trên bàn */
+  targetBadgeY: number;
+  /** Chiều cao hệ toạ độ thiết kế trên máy này */
+  designHeight: number;
+  /** Lề an toàn đã áp dụng, theo đơn vị thiết kế */
+  safeArea: { top: number; right: number; bottom: number; left: number };
   scale: number;
 };
 
@@ -25,38 +31,94 @@ const TRAY_Y = LAYOUT_TOKENS.tray.y;
 const TRAY_WIDTH = LAYOUT_TOKENS.tray.width;
 const TRAY_HEIGHT = LAYOUT_TOKENS.tray.height;
 
+/** Khe hở giữa khay và thanh đáy trên artboard gốc (1164 - 1152). */
+const TRAY_TO_BAR_GAP = LAYOUT_TOKENS.bottomBar.y - (TRAY_Y + TRAY_HEIGHT);
+
+/**
+ * Huy hiệu mục tiêu nằm cao hơn mép trên bàn đúng khoảng này.
+ *
+ * Lấy 22 chứ không phải hiệu của token (200 - 158 = 42): bản dựng thật đặt tâm
+ * huy hiệu ở y=178 để đỉnh của nó không đè lên phụ đề chương. Token đã trôi
+ * khỏi code từ trước; ở đây bám theo thứ đang hiển thị.
+ */
+const BADGE_ABOVE_BOARD = 22;
+
+/**
+ * Khoảng tối thiểu từ đáy header xuống mép trên bàn.
+ *
+ * Bằng đúng khoảng của artboard gốc (200 - 96). Hạ thấp hơn thì huy hiệu mục
+ * tiêu — bán kính 94, tâm cao hơn bàn 22 — sẽ trùm lên dòng phụ đề chương.
+ */
+const MIN_BOARD_TOP_GAP = BOARD_Y - (LAYOUT_TOKENS.header.y + LAYOUT_TOKENS.header.height);
+
+/**
+ * Bố cục dọc cho chiều cao màn thật.
+ *
+ * Bề ngang cố định 720 nên bàn giữ nguyên 640x800 và `cellPixel` vẫn là 5 —
+ * mọi phép quy đổi lưới, hit-test và bán kính mảnh không đổi theo máy.
+ *
+ * Chiều dọc thì neo hai đầu rồi căn giữa phần còn lại: header bám mép trên và
+ * thanh đáy bám mép dưới, cả hai lùi vào theo lề an toàn; khay nằm ngay trên
+ * thanh đáy; bàn căn giữa khoảng trống giữa header và khay. Trên máy dài hơn
+ * 9:16 phần dôi ra thành khoảng thở quanh bàn chứ không thành viền.
+ */
 export function computeLayout(
-  viewportWidth: number,
-  viewportHeight: number,
-  _safeArea?: { top: number; bottom: number }
+  designWidth: number,
+  designHeight: number,
+  safeArea: { top: number; right?: number; bottom: number; left?: number } = {
+    top: 0,
+    bottom: 0,
+  }
 ): LayoutMetrics {
-  const scaleX = viewportWidth / BASE_WIDTH;
-  const scaleY = viewportHeight / BASE_HEIGHT;
-  const scale = Math.min(scaleX, scaleY);
+  const height = designHeight > 0 ? designHeight : BASE_HEIGHT;
+  const width = designWidth > 0 ? designWidth : BASE_WIDTH;
+  const safe = {
+    top: Math.max(0, safeArea.top),
+    right: Math.max(0, safeArea.right ?? 0),
+    bottom: Math.max(0, safeArea.bottom),
+    left: Math.max(0, safeArea.left ?? 0),
+  };
+
+  const headerY = safe.top;
+  const headerHeight = LAYOUT_TOKENS.header.height;
+
+  const bottomBarHeight = LAYOUT_TOKENS.bottomBar.height;
+  const bottomBarY = height - safe.bottom - bottomBarHeight;
+
+  const trayY = bottomBarY - TRAY_TO_BAR_GAP - TRAY_HEIGHT;
+
+  // Căn giữa bàn trong khoảng trống giữa đáy header và đỉnh khay, nhưng không
+  // để nó trôi lên đè vào header khi màn quá thấp.
+  const slotTop = headerY + headerHeight;
+  const centeredBoardY = slotTop + (trayY - slotTop - BOARD_HEIGHT) / 2;
+  const boardY = Math.max(slotTop + MIN_BOARD_TOP_GAP, centeredBoardY);
 
   return {
     boardBounds: {
       x: BOARD_X,
-      y: BOARD_Y,
+      y: boardY,
       width: BOARD_WIDTH,
       height: BOARD_HEIGHT,
     },
     cellPixel: CELL_PIXEL,
     trayBounds: {
       x: TRAY_X,
-      y: TRAY_Y,
+      y: trayY,
       width: TRAY_WIDTH,
       height: TRAY_HEIGHT,
     },
     headerBounds: {
-      y: LAYOUT_TOKENS.header.y,
-      height: LAYOUT_TOKENS.header.height,
+      y: headerY,
+      height: headerHeight,
     },
     bottomBarBounds: {
-      y: LAYOUT_TOKENS.bottomBar.y,
-      height: LAYOUT_TOKENS.bottomBar.height,
+      y: bottomBarY,
+      height: bottomBarHeight,
     },
-    scale: scale > 0 ? scale : 1,
+    targetBadgeY: boardY - BADGE_ABOVE_BOARD,
+    designHeight: height,
+    safeArea: safe,
+    scale: width / BASE_WIDTH,
   };
 }
 

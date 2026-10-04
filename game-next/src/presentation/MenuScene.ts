@@ -3,10 +3,10 @@ import { campaignManifest } from '../content/manifest.ts';
 import { resolveNextCampaignLevel } from '../domain/campaign.ts';
 import { createProgressRepository } from '../infrastructure/progressRepository.ts';
 import type { ProgressRepository } from '../application/progressPort.ts';
-import { COLOR_NUMBERS, COLOR_TOKENS, TYPO_TOKENS } from './designTokens.ts';
+import { COLOR_NUMBERS, COLOR_TOKENS, LAYOUT_TOKENS, TYPO_TOKENS } from './designTokens.ts';
 import { TEXTURE_KEYS, TextureFactory } from './TextureFactory.ts';
 import { SkyBackdrop } from './SkyBackdrop.ts';
-import { applyDesignViewport } from './designViewport.ts';
+import { applyDesignViewport, designSafeArea, designViewBounds } from './designViewport.ts';
 import { SettingsDialog } from './SettingsDialog.ts';
 
 export class MenuScene extends Phaser.Scene {
@@ -15,6 +15,9 @@ export class MenuScene extends Phaser.Scene {
   private emblemGraphics!: Phaser.GameObjects.Graphics;
   private uiContainer!: Phaser.GameObjects.Container;
 
+  private blockOffsetY = 0;
+  private viewHeight: number = LAYOUT_TOKENS.canvas.height;
+  private safe = { top: 0, right: 0, bottom: 0, left: 0 };
   private ringAngle1 = 0;
   private ringAngle2 = 0;
   private pulseTime = 0;
@@ -33,11 +36,20 @@ export class MenuScene extends Phaser.Scene {
     // 1. Nền trời dùng chung (gradient, nebula, trăng, trường sao)
     this.sky = new SkyBackdrop(this, { seed: 1, drift: false });
 
+    // Khối nội dung chính vẫn dựng theo artboard 1280 rồi dịch xuống cho cân
+    // giữa chiều cao thật — giữ nguyên bố cục đã tinh chỉnh (tiêu đề, vòng ấn
+    // bia, hai nút) thay vì rải lại từng phần tử. Nút cài đặt và dòng phiên bản
+    // thì bám hai mép, nên chúng tự trừ lại khoảng dịch này.
+    const view = designViewBounds(this);
+    this.safe = designSafeArea(this);
+    this.blockOffsetY = (view.height - LAYOUT_TOKENS.canvas.height) / 2;
+    this.viewHeight = view.height;
+
     // 2. Ấn bia cổ ngữ xoay (280px Prophecy Seal)
-    this.emblemGraphics = this.add.graphics();
+    this.emblemGraphics = this.add.graphics().setY(this.blockOffsetY);
 
     // 3. UI Container chính
-    this.uiContainer = this.add.container(0, 0);
+    this.uiContainer = this.add.container(0, this.blockOffsetY);
     this.buildMainMenu(progress.completed);
   }
 
@@ -56,9 +68,9 @@ export class MenuScene extends Phaser.Scene {
 
     // Nút Cài đặt góc trên phải (x=664, y=52)
     const settingsBtn = this.add
-      .image(664, 52, TEXTURE_KEYS.btnCircle56)
+      .image(664, this.safe.top + 52 - this.blockOffsetY, TEXTURE_KEYS.btnCircle56)
       .setInteractive({ useHandCursor: true });
-    const settingsIcon = this.add.image(664, 52, TEXTURE_KEYS.iconGear);
+    const settingsIcon = this.add.image(664, this.safe.top + 52 - this.blockOffsetY, TEXTURE_KEYS.iconGear);
     settingsBtn.on('pointerdown', () => {
       this.animateButtonTap(settingsBtn, () => this.openSettings());
     });
@@ -165,7 +177,7 @@ export class MenuScene extends Phaser.Scene {
 
     // Chân trang phiên bản
     const footerText = this.add
-      .text(360, 1240, 'Mirror v0.2.1 · Bản Thử Nghiệm Android', {
+      .text(360, this.viewHeight - this.safe.bottom - 40 - this.blockOffsetY, 'Mirror v0.2.1 · Bản Thử Nghiệm Android', {
         fontFamily: TYPO_TOKENS.fontFamily.sans,
         fontSize: '12px',
         color: COLOR_TOKENS.text.secondary,

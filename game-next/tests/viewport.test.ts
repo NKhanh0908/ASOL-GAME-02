@@ -1,10 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import {
+  computeDesignHeight,
   computeDesignView,
   computeViewport,
+  safeAreaToDesignUnits,
   DESIGN_HEIGHT,
   DESIGN_WIDTH,
   MAX_DPR,
+  NO_SAFE_AREA,
 } from '../src/presentation/viewport.ts';
 
 describe('computeViewport', () => {
@@ -44,29 +47,57 @@ describe('computeViewport', () => {
   });
 });
 
-describe('computeDesignView', () => {
+describe('computeDesignHeight', () => {
   it('trả đúng khung thiết kế trên màn 9:16', () => {
-    const view = computeDesignView(720, 1280);
-    expect(view).toEqual({ x: 0, y: 0, width: DESIGN_WIDTH, height: DESIGN_HEIGHT });
+    expect(computeDesignHeight(720, 1280)).toBeCloseTo(DESIGN_HEIGHT);
   });
 
-  it('lộ thêm vùng trên và dưới trên màn dài, căn giữa khung', () => {
+  it('cao hơn 1280 trên màn dài, theo đúng tỉ lệ máy', () => {
+    // 1080x2460 -> 720 * (2460/1080) = 1640
+    expect(computeDesignHeight(1080, 2460)).toBeCloseTo(1640);
+  });
+
+  it('thấp hơn 1280 trên màn ngắn hơn 9:16', () => {
+    expect(computeDesignHeight(1080, 1440)).toBeLessThan(DESIGN_HEIGHT);
+  });
+
+  it('giữ nguyên tỉ lệ: chiều cao thiết kế chia 720 bằng tỉ lệ bộ đệm', () => {
+    const h = computeDesignHeight(1080, 2460);
+    expect(h / DESIGN_WIDTH).toBeCloseTo(2460 / 1080);
+  });
+
+  it('lùi về 1280 khi bộ đệm vô nghĩa', () => {
+    expect(computeDesignHeight(0, 0)).toBe(DESIGN_HEIGHT);
+  });
+});
+
+describe('computeDesignView', () => {
+  it('luôn bắt đầu từ gốc toạ độ', () => {
     const view = computeDesignView(1080, 2460);
-    expect(view.width).toBe(DESIGN_WIDTH);
-    expect(view.height).toBeCloseTo(1640);
-    // Khung 1280 nằm giữa vùng cao 1640 -> dư 180 mỗi đầu.
-    expect(view.y).toBeCloseTo(-180);
-    expect(view.y + view.height).toBeCloseTo(DESIGN_HEIGHT + 180);
+    expect(view.x).toBe(0);
+    expect(view.y).toBe(0);
   });
 
-  it('giữ khung cân đối: phần lộ trên bằng phần lộ dưới', () => {
-    const view = computeDesignView(1080, 2340);
-    expect(-view.y).toBeCloseTo(view.y + view.height - DESIGN_HEIGHT);
+  it('rộng đúng 720 bất kể máy nào', () => {
+    expect(computeDesignView(1080, 2460).width).toBe(DESIGN_WIDTH);
+    expect(computeDesignView(1440, 2560).width).toBe(DESIGN_WIDTH);
+  });
+});
+
+describe('safeAreaToDesignUnits', () => {
+  it('quy đổi lề từ pixel CSS sang đơn vị thiết kế', () => {
+    // Màn rộng 360 pixel CSS -> 1 pixel CSS bằng 2 đơn vị thiết kế.
+    const safe = safeAreaToDesignUnits({ top: 24, right: 0, bottom: 16, left: 0 }, 360);
+    expect(safe.top).toBeCloseTo(48);
+    expect(safe.bottom).toBeCloseTo(32);
   });
 
-  it('cắt bớt hai đầu khung trên màn ngắn hơn 9:16', () => {
-    const view = computeDesignView(1080, 1440);
-    expect(view.height).toBeLessThan(DESIGN_HEIGHT);
-    expect(view.y).toBeGreaterThan(0);
+  it('coi lề âm là không có lề', () => {
+    const safe = safeAreaToDesignUnits({ top: -5, right: 0, bottom: 0, left: 0 }, 360);
+    expect(safe.top).toBe(0);
+  });
+
+  it('trả lề rỗng khi bề ngang vô nghĩa', () => {
+    expect(safeAreaToDesignUnits({ top: 24, right: 0, bottom: 0, left: 0 }, 0)).toEqual(NO_SAFE_AREA);
   });
 });

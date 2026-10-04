@@ -67,9 +67,6 @@ export class SkyBackdrop {
     this.twinklingStars = field.twinkling;
     this.starTextureKey = `sky_stars_${options.seed}`;
 
-    // Màn dài hơn 9:16 nhìn thấy quá khung 720x1280. Nền trời bám vùng nhìn
-    // thấy thay vì bám khung, nếu không phần lộ ra là màu nền trơn và mắt đọc
-    // ngay ra một dải khác màu ở hai đầu.
     const view = designViewBounds(scene);
 
     this.skyLayer = scene.add
@@ -77,8 +74,7 @@ export class SkyBackdrop {
       .setOrigin(0, 0)
       .setDepth(DEPTH_TOKENS.backgroundSky);
 
-    this.paintSky(width, height);
-    this.bleedSky(view);
+    this.paintSky(view);
     this.buildStarTexture(width, height);
 
     this.starLayer = scene.add
@@ -96,60 +92,47 @@ export class SkyBackdrop {
    *
    * Dựng bằng canvas 2D vì nó có gradient thật. Trước đây xấp xỉ bằng các dải
    * ngang và vòng tròn đồng tâm, và mắt thấy rõ từng vòng (banding).
+   *
+   * Vẽ ở đúng chiều cao nhìn thấy, không vẽ khung 1280 rồi nối thêm hai dải.
+   * Cách nối từng bị loại vì mép khung không phải màu stop thuần — nebula hồng
+   * tâm (648, 966) bán kính 360 phủ tới y=1326, tức là tràn qua mép dưới — nên
+   * dải nối luôn lệch tông và để lộ một đường ranh. Gradient của canvas tự kẹp
+   * màu ngoài hai đầu, còn nebula vẽ ở cùng toạ độ thiết kế thì tràn ra tự
+   * nhiên: không còn ranh giới nào để lệch.
    */
-  private paintSky(width: number, height: number): void {
-    const key = `sky_base_${width}x${height}`;
+  private paintSky(view: DesignView): void {
+    const { width, height } = LAYOUT_TOKENS.canvas;
+    const viewHeight = Math.ceil(view.height);
+    const key = `sky_base_${width}x${viewHeight}`;
     const tm = this.scene.textures;
+
+    // Khung 1280 được căn giữa chiều cao thật, nên nền giữ nguyên bố cục gốc
+    // dù màn dài tới đâu.
+    const frameTop = (view.height - height) / 2;
+
     if (!tm.exists(key)) {
-      const canvas = tm.createCanvas(key, width, height);
+      const canvas = tm.createCanvas(key, width, viewHeight);
       if (canvas) {
         const ctx = canvas.context;
 
-        const sky = ctx.createLinearGradient(0, 0, 0, height);
+        const sky = ctx.createLinearGradient(0, frameTop, 0, frameTop + height);
         COLOR_TOKENS.sky.stops.forEach((stop, i) => {
           sky.addColorStop(COLOR_TOKENS.sky.stopOffsets[i], stop);
         });
         ctx.fillStyle = sky;
-        ctx.fillRect(0, 0, width, height);
+        ctx.fillRect(0, 0, width, viewHeight);
 
         // Toạ độ theo mockup 390x844, quy đổi sang canvas 720x1280
-        radialGlow(ctx, 108, 436, 396, COLOR_TOKENS.sky.nebulaBlue, 0.45);
-        radialGlow(ctx, 648, 966, 360, COLOR_TOKENS.sky.nebulaPink, 0.32);
-        radialGlow(ctx, 619, 140, 158, COLOR_TOKENS.sky.moonHalo, 0.35);
-        radialGlow(ctx, 619, 140, 62, COLOR_TOKENS.sky.moonCore, 0.9);
+        radialGlow(ctx, 108, frameTop + 436, 396, COLOR_TOKENS.sky.nebulaBlue, 0.45);
+        radialGlow(ctx, 648, frameTop + 966, 360, COLOR_TOKENS.sky.nebulaPink, 0.32);
+        radialGlow(ctx, 619, frameTop + 140, 158, COLOR_TOKENS.sky.moonHalo, 0.35);
+        radialGlow(ctx, 619, frameTop + 140, 62, COLOR_TOKENS.sky.moonCore, 0.9);
 
         canvas.refresh();
       }
     }
-    // Toạ độ trong RenderTexture tính từ mép texture, mà texture nay bắt đầu ở
-    // `view.y` (âm trên màn dài). Bù lại để nền trời vẫn trùng khung thiết kế.
-    const view = designViewBounds(this.scene);
-    this.skyLayer.draw(key, -view.x, -view.y);
-  }
 
-  /**
-   * Kéo màu hai đầu gradient ra phần vượt khung thiết kế.
-   *
-   * Không kéo giãn cả gradient vì làm vậy thì vị trí trăng và nebula xê dịch
-   * theo từng máy; giữ nguyên khung và chỉ nối thêm màu ở hai mép thì ranh giới
-   * không nhìn ra được.
-   */
-  private bleedSky(view: DesignView): void {
-    const { height } = LAYOUT_TOKENS.canvas;
-    const stops = COLOR_TOKENS.sky.stops;
-    const topBand = -view.y;
-    const bottomBandStart = topBand + height;
-
-    if (topBand > 0) {
-      const top = Phaser.Display.Color.HexStringToColor(stops[0]).color;
-      this.skyLayer.fill(top, 1, 0, 0, view.width, topBand);
-    }
-
-    const bottomBandHeight = view.height - bottomBandStart;
-    if (bottomBandHeight > 0) {
-      const bottom = Phaser.Display.Color.HexStringToColor(stops[stops.length - 1]).color;
-      this.skyLayer.fill(bottom, 1, 0, bottomBandStart, view.width, bottomBandHeight);
-    }
+    this.skyLayer.draw(key, 0, 0);
   }
 
   /**

@@ -4,6 +4,21 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-04 - Elastic vertical layout, seamless backdrop, safe-area aware HUD (Tier 2)
+
+Device play-test of the Tier 0 build (`docs/screenshots/mobile/m0/`) confirmed immersive mode, crisp text and the Cormorant switch, but showed the play area still boxed into the 720x1280 frame with a visible seam at the top and bottom bands.
+
+- Fixed the seam. `game-next/src/presentation/SkyBackdrop.ts`: `paintSky` now renders the gradient canvas at the real visible height and offsets the nebulae by the frame origin, and `bleedSky` is gone. The old approach filled the overflow with the raw first and last gradient stop, but the pink nebula at (648, 966) with radius 360 reaches y=1326, so the frame edge was never the bare stop colour and the joint always stepped. A canvas gradient clamps outside its endpoints, so painting the full height removes the boundary instead of trying to match across it.
+- Fixed the dialog overlays. `SettingsDialog.ts` and `PauseDialog.ts` sized their dimming rectangle to 720x1280 and centred their container on (360, 640), so on a tall screen the overflow stayed undimmed as two bright bands. Both now use `designViewBounds`.
+- `game-next/src/presentation/viewport.ts`: added `computeDesignHeight` (design height follows the device aspect, width stays 720), `safeAreaToDesignUnits` and `readSafeAreaCssPx`. `computeDesignView` now returns a view anchored at the origin rather than a frame centred on 1280.
+- `game-next/src/presentation/designViewport.ts`: the camera shows the whole elastic view; added `designSafeArea`, which reads `env(safe-area-inset-*)` once through a probe element and caches it.
+- `game-next/src/presentation/layout.ts`: `computeLayout(designWidth, designHeight, safeArea)` distributes vertically - header pinned below the top inset, bottom bar above the bottom inset, tray above the bar, board centred in what remains and clamped so the target badge never rides over the chapter subtitle. Added `targetBadgeY`, `designHeight` and `safeArea` to `LayoutMetrics`. The board stays 640x800 and `cellPixel` stays 5, so grid maths, hit testing and `BoardRenderer` are untouched.
+- `game-next/src/presentation/Hud.ts`: takes the layout and anchors the header row, the bottom button row, the victory card and the input blocker to it instead of `LAYOUT_TOKENS.bottomBar.y` and fixed offsets.
+- `game-next/src/presentation/TargetBadge.ts`: follows `layout.targetBadgeY` instead of a hardcoded y=178.
+- `game-next/src/presentation/MenuScene.ts`: the main block keeps its tuned 1280 composition and is shifted to centre on the real height; the settings button and the version line anchor to the top and bottom insets.
+- `game-next/src/presentation/LevelSelectScene.ts`: header background extends to y=0 under the notch while its controls sit below the inset, and the scroll limit uses the real height rather than 1280.
+- Verification: 639/639 vitest tests pass across 49 suites, including 24 new in `tests/layoutElastic.test.ts` covering 9:16, 9:19.5 and 9:21 with and without insets - no overlap between tray, board and bottom bar, nothing outside the view, and **the 9:16 case reproduces the original artboard exactly** (board y=200, tray y=1016, bottom bar y=1164), which is the no-regression guarantee. `npm run typecheck` and `npm run build` clean; `android:sync` plus `gradlew assembleDebug` rebuild the debug APK. GitNexus `detect_changes` reports 37 symbols over 29 processes; `gridToCanvas`, `canvasToGrid`, `pieceHitbox` and `pieceBoardOrigin` appear as touched because their file changed, but their bodies are unchanged and they follow the board through `layout.boardBounds` by design. **Not yet verified on hardware.**
+
 ### 2026-10-04 - Fix the Android letterbox, render at device resolution, self-host fonts
 
 Tier 0 of the mobile display work. Screenshots from a 1080x2460 device (`docs/screenshots/mobile/`) showed a large black band above the game, none below, a visible status bar, and soft text.

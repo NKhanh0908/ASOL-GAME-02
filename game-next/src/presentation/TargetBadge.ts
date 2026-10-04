@@ -13,10 +13,11 @@ export class TargetBadge {
   private isEnlarged = false;
 
   constructor(scene: Phaser.Scene, layout: LayoutMetrics, level: Level) {
-    // Tâm huy hiệu: chồng một phần lên mép trên bàn (y=200) như mockup, nhưng
-    // đỉnh huy hiệu phải nằm dưới phụ đề chương (y≈86) — trước đây đè lên nó.
+    // Tâm huy hiệu: chồng một phần lên mép trên bàn như mockup, nhưng đỉnh huy
+    // hiệu phải nằm dưới phụ đề chương — trước đây đè lên nó. Bám theo bàn chứ
+    // không viết cứng, vì bàn trôi theo chiều cao màn thật.
     const cx = 360;
-    const cy = 178;
+    const cy = layout.targetBadgeY;
 
     this.container = scene.add.container(cx, cy).setDepth(DEPTH_TOKENS.hudControls + 5);
     this.badgeGraphics = scene.add.graphics();

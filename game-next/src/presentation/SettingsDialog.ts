@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import type { ProgressRepository } from '../application/progressPort.ts';
 import { COLOR_NUMBERS, COLOR_TOKENS, TYPO_TOKENS } from './designTokens.ts';
+import { designViewBounds } from './designViewport.ts';
 import { TEXTURE_KEYS } from './TextureFactory.ts';
 
 export class SettingsDialog {
@@ -18,11 +19,15 @@ export class SettingsDialog {
   public open(): void {
     if (this.container) return;
 
-    this.container = this.scene.add.container(360, 640).setDepth(150);
+    const view = designViewBounds(this.scene);
+    this.container = this.scene.add.container(view.width / 2, view.height / 2).setDepth(150);
 
     // 1. Nền mờ 55%
+    // Phủ trọn khung nhìn, không phải 720x1280. Lấy cứng khung thiết kế thì
+    // trên máy dài phần dôi ra không bị làm mờ và hiện lên thành hai dải sáng
+    // hai đầu hộp thoại.
     const backdrop = this.scene.add
-      .rectangle(0, 0, 720, 1280, COLOR_NUMBERS.navyBackdrop, 0.65)
+      .rectangle(0, 0, view.width, view.height, COLOR_NUMBERS.navyBackdrop, 0.65)
       .setInteractive();
     backdrop.on('pointerdown', () => this.close());
 

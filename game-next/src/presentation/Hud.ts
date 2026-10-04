@@ -8,6 +8,8 @@ import {
   TYPO_TOKENS,
 } from './designTokens.ts';
 import { TEXTURE_KEYS } from './TextureFactory.ts';
+import { computeLayout } from './layout.ts';
+import type { LayoutMetrics } from './layout.ts';
 import { drawJewel } from './JewelShape.ts';
 import { CHAPTERS, chapterInfo, chapterOfLevelId } from '../content/chapters.ts';
 import {
@@ -50,30 +52,42 @@ export class Hud {
   private snapHint: Phaser.GameObjects.Container | null = null;
   private winVerseText!: Phaser.GameObjects.Text;
   private rotateAllowed = false;
+  private readonly layout: LayoutMetrics;
 
-  constructor(scene: Phaser.Scene, title: string, callbacks: HudCallbacks, levelId: string = '1-1') {
+  constructor(
+    scene: Phaser.Scene,
+    title: string,
+    callbacks: HudCallbacks,
+    levelId: string = '1-1',
+    layout: LayoutMetrics = computeLayout(LAYOUT_TOKENS.canvas.width, LAYOUT_TOKENS.canvas.height)
+  ) {
     this.scene = scene;
     this.callbacks = callbacks;
     this.levelId = levelId;
+    this.layout = layout;
 
     // Màn dev (mã không theo "<chương>-<số>") hiển thị như Chương I
     const chapter = chapterInfo(chapterOfLevelId(this.levelId) ?? 1) ?? CHAPTERS[0];
     const chapterRoman = `Chương ${chapter.roman}`;
     const levelName = title.includes('·') ? title.split('·')[1].trim() : title;
 
+    // Header bám mép trên đã trừ lề an toàn. Toạ độ y bên dưới là khoảng cách
+    // tính từ đỉnh header trên artboard gốc, nên chỉ việc cộng thêm.
+    const headerTop = this.layout.headerBounds.y;
+
     // 1. Nút Menu tròn 80px (Vùng chạm 96px, Góc trên trái: x=56, y=56)
     const menuBtn = this.scene.add
-      .image(56, 56, TEXTURE_KEYS.btnCircle80)
+      .image(56, headerTop + 56, TEXTURE_KEYS.btnCircle80)
       .setSize(96, 96)
       .setInteractive({ useHandCursor: true });
-    const menuIcon = this.scene.add.image(56, 56, TEXTURE_KEYS.iconMenuBack).setScale(1.25);
+    const menuIcon = this.scene.add.image(56, headerTop + 56, TEXTURE_KEYS.iconMenuBack).setScale(1.25);
     menuBtn.on('pointerdown', () => {
       this.animateButtonTap(menuBtn, () => this.callbacks.onMenu());
     });
 
     // 2. Tiêu đề màn chơi 36px + Dòng phụ Chương 24px (Giữa header: x=360)
     this.titleText = this.scene.add
-      .text(360, 34, levelName, {
+      .text(360, headerTop + 34, levelName, {
         fontFamily: TYPO_TOKENS.fontFamily.levelTitle,
         fontSize: TYPO_TOKENS.fontSize.headerTitle,
         color: COLOR_TOKENS.text.primary,
@@ -83,7 +97,7 @@ export class Hud {
     this.titleText.setFontSize(fitHudTitleFontSize(this.titleText.width));
 
     this.subtitleText = this.scene.add
-      .text(360, 74, `${chapterRoman} · Màn ${this.levelId}`, {
+      .text(360, headerTop + 74, `${chapterRoman} · Màn ${this.levelId}`, {
         fontFamily: TYPO_TOKENS.fontFamily.sans,
         fontSize: '24px',
         color: COLOR_TOKENS.text.secondary,
@@ -91,7 +105,7 @@ export class Hud {
       .setOrigin(0.5);
 
     // 3. Nút tròn Icon mắt bóng mục tiêu 80px (Vùng chạm 96px, Góc trên phải: x=664, y=56)
-    this.targetButton = this.scene.add.container(664, 56);
+    this.targetButton = this.scene.add.container(664, headerTop + 56);
     const targetBtnBase = this.scene.add
       .image(0, 0, TEXTURE_KEYS.btnCircle80)
       .setSize(96, 96)
@@ -107,7 +121,7 @@ export class Hud {
     // 4 — Luân Chuyển), thanh đếm mảnh ở giữa — theo mockup. Trước đây nút Đặt lại nằm
     // giữa màn, ngay chỗ khay và thanh đếm, nên bị cả hai che.
     const rotationChapter = chapter.rotationEnabled;
-    const bottomRowY = LAYOUT_TOKENS.bottomBar.y + 44;
+    const bottomRowY = this.layout.bottomBarBounds.y + 44;
     const buttonScale = 0.8; // 112px -> ~90px, vẫn trên chuẩn chạm tối thiểu
 
     // A. Nút Đặt lại
@@ -164,7 +178,7 @@ export class Hud {
     // 5. Thanh đếm mảnh ở đáy: viên thuốc bo tròn, icon thoi đặc cho mảnh đã
     // khớp và thoi nét đứt cho mảnh còn lại.
     // Cùng hàng với nút Đặt lại để đáy màn hình đọc thành một dải
-    const barY = LAYOUT_TOKENS.bottomBar.y + 44;
+    const barY = this.layout.bottomBarBounds.y + 44;
     this.matchBar = this.scene.add.container(360, barY).setDepth(DEPTH_TOKENS.hudControls);
     this.matchBarGraphics = this.scene.add.graphics();
     this.matchBarText = this.scene.add
@@ -181,12 +195,13 @@ export class Hud {
 
     // Thẻ hoàn thành thay chỗ khay và hàng nút đáy, theo mockup: bàn chơi đã
     // giải vẫn hiện trọn phía trên, không có gì đè lên nó.
-    const card = { x: 30, y: 1012, w: 660, h: 262 };
+    // Thẻ chiến thắng bám mép trên khay (artboard gốc: 1016 - 4).
+    const card = { x: 30, y: this.layout.trayBounds.y - 4, w: 660, h: 262 };
     const cx = card.x + card.w / 2;
 
     // Lớp chặn chạm xuống bàn, gần như trong suốt để không làm tối khung vàng
     const winOverlay = this.scene.add
-      .rectangle(0, 0, LAYOUT_TOKENS.canvas.width, LAYOUT_TOKENS.canvas.height, 0x000000, 0.01)
+      .rectangle(0, 0, LAYOUT_TOKENS.canvas.width, this.layout.designHeight, 0x000000, 0.01)
       .setOrigin(0, 0)
       .setInteractive();
 
