@@ -72,10 +72,11 @@ export const COLOR_NUMBERS = {
 export const TYPO_TOKENS = {
   fontFamily: {
     /**
-     * Cormorant Garamond chỉ nhúng weight 600. Nét nó mảnh hơn Playfair nên cỡ
-     * chữ tiêu đề được nâng một bậc để giữ độ nổi trên nền navy.
+     * Fredoka (bo tròn, casual) cho tiêu đề, modal title, hero title và nút bấm chính.
+     * Hỗ trợ đầy đủ tiếng Việt và tiếng Anh.
      */
-    serif: "'Cormorant Garamond', Georgia, serif",
+    display: "'Fredoka', 'Baloo 2', -apple-system, sans-serif",
+    serif: "'Fredoka', 'Baloo 2', -apple-system, sans-serif",
     sans: "'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
     /** Tên level cần bộ glyph tiếng Việt đầy đủ, kể cả khi webfont chưa tải. */
     levelTitle: "'Be Vietnam Pro', 'Segoe UI', Arial, sans-serif",

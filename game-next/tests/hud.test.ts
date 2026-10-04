@@ -31,11 +31,11 @@ describe('Hud Behavioral Logic and Visual Standards', () => {
     const sampleTitle = 'Màn 1-1 · Song Tinh';
     const isNotAllCaps = sampleTitle !== sampleTitle.toUpperCase();
     expect(isNotAllCaps).toBe(true);
-    expect(TYPO_TOKENS.fontFamily.serif).toContain('Cormorant Garamond');
+    expect(TYPO_TOKENS.fontFamily.serif).toContain('Fredoka');
     expect(TYPO_TOKENS.fontFamily.levelTitle).toContain('Be Vietnam Pro');
-    // Tên màn phải giữ font sans: serif chỉ nhúng 600/700 nên thiếu nét
+    // Tên màn phải giữ font sans: serif/display chỉ nhúng 600/700 nên thiếu nét
     // thường, và dấu tiếng Việt dày đặc đọc tại cỡ nhỏ kém hơn hẳn.
-    expect(TYPO_TOKENS.fontFamily.levelTitle).not.toContain('Cormorant Garamond');
+    expect(TYPO_TOKENS.fontFamily.levelTitle).not.toContain('Fredoka');
   });
 });
 

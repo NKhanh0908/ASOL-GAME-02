@@ -35,6 +35,8 @@ const REQUIRED_FACES = [
   // Vài tiêu đề đặt fontStyle: 'bold'. Không nhúng weight 700 thì trình duyệt
   // tự làm đậm giả, nét bệt và rìa bẩn.
   "700 16px 'Cormorant Garamond'",
+  "600 16px 'Fredoka'",
+  "700 16px 'Fredoka'",
 ] as const;
 
 /**

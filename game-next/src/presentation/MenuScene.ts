@@ -13,6 +13,7 @@ export class MenuScene extends Phaser.Scene {
   private progressRepo!: ProgressRepository;
   private sky!: SkyBackdrop;
   private emblemGraphics!: Phaser.GameObjects.Graphics;
+  private sparkleGraphics!: Phaser.GameObjects.Graphics;
   private uiContainer!: Phaser.GameObjects.Container;
 
   private blockOffsetY = 0;
@@ -36,17 +37,14 @@ export class MenuScene extends Phaser.Scene {
     // 1. Nền trời dùng chung (gradient, nebula, trăng, trường sao)
     this.sky = new SkyBackdrop(this, { seed: 1, drift: false });
 
-    // Khối nội dung chính vẫn dựng theo artboard 1280 rồi dịch xuống cho cân
-    // giữa chiều cao thật — giữ nguyên bố cục đã tinh chỉnh (tiêu đề, vòng ấn
-    // bia, hai nút) thay vì rải lại từng phần tử. Nút cài đặt và dòng phiên bản
-    // thì bám hai mép, nên chúng tự trừ lại khoảng dịch này.
     const view = designViewBounds(this);
     this.safe = designSafeArea(this);
     this.blockOffsetY = (view.height - LAYOUT_TOKENS.canvas.height) / 2;
     this.viewHeight = view.height;
 
-    // 2. Ấn bia cổ ngữ xoay (280px Prophecy Seal)
+    // 2. Biểu tượng Ngọc Đôi (Dual Jewels XOR) lơ lửng ở trung tâm
     this.emblemGraphics = this.add.graphics().setY(this.blockOffsetY);
+    this.sparkleGraphics = this.add.graphics().setY(this.blockOffsetY);
 
     // 3. UI Container chính
     this.uiContainer = this.add.container(0, this.blockOffsetY);
@@ -76,35 +74,20 @@ export class MenuScene extends Phaser.Scene {
     });
     this.uiContainer.add([settingsBtn, settingsIcon]);
 
-    // Tiêu đề game lớn phong cách chiêm tinh
-    const titleText = this.add
-      .text(360, 210, 'M I R R O R', {
-        fontFamily: TYPO_TOKENS.fontFamily.serif,
-        fontSize: TYPO_TOKENS.fontSize.heroTitle,
-        color: COLOR_TOKENS.amberGold.solidPrimary,
-      })
-      .setOrigin(0.5);
+    // -------------------------------------------------------------
+    // LOGO PHƯƠNG ÁN 2: GƯƠNG ĐÔI (CASUAL LOGO WITH MIRROR REFLECTION)
+    // -------------------------------------------------------------
+    this.buildCasualMirrorLogo();
 
-    // Hình phản chiếu lật ngược (Mirror Reflection)
-    const reflectionText = this.add
-      .text(360, 260, 'M I R R O R', {
-        fontFamily: TYPO_TOKENS.fontFamily.serif,
-        fontSize: TYPO_TOKENS.fontSize.heroTitle,
-        color: COLOR_TOKENS.iceGlass.bevelShadow,
-      })
-      .setOrigin(0.5)
-      .setScale(1, -0.85)
-      .setAlpha(0.22);
-
+    // Dòng phụ đề phong cách casual
     const subtitleText = this.add
-      .text(360, 310, 'Cổ Ngữ Chiêm Tinh · Bí Ẩn Giao Thoa', {
-        fontFamily: TYPO_TOKENS.fontFamily.sans,
-        fontSize: '14px',
+      .text(360, 316, 'Ghép bóng hình · Bí ẩn giao thoa', {
+        fontFamily: TYPO_TOKENS.fontFamily.display,
+        fontSize: '15px',
         color: COLOR_TOKENS.text.secondary,
       })
       .setOrigin(0.5);
-
-    this.uiContainer.add([titleText, reflectionText, subtitleText]);
+    this.uiContainer.add(subtitleText);
 
     // Nút Bắt đầu / Tiếp tục chính (Primary Hero CTA Button - Khối vàng đặc)
     const btnWidth = 340;
@@ -118,9 +101,9 @@ export class MenuScene extends Phaser.Scene {
 
     const mainBtnText = this.add
       .text(btnX, btnY - 12, btnLabelText, {
-        fontFamily: TYPO_TOKENS.fontFamily.sans,
-        fontSize: '20px',
-        color: COLOR_TOKENS.sky.stops[0],
+        fontFamily: TYPO_TOKENS.fontFamily.display,
+        fontSize: '22px',
+        color: '#22145A',
         fontStyle: 'bold',
       })
       .setOrigin(0.5);
@@ -155,8 +138,8 @@ export class MenuScene extends Phaser.Scene {
 
     const secBtnText = this.add
       .text(btnX, secBtnY, 'Chọn màn chơi', {
-        fontFamily: TYPO_TOKENS.fontFamily.sans,
-        fontSize: '16px',
+        fontFamily: TYPO_TOKENS.fontFamily.display,
+        fontSize: '17px',
         color: COLOR_TOKENS.text.primary,
       })
       .setOrigin(0.5);
@@ -186,6 +169,109 @@ export class MenuScene extends Phaser.Scene {
     this.uiContainer.add(footerText);
   }
 
+  /**
+   * Dựng cụm logo MIRROR phong cách Phương án 2 (Gương Đôi)
+   * Chữ vàng tròn mập, đứng trên thanh gương cyan phản chiếu lật ngược
+   */
+  private buildCasualMirrorLogo(): void {
+    const letters = [
+      { char: 'M', dx: -180, rot: -4 },
+      { char: 'I', dx: -110, rot: 3 },
+      { char: 'R', dx: -45, rot: -3 },
+      { char: 'R', dx: 38, rot: 4 },
+      { char: 'O', dx: 114, rot: -3 },
+      { char: 'R', dx: 182, rot: 4 },
+    ];
+
+    const logoY = 195;
+    const barY = 248;
+
+    // 1. Bóng phản chiếu màu kính cyan bên dưới thanh gương (Mirror Reflection)
+    for (const item of letters) {
+      const x = 360 + item.dx;
+      const refY = barY + 36;
+      const refText = this.add
+        .text(x, refY, item.char, {
+          fontFamily: TYPO_TOKENS.fontFamily.display,
+          fontSize: '76px',
+          color: '#7FD8FF',
+          stroke: '#3B2779',
+          strokeThickness: 10,
+        })
+        .setOrigin(0.5)
+        .setAngle(item.rot)
+        .setScale(1, -0.75)
+        .setAlpha(0.25);
+      this.uiContainer.add(refText);
+    }
+
+    // 2. Thanh gương kính cyan (Mirror Bar) ở giữa
+    const barWidth = 470;
+    const barHeight = 18;
+    const barBg = this.add.graphics();
+    // Đổ bóng thanh gương
+    barBg.fillStyle(0x22145a, 0.8);
+    barBg.fillRoundedRect(360 - barWidth / 2, barY - barHeight / 2 + 5, barWidth, barHeight, 9);
+    // Thân thanh gương cyan
+    barBg.fillStyle(0x7fd8ff, 1.0);
+    barBg.fillRoundedRect(360 - barWidth / 2, barY - barHeight / 2, barWidth, barHeight, 9);
+    barBg.lineStyle(3, 0x3b2779, 1.0);
+    barBg.strokeRoundedRect(360 - barWidth / 2, barY - barHeight / 2, barWidth, barHeight, 9);
+    // Vệt highlight trên gương
+    barBg.fillStyle(0xffffff, 0.7);
+    barBg.fillRoundedRect(360 - barWidth / 2 + 18, barY - barHeight / 2 + 3, 160, 4, 2);
+
+    // Viên ngọc thoi vàng đính ở tâm thanh gương
+    const centerJewel = this.add.graphics();
+    const jewelPts = [
+      new Phaser.Geom.Point(360, barY - 14),
+      new Phaser.Geom.Point(374, barY),
+      new Phaser.Geom.Point(360, barY + 14),
+      new Phaser.Geom.Point(346, barY),
+    ];
+    centerJewel.fillStyle(0xffc94a, 1.0);
+    centerJewel.fillPoints(jewelPts, true);
+    centerJewel.lineStyle(3.5, 0x3b2779, 1.0);
+    centerJewel.strokePoints(jewelPts, true);
+
+    // Ngôi sao nhỏ ở tâm viên ngọc
+    centerJewel.fillStyle(0xffffff, 0.9);
+    centerJewel.fillCircle(360, barY, 2.5);
+
+    this.uiContainer.add([barBg, centerJewel]);
+
+    // 3. Cụm chữ chính MIRROR màu vàng hổ phách nổi khối
+    for (const item of letters) {
+      const x = 360 + item.dx;
+
+      // Lớp bóng đổ đậm (Deep shadow)
+      const shadowText = this.add
+        .text(x, logoY + 7, item.char, {
+          fontFamily: TYPO_TOKENS.fontFamily.display,
+          fontSize: '76px',
+          color: '#22145A',
+          stroke: '#22145A',
+          strokeThickness: 14,
+        })
+        .setOrigin(0.5)
+        .setAngle(item.rot);
+
+      // Chữ chính màu vàng có viền tím đậm (Gold face with purple outline)
+      const mainText = this.add
+        .text(x, logoY, item.char, {
+          fontFamily: TYPO_TOKENS.fontFamily.display,
+          fontSize: '76px',
+          color: '#FFD23F',
+          stroke: '#3B2779',
+          strokeThickness: 14,
+        })
+        .setOrigin(0.5)
+        .setAngle(item.rot);
+
+      this.uiContainer.add([shadowText, mainText]);
+    }
+  }
+
   private openSettings(): void {
     new SettingsDialog(this, this.progressRepo).open();
   }
@@ -206,61 +292,165 @@ export class MenuScene extends Phaser.Scene {
     // 1. Nền trời
     this.sky.update(delta);
 
-    // 2. Ấn bia cổ ngữ 280px xoay chậm (x=360, y=500)
-    this.ringAngle1 += delta * 0.0003;
-    this.ringAngle2 -= delta * 0.0002;
+    // 2. Chuyển động lơ lửng và nhịp thở của biểu tượng Ngọc Đôi (Icon 1 XOR)
+    this.ringAngle1 += delta * 0.0004;
+    this.ringAngle2 -= delta * 0.0003;
     this.pulseTime += delta * 0.003;
 
-    this.emblemGraphics.clear();
-    const cx = 360;
-    const cy = 500;
-
-    // Vòng ngoài (R = 140px)
-    this.emblemGraphics.lineStyle(1.8, COLOR_NUMBERS.icePrimary, 0.4);
-    this.emblemGraphics.strokeCircle(cx, cy, 140);
-
-    // Vòng trong vàng (R = 115px)
-    this.emblemGraphics.lineStyle(1.2, COLOR_NUMBERS.gridModule, 0.35);
-    this.emblemGraphics.strokeCircle(cx, cy, 115);
-
-    // Các điểm vệ tinh xoay trên vòng ngoài
-    for (let i = 0; i < 4; i++) {
-      const angle = this.ringAngle1 + (i * Math.PI) / 2;
-      const x = cx + Math.cos(angle) * 140;
-      const y = cy + Math.sin(angle) * 140;
-      this.emblemGraphics.fillStyle(COLOR_NUMBERS.iceHighlight, 0.7);
-      this.emblemGraphics.fillCircle(x, y, 3.5);
-    }
-
-    // Các ký tự nan hoa trên vòng trong
-    for (let i = 0; i < 6; i++) {
-      const angle = this.ringAngle2 + (i * Math.PI) / 3;
-      const x1 = cx + Math.cos(angle) * 95;
-      const y1 = cy + Math.sin(angle) * 95;
-      const x2 = cx + Math.cos(angle) * 115;
-      const y2 = cy + Math.sin(angle) * 115;
-      this.emblemGraphics.lineStyle(1, COLOR_NUMBERS.gridModule, 0.4);
-      this.emblemGraphics.lineBetween(x1, y1, x2, y2);
-    }
-
-    // Hai viên ngọc thoi vàng chạm đỉnh ở tâm ấn bia (Song Tinh) phát quang nhịp thở
-    const rhombAlpha = 0.75 + Math.sin(this.pulseTime) * 0.2;
-    this.drawCenterRhomb(cx - 22, cy, 18, rhombAlpha);
-    this.drawCenterRhomb(cx + 22, cy, 18, rhombAlpha);
+    this.renderDualJewelEmblem();
   }
 
-  private drawCenterRhomb(cx: number, cy: number, r: number, alpha: number): void {
-    const points = [
+  /**
+   * Vẽ biểu tượng Ngọc Đôi (Icon 1) ở trung tâm màn hình chính:
+   * Hai viên ngọc thoi vàng lồng nhau, tạo vùng rỗng Parity XOR ở giữa
+   * kèm ngôi sao phát quang nhịp thở.
+   */
+  private renderDualJewelEmblem(): void {
+    this.emblemGraphics.clear();
+    this.sparkleGraphics.clear();
+
+    const cx = 360;
+    // Nhấp nhô nhẹ nhàng
+    const bobY = Math.sin(this.pulseTime * 0.7) * 5;
+    const cy = 520 + bobY;
+
+    // Vòng bụi sao xoay mờ ảo xung quanh (R = 150px)
+    this.emblemGraphics.lineStyle(1.2, COLOR_NUMBERS.icePrimary, 0.25);
+    this.emblemGraphics.strokeCircle(cx, cy, 150);
+
+    for (let i = 0; i < 4; i++) {
+      const angle = this.ringAngle1 + (i * Math.PI) / 2;
+      const x = cx + Math.cos(angle) * 150;
+      const y = cy + Math.sin(angle) * 150;
+      this.emblemGraphics.fillStyle(0xcfe6ff, 0.6);
+      this.emblemGraphics.fillCircle(x, y, 3);
+    }
+
+    for (let i = 0; i < 4; i++) {
+      const angle = this.ringAngle2 + (i * Math.PI) / 2 + Math.PI / 4;
+      const x = cx + Math.cos(angle) * 125;
+      const y = cy + Math.sin(angle) * 125;
+      this.emblemGraphics.fillStyle(0xffd27a, 0.5);
+      this.emblemGraphics.fillCircle(x, y, 2.5);
+    }
+
+    // Hai viên ngọc thoi:
+    // Viên trái: tâm cx - 38
+    // Viên phải: tâm cx + 38
+    const jewelR = 68; // Bán kính đường chéo
+    const overlapOffset = 38;
+
+    // Đổ bóng chân cụm ngọc
+    this.drawDiamond(cx - overlapOffset, cy + 8, jewelR, 0x1b0b4a, 0.45);
+    this.drawDiamond(cx + overlapOffset, cy + 8, jewelR, 0x1b0b4a, 0.45);
+
+    // Viên ngọc trái (Vát 4 mặt sáng tối)
+    this.drawFacetedJewel(cx - overlapOffset, cy, jewelR);
+
+    // Viên ngọc phải (Vát 4 mặt sáng tối)
+    this.drawFacetedJewel(cx + overlapOffset, cy, jewelR);
+
+    // VÙNG GIAO NHAU (Parity XOR): Rỗng thành nền đêm tím sâu
+    // Giao giữa 2 viên thoi tạo thành một hình thoi đứng ở chính giữa (cx, cy)
+    const xorHalfW = jewelR - overlapOffset; // 68 - 38 = 30
+    const xorHalfH = jewelR - overlapOffset; // 30
+
+    const xorPts = [
+      new Phaser.Geom.Point(cx, cy - xorHalfH),
+      new Phaser.Geom.Point(cx + xorHalfW, cy),
+      new Phaser.Geom.Point(cx, cy + xorHalfH),
+      new Phaser.Geom.Point(cx - xorHalfW, cy),
+    ];
+
+    // Nền XOR sâu thẳm
+    this.emblemGraphics.fillStyle(0x1a2470, 0.95);
+    this.emblemGraphics.fillPoints(xorPts, true);
+
+    // Viền XOR sắc nét
+    this.emblemGraphics.lineStyle(3.5, 0xb85c00, 1.0);
+    this.emblemGraphics.strokePoints(xorPts, true);
+
+    // Viền trong tối
+    this.emblemGraphics.lineStyle(1.5, 0x3a1585, 0.8);
+    this.emblemGraphics.strokePoints(xorPts, true);
+
+    // Ngôi sao 4 cánh phát quang nhịp thở tại tâm vùng XOR
+    const pulseScale = 0.8 + Math.sin(this.pulseTime * 2.2) * 0.3;
+    const starR = 14 * pulseScale;
+    this.drawSparkle(cx, cy, starR, 0xffffff, 0.95);
+
+    // Hai ngôi sao lấp lánh trang trí góc ngoài
+    const spark1Alpha = 0.6 + Math.sin(this.pulseTime * 1.5) * 0.35;
+    this.drawSparkle(cx - 100, cy - 65, 8, 0xffe8b8, spark1Alpha);
+    const spark2Alpha = 0.6 + Math.cos(this.pulseTime * 1.7) * 0.35;
+    this.drawSparkle(cx + 105, cy + 60, 9, 0xffe8b8, spark2Alpha);
+  }
+
+  /**
+   * Vẽ 1 viên ngọc thoi vát 4 mặt sáng tối (Faceted Jewel)
+   */
+  private drawFacetedJewel(cx: number, cy: number, r: number): void {
+    const top = new Phaser.Geom.Point(cx, cy - r);
+    const right = new Phaser.Geom.Point(cx + r, cy);
+    const bottom = new Phaser.Geom.Point(cx, cy + r);
+    const left = new Phaser.Geom.Point(cx - r, cy);
+    const center = new Phaser.Geom.Point(cx, cy);
+
+    // Mặt Bắc (North) - sáng nhất: #FFF0A6
+    this.emblemGraphics.fillStyle(0xfff0a6, 1.0);
+    this.emblemGraphics.fillPoints([top, right, center], true);
+
+    // Mặt Tây (West) - sáng vừa: #FFD23F
+    this.emblemGraphics.fillStyle(0xffd23f, 1.0);
+    this.emblemGraphics.fillPoints([top, left, center], true);
+
+    // Mặt Đông (East) - sẫm vàng: #FFB31F
+    this.emblemGraphics.fillStyle(0xffb31f, 1.0);
+    this.emblemGraphics.fillPoints([bottom, left, center], true);
+
+    // Mặt Nam (South) - tối cam: #F59400
+    this.emblemGraphics.fillStyle(0xf59400, 1.0);
+    this.emblemGraphics.fillPoints([bottom, right, center], true);
+
+    // Viền bao ngoài viên ngọc
+    this.emblemGraphics.lineStyle(3, 0xb85c00, 1.0);
+    this.emblemGraphics.strokePoints([top, right, bottom, left], true);
+
+    // Highlight ánh kim góc trên-trái
+    this.emblemGraphics.lineStyle(2, 0xffffff, 0.7);
+    this.emblemGraphics.lineBetween(left.x + 10, left.y - 10, top.x - 10, top.y + 10);
+  }
+
+  /**
+   * Vẽ hình thoi đơn giản dùng cho bóng đổ
+   */
+  private drawDiamond(cx: number, cy: number, r: number, color: number, alpha: number): void {
+    const pts = [
       new Phaser.Geom.Point(cx, cy - r),
       new Phaser.Geom.Point(cx + r, cy),
       new Phaser.Geom.Point(cx, cy + r),
       new Phaser.Geom.Point(cx - r, cy),
     ];
+    this.emblemGraphics.fillStyle(color, alpha);
+    this.emblemGraphics.fillPoints(pts, true);
+  }
 
-    this.emblemGraphics.fillStyle(COLOR_NUMBERS.amberSolid, alpha);
-    this.emblemGraphics.fillPoints(points, true);
-
-    this.emblemGraphics.lineStyle(1.5, COLOR_NUMBERS.amberGlow, alpha);
-    this.emblemGraphics.strokePoints(points, true);
+  /**
+   * Vẽ ngôi sao 4 cánh phát quang (4-pointed Sparkle)
+   */
+  private drawSparkle(cx: number, cy: number, r: number, color: number, alpha: number): void {
+    this.sparkleGraphics.fillStyle(color, alpha);
+    const inner = r * 0.28;
+    const pts = [
+      new Phaser.Geom.Point(cx, cy - r),
+      new Phaser.Geom.Point(cx + inner, cy - inner),
+      new Phaser.Geom.Point(cx + r, cy),
+      new Phaser.Geom.Point(cx + inner, cy + inner),
+      new Phaser.Geom.Point(cx, cy + r),
+      new Phaser.Geom.Point(cx - inner, cy + inner),
+      new Phaser.Geom.Point(cx - r, cy),
+      new Phaser.Geom.Point(cx - inner, cy - inner),
+    ];
+    this.sparkleGraphics.fillPoints(pts, true);
   }
 }

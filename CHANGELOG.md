@@ -4,6 +4,16 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-04 - Casual branding: Dual Jewels app icon, Gương Đôi title logo, and Fredoka typography
+
+- Added self-hosted Fredoka font files (`fredoka-600/700` Latin and Latin-ext covering English and complete Vietnamese diacritics) to `game-next/public/fonts/`.
+- Updated `game-next/src/style.css` with `@font-face` declarations for Fredoka, and added them to `REQUIRED_FACES` in `game-next/src/main.ts` for clean pre-boot loading.
+- Updated `game-next/src/presentation/designTokens.ts`: `TYPO_TOKENS.fontFamily.display` and `serif` aliases point to Fredoka while preserving Be Vietnam Pro for body text, level titles, and long descriptions.
+- Redesigned `game-next/src/presentation/MenuScene.ts` to implement Logo Casual Option 2 (Gương Đôi) featuring 3D gold rounded lettering on a cyan mirror bar with an inverted reflection below, and replaced the astrological prophecy seal with the interactive Dual Jewels (Ngọc Đôi) emblem showing the Parity XOR hollow core with a pulsing center sparkle.
+- Generated app icons for web (`favicon.svg`, `icon.svg`, `favicon.png`, `icon-192.png`, `icon-512.png`, `apple-touch-icon.png`) and updated `game-next/index.html`.
+- Generated Android launcher icons across all densities (`mdpi`, `hdpi`, `xhdpi`, `xxhdpi`, `xxxhdpi` for `ic_launcher`, `ic_launcher_round`, and `ic_launcher_foreground`), and updated `ic_launcher_background.xml` with purple-violet gradient `#A774FF` -> `#5A1FC7`.
+- Verification: 639/639 vitest tests pass (`tests/designTokens.test.ts`, `tests/hud.test.ts`, `tests/menu.test.ts` updated to match Fredoka); `npm run typecheck` passes with zero errors; `npm run build` succeeds cleanly; GitNexus `detect_changes()` reports 8 symbols across 2 processes with medium risk.
+
 ### 2026-10-04 - Elastic vertical layout, seamless backdrop, safe-area aware HUD (Tier 2)
 
 Device play-test of the Tier 0 build (`docs/screenshots/mobile/m0/`) confirmed immersive mode, crisp text and the Cormorant switch, but showed the play area still boxed into the 720x1280 frame with a visible seam at the top and bottom bands.
