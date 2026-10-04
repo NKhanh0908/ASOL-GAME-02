@@ -4,6 +4,13 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-04 - Merge Plan E (Level Studio) into main
+
+- Merged `feat/level-studio-e3` containing Phases E1, E2, and E3 into `main`.
+- Delivered automatic difficulty scoring (`scoreDifficulty`), calibration tables, warnings report, studio backend storage, Vite dev middleware (`/__studio/`), campaign promote pipeline (`npm run content:promote`), harness studio level loading, and interactive 3-column Level Studio UI (`studio.html`) with async Web Worker solver.
+- Updated `docs/ai/STATUS.md` and `docs/ai/DOCS-INDEX.md` to reflect `main` branch state.
+- Verification: 605/605 vitest tests pass across 47 suites; `npm run typecheck` and `npm run build` pass cleanly.
+
 ### 2026-10-04 - Record reviewer approval of Level Studio (Plan E) at Stop Point 4
 
 - Updated `docs/testing/studio/acceptance.md`: updated status to `passed` following reviewer (NKhanh0908) verification and approval.

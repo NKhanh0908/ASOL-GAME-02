@@ -4,15 +4,15 @@ Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; k
 
 ## Now
 
-- Branch: `feat/level-studio-e3`.
-- Product state: Plan E (Level Studio) 100% complete and approved across all phases (E1 difficulty scoring, E2 backend infrastructure, E3 Studio UI & acceptance). Stop Point 4 passed; acceptance passed; 605/605 tests pass; Vite build clean.
-- Next step: Reviewer (NKhanh0908) merges `feat/level-studio-e3` to default branch; then start Plan F (Motion) or G (Audio).
+- Branch: `main`.
+- Product state: Plan E (Level Studio) complete, approved, and merged to `main` (E1 difficulty scoring, E2 backend infrastructure, E3 Studio UI & acceptance); 605/605 tests pass; Vite build clean.
+- Next step: Plan F (Motion F1/F2/F3) or Plan G (Audio G0/G1/G2) per roadmap priority.
 
 ## Streams
 
 | Stream | State | Entry doc |
 |--------|-------|-----------|
-| Level system A → B → C/D → E | complete; Plan E approved on `feat/level-studio-e3`, ready to merge | `docs/ai/DOCS-INDEX.md` rows A–E |
+| Level system A → B → C/D → E | complete; Plan E merged to `main` | `docs/ai/DOCS-INDEX.md` rows A–E |
 | F motion (F1 → F2 → F3) | specs approved, plans ready, not started | `docs/superpowers/plans/2026-10-03-f-motion-index.md` |
 | C chapter 2 + Hoa Pham | complete; all 16 levels approved and available in campaign order | `docs/superpowers/plans/2026-10-02-c-chapter-2-hoa-pham-levels.md` |
 | G audio (G0 → G1 → G2) | spec approved, plans written, not started | `docs/superpowers/plans/2026-10-03-g-audio-index.md` |
