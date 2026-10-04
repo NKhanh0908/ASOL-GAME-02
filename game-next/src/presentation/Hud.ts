@@ -13,11 +13,11 @@ import type { LayoutMetrics } from './layout.ts';
 import { drawJewel } from './JewelShape.ts';
 import { CHAPTERS, chapterInfo, chapterOfLevelId } from '../content/chapters.ts';
 import {
-  SNAP_HINT_TEXT,
-  VICTORY_LABELS,
   VICTORY_VERSE_FONT_SIZE,
   fitHudTitleFontSize,
   formatMatchCount,
+  getSnapHintText,
+  getVictoryLabels,
 } from './hudText.ts';
 
 export type HudCallbacks = {
@@ -196,6 +196,7 @@ export class Hud {
     // Thẻ hoàn thành thay chỗ khay và hàng nút đáy, theo mockup: bàn chơi đã
     // giải vẫn hiện trọn phía trên, không có gì đè lên nó.
     // Thẻ chiến thắng bám mép trên khay (artboard gốc: 1016 - 4).
+    const victoryLabels = getVictoryLabels();
     const card = { x: 30, y: this.layout.trayBounds.y - 4, w: 660, h: 262 };
     const cx = card.x + card.w / 2;
 
@@ -213,7 +214,7 @@ export class Hud {
       .setOrigin(0, 0);
 
     const winLabel = this.scene.add
-      .text(cx, card.y + 38, VICTORY_LABELS.title, {
+      .text(cx, card.y + 38, victoryLabels.title, {
         fontFamily: TYPO_TOKENS.fontFamily.sans,
         fontSize: '22px',
         fontStyle: 'bold',
@@ -255,7 +256,7 @@ export class Hud {
     selectBtnBg.strokeRoundedRect(innerLeft, btnTop, selectW, btnH, 30);
 
     const selectBtn = this.scene.add
-      .text(innerLeft + selectW / 2, btnTop + btnH / 2, VICTORY_LABELS.levelSelect, {
+      .text(innerLeft + selectW / 2, btnTop + btnH / 2, victoryLabels.levelSelect, {
         fontFamily: TYPO_TOKENS.fontFamily.sans,
         fontSize: '26px',
         fontStyle: 'bold',
@@ -272,7 +273,7 @@ export class Hud {
       .image(nextX, btnTop, TEXTURE_KEYS.victoryNextButton)
       .setOrigin(0, 0);
     const nextBtn = this.scene.add
-      .text(nextX + 173, btnTop + btnH / 2, VICTORY_LABELS.next, {
+      .text(nextX + 173, btnTop + btnH / 2, victoryLabels.next, {
         fontFamily: TYPO_TOKENS.fontFamily.sans,
         fontSize: '28px',
         fontStyle: 'bold',
@@ -373,7 +374,7 @@ export class Hud {
       bg.fillStyle(0xfff4d2, 1);
       bg.fillRoundedRect(-80, -22, 160, 44, 14);
       const label = this.scene.add
-        .text(0, 0, SNAP_HINT_TEXT, {
+        .text(0, 0, getSnapHintText(), {
           fontFamily: TYPO_TOKENS.fontFamily.sans,
           fontSize: '22px',
           color: COLOR_TOKENS.text.onAmber,

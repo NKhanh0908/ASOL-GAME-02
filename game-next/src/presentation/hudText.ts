@@ -6,9 +6,12 @@
  */
 import { t } from './i18n.ts';
 
-/** Nhãn nổi cạnh mảnh khi kéo trúng vùng hít */
-export const SNAP_HINT_TEXT = 'Thả để khớp';
-
+/**
+ * Nhãn nổi cạnh mảnh khi kéo trúng vùng hít.
+ *
+ * Là hàm chứ không phải hằng số: hằng số bị cố định ở thời điểm nạp module nên
+ * đổi ngôn ngữ xong vẫn ra chuỗi cũ. Bản tiếng Việt nằm trong `i18n.ts`.
+ */
 export function getSnapHintText(): string {
   return t('snap_hint');
 }
@@ -41,13 +44,7 @@ export function formatMatchCount(matched: number, total: number): string {
   return t('match_count', { matched, total });
 }
 
-/** Nhãn của màn hoàn thành */
-export const VICTORY_LABELS = {
-  title: 'Hoàn thành',
-  next: 'Màn tiếp theo',
-  levelSelect: 'Chọn màn',
-} as const;
-
+/** Nhãn của màn hoàn thành. Gọi lúc dựng, xem ghi chú ở `getSnapHintText`. */
 export function getVictoryLabels() {
   return {
     title: t('victory_title'),

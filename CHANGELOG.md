@@ -4,6 +4,31 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-04 - Replace Fredoka with Baloo 2 and finish wiring the HUD to i18n
+
+Review of the branding commits (f17f609, 93a172f).
+
+- Fixed mixed typefaces in Vietnamese display text. Google Fonts publishes Fredoka with the hebrew, latin and latin-ext subsets only - there is no vietnamese subset - so U+1EA0-1EF1 fell outside every declared range and the browser substituted a fallback face per character. 8 of the 10 prominent display strings were affected, splitting single words: "Bắt đầu" (ầ ắ), "Tiếp tục" (ế ụ), "Chọn màn chơi" (ọ), "Cài Đặt Chiêm Tinh" (ặ), "Tạm Dừng" (ạ ừ). Replaced with Baloo 2, which was already the declared fallback, matches the rounded casual tone and ships a vietnamese subset. `game-next/public/fonts/` gains 6 Baloo 2 woff2 files (138 KB) and loses the 4 Fredoka ones; `src/style.css`, `src/presentation/designTokens.ts` and `src/main.ts` updated accordingly.
+- Added `game-next/tests/displayFontCoverage.test.ts`: parses the `@font-face` rules out of `style.css` and asserts the display family covers U+1EA0-1EF9 and every string in `TRANSLATIONS`. This class of bug breaks no build and fails no other test - it is only visible on a device - so it needs an automated guard. Verified the guard bites: with Fredoka's real ranges, 82 of the 90 code points in that block are uncovered.
+- Finished the i18n wiring. `Hud.ts` still imported the hardcoded Vietnamese `VICTORY_LABELS` and `SNAP_HINT_TEXT`, so the victory modal and the snap hint stayed Vietnamese in English mode while the match counter translated. It now calls `getVictoryLabels()` and `getSnapHintText()`, read at build time rather than at module load. Deleted the duplicate constants from `hudText.ts` - that duplication was the source of the drift - and moved the tests onto the accessors, adding a case that asserts the labels actually change with the locale.
+
+### 2026-10-04 - Bilingual i18n system and studio splash intro
+
+- Added `game-next/src/presentation/i18n.ts`: `vi`/`en` dictionaries, `t()` with `{param}` interpolation, `getLocale`/`setLocale` persisted to `localStorage` under `mirror.rebuild.locale`, an `onLocaleChange` observer and `getLevelTitle` for English level names. Guards `typeof window` and wraps storage access, so it loads under vitest's node environment.
+- Added `game-next/src/presentation/SplashScene.ts`: studio intro shown before the menu, registered first in the scene list in `src/main.ts` and skipped when a launch parameter targets another scene.
+- Routed `MenuScene`, `SettingsDialog`, `PauseDialog`, `LevelSelectScene` and `hudText` through `t()`; `SettingsDialog` gains a language row that switches locale and rebuilds the menu.
+- Added `game-next/tests/i18n.test.ts`.
+- Verification: covered by the suite run below. Note: `onLocaleChange` is exercised only by its test - the menu rebuild goes through a `(this.scene as any).buildMainMenu(...)` cast in `SettingsDialog.ts`, which works today because the dialog is only opened from `MenuScene`.
+
+### 2026-10-04 - Dual jewel app icon, casual mirror logo and display typography
+
+- Replaced the Android launcher icons across every mipmap density and `ic_launcher_background.xml`.
+- Added web icons and favicons (`game-next/public/icon.svg`, `icon-192.png`, `icon-512.png`, `favicon.svg`, `favicon.png`, `apple-touch-icon.png`, `assets/studio.svg`) and linked them from `index.html`, whose title becomes "Mirror".
+- Reworked the `MenuScene` logo treatment and introduced a `display` typography token.
+- Verification: covered by the suite run below.
+
+Verification for the three entries above: 702/702 vitest tests pass across 51 suites; `npm run typecheck` and `npm run build` clean; `npm run android:sync` plus `gradlew assembleDebug` produce a debug APK. The Fredoka subset claim was checked against the Google Fonts API, not assumed. **Not yet verified on hardware.**
+
 ### 2026-10-04 - Bilingual i18n system and Alpaca Solutions studio splash intro
 
 - Created `game-next/src/presentation/i18n.ts`: reactive translation manager supporting Vietnamese (`vi`) and English (`en`), persisting choice to `localStorage` (`mirror.rebuild.locale`), with full dictionary coverage for menu, settings, pause, level select, HUD and localized level names.

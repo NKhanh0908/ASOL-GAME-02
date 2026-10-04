@@ -33,11 +33,11 @@ const REQUIRED_FACES = [
   "600 16px 'Be Vietnam Pro'",
   "700 16px 'Be Vietnam Pro'",
   "600 16px 'Cormorant Garamond'",
+  "700 16px 'Cormorant Garamond'",
   // Vài tiêu đề đặt fontStyle: 'bold'. Không nhúng weight 700 thì trình duyệt
   // tự làm đậm giả, nét bệt và rìa bẩn.
-  "700 16px 'Cormorant Garamond'",
-  "600 16px 'Fredoka'",
-  "700 16px 'Fredoka'",
+  "600 16px 'Baloo 2'",
+  "700 16px 'Baloo 2'",
 ] as const;
 
 /**
