@@ -4,6 +4,13 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-04 - Add dev-only free-placement harness level
+
+- Registered `FREE_DEMO_SOURCE` as `dev-free-placement` in `game-next/src/content/devLevels.ts` (dev server and harness only, never in the manifest or campaign).
+- Added catalog and PlayController tests: the level loads in harness, pieces snap to `grid:<x>,<y>` candidates and the level is won; added screenshots `docs/testing/levels/screens/dev-free-placement-{play,drag,win}.png`.
+- Verification: the new tests failed before registration and passed after; typecheck, all tests, `content:validate` and `build` passed; the build contains no `dev-free-placement` string; screenshots checked by eye.
+
+
 ### 2026-10-04 - Skip kit decoys on free-placement pieces
 
 - `piece`, `row` and `concentric` in `game-next/src/content/kit.ts` accept `placement: 'free'` and then emit only anchor A, ignoring `decoys`.

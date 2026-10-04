@@ -92,5 +92,8 @@ export const FREE_DEMO_SOURCE: LevelSource = {
 };
 
 export const DEV_LEVEL_DOCUMENTS: Readonly<Record<string, unknown>> = import.meta.env.DEV
-  ? { [shapesV2.id]: buildLevelDocument(shapesV2) }
+  ? {
+      [shapesV2.id]: buildLevelDocument(shapesV2),
+      [FREE_DEMO_SOURCE.id]: buildLevelDocument(FREE_DEMO_SOURCE),
+    }
   : {};

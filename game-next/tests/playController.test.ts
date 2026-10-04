@@ -122,3 +122,32 @@ describe('PlayController Loop and State Coordination', () => {
     expect(afterReset.selectedPieceId).toBeNull();
   });
 });
+
+describe('Màn đặt tự do thắng được qua PlayController (spec D mục 7)', () => {
+  const layout = computeLayout(720, 1280);
+
+  test('kéo bốn mảnh tới gần giao điểm đúng: nhãn hít grid, mảnh hít và màn thắng', () => {
+    const level = loadLevel('dev-free-placement', 'harness');
+    const repo = createProgressRepository(createMockStorage(), campaignManifest, 'oracle-v1');
+    const controller = new PlayController(level, repo, false);
+
+    let last = null as ReturnType<PlayController['onPointerUp']>;
+    level.pieces.forEach((piece, index) => {
+      const start = pieceHitbox(piece, { kind: 'tray', turns: 0 }, layout, index, level.pieces.length);
+      const anchor = piece.anchors[0];
+      const center = gridToCanvas(anchor.x + piece.frameSize / 2, anchor.y + piece.frameSize / 2, layout);
+      expect(controller.onPointerDown(start.x + start.width / 2, start.y + start.height / 2, layout)).toBe(true);
+      // Lệch (+12, −12) px khỏi tâm đích = (+2, −3) ô: vẫn trong bán kính hít
+      controller.onPointerMove(center.x + 12, center.y - 12, layout);
+      expect(controller.getSnapshot().snapCandidateId).toBe(`grid:${anchor.x},${anchor.y}`);
+      last = controller.onPointerUp(center.x + 12, center.y - 12, layout);
+    });
+
+    expect(last?.becameWon).toBe(true);
+    expect(controller.getSnapshot().phase).toBe('won');
+    expect(controller.getSnapshot().snappedCount).toBe(4);
+    for (const piece of level.pieces) {
+      expect(controller.getPuzzleState().pieces[piece.id].kind).toBe('placed');
+    }
+  });
+});
