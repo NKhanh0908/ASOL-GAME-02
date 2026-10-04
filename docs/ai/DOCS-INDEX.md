@@ -18,8 +18,9 @@ Paths below are relative to `docs/superpowers/`.
 | C | Chapter 2 + Hoa Pham levels (16) | specs/2026-10-02-c-chapter-2-hoa-pham-levels-design.md | plans/2026-10-02-c-chapter-2-hoa-pham-levels.md | done | All 16 levels approved in campaign order and merged to `main` |
 | BF | Board fit measured by piece cells | none — spec C §4 coordinates and plan D decision 3 | plans/2026-10-03-board-fit-by-cells.md | done | Merged to `main` with plan C |
 | D | Free placement + XOR solver | specs/2026-10-02-d-free-placement-design.md | plans/2026-10-02-d-free-placement.md | done | Complete; merged to main |
-| E | Level studio | specs/2026-10-02-e-level-studio-design.md | plans/2026-10-02-e-level-studio.md (index) | approved | §9 changes need re-review; starts only after A, B, D are green |
-| E1–E3 | Studio phase plans | spec E §8 | plans/2026-10-02-e1-difficulty.md, e2-studio-backend, e3-1-logic, e3-2-board-page, e3-3-check-acceptance | draft | Task skeletons only; run writing-plans on each before executing |
+| E | Level studio | specs/2026-10-02-e-level-studio-design.md | plans/2026-10-02-e-level-studio.md (index) | done | E1, E2, E3 approved by reviewer at Stop Point 4; acceptance passed |
+| E1–E2 | Studio backend & difficulty | spec E §8 | plans/2026-10-02-e1-difficulty.md, e2-studio-backend.md | done | Completed on feat/level-studio-e2; all 573 tests pass |
+| E3 | Studio frontend UI & acceptance | spec E §8 | plans/2026-10-02-e3-1-logic.md, e3-2-board-page.md, e3-3-check-acceptance.md | done | Completed on feat/level-studio-e3; acceptance evidence in docs/testing/studio/ |
 | F1 | Motion foundation + scene transitions | specs/2026-10-03-f1-scene-transitions-design.md | plans/2026-10-03-f-motion-index.md (read first), f1-1-nen-tang, f1-2-director, f1-3-dan-dung | approved | §3.3 edited after approval; not started |
 | F2 | In-level game feel | specs/2026-10-03-f2-in-level-game-feel-design.md | plans/2026-10-03-f2-1-logic, f2-2-renderer, f2-3-phan-hoi | approved | Plans list 7 spec departures to review; not started |
 | F3 | Motion acceptance tools | specs/2026-10-03-f3-motion-acceptance-design.md | plans/2026-10-03-f3-motion-acceptance.md | approved | Not started |

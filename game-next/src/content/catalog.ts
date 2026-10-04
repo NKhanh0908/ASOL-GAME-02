@@ -50,14 +50,74 @@ const documents: Record<string, unknown> = {
   '3-9': saoBatPhuong,
 };
 
+const globStudioDocs: Record<string, unknown> = import.meta.env.DEV
+  ? (import.meta.glob('./studio/levels/*.json', { eager: true, import: 'default' }) as Record<string, unknown>)
+  : {};
+
+function findStudioDoc(id: string, studioLevelsOverride?: Record<string, unknown>): unknown | undefined {
+  if (studioLevelsOverride && id in studioLevelsOverride) {
+    return studioLevelsOverride[id];
+  }
+  if (!import.meta.env.DEV) {
+    return undefined;
+  }
+  for (const [path, doc] of Object.entries(globStudioDocs)) {
+    if (doc && typeof doc === 'object' && 'id' in doc && (doc as { id: unknown }).id === id) {
+      return doc;
+    }
+    const match = path.match(/([^/\\]+)\.json$/);
+    if (match && match[1] === id) {
+      return doc;
+    }
+  }
+  return undefined;
+}
+
 /**
  * Tải và xác thực dữ liệu màn chơi theo chế độ truy cập (campaign hoặc harness).
  * - campaign: chỉ cho phép màn đã đạt status 'approved'.
- * - harness: cho phép màn có status 'validated' hoặc 'approved'.
+ * - harness: cho phép màn có status 'validated' hoặc 'approved', màn dev, và màn studio khi DEV.
  */
-export function loadLevel(id: string, mode: 'campaign' | 'harness'): Level {
-  // Màn dev (thử hình, sau này là màn studio): chỉ ở harness trên dev server
-  if (mode === 'harness' && import.meta.env.DEV && id in DEV_LEVEL_DOCUMENTS) {
+export function loadLevel(
+  id: string,
+  mode: 'campaign' | 'harness',
+  studioLevelsOverride?: Record<string, unknown>
+): Level {
+  // Campaign mode: chỉ nạp màn approved từ campaign manifest
+  if (mode === 'campaign') {
+    const entry = campaignManifest.find((e) => e.id === id);
+    if (!entry || entry.status !== 'approved') {
+      throw new Error(`unavailable:${id}`);
+    }
+    const doc = documents[id];
+    if (!doc) {
+      throw new Error(`missing-document:${id}`);
+    }
+    const result = validateLevel(doc);
+    if (!result.ok) {
+      throw new Error(`validation-failed:${id} -> ${JSON.stringify(result.issues)}`);
+    }
+    return result.level;
+  }
+
+  // Harness mode: tìm theo thứ tự manifest -> devLevels -> studioLevels (ST-07)
+  const entry = campaignManifest.find((e) => e.id === id);
+  if (entry) {
+    if (!['validated', 'approved'].includes(entry.status)) {
+      throw new Error(`unavailable:${id}`);
+    }
+    const doc = documents[id];
+    if (!doc) {
+      throw new Error(`missing-document:${id}`);
+    }
+    const result = validateLevel(doc);
+    if (!result.ok) {
+      throw new Error(`validation-failed:${id} -> ${JSON.stringify(result.issues)}`);
+    }
+    return result.level;
+  }
+
+  if (import.meta.env.DEV && id in DEV_LEVEL_DOCUMENTS) {
     const result = validateLevel(DEV_LEVEL_DOCUMENTS[id]);
     if (!result.ok) {
       throw new Error(`validation-failed:${id} -> ${JSON.stringify(result.issues)}`);
@@ -65,25 +125,16 @@ export function loadLevel(id: string, mode: 'campaign' | 'harness'): Level {
     return result.level;
   }
 
-  const entry = campaignManifest.find((e) => e.id === id);
-  if (
-    !entry ||
-    (mode === 'campaign'
-      ? entry.status !== 'approved'
-      : !['validated', 'approved'].includes(entry.status))
-  ) {
-    throw new Error(`unavailable:${id}`);
+  if (import.meta.env.DEV || studioLevelsOverride) {
+    const studioDoc = findStudioDoc(id, studioLevelsOverride);
+    if (studioDoc) {
+      const result = validateLevel(studioDoc);
+      if (!result.ok) {
+        throw new Error(`validation-failed:${id} -> ${JSON.stringify(result.issues)}`);
+      }
+      return result.level;
+    }
   }
 
-  const doc = documents[id];
-  if (!doc) {
-    throw new Error(`missing-document:${id}`);
-  }
-
-  const result = validateLevel(doc);
-  if (!result.ok) {
-    throw new Error(`validation-failed:${id} -> ${JSON.stringify(result.issues)}`);
-  }
-
-  return result.level;
+  throw new Error(`unavailable:${id}`);
 }

@@ -4,6 +4,117 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-04 - Record reviewer approval of Level Studio (Plan E) at Stop Point 4
+
+- Updated `docs/testing/studio/acceptance.md`: updated status to `passed` following reviewer (NKhanh0908) verification and approval.
+- Updated `docs/ai/DOCS-INDEX.md`: marked rows `E` and `E3` as `done`.
+- Updated `docs/ai/STATUS.md`: recorded 100% completion of Plan E (E1 difficulty scoring, E2 backend infrastructure, E3 Studio UI & acceptance), passing Stop Point 4.
+- Verification: all 605 vitest tests pass across 47 suites; `npm run typecheck` and `npm run build` pass cleanly.
+
+### 2026-10-04 - Fix id-clash-campaign when saving campaign levels and sync rotation with chapter in Studio
+
+- Modified `game-next/src/content/manifest.ts`: exported `isCampaignId(id)` helper to check if an ID belongs to `campaignManifest`.
+- Modified `game-next/src/studio/state.ts`: synchronized `chapter` and `rotationEnabled` in `studioReducer`. Setting `chapter: 4` or toggling `rotationEnabled: true` automatically enables both; switching away from Chapter 4 automatically disables rotation and resets turns to 0. Resolves validator error `chapter-rotation-disabled`.
+- Modified `game-next/src/studio/inspector.ts`: added campaign reference badge `⚠️ Màn Chiến dịch (chỉ đọc)` on ID field; updated Save button to `LƯU BẢN STUDIO (Clone & Lưu)` when viewing campaign levels, prompting the user for a new studio ID and cloning/saving seamlessly instead of failing with `id-clash-campaign`.
+- Modified `game-next/src/studio/library.ts`: prevented creating or cloning levels with IDs that clash with campaign manifest.
+- Added test cases in `game-next/tests/studioState.test.ts`: verified chapter and rotation two-way synchronization in reducer.
+- Verification: `npm run typecheck` passed, all 605 tests passed across 47 suites, browser CDP capture verified `✓ Hợp lệ` upon rotation toggle and proper clone-save workflow.
+
+### 2026-10-04 - Complete Level Studio frontend UI and acceptance evidence (Phases E3-2 & E3-3)
+
+- Added `game-next/studio.html`: dedicated Level Studio interface page with dark cosmic aesthetic, responsive 3-column layout.
+- Added `game-next/src/studio/boardView.ts`: 512x640 SVG board rendering 8-cell/24-cell grid, odd/even parity silhouette fills (`#d4af37` gold for odd, hollow for even, dotted for 3+), piece polygons, vertex anchors (gold A and blue/red decoys), with pointer-based drag-and-drop and grid snapping.
+- Added `game-next/src/studio/palette.ts`: shape selection (Square, Triangle, Diamond, Circle, Parallelogram), dynamic frame sizes (`isValidFrame`), orientation picker, "+ Thêm mảnh", "+ Neo nhiễu", and rotate/mirror/delete buttons.
+- Added `game-next/src/studio/library.ts`: studio level management (create, clone, select, delete) with dirty state indicator (`●`), and campaign levels reference list.
+- Added `game-next/src/studio/inspector.ts`: metadata editor (id, title, chapter, objective, difficulty estimate), live validation status badge (`✓ Hợp lệ` / `Lỗi`), solver metrics (solution count, proven status, solve time, warnings), 6-component difficulty scorecard with visual bar charts, and Save / Play Test / Open SVG actions.
+- Added `game-next/src/studio/solverWorker.ts` & `tests/studioSolverWorker.test.ts`: Web Worker module and pure `handleCheck` solver function.
+- Added `game-next/src/studio/api.ts`: typed client functions connecting to `/__studio/` endpoints.
+- Added `game-next/src/studio/main.ts`: studio application root binding reducer state, check queue, Web Worker, hash loader, beforeunload dirty check, and keyboard navigation.
+- Added `game-next/src/content/sourceFromDocument.ts`: extracted pure document-to-source converter to guarantee zero Node.js dependencies in browser runtime.
+- Added `docs/testing/studio/acceptance.md`, `acceptance.png`, `inspector.png`, `page.png`: complete acceptance report and full 1440x900 screenshots showing 3 columns, silhouette parity, and difficulty scorecard.
+- Verification: all 603 tests pass across 47 suites; `npm run build` succeeds and produces clean bundle strictly excluding `studio.html`; automated headless Chrome captures verified live rendering and solver queue.
+
+### 2026-10-04 - Implement core logic for Level Studio (Phase E3-1)
+
+- Added `game-next/src/studio/state.ts`: implements `StudioState`, `studioReducer`, `cloneLevelSource`, `computeDecoyReason`, and `isDirty`.
+- Added `game-next/src/studio/keys.ts`: implements `keyToAction` mapping keyboard shortcuts (`R`, `Shift+R`, `Delete`, `Ctrl+D`, arrow keys) to studio actions.
+- Added `game-next/src/studio/geometry.ts`: implements `layerCounts`, `outlinePath` (boundary SVG path generation for overlapping layers), and `snapAndClamp` (grid snapping and frame boundary clamping).
+- Added `game-next/src/studio/checkQueue.ts`: implements `createCheckQueue` with 300 ms debounce, single in-flight run enforcement, and stale result marking.
+- Added `game-next/tests/studioState.test.ts`, `studioKeys.test.ts`, `studioGeometry.test.ts`, `studioCheckQueue.test.ts`: test coverage for all pure logic modules.
+- Verification: all 28 new tests passed; full test suite passes with 601 tests across 46 suites; typecheck clean.
+
+### 2026-10-04 - Update status and documentation index for Plan E phases E1 and E2
+
+- Updated `docs/ai/STATUS.md`: recorded completion of E1 (difficulty scoring) and E2 (studio backend infrastructure), reaching Stop Point 2.
+- Updated `docs/ai/DOCS-INDEX.md`: marked E1 and E2 rows as done on `feat/level-studio-e2`.
+- Verification: git status clean, all 573 tests passing.
+
+### 2026-10-04 - Add content:promote script and campaign promotion pipeline
+
+- Added `game-next/src/content/promote.ts`: implements `sourceFromDocument`, `registerInCatalog`, `updateManifestLine`, `updateAuthoredLevels`, and `promoteStudioLevel` to safely promote studio levels to campaign targets with single-solution validation.
+- Added `game-next/scripts/promote-level.ts`: CLI entrypoint for `npm run content:promote -- <studio-id> <target-id>`.
+- Modified `game-next/package.json`: added `"content:promote"` npm script.
+- Added `game-next/tests/promote.test.ts`: test coverage for document-to-source conversion, catalog and manifest updating, single-solution enforcement, rotation rule validation, and full promote workflow.
+- Verification: tests failed before implementation and passed after; `npm run typecheck`, `npm test` (all 573 tests) and `npm run build` passed.
+
+### 2026-10-04 - Support loading studio levels in harness mode
+
+- `game-next/src/content/catalog.ts`: added `import.meta.glob('./studio/levels/*.json', ...)` when DEV, supporting studio level loading in harness mode with optional `studioLevelsOverride`. Search order prioritizes manifest -> dev levels -> studio levels; campaign mode strictly rejects studio levels.
+- `game-next/tests/catalog.test.ts`: added tests verifying harness mode loads studio levels and campaign mode rejects them.
+- Verification: tests failed before implementation and passed after; `npm run typecheck` and all 564 vitest tests passed.
+
+### 2026-10-04 - Add studio dev server plugin and Vite configuration
+
+- Added `game-next/scripts/studio/studioPlugin.ts`: Vite dev plugin serving `GET /__studio/list`, `POST /__studio/save`, and `POST /__studio/delete` with CSRF protection (Content-Type 415, Origin 403) and 1 MB body limit (413).
+- Added `game-next/vite.config.ts`: configures `studioPlugin` only during dev (`command === 'serve'`) and restricts `rollupOptions.input` strictly to `index.html`.
+- Added `game-next/tests/studioPlugin.test.ts`: test coverage for HTTP status codes 200, 400, 403, 409, 413, 415.
+- Verification: tests failed before implementation and passed after; `npm run build` produced bundle excluding studio files; `npm run typecheck` and all 562 tests passed.
+
+
+### 2026-10-04 - Add studio level storage system
+
+- Added `game-next/src/content/studioStore.ts`: implements `saveStudioLevel`, `deleteStudioLevel`, `listStudioLevels`, path safety validation, and ID pattern validation.
+- Added `game-next/tests/studioStore.test.ts`: verified file creation, ID pattern checks, rejection of path traversal and campaign clashes, safe list handling and deletions.
+- Verification: tests failed before implementation and passed after; `npm run typecheck` and all 554 vitest tests passed.
+
+
+### 2026-10-04 - Add in-memory level authoring pipeline
+
+- Added `game-next/src/content/authorLevel.ts`: implements `authorLevel(source)` running the full authoring pipeline in memory, generating document, solution report, difficulty score, warnings, JSON, SVG and markdown.
+- Added `game-next/tests/authorLevel.test.ts`: verified byte-exact match on 1-1 against committed assets and non-throwing error handling for invalid sources.
+- Verification: tests failed before implementation and passed after; `npm run typecheck` and all 546 tests passed.
+
+
+### 2026-10-04 - Add level source code serializer
+
+- Added `game-next/src/content/serializeSource.ts`: implements `serializeLevelSource(source, constName)` emitting clean TypeScript source matching `sources/` formatting standards.
+- Added `game-next/tests/serializeSource.test.ts`: verified byte locks on 1-1, 1-3, 1-4, 1-6 and round-trip dynamic import across all 22 authored levels in `LEVEL_SOURCES`.
+- Updated `docs/superpowers/plans/2026-10-02-e2-studio-backend.md` with detailed TDD tasks.
+- Verification: tests failed before implementation and passed after; `npm run typecheck` and all 543 vitest tests passed.
+
+
+### 2026-10-04 - Expand difficulty calibration test over 16 spec C levels
+
+- `game-next/tests/difficulty.test.ts`: added calibration suite asserting exact parts, raw score and discrete difficulty for all 16 levels in Chapters 2 and 3 (2-1..2-6 and 3-1..3-10).
+- Verification: all 29 tests in `tests/difficulty.test.ts` passed; `npm run typecheck` and all 519 tests in `npm test` passed.
+
+
+### 2026-10-04 - Add difficulty warnings to authoring reports
+
+- `game-next/src/content/authoringReport.ts`: `renderReportMarkdown` accepts optional `warnings` parameter and renders `## Cảnh báo` section when warnings exist.
+- `game-next/scripts/author-level.ts`: computes difficulty score and warnings via `scoreDifficulty` and `collectWarnings`, passing warnings to `renderReportMarkdown`.
+- `game-next/tests/authoringReport.test.ts` & `game-next/tests/difficulty.test.ts`: added tests for warning formatting and mismatch threshold detection.
+- Verification: tests failed before implementation and passed after; `npm run typecheck` and all 503 tests passed; `npm run content:author -- --all` ran cleanly with 0 diff on committed reports.
+
+
+### 2026-10-04 - Add automated difficulty scoring and Chapter 1 calibration
+
+- Added `game-next/src/content/difficulty.ts`: implements `scoreDifficulty` with 6 components (`pieces`, `choices`, `hollow`, `revive`, `nearMiss`, `hiddenEdges`), `DIFFICULTY_WEIGHTS`, `DIFFICULTY_THRESHOLDS`, and `collectWarnings`.
+- Added `game-next/tests/difficulty.test.ts`: verified with 4 hand fixtures (`single`, `pair`, `triple`, `free`), edge cases for board boundary hidden edges and free placement bounds, and calibration of all 6 Chapter 1 levels.
+- Updated `docs/superpowers/plans/2026-10-02-e1-difficulty.md` with detailed TDD tasks.
+- Verification: tests in `tests/difficulty.test.ts` failed before implementation and passed after; `npm run typecheck` and all 501 vitest tests passed.
+
+
 ### 2026-10-04 - Add dev-only free-placement harness level
 
 - Registered `FREE_DEMO_SOURCE` as `dev-free-placement` in `game-next/src/content/devLevels.ts` (dev server and harness only, never in the manifest or campaign).

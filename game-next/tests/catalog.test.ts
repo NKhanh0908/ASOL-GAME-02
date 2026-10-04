@@ -212,3 +212,28 @@ describe('Màn dev thử chế độ đặt tự do (spec D)', () => {
     expect(() => loadLevel('dev-free-placement', 'campaign')).toThrow('unavailable:dev-free-placement');
   });
 });
+
+describe('Màn studio trong catalog (spec E, ST-07)', () => {
+  const fakeStudioDoc = {
+    ...rawSongTinh,
+    id: 'studio-fake-1',
+    title: 'Studio Fake 1',
+  };
+
+  test('màn studio nạp được ở chế độ harness khi dev', () => {
+    const level = loadLevel('studio-fake-1', 'harness', {
+      'studio-fake-1': fakeStudioDoc,
+    });
+    expect(level.id).toBe('studio-fake-1');
+    expect(level.title).toBe('Studio Fake 1');
+  });
+
+  test('màn studio không bao giờ nạp ở campaign', () => {
+    expect(() =>
+      loadLevel('studio-fake-1', 'campaign', {
+        'studio-fake-1': fakeStudioDoc,
+      })
+    ).toThrow('unavailable:studio-fake-1');
+  });
+});
+

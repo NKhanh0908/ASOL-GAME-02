@@ -102,26 +102,80 @@ Ghi chú: hai dòng 3-5 và 3-6 tính với toạ độ hiện tại của spec 
 
 ## Task
 
-> **Trạng thái:** khung task, **chưa có bước TDD và code**. Người viết tiếp dùng skill `superpowers:writing-plans`, giữ nguyên quyết định và con số ở trên, thay mỗi mục dưới bằng các bước đầy đủ (test thất bại → cài đặt → test xanh → CHANGELOG → commit).
+### Task 1: `scoreDifficulty` và hiệu chỉnh Chương 1
 
-### Task 1: `scoreDifficulty` và hiệu chỉnh Chương 1 — CHƯA VIẾT
+**Files:**
+- Create: `game-next/src/content/difficulty.ts`
+- Create: `game-next/tests/difficulty.test.ts`
 
-- Kiểu `PartName = 'pieces' | 'choices' | 'hollow' | 'revive' | 'nearMiss' | 'hiddenEdges'`, `DifficultyScore = { score: 1 | 2 | 3 | 4 | 5; raw: number; parts: Record<PartName, number> }`.
-- Test: 4 fixture tay (khớp `parts`, `raw` với `toBeCloseTo(…, 6)`, `score`), bảng 6 màn 1-x dựng từ `LEVEL_SOURCES` qua `buildLevelDocument` + `searchSolutions`.
-- Test riêng `nearMiss` màn `free` (dịch 8 ô theo 4 hướng, bỏ hướng ra ngoài bàn) và mép bàn của `hiddenEdges`.
+**Interfaces:**
+- Consumes: `LevelDocument` from `src/content/document.ts`, `SolutionReport` from `src/content/authoringReport.ts`, `rotateCells`, `fitsBoard` from `src/domain/geometry.ts`, `GRID_WIDTH`, `GRID_HEIGHT`, `TOTAL_CELLS` from `src/domain/model.ts`.
+- Produces: `PartName`, `DifficultyScore`, `DIFFICULTY_WEIGHTS`, `DIFFICULTY_THRESHOLDS`, `scoreDifficulty(doc, report)`.
 
-### Task 2: Cảnh báo trong báo cáo — CHƯA VIẾT
+- [ ] **Step 1: Viết test thất bại trong `tests/difficulty.test.ts`**
+  - Tạo fixture tay `single`, `pair`, `triple`, `free` như bảng mục "Fixture tay".
+  - Kiểm tra các thành phần `parts`, `raw` (dùng `toBeCloseTo(..., 6)`), và `score`.
+  - Kiểm tra 6 màn 1-1..1-6 từ `LEVEL_SOURCES`.
+  - Kiểm tra biên bàn của `hiddenEdges` và 4 hướng của `nearMiss` chế độ `free`.
+- [ ] **Step 2: Chạy test để xác nhận test thất bại**
+  - `npm test tests/difficulty.test.ts` báo lỗi do chưa có `src/content/difficulty.ts`.
+- [ ] **Step 3: Cài đặt `src/content/difficulty.ts`**
+  - Định nghĩa `PartName`, `DifficultyScore`, `DIFFICULTY_WEIGHTS`, `DIFFICULTY_THRESHOLDS`.
+  - Cài đặt tính toán cho 6 thành phần: `pieces`, `choices`, `hollow`, `revive`, `nearMiss`, `hiddenEdges`.
+  - Tính `raw` và quy đổi `score` 1..5.
+- [ ] **Step 4: Chạy lại test để xác nhận test xanh**
+  - `npm test tests/difficulty.test.ts` xanh toàn bộ.
+- [ ] **Step 5: Ghi CHANGELOG và commit Task 1**
+  - Thêm mục vào `CHANGELOG.md` dưới `## Unreleased`.
+  - Chạy `detect_changes()`, typecheck, git commit.
 
-- `collectWarnings(doc, score): LevelWarning[]`, `LevelWarning = { code: 'difficulty-mismatch'; message: string }`. Lệch > 1 mới cảnh báo.
-- `renderReportMarkdown` thêm tham số thứ tư; mục `## Cảnh báo` chỉ in khi khác rỗng. Chạy `impact` trên `renderReportMarkdown` trước khi sửa.
-- `scripts/author-level.ts` gọi `scoreDifficulty` và `collectWarnings`.
-- Kiểm: `npm run content:author -- --all` rồi `git diff --exit-code docs/testing/levels` (không đổi byte nào).
+---
 
-### Task 3: Mở rộng hiệu chỉnh lên 16 màn spec C — CHƯA VIẾT
+### Task 2: Cảnh báo trong báo cáo màn
 
-- Chỉ chạy khi plan C đã vào nhánh. Thêm 16 dòng của bảng spec C vào test.
-- Step 2: nếu toạ độ 3-5/3-6 đã đổi theo điểm dừng 1, tính lại hai dòng đó bằng code thật và cập nhật bảng ở trên.
-- Nếu C chưa xong khi E1 merge: để task này mở, ghi vào chỉ mục là việc bắt buộc khi C vào nhánh.
+**Files:**
+- Modify: `game-next/src/content/difficulty.ts`
+- Modify: `game-next/src/content/authoringReport.ts`
+- Modify: `game-next/scripts/author-level.ts`
+- Modify: `game-next/tests/authoringReport.test.ts`
+
+**Interfaces:**
+- Consumes: `scoreDifficulty` từ `src/content/difficulty.ts`.
+- Produces: `LevelWarning`, `collectWarnings(doc, score)` trong `src/content/difficulty.ts`, tham số thứ tư `warnings` trong `renderReportMarkdown`.
+
+- [ ] **Step 1: Viết test thất bại trong `tests/authoringReport.test.ts` và `tests/difficulty.test.ts`**
+  - Test `collectWarnings` trả cảnh báo `difficulty-mismatch` khi `|score.score - doc.difficultyEstimate| > 1`, rỗng khi lệch <= 1.
+  - Test `renderReportMarkdown` in khối `## Cảnh báo` khi có cảnh báo, không in khi rỗng.
+- [ ] **Step 2: Chạy test để xác nhận test thất bại**
+  - `npm test tests/authoringReport.test.ts` báo lỗi.
+- [ ] **Step 3: Cài đặt `collectWarnings`, cập nhật `renderReportMarkdown` và `scripts/author-level.ts`**
+  - Thêm `collectWarnings` vào `src/content/difficulty.ts`.
+  - Sửa `renderReportMarkdown(doc, report, dropped = [], warnings = [])`: in `## Cảnh báo` nếu `warnings.length > 0`.
+  - Cập nhật `scripts/author-level.ts` gọi `scoreDifficulty`, `collectWarnings`, truyền vào `renderReportMarkdown`.
+- [ ] **Step 4: Chạy test và kiểm tra không đổi byte báo cáo cũ**
+  - `npm test` xanh.
+  - `npm run content:author -- --all` rồi `git diff --exit-code docs/testing/levels` (không đổi byte nào).
+- [ ] **Step 5: Ghi CHANGELOG và commit Task 2**
+  - Thêm mục vào `CHANGELOG.md`.
+  - Chạy `detect_changes()`, typecheck, git commit.
+
+---
+
+### Task 3: Mở rộng hiệu chỉnh lên 16 màn spec C
+
+**Files:**
+- Modify: `game-next/tests/difficulty.test.ts`
+
+**Interfaces:**
+- Consumes: `LEVEL_SOURCES` cho các màn 2-1..2-6 và 3-1..3-10, `scoreDifficulty`.
+
+- [ ] **Step 1: Bổ sung 16 màn spec C vào test hiệu chỉnh**
+  - Thêm test chạy qua 16 màn Chương 2 và Chương 3, kiểm tra `raw`, `parts` và `score` khớp bảng mục "16 màn spec C".
+- [ ] **Step 2: Chạy test và xác nhận xanh toàn bộ 22 màn**
+  - `npm test tests/difficulty.test.ts` kiểm tra 22 màn.
+- [ ] **Step 3: Ghi CHANGELOG và commit Task 3**
+  - Thêm mục vào `CHANGELOG.md`.
+  - Chạy `detect_changes()`, typecheck, git commit.
 
 ## Kiểm tra cuối E1
 

@@ -12,6 +12,7 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildLevelDocument, filterDecoys, serializeLevelDocument } from '../src/content/authoring.ts';
 import { renderPreviewSvg, renderReportMarkdown, searchSolutions } from '../src/content/authoringReport.ts';
+import { collectWarnings, scoreDifficulty } from '../src/content/difficulty.ts';
 import type { LevelDocument } from '../src/content/document.ts';
 import { LEVEL_SOURCES } from '../src/content/sources/index.ts';
 import { validateLevel } from '../src/content/validate.ts';
@@ -44,18 +45,23 @@ function authorOne(id: string): boolean {
   }
 
   const report = searchSolutions(doc);
+  const score = scoreDifficulty(doc, report);
+  const warnings = collectWarnings(doc, score);
   writeFileSync(resolve(LEVELS_DIR, `${id}.json`), serializeLevelDocument(doc), 'utf8');
   mkdirSync(REPORT_DIR, { recursive: true });
   writeFileSync(resolve(REPORT_DIR, `${id}.svg`), renderPreviewSvg(doc), 'utf8');
   const { dropped } = filterDecoys(source);
-  writeFileSync(resolve(REPORT_DIR, `${id}-report.md`), renderReportMarkdown(doc, report, dropped), 'utf8');
+  writeFileSync(resolve(REPORT_DIR, `${id}-report.md`), renderReportMarkdown(doc, report, dropped, warnings), 'utf8');
   if (dropped.length > 0) {
     console.log(`[author-level] ${id}: bỏ ${dropped.length} neo nhiễu theo KIT-03 (xem ${id}-report.md)`);
+  }
+  for (const w of warnings) {
+    console.warn(`[author-level] CẢNH BÁO ${id}: ${w.code} - ${w.message}`);
   }
 
   console.log(
     `[author-level] ${id}: ${doc.targetCells.length} ô mục tiêu, ${report.solutionCount} nghiệm, ` +
-      `${report.fewerPieceSolutions} nghiệm ít mảnh hơn`
+      `${report.fewerPieceSolutions} nghiệm ít mảnh hơn (điểm độ khó: ${score.score}, raw: ${score.raw.toFixed(4)})`
   );
   if (!report.proven) {
     // Vẫn ghi file (FP-09); chỉ --release mới chặn
