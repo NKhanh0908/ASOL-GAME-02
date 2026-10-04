@@ -4,6 +4,14 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-04 - Add level source code serializer
+
+- Added `game-next/src/content/serializeSource.ts`: implements `serializeLevelSource(source, constName)` emitting clean TypeScript source matching `sources/` formatting standards.
+- Added `game-next/tests/serializeSource.test.ts`: verified byte locks on 1-1, 1-3, 1-4, 1-6 and round-trip dynamic import across all 22 authored levels in `LEVEL_SOURCES`.
+- Updated `docs/superpowers/plans/2026-10-02-e2-studio-backend.md` with detailed TDD tasks.
+- Verification: tests failed before implementation and passed after; `npm run typecheck` and all 543 vitest tests passed.
+
+
 ### 2026-10-04 - Expand difficulty calibration test over 16 spec C levels
 
 - `game-next/tests/difficulty.test.ts`: added calibration suite asserting exact parts, raw score and discrete difficulty for all 16 levels in Chapters 2 and 3 (2-1..2-6 and 3-1..3-10).
