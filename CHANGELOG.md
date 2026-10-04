@@ -4,6 +4,13 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-04 - Add studio level storage system
+
+- Added `game-next/src/content/studioStore.ts`: implements `saveStudioLevel`, `deleteStudioLevel`, `listStudioLevels`, path safety validation, and ID pattern validation.
+- Added `game-next/tests/studioStore.test.ts`: verified file creation, ID pattern checks, rejection of path traversal and campaign clashes, safe list handling and deletions.
+- Verification: tests failed before implementation and passed after; `npm run typecheck` and all 554 vitest tests passed.
+
+
 ### 2026-10-04 - Add in-memory level authoring pipeline
 
 - Added `game-next/src/content/authorLevel.ts`: implements `authorLevel(source)` running the full authoring pipeline in memory, generating document, solution report, difficulty score, warnings, JSON, SVG and markdown.
