@@ -4,6 +4,20 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-04 - Complete Level Studio frontend UI and acceptance evidence (Phases E3-2 & E3-3)
+
+- Added `game-next/studio.html`: dedicated Level Studio interface page with dark cosmic aesthetic, responsive 3-column layout.
+- Added `game-next/src/studio/boardView.ts`: 512x640 SVG board rendering 8-cell/24-cell grid, odd/even parity silhouette fills (`#d4af37` gold for odd, hollow for even, dotted for 3+), piece polygons, vertex anchors (gold A and blue/red decoys), with pointer-based drag-and-drop and grid snapping.
+- Added `game-next/src/studio/palette.ts`: shape selection (Square, Triangle, Diamond, Circle, Parallelogram), dynamic frame sizes (`isValidFrame`), orientation picker, "+ Thêm mảnh", "+ Neo nhiễu", and rotate/mirror/delete buttons.
+- Added `game-next/src/studio/library.ts`: studio level management (create, clone, select, delete) with dirty state indicator (`●`), and campaign levels reference list.
+- Added `game-next/src/studio/inspector.ts`: metadata editor (id, title, chapter, objective, difficulty estimate), live validation status badge (`✓ Hợp lệ` / `Lỗi`), solver metrics (solution count, proven status, solve time, warnings), 6-component difficulty scorecard with visual bar charts, and Save / Play Test / Open SVG actions.
+- Added `game-next/src/studio/solverWorker.ts` & `tests/studioSolverWorker.test.ts`: Web Worker module and pure `handleCheck` solver function.
+- Added `game-next/src/studio/api.ts`: typed client functions connecting to `/__studio/` endpoints.
+- Added `game-next/src/studio/main.ts`: studio application root binding reducer state, check queue, Web Worker, hash loader, beforeunload dirty check, and keyboard navigation.
+- Added `game-next/src/content/sourceFromDocument.ts`: extracted pure document-to-source converter to guarantee zero Node.js dependencies in browser runtime.
+- Added `docs/testing/studio/acceptance.md`, `acceptance.png`, `inspector.png`, `page.png`: complete acceptance report and full 1440x900 screenshots showing 3 columns, silhouette parity, and difficulty scorecard.
+- Verification: all 603 tests pass across 47 suites; `npm run build` succeeds and produces clean bundle strictly excluding `studio.html`; automated headless Chrome captures verified live rendering and solver queue.
+
 ### 2026-10-04 - Implement core logic for Level Studio (Phase E3-1)
 
 - Added `game-next/src/studio/state.ts`: implements `StudioState`, `studioReducer`, `cloneLevelSource`, `computeDecoyReason`, and `isDirty`.
