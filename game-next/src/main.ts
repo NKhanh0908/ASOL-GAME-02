@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { App } from '@capacitor/app';
+import { SplashScene } from './presentation/SplashScene.ts';
 import { MenuScene } from './presentation/MenuScene.ts';
 import { PlayScene } from './presentation/PlayScene.ts';
 import { LevelSelectScene } from './presentation/LevelSelectScene.ts';
@@ -83,11 +84,12 @@ async function bootstrap(): Promise<void> {
       mode: Phaser.Scale.NONE,
       autoCenter: Phaser.Scale.NO_CENTER,
     },
-    scene: [MenuScene, PlayScene, LevelSelectScene, FixtureScene],
+    scene: [SplashScene, MenuScene, PlayScene, LevelSelectScene, FixtureScene],
   });
 
   if (launch.scene !== 'MenuScene') {
     game.events.once('ready', () => {
+      game.scene.stop('SplashScene');
       game.scene.stop('MenuScene');
       if (launch.scene === 'PlayScene') {
         game.scene.start('PlayScene', { levelId: launch.levelId, mode: launch.mode });
@@ -101,11 +103,14 @@ async function bootstrap(): Promise<void> {
     onHardwareBack: () => {
       const activePlayScene = game.scene.getScene('PlayScene') as PlayScene;
       const activeLevelSelect = game.scene.getScene('LevelSelectScene');
+      const activeSplashScene = game.scene.getScene('SplashScene');
 
       if (activePlayScene && activePlayScene.scene.isActive()) {
         activePlayScene.onHardwareBack();
       } else if (activeLevelSelect && activeLevelSelect.scene.isActive()) {
         activeLevelSelect.scene.start('MenuScene');
+      } else if (activeSplashScene && activeSplashScene.scene.isActive()) {
+        App.exitApp();
       } else {
         App.exitApp();
       }

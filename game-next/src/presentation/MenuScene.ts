@@ -8,6 +8,7 @@ import { TEXTURE_KEYS, TextureFactory } from './TextureFactory.ts';
 import { SkyBackdrop } from './SkyBackdrop.ts';
 import { applyDesignViewport, designSafeArea, designViewBounds } from './designViewport.ts';
 import { SettingsDialog } from './SettingsDialog.ts';
+import { t, getLocale, setLocale, getLevelTitle } from './i18n.ts';
 
 export class MenuScene extends Phaser.Scene {
   private progressRepo!: ProgressRepository;
@@ -59,16 +60,67 @@ export class MenuScene extends Phaser.Scene {
     const targetLevel = nextResolution.level;
     const btnLabelText =
       nextResolution.type === 'start'
-        ? 'Bắt đầu'
+        ? t('btn_start')
         : nextResolution.type === 'continue'
-        ? 'Tiếp tục'
-        : 'Chơi lại';
+        ? t('btn_continue')
+        : t('btn_replay');
+
+    const topY = this.safe.top + 52 - this.blockOffsetY;
+
+    // Nút chọn Ngôn ngữ (Pill Toggle: VI | EN ở góc trên trái: x=72)
+    const currentLoc = getLocale();
+    const pillW = 88;
+    const pillH = 38;
+    const pillX = 72;
+
+    const langPillBg = this.add.graphics();
+    langPillBg.fillStyle(COLOR_NUMBERS.boardSurfaceTop, 0.85);
+    langPillBg.fillRoundedRect(pillX - pillW / 2, topY - pillH / 2, pillW, pillH, 19);
+    langPillBg.lineStyle(1.6, COLOR_NUMBERS.icePrimary, 0.8);
+    langPillBg.strokeRoundedRect(pillX - pillW / 2, topY - pillH / 2, pillW, pillH, 19);
+
+    const activeBg = this.add.graphics();
+    activeBg.fillStyle(COLOR_NUMBERS.amberSolid, 1.0);
+    if (currentLoc === 'vi') {
+      activeBg.fillRoundedRect(pillX - pillW / 2 + 2, topY - pillH / 2 + 2, pillW / 2 - 2, pillH - 4, 17);
+    } else {
+      activeBg.fillRoundedRect(pillX, topY - pillH / 2 + 2, pillW / 2 - 2, pillH - 4, 17);
+    }
+
+    const viText = this.add
+      .text(pillX - 22, topY, 'VI', {
+        fontFamily: TYPO_TOKENS.fontFamily.display,
+        fontSize: '15px',
+        color: currentLoc === 'vi' ? '#22145A' : COLOR_TOKENS.text.secondary,
+        fontStyle: 'bold',
+      })
+      .setOrigin(0.5);
+
+    const enText = this.add
+      .text(pillX + 22, topY, 'EN', {
+        fontFamily: TYPO_TOKENS.fontFamily.display,
+        fontSize: '15px',
+        color: currentLoc === 'en' ? '#22145A' : COLOR_TOKENS.text.secondary,
+        fontStyle: 'bold',
+      })
+      .setOrigin(0.5);
+
+    const langHitZone = this.add
+      .zone(pillX, topY, pillW, pillH)
+      .setInteractive({ useHandCursor: true });
+    langHitZone.on('pointerdown', () => {
+      const nextLoc = currentLoc === 'vi' ? 'en' : 'vi';
+      setLocale(nextLoc);
+      this.buildMainMenu(completedLevels);
+    });
+
+    this.uiContainer.add([langPillBg, activeBg, viText, enText, langHitZone]);
 
     // Nút Cài đặt góc trên phải (x=664, y=52)
     const settingsBtn = this.add
-      .image(664, this.safe.top + 52 - this.blockOffsetY, TEXTURE_KEYS.btnCircle56)
+      .image(664, topY, TEXTURE_KEYS.btnCircle56)
       .setInteractive({ useHandCursor: true });
-    const settingsIcon = this.add.image(664, this.safe.top + 52 - this.blockOffsetY, TEXTURE_KEYS.iconGear);
+    const settingsIcon = this.add.image(664, topY, TEXTURE_KEYS.iconGear);
     settingsBtn.on('pointerdown', () => {
       this.animateButtonTap(settingsBtn, () => this.openSettings());
     });
@@ -81,7 +133,7 @@ export class MenuScene extends Phaser.Scene {
 
     // Dòng phụ đề phong cách casual
     const subtitleText = this.add
-      .text(360, 316, 'Ghép bóng hình · Bí ẩn giao thoa', {
+      .text(360, 316, t('menu_subtitle'), {
         fontFamily: TYPO_TOKENS.fontFamily.display,
         fontSize: '15px',
         color: COLOR_TOKENS.text.secondary,
@@ -108,8 +160,9 @@ export class MenuScene extends Phaser.Scene {
       })
       .setOrigin(0.5);
 
+    const localizedTitle = getLevelTitle(targetLevel.id, targetLevel.title);
     const subBtnText = this.add
-      .text(btnX, btnY + 14, `${targetLevel.id} · ${targetLevel.title}`, {
+      .text(btnX, btnY + 14, `${targetLevel.id} · ${localizedTitle}`, {
         fontFamily: TYPO_TOKENS.fontFamily.sans,
         fontSize: '13px',
         color: '#3E2A00',
@@ -137,7 +190,7 @@ export class MenuScene extends Phaser.Scene {
     secBtnBg.strokeRoundedRect(btnX - btnWidth / 2, secBtnY - 28, btnWidth, 56, 18);
 
     const secBtnText = this.add
-      .text(btnX, secBtnY, 'Chọn màn chơi', {
+      .text(btnX, secBtnY, t('btn_select_level'), {
         fontFamily: TYPO_TOKENS.fontFamily.display,
         fontSize: '17px',
         color: COLOR_TOKENS.text.primary,
@@ -160,7 +213,7 @@ export class MenuScene extends Phaser.Scene {
 
     // Chân trang phiên bản
     const footerText = this.add
-      .text(360, this.viewHeight - this.safe.bottom - 40 - this.blockOffsetY, 'Mirror v0.2.1 · Bản Thử Nghiệm Android', {
+      .text(360, this.viewHeight - this.safe.bottom - 40 - this.blockOffsetY, t('version_footer'), {
         fontFamily: TYPO_TOKENS.fontFamily.sans,
         fontSize: '12px',
         color: COLOR_TOKENS.text.secondary,

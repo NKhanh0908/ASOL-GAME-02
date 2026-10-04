@@ -4,6 +4,19 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-04 - Bilingual i18n system and Alpaca Solutions studio splash intro
+
+- Created `game-next/src/presentation/i18n.ts`: reactive translation manager supporting Vietnamese (`vi`) and English (`en`), persisting choice to `localStorage` (`mirror.rebuild.locale`), with full dictionary coverage for menu, settings, pause, level select, HUD and localized level names.
+- Added quick `VI | EN` pill toggle button to `MenuScene.ts` top bar and language selector row inside `SettingsDialog.ts`.
+- Integrated `t(...)` translations and localized level names across `MenuScene.ts`, `SettingsDialog.ts`, `PauseDialog.ts`, `LevelSelectScene.ts`, and `hudText.ts`.
+- Added unit tests in `game-next/tests/i18n.test.ts` covering default locale, English switching, parameter interpolation, level title translation, and reactive listeners.
+- Created `game-next/src/presentation/SplashScene.ts` featuring the Alpaca Solutions studio intro on a pure white background (`#FFFFFF`):
+  - Renders the origami logo sharply from `docs/gdd/assets/studio.svg` (copied to `game-next/public/assets/studio.svg`) with an ambient gold/purple glow and floating physics.
+  - "Alpaca Solutions" brand text in `Fredoka` font with mirror bar and inverted glass reflection beneath, matching the Gương Đôi concept.
+  - Entrance timeline: elastic logo pop-in (0.7s), expanding mirror bar and slide-in typography (0.4-0.9s), light sweep sheen and twinkling stars (0.8-1.4s), followed by a 1.5s hold before smooth camera fade-out into `MenuScene` without requiring touch.
+- Registered `SplashScene` in `game-next/src/main.ts` as the primary startup scene while bypassing it on specific launch targets (`?scene=play|levelSelect`).
+- Verification: 644/644 vitest tests pass (including 5 new in `tests/i18n.test.ts`); `npm run typecheck` clean; `npm run build` succeeds; `npm run android:sync` copies web assets and updates Capacitor Android; GitNexus `detect_changes()` verified.
+
 ### 2026-10-04 - Casual branding: Dual Jewels app icon, Gương Đôi title logo, and Fredoka typography
 
 - Added self-hosted Fredoka font files (`fredoka-600/700` Latin and Latin-ext covering English and complete Vietnamese diacritics) to `game-next/public/fonts/`.

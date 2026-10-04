@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { COLOR_NUMBERS, COLOR_TOKENS, TYPO_TOKENS } from './designTokens.ts';
 import { designViewBounds } from './designViewport.ts';
+import { t } from './i18n.ts';
 
 export type PauseCallbacks = {
   onResume: () => void;
@@ -25,9 +26,6 @@ export class PauseDialog {
     this.container = this.scene.add.container(view.width / 2, view.height / 2).setDepth(150);
 
     // 1. Lớp phủ đen mờ 65%
-    // Phủ trọn khung nhìn, không phải 720x1280. Lấy cứng khung thiết kế thì
-    // trên máy dài phần dôi ra không bị làm mờ và hiện lên thành hai dải sáng
-    // hai đầu hộp thoại.
     const backdrop = this.scene.add
       .rectangle(0, 0, view.width, view.height, COLOR_NUMBERS.navyBackdrop, 0.65)
       .setInteractive();
@@ -48,7 +46,7 @@ export class PauseDialog {
 
     // 3. Tiêu đề
     const title = this.scene.add
-      .text(0, -modalH / 2 + 45, 'Tạm Dừng', {
+      .text(0, -modalH / 2 + 45, t('pause_title'), {
         fontFamily: TYPO_TOKENS.fontFamily.serif,
         fontSize: '26px',
         color: COLOR_TOKENS.amberGold.solidPrimary,
@@ -62,7 +60,7 @@ export class PauseDialog {
     btn1Bg.fillRoundedRect(-150, -40, 300, 56, 18);
 
     const btn1Text = this.scene.add
-      .text(0, -12, 'Tiếp tục chơi', {
+      .text(0, -12, t('pause_resume'), {
         fontFamily: TYPO_TOKENS.fontFamily.sans,
         fontSize: '17px',
         color: COLOR_TOKENS.sky.stops[0],
@@ -83,7 +81,7 @@ export class PauseDialog {
     btn2Bg.strokeRoundedRect(-150, 40, 300, 50, 16);
 
     const btn2Text = this.scene.add
-      .text(0, 65, 'Chơi lại màn này', {
+      .text(0, 65, t('pause_restart'), {
         fontFamily: TYPO_TOKENS.fontFamily.sans,
         fontSize: '15px',
         color: COLOR_TOKENS.text.primary,
@@ -97,7 +95,7 @@ export class PauseDialog {
 
     // C. Nút 3: Về chọn màn (Nút văn bản tinh giản)
     const btn3Text = this.scene.add
-      .text(0, 128, 'Về danh sách màn chơi', {
+      .text(0, 128, t('pause_level_select'), {
         fontFamily: TYPO_TOKENS.fontFamily.sans,
         fontSize: '14px',
         color: COLOR_TOKENS.text.secondary,

@@ -4,9 +4,14 @@
  * Tách khỏi Hud.ts vì file đó import Phaser, mà Phaser cần `window` nên
  * không nạp được trong vitest. Phần thuần nằm riêng thì test được trực tiếp.
  */
+import { t } from './i18n.ts';
 
 /** Nhãn nổi cạnh mảnh khi kéo trúng vùng hít */
 export const SNAP_HINT_TEXT = 'Thả để khớp';
+
+export function getSnapHintText(): string {
+  return t('snap_hint');
+}
 
 /** Bề ngang an toàn giữa vùng chạm của hai nút header, đã chừa lề 16px mỗi bên. */
 export const HUD_LEVEL_TITLE_MAX_WIDTH = 448;
@@ -33,7 +38,7 @@ export function fitHudTitleFontSize(
 
 /** Nội dung thanh đếm ở đáy màn chơi */
 export function formatMatchCount(matched: number, total: number): string {
-  return `${matched}/${total} mảnh đã khớp`;
+  return t('match_count', { matched, total });
 }
 
 /** Nhãn của màn hoàn thành */
@@ -42,6 +47,14 @@ export const VICTORY_LABELS = {
   next: 'Màn tiếp theo',
   levelSelect: 'Chọn màn',
 } as const;
+
+export function getVictoryLabels() {
+  return {
+    title: t('victory_title'),
+    next: t('victory_next'),
+    levelSelect: t('victory_level_select'),
+  };
+}
 
 /** Chỉ số tiến độ ở header màn chọn màn, ví dụ "1/18" */
 export function formatProgress(completed: number, total: number): string {

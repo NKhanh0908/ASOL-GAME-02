@@ -3,6 +3,7 @@ import type { ProgressRepository } from '../application/progressPort.ts';
 import { COLOR_NUMBERS, COLOR_TOKENS, TYPO_TOKENS } from './designTokens.ts';
 import { designViewBounds } from './designViewport.ts';
 import { TEXTURE_KEYS } from './TextureFactory.ts';
+import { t, getLocale, setLocale } from './i18n.ts';
 
 export class SettingsDialog {
   private scene: Phaser.Scene;
@@ -22,18 +23,15 @@ export class SettingsDialog {
     const view = designViewBounds(this.scene);
     this.container = this.scene.add.container(view.width / 2, view.height / 2).setDepth(150);
 
-    // 1. Nền mờ 55%
-    // Phủ trọn khung nhìn, không phải 720x1280. Lấy cứng khung thiết kế thì
-    // trên máy dài phần dôi ra không bị làm mờ và hiện lên thành hai dải sáng
-    // hai đầu hộp thoại.
+    // 1. Nền mờ 65%
     const backdrop = this.scene.add
       .rectangle(0, 0, view.width, view.height, COLOR_NUMBERS.navyBackdrop, 0.65)
       .setInteractive();
     backdrop.on('pointerdown', () => this.close());
 
-    // 2. Tấm bia cài đặt (460 x 440)
+    // 2. Tấm bia cài đặt (460 x 500)
     const modalW = 460;
-    const modalH = 440;
+    const modalH = 500;
     const panel = this.scene.add.graphics();
     panel.fillStyle(COLOR_NUMBERS.boardSurfaceTop, 0.98);
     panel.fillRoundedRect(-modalW / 2, -modalH / 2, modalW, modalH, 24);
@@ -46,7 +44,7 @@ export class SettingsDialog {
 
     // 3. Tiêu đề
     const title = this.scene.add
-      .text(0, -modalH / 2 + 40, 'Cài Đặt Chiêm Tinh', {
+      .text(0, -modalH / 2 + 38, t('settings_title'), {
         fontFamily: TYPO_TOKENS.fontFamily.serif,
         fontSize: '22px',
         color: COLOR_TOKENS.amberGold.solidPrimary,
@@ -61,13 +59,16 @@ export class SettingsDialog {
 
     this.container.add([backdrop, panel, title, closeBtn]);
 
-    // 4. Các tùy chọn Toggle
+    // 4. Hàng chọn Ngôn ngữ (Language Switcher Row)
+    this.createLanguageRow(-modalH / 2 + 96);
+
+    // 5. Các tùy chọn Toggle
     let showTarget = this.progressRepo.read().progress.settings.showTarget;
 
     // Toggle 1: Bóng mục tiêu
     this.createToggleRow(
-      -modalH / 2 + 110,
-      'Hình mẫu mờ trên bàn',
+      -modalH / 2 + 165,
+      t('setting_show_target'),
       showTarget,
       (val) => {
         showTarget = val;
@@ -77,8 +78,8 @@ export class SettingsDialog {
 
     // Toggle 2: Giảm chuyển động
     this.createToggleRow(
-      -modalH / 2 + 175,
-      'Giảm chuyển động xoay',
+      -modalH / 2 + 230,
+      t('setting_reduce_motion'),
       false,
       (_val) => {
         // Tùy chọn accessibility
@@ -89,17 +90,17 @@ export class SettingsDialog {
     const hasVibration = typeof navigator !== 'undefined' && 'vibrate' in navigator;
     if (hasVibration) {
       this.createToggleRow(
-        -modalH / 2 + 240,
-        'Rung phản hồi khi snap',
+        -modalH / 2 + 295,
+        t('setting_haptics'),
         true,
         (_val) => {}
       );
     }
 
-    // 5. Khu vực nguy hiểm: Xóa tiến trình chơi (tách biệt dưới đáy)
-    const dangerY = modalH / 2 - 60;
+    // 6. Khu vực nguy hiểm: Xóa tiến trình chơi (tách biệt dưới đáy)
+    const dangerY = modalH / 2 - 50;
     const resetProgressBtn = this.scene.add
-      .text(0, dangerY, 'Xóa toàn bộ tiến trình chơi', {
+      .text(0, dangerY, t('setting_danger_reset'), {
         fontFamily: TYPO_TOKENS.fontFamily.sans,
         fontSize: '13px',
         color: COLOR_TOKENS.danger.warningText,
@@ -112,6 +113,96 @@ export class SettingsDialog {
     });
 
     this.container.add(resetProgressBtn);
+  }
+
+  /**
+   * Hàng chọn ngôn ngữ Song ngữ Tiếng Việt | English
+   */
+  private createLanguageRow(y: number): void {
+    if (!this.container) return;
+
+    const current = getLocale();
+
+    const rowLabel = this.scene.add
+      .text(-190, y, t('setting_language'), {
+        fontFamily: TYPO_TOKENS.fontFamily.sans,
+        fontSize: '14px',
+        color: COLOR_TOKENS.text.primary,
+      })
+      .setOrigin(0, 0.5);
+
+    // Pill Selector: [ VI ] [ EN ]
+    const pillW = 120;
+    const pillH = 34;
+    const pillX = 135;
+
+    const pillBg = this.scene.add.graphics();
+    pillBg.fillStyle(COLOR_NUMBERS.skyTop, 1.0);
+    pillBg.fillRoundedRect(pillX - pillW / 2, y - pillH / 2, pillW, pillH, 17);
+    pillBg.lineStyle(1.5, COLOR_NUMBERS.iceShadow, 0.8);
+    pillBg.strokeRoundedRect(pillX - pillW / 2, y - pillH / 2, pillW, pillH, 17);
+
+    // Nửa bên chọn VI (x: pillX - 30)
+    const viSelected = current === 'vi';
+    const viBg = this.scene.add.graphics();
+    if (viSelected) {
+      viBg.fillStyle(COLOR_NUMBERS.amberSolid, 1.0);
+      viBg.fillRoundedRect(pillX - pillW / 2 + 2, y - pillH / 2 + 2, pillW / 2 - 2, pillH - 4, 15);
+    }
+
+    const viText = this.scene.add
+      .text(pillX - 30, y, 'VI', {
+        fontFamily: TYPO_TOKENS.fontFamily.display,
+        fontSize: '14px',
+        color: viSelected ? '#22145A' : COLOR_TOKENS.text.secondary,
+        fontStyle: 'bold',
+      })
+      .setOrigin(0.5)
+      .setInteractive({ useHandCursor: true });
+
+    viText.on('pointerdown', () => {
+      if (getLocale() !== 'vi') {
+        setLocale('vi');
+        this.close();
+        this.open();
+        // Thông báo scene rebuild nếu có
+        if ('buildMainMenu' in this.scene) {
+          (this.scene as any).buildMainMenu((this.progressRepo.read().progress.completed));
+        }
+      }
+    });
+
+    // Nửa bên chọn EN (x: pillX + 30)
+    const enSelected = current === 'en';
+    const enBg = this.scene.add.graphics();
+    if (enSelected) {
+      enBg.fillStyle(COLOR_NUMBERS.amberSolid, 1.0);
+      enBg.fillRoundedRect(pillX, y - pillH / 2 + 2, pillW / 2 - 2, pillH - 4, 15);
+    }
+
+    const enText = this.scene.add
+      .text(pillX + 30, y, 'EN', {
+        fontFamily: TYPO_TOKENS.fontFamily.display,
+        fontSize: '14px',
+        color: enSelected ? '#22145A' : COLOR_TOKENS.text.secondary,
+        fontStyle: 'bold',
+      })
+      .setOrigin(0.5)
+      .setInteractive({ useHandCursor: true });
+
+    enText.on('pointerdown', () => {
+      if (getLocale() !== 'en') {
+        setLocale('en');
+        this.close();
+        this.open();
+        // Thông báo scene rebuild nếu có
+        if ('buildMainMenu' in this.scene) {
+          (this.scene as any).buildMainMenu((this.progressRepo.read().progress.completed));
+        }
+      }
+    });
+
+    this.container.add([rowLabel, pillBg, viBg, viText, enBg, enText]);
   }
 
   private createToggleRow(
@@ -177,14 +268,14 @@ export class SettingsDialog {
     const confirmContainer = this.scene.add.container(0, 0);
 
     const overlay = this.scene.add
-      .rectangle(0, 0, 460, 440, COLOR_NUMBERS.navyBackdrop, 0.94)
+      .rectangle(0, 0, 460, 500, COLOR_NUMBERS.navyBackdrop, 0.94)
       .setInteractive();
 
     const confirmText = this.scene.add
       .text(
         0,
         -40,
-        'Bạn có chắc chắn muốn xóa toàn bộ tiến trình chơi?\nThao tác này không thể hoàn tác.',
+        t('reset_confirm_message'),
         {
           fontFamily: TYPO_TOKENS.fontFamily.sans,
           fontSize: '14px',
@@ -203,7 +294,7 @@ export class SettingsDialog {
     cancelBtnBg.strokeRoundedRect(-140, 40, 120, 44, 12);
 
     const cancelBtn = this.scene.add
-      .text(-80, 62, 'Hủy', {
+      .text(-80, 62, t('btn_cancel'), {
         fontFamily: TYPO_TOKENS.fontFamily.sans,
         fontSize: '14px',
         color: COLOR_TOKENS.text.primary,
@@ -222,7 +313,7 @@ export class SettingsDialog {
     deleteBtnBg.strokeRoundedRect(20, 40, 120, 44, 12);
 
     const deleteBtn = this.scene.add
-      .text(80, 62, 'Xác nhận xóa', {
+      .text(80, 62, t('btn_confirm_delete'), {
         fontFamily: TYPO_TOKENS.fontFamily.sans,
         fontSize: '13px',
         color: '#FFFFFF',

@@ -12,6 +12,7 @@ import { SkyBackdrop } from './SkyBackdrop.ts';
 import { applyDesignViewport, designSafeArea, designViewBounds } from './designViewport.ts';
 import { formatProgress } from './hudText.ts';
 import { layoutCampaignMap } from './constellationLayout.ts';
+import { t, getLevelTitle } from './i18n.ts';
 
 type NodeInfo = {
   id: string;
@@ -137,7 +138,7 @@ export class LevelSelectScene extends Phaser.Scene {
 
     // Tiêu đề trang 32px serif
     const headerTitle = this.add
-      .text(360, top + 56, 'Chòm Sao Tiên Tri', {
+      .text(360, top + 56, t('level_select_title'), {
         fontFamily: TYPO_TOKENS.fontFamily.serif,
         fontSize: '32px',
         color: COLOR_TOKENS.text.primary,
@@ -339,8 +340,9 @@ export class LevelSelectScene extends Phaser.Scene {
         badgeBg.lineStyle(1.5, COLOR_NUMBERS.amberSolid, 0.9);
         badgeBg.strokeRoundedRect(-130, -18, 260, 36, 18);
 
+        const localizedTitle = getLevelTitle(node.id, node.title);
         const badgeText = this.add
-          .text(0, 0, `✦ ${node.id} · ${node.title} ✦`, {
+          .text(0, 0, `✦ ${node.id} · ${localizedTitle} ✦`, {
             fontFamily: TYPO_TOKENS.fontFamily.sans,
             fontSize: '18px',
             color: COLOR_TOKENS.amberGold.solidPrimary,
