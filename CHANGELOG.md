@@ -4,6 +4,14 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-04 - Add automated difficulty scoring and Chapter 1 calibration
+
+- Added `game-next/src/content/difficulty.ts`: implements `scoreDifficulty` with 6 components (`pieces`, `choices`, `hollow`, `revive`, `nearMiss`, `hiddenEdges`), `DIFFICULTY_WEIGHTS`, `DIFFICULTY_THRESHOLDS`, and `collectWarnings`.
+- Added `game-next/tests/difficulty.test.ts`: verified with 4 hand fixtures (`single`, `pair`, `triple`, `free`), edge cases for board boundary hidden edges and free placement bounds, and calibration of all 6 Chapter 1 levels.
+- Updated `docs/superpowers/plans/2026-10-02-e1-difficulty.md` with detailed TDD tasks.
+- Verification: tests in `tests/difficulty.test.ts` failed before implementation and passed after; `npm run typecheck` and all 501 vitest tests passed.
+
+
 ### 2026-10-04 - Add dev-only free-placement harness level
 
 - Registered `FREE_DEMO_SOURCE` as `dev-free-placement` in `game-next/src/content/devLevels.ts` (dev server and harness only, never in the manifest or campaign).
