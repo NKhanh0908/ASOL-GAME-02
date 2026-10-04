@@ -71,16 +71,20 @@ export const COLOR_NUMBERS = {
 
 export const TYPO_TOKENS = {
   fontFamily: {
-    serif: "'Playfair Display', Georgia, serif",
+    /**
+     * Cormorant Garamond chỉ nhúng weight 600. Nét nó mảnh hơn Playfair nên cỡ
+     * chữ tiêu đề được nâng một bậc để giữ độ nổi trên nền navy.
+     */
+    serif: "'Cormorant Garamond', Georgia, serif",
     sans: "'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
     /** Tên level cần bộ glyph tiếng Việt đầy đủ, kể cả khi webfont chưa tải. */
     levelTitle: "'Be Vietnam Pro', 'Segoe UI', Arial, sans-serif",
   },
   fontSize: {
-    heroTitle: '52px',
+    heroTitle: '60px',
     headerTitle: '52px',
     sectionHeader: '32px',
-    modalTitle: '44px',
+    modalTitle: '50px',
     bodyPrimary: '28px',
     buttonLabel: '26px',
     caption: '24px',

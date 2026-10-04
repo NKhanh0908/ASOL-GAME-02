@@ -4,6 +4,22 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-04 - Fix the Android letterbox, render at device resolution, self-host fonts
+
+Tier 0 of the mobile display work. Screenshots from a 1080x2460 device (`docs/screenshots/mobile/`) showed a large black band above the game, none below, a visible status bar, and soft text.
+
+- Fixed the black band. `game-next/src/style.css`: removed the flex centering from `#game`. Phaser's `autoCenter` already centers the canvas by writing `style.marginTop` (`ScaleManager.updateCenter`), and a flex parent centers the canvas' margin box on top of that, so the offset was applied twice and pushed the canvas to y=405 instead of y=270.
+- Added `game-next/src/presentation/viewport.ts`: `computeViewport` sizes the drawing buffer to physical pixels (devicePixelRatio capped at 3), `computeDesignView` reports the design-space area a given buffer actually shows. Phaser-free, so it is unit tested directly.
+- Added `game-next/src/presentation/designViewport.ts`: `applyDesignViewport` restores the 720x1280 design coordinate space with a camera zoom, and wraps each scene's `add.text` factory so every label rasterises at device resolution. Wrapping the factory covers all 41 text call sites at once.
+- Modified `game-next/src/main.ts`: the game is sized to the physical pixel buffer with `Scale.NONE`, so the canvas is no longer upscaled. Game construction moved into an async `bootstrap()` because top-level await does not build.
+- Modified `game-next/src/presentation/{MenuScene,PlayScene,LevelSelectScene,FixtureScene}.ts`: call `applyDesignViewport` at the top of `create()`. `PlayScene` and `LevelSelectScene` now read `pointer.worldX/worldY` instead of `pointer.x/y`, which camera zoom would otherwise offset silently, breaking drag-and-drop and map scrolling.
+- Modified `game-next/src/presentation/SkyBackdrop.ts`: the sky and star layers follow the visible design area instead of the 720x1280 frame, and `bleedSky` extends the first and last gradient stop into the overflow, so screens taller than 9:16 show sky rather than a flat band.
+- Modified `game-next/android/.../MainActivity.java`: immersive sticky mode, drawing through the display cutout, re-applied on `onWindowFocusChanged` so the bars stay hidden after returning from background. No new Capacitor plugin; the manifest already locked portrait.
+- Replaced the `fonts.googleapis.com` `@import` with 18 self-hosted woff2 files in `game-next/public/fonts/` (Be Vietnam Pro 400/500/600/700, Cormorant Garamond 600/700; Latin, Latin-ext and Vietnamese subsets; 320 KB). `main.ts` now calls `document.fonts.load` for each face before building the game: Phaser draws text on a canvas, and setting `ctx.font` does not trigger a webfont download, so `document.fonts.ready` alone would have resolved before the fonts arrived.
+- Switched the display face from Playfair Display to Cormorant Garamond in `game-next/src/presentation/designTokens.ts`, raising `heroTitle` 52px to 60px and `modalTitle` 44px to 50px because Cormorant is lighter on the navy background. Updated the three tests that pinned the old face and size.
+- Known limitation: `TextureFactory` and `GridPainter` still bake buttons, icons and the grid at design size, so those bitmaps are upscaled exactly as before. Text and all vector drawing are now crisp. Deferred deliberately because the fix would touch 18 image call sites, four inside `BoardRenderer` (CRITICAL).
+- Verification: 615/615 vitest tests pass across 48 suites (10 new in `tests/viewport.test.ts`); `npm run typecheck` and `npm run build` clean; `npm run android:sync` plus `gradlew assembleDebug` produce a 5.9 MB debug APK with the fonts in `dist/fonts/`. GitNexus `detect_changes` reports 20 changed symbols over 26 processes, all of them `create` flows of the four scenes, with no Domain or Application symbol touched. The double-centering cause was confirmed by reading `ScaleManager.updateCenter` rather than from a device. **Not yet verified on hardware** - the reviewer play-test is the stop point.
+
 ### 2026-10-04 - Merge Plan E (Level Studio) into main
 
 - Merged `feat/level-studio-e3` containing Phases E1, E2, and E3 into `main`.

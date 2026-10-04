@@ -6,6 +6,7 @@ import type { ProgressRepository } from '../application/progressPort.ts';
 import { COLOR_NUMBERS, COLOR_TOKENS, TYPO_TOKENS } from './designTokens.ts';
 import { TEXTURE_KEYS, TextureFactory } from './TextureFactory.ts';
 import { SkyBackdrop } from './SkyBackdrop.ts';
+import { applyDesignViewport } from './designViewport.ts';
 import { SettingsDialog } from './SettingsDialog.ts';
 
 export class MenuScene extends Phaser.Scene {
@@ -23,6 +24,7 @@ export class MenuScene extends Phaser.Scene {
   }
 
   create(): void {
+    applyDesignViewport(this);
     TextureFactory.generateAll(this);
 
     this.progressRepo = createProgressRepository(localStorage, campaignManifest, 'oracle-v1');

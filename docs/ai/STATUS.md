@@ -1,18 +1,19 @@
-# Status — updated 2026-10-04 by Antigravity
+# Status — updated 2026-10-04 by Claude Code
 
 Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; keep this file ≤ 60 lines.
 
 ## Now
 
-- Branch: `main`.
-- Product state: Plan E (Level Studio) complete, approved, and merged to `main` (E1 difficulty scoring, E2 backend infrastructure, E3 Studio UI & acceptance); 605/605 tests pass; Vite build clean.
-- Next step: Plan F (Motion F1/F2/F3) or Plan G (Audio G0/G1/G2) per roadmap priority.
+- Branch: `feat/mobile-display-tier0` (branched from `main`, not merged).
+- Product state: Plan E (Level Studio) merged to `main`. Tier 0 of the mobile display work is implemented on the current branch; 615/615 tests pass, build clean, debug APK built.
+- Next step: the reviewer plays the debug APK on a real device. That play-test decides whether Tier 2 (elastic height + safe-area redistribution) is needed, or whether this branch merges as-is and work returns to Plan F or Plan G.
 
 ## Streams
 
 | Stream | State | Entry doc |
 |--------|-------|-----------|
 | Level system A → B → C/D → E | complete; Plan E merged to `main` | `docs/ai/DOCS-INDEX.md` rows A–E |
+| MD mobile display (Tier 0) | implemented, awaiting device play-test | `docs/superpowers/plans/2026-10-04-mobile-display-quick-wins.md` |
 | F motion (F1 → F2 → F3) | specs approved, plans ready, not started | `docs/superpowers/plans/2026-10-03-f-motion-index.md` |
 | C chapter 2 + Hoa Pham | complete; all 16 levels approved and available in campaign order | `docs/superpowers/plans/2026-10-02-c-chapter-2-hoa-pham-levels.md` |
 | G audio (G0 → G1 → G2) | spec approved, plans written, not started | `docs/superpowers/plans/2026-10-03-g-audio-index.md` |
@@ -20,12 +21,18 @@ Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; k
 
 ## Open decisions / blockers
 
-- E: All 4 stop points passed. Ready for merge to main.
+- MD: nothing in Tier 0 has been verified on hardware. The letterbox cause was confirmed by reading Phaser's source, not by measuring a device. The APK is at `game-next/android/app/build/outputs/apk/debug/app-debug.apk`.
+- MD: deferred on purpose — `TextureFactory` and `GridPainter` still bake bitmaps at design size, so buttons, icons and the grid texture stay as soft as they are today. Decide at the play-test whether that is visible enough to fix.
+- MD: the play area is still bound to the 720x1280 frame. Tier 2 would make the vertical layout elastic; it was deliberately not started.
 - F1 §3.3 edited after approval; F2 plans list 7 spec departures — review at F stop point 1.
 - G: plans await review at G stop point 1 (9 spec departures listed in the index). G0 can start now; G1/G2 wait for F2.
 
 ## Gotchas learned recently
 
+- Phaser `autoCenter` centers the canvas with `style.marginTop`. Any flex or grid centering on the parent is applied on top of it, so the canvas ends up offset twice. Pick one; never both.
+- Phaser draws text onto a canvas, and setting `ctx.font` does not trigger a webfont download. `document.fonts.ready` resolves without the font ever loading unless something explicitly calls `document.fonts.load`.
+- Camera zoom makes `pointer.x/y` diverge from design coordinates. Anything hit-testing against layout must read `pointer.worldX/worldY`.
+- Top-level `await` in `src/main.ts` passes typecheck but fails the esbuild step of `npm run build`.
 - `rotationEnabled` is strictly tied to `chapter === 4`; studioReducer synchronizes them automatically to avoid `chapter-rotation-disabled`.
 - Campaign levels are read-only references in Studio; saving them automatically guides user to clone into a new studio ID.
 - Browser modules cannot import node-dependent modules (`promote.ts` importing `node:fs`); pure functions like `sourceFromDocument` live in `src/content/sourceFromDocument.ts`.

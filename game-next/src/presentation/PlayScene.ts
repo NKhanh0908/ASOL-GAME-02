@@ -9,6 +9,8 @@ import { PlayController } from '../application/playController.ts';
 import { BoardRenderer } from './BoardRenderer.ts';
 import { maskCentroid } from '../domain/mask.ts';
 import { Hud } from './Hud.ts';
+import { applyDesignViewport } from './designViewport.ts';
+import { DESIGN_HEIGHT, DESIGN_WIDTH } from './viewport.ts';
 import {
   computeLayout,
   gridToCanvas,
@@ -66,8 +68,10 @@ export class PlayScene extends Phaser.Scene {
   }
 
   create(): void {
+    applyDesignViewport(this);
     TextureFactory.generateAll(this);
-    const layout = computeLayout(this.scale.width, this.scale.height);
+    // Hệ toạ độ thiết kế, không phải kích thước bộ đệm: camera zoom đã quy đổi.
+    const layout = computeLayout(DESIGN_WIDTH, DESIGN_HEIGHT);
     this.layout = layout;
 
     // 1. Nền trời dùng chung
@@ -158,19 +162,19 @@ export class PlayScene extends Phaser.Scene {
 
     // Pointer events
     this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
-      const hit = this.controller.onPointerDown(pointer.x, pointer.y, layout);
+      const hit = this.controller.onPointerDown(pointer.worldX, pointer.worldY, layout);
       if (hit) {
         this.refreshView();
       }
     });
 
     this.input.on('pointermove', (pointer: Phaser.Input.Pointer) => {
-      this.controller.onPointerMove(pointer.x, pointer.y, layout);
+      this.controller.onPointerMove(pointer.worldX, pointer.worldY, layout);
       this.refreshView();
     });
 
     this.input.on('pointerup', (pointer: Phaser.Input.Pointer) => {
-      const transition = this.controller.onPointerUp(pointer.x, pointer.y, layout);
+      const transition = this.controller.onPointerUp(pointer.worldX, pointer.worldY, layout);
       this.refreshView();
       if (transition?.becameWon) {
         this.playCelebration(layout);
@@ -178,7 +182,7 @@ export class PlayScene extends Phaser.Scene {
     });
 
     this.input.on('pointerupoutside', (pointer: Phaser.Input.Pointer) => {
-      const transition = this.controller.onPointerUp(pointer.x, pointer.y, layout);
+      const transition = this.controller.onPointerUp(pointer.worldX, pointer.worldY, layout);
       this.refreshView();
       if (transition?.becameWon) {
         this.playCelebration(layout);

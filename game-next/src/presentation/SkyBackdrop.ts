@@ -1,6 +1,8 @@
 import Phaser from 'phaser';
 import { COLOR_TOKENS, DEPTH_TOKENS, LAYOUT_TOKENS } from './designTokens.ts';
 import { generateStarField, twinkleAlpha, driftOffset } from './starField.ts';
+import { designViewBounds } from './designViewport.ts';
+import type { DesignView } from './viewport.ts';
 import type { Star } from './starField.ts';
 
 /**
@@ -65,16 +67,24 @@ export class SkyBackdrop {
     this.twinklingStars = field.twinkling;
     this.starTextureKey = `sky_stars_${options.seed}`;
 
+    // Màn dài hơn 9:16 nhìn thấy quá khung 720x1280. Nền trời bám vùng nhìn
+    // thấy thay vì bám khung, nếu không phần lộ ra là màu nền trơn và mắt đọc
+    // ngay ra một dải khác màu ở hai đầu.
+    const view = designViewBounds(scene);
+
     this.skyLayer = scene.add
-      .renderTexture(0, 0, width, height)
+      .renderTexture(view.x, view.y, view.width, view.height)
       .setOrigin(0, 0)
       .setDepth(DEPTH_TOKENS.backgroundSky);
 
     this.paintSky(width, height);
+    this.bleedSky(view);
     this.buildStarTexture(width, height);
 
     this.starLayer = scene.add
-      .tileSprite(0, 0, width, height, this.starTextureKey)
+      // TileSprite lặp texture sao nên tự phủ kín phần cao thêm, không cần sinh
+      // thêm sao.
+      .tileSprite(view.x, view.y, view.width, view.height, this.starTextureKey)
       .setOrigin(0, 0)
       .setDepth(DEPTH_TOKENS.backgroundSky + 1);
 
@@ -111,7 +121,35 @@ export class SkyBackdrop {
         canvas.refresh();
       }
     }
-    this.skyLayer.draw(key, 0, 0);
+    // Toạ độ trong RenderTexture tính từ mép texture, mà texture nay bắt đầu ở
+    // `view.y` (âm trên màn dài). Bù lại để nền trời vẫn trùng khung thiết kế.
+    const view = designViewBounds(this.scene);
+    this.skyLayer.draw(key, -view.x, -view.y);
+  }
+
+  /**
+   * Kéo màu hai đầu gradient ra phần vượt khung thiết kế.
+   *
+   * Không kéo giãn cả gradient vì làm vậy thì vị trí trăng và nebula xê dịch
+   * theo từng máy; giữ nguyên khung và chỉ nối thêm màu ở hai mép thì ranh giới
+   * không nhìn ra được.
+   */
+  private bleedSky(view: DesignView): void {
+    const { height } = LAYOUT_TOKENS.canvas;
+    const stops = COLOR_TOKENS.sky.stops;
+    const topBand = -view.y;
+    const bottomBandStart = topBand + height;
+
+    if (topBand > 0) {
+      const top = Phaser.Display.Color.HexStringToColor(stops[0]).color;
+      this.skyLayer.fill(top, 1, 0, 0, view.width, topBand);
+    }
+
+    const bottomBandHeight = view.height - bottomBandStart;
+    if (bottomBandHeight > 0) {
+      const bottom = Phaser.Display.Color.HexStringToColor(stops[stops.length - 1]).color;
+      this.skyLayer.fill(bottom, 1, 0, bottomBandStart, view.width, bottomBandHeight);
+    }
   }
 
   /**

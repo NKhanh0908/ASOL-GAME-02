@@ -9,6 +9,7 @@ import type { ProgressRepository } from '../application/progressPort.ts';
 import { ANIM_TOKENS, COLOR_NUMBERS, COLOR_TOKENS, TYPO_TOKENS } from './designTokens.ts';
 import { TEXTURE_KEYS, TextureFactory } from './TextureFactory.ts';
 import { SkyBackdrop } from './SkyBackdrop.ts';
+import { applyDesignViewport } from './designViewport.ts';
 import { formatProgress } from './hudText.ts';
 import { layoutCampaignMap } from './constellationLayout.ts';
 
@@ -60,6 +61,7 @@ export class LevelSelectScene extends Phaser.Scene {
   }
 
   create(): void {
+    applyDesignViewport(this);
     TextureFactory.generateAll(this);
 
     this.progressRepo = createProgressRepository(localStorage, campaignManifest, 'oracle-v1');
@@ -401,17 +403,19 @@ export class LevelSelectScene extends Phaser.Scene {
   }
 
   private setupScrolling(): void {
+    // worldY chứ không phải y: camera có zoom nên toạ độ màn hình không còn
+    // trùng toạ độ thiết kế, dùng nhầm thì ngưỡng header và quãng cuộn đều lệch.
     this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
-      if (pointer.y > 100) {
+      if (pointer.worldY > 100) {
         this.isDragging = true;
-        this.dragStartY = pointer.y;
+        this.dragStartY = pointer.worldY;
         this.containerStartY = this.mapContainer.y;
       }
     });
 
     this.input.on('pointermove', (pointer: Phaser.Input.Pointer) => {
       if (this.isDragging) {
-        const dy = pointer.y - this.dragStartY;
+        const dy = pointer.worldY - this.dragStartY;
         let targetY = this.containerStartY + dy;
         targetY = Phaser.Math.Clamp(targetY, this.minY, this.maxY);
         this.mapContainer.y = targetY;

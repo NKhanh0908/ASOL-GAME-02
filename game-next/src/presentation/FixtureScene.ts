@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { COLOR_TOKENS } from './designTokens.ts';
+import { applyDesignViewport } from './designViewport.ts';
 import { runFixtureSolution } from '../application/fixtureRunner.ts';
 import { GRID_HEIGHT, GRID_WIDTH } from '../domain/model.ts';
 
@@ -18,6 +19,7 @@ export class FixtureScene extends Phaser.Scene {
   }
 
   create(): void {
+    applyDesignViewport(this);
     // Tiêu đề mốc M0
     this.add.text(360, 80, 'M0 · Fixture Kỹ Thuật', {
       fontFamily: 'sans-serif',
