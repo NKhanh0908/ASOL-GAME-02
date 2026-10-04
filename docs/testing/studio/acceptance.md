@@ -1,6 +1,6 @@
 # Báo cáo nghiệm thu Xưởng tạo màn (Mirror Studio — Plan E)
 
-- **Trạng thái:** `pending` (chờ người duyệt NKhanh0908 xác nhận thực tế và chuyển sang `passed`)
+- **Trạng thái:** `passed` (đã được người duyệt NKhanh0908 nghiệm thu)
 - **Ngày tạo:** 2026-10-04
 - **Nhánh:** `feat/level-studio-e3`
 - **Ảnh nghiệm thu:**
@@ -34,7 +34,7 @@ Người review mở dev server (`npm run dev`) truy cập `http://localhost:517
 | **Bảng điểm 6 thành phần** | Điểm 1–5 kèm thanh phần trăm: Số mảnh, Tư thế, Vùng rỗng chẵn, Hạt nhân lẻ, Suýt đúng, Biên ẩn | **ĐẠT** | Khớp công thức DF-01 |
 | **API Dev Studio** | `GET /__studio/list`, `POST /__studio/save`, `POST /__studio/delete` kèm chống CSRF | **ĐẠT** | Test tích hợp ghi đủ 4 tệp và xoá sạch |
 | **Đóng gói sản phẩm** | `npm run build` tạo web bundle | **ĐẠT** | `dist/index.html` sạch; `dist/studio.html` không tồn tại |
-| **Bộ kiểm thử** | Vitest chạy toàn bộ | **ĐẠT** | 47 test suites, 603/603 tests pass |
+| **Bộ kiểm thử** | Vitest chạy toàn bộ | **ĐẠT** | 47 test suites, 605/605 tests pass |
 
 ---
 

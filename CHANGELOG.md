@@ -4,6 +4,13 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-04 - Record reviewer approval of Level Studio (Plan E) at Stop Point 4
+
+- Updated `docs/testing/studio/acceptance.md`: updated status to `passed` following reviewer (NKhanh0908) verification and approval.
+- Updated `docs/ai/DOCS-INDEX.md`: marked rows `E` and `E3` as `done`.
+- Updated `docs/ai/STATUS.md`: recorded 100% completion of Plan E (E1 difficulty scoring, E2 backend infrastructure, E3 Studio UI & acceptance), passing Stop Point 4.
+- Verification: all 605 vitest tests pass across 47 suites; `npm run typecheck` and `npm run build` pass cleanly.
+
 ### 2026-10-04 - Fix id-clash-campaign when saving campaign levels and sync rotation with chapter in Studio
 
 - Modified `game-next/src/content/manifest.ts`: exported `isCampaignId(id)` helper to check if an ID belongs to `campaignManifest`.
