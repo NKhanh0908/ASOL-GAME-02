@@ -54,7 +54,7 @@ export class PlayController {
 
   getSnapshot(): PlayViewSnapshot {
     const snappedCount = Object.values(this.puzzleState.pieces).filter(
-      (p) => p.kind === 'snapped'
+      (p) => p.kind === 'snapped' || p.kind === 'placed'
     ).length;
 
     const committedPlacements: Placement[] = placementsOf(this.level, this.puzzleState);

@@ -1,18 +1,18 @@
-# Status — updated 2026-10-03 by Codex
+# Status — updated 2026-10-04 by Antigravity
 
 Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; keep this file ≤ 60 lines.
 
 ## Now
 
-- Branch: `main` after local merge of completed Plan C.
-- Product state: level kit and `content:new`; KIT-03 decoy filtering; 28-level / 4-chapter manifest; four-constellation map; 15-image authoring guide; Chapters 1–3 provide 22 approved campaign levels.
-- Next step: choose the next implementation stream; F1 is the first unstarted dependency for the motion/audio path.
+- Branch: `feat/free-placement`.
+- Product state: Plan D complete (free placement mode, XOR meet-in-the-middle unique solution solver, harness fixture); 489/489 tests pass; ready for review.
+- Next step: Review Plan D, merge `feat/free-placement` into `main`, then proceed to Plan E or F.
 
 ## Streams
 
 | Stream | State | Entry doc |
 |--------|-------|-----------|
-| Level system A → B → C/D → E | A, B and C merged to `main`; D/E pending | `docs/ai/DOCS-INDEX.md` rows A–E |
+| Level system A → B → C/D → E | A, B, C and D complete (D on `feat/free-placement` ready for review); E pending | `docs/ai/DOCS-INDEX.md` rows A–E |
 | F motion (F1 → F2 → F3) | specs approved, plans ready, not started | `docs/superpowers/plans/2026-10-03-f-motion-index.md` |
 | C chapter 2 + Hoa Pham | complete; all 16 levels approved and available in campaign order | `docs/superpowers/plans/2026-10-02-c-chapter-2-hoa-pham-levels.md` |
 | G audio (G0 → G1 → G2) | spec approved, plans written, not started | `docs/superpowers/plans/2026-10-03-g-audio-index.md` |

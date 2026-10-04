@@ -12,6 +12,7 @@ describe('Kernel Geometry and Mask Rules', () => {
       chapter: 2,
       contentRevision: 'test',
       rotationEnabled: false,
+      placement: 'anchors',
       targetMask: new Uint8Array(GRID_WIDTH * GRID_HEIGHT),
       pieces: ['a', 'b', 'c', 'd'].map((id) => ({
         id,
@@ -39,6 +40,7 @@ describe('Kernel Geometry and Mask Rules', () => {
       chapter: 2,
       contentRevision: 'test',
       rotationEnabled: false,
+      placement: 'anchors',
       targetMask: new Uint8Array(GRID_WIDTH * GRID_HEIGHT),
       pieces: [
         { id: 'p1', frameSize: 2, cells: [[0, 0]], anchors: [{ id: 'A', x: 10, y: 20 }], color: 'amber' },
@@ -121,6 +123,7 @@ describe('Kernel Geometry and Mask Rules', () => {
       chapter: 1,
       contentRevision: 'test',
       rotationEnabled: false,
+      placement: 'anchors',
       targetMask: new Uint8Array(GRID_WIDTH * GRID_HEIGHT),
       pieces: [{ id: 'p1', frameSize: 2, cells: [[0, 0]], anchors: [{ id: 'A', x: 0, y: 0 }], color: 'amber' }],
     };

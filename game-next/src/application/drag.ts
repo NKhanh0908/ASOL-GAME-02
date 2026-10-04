@@ -6,12 +6,19 @@ import type {
   Placement,
   PuzzleState,
   Transition,
+  Turns,
 } from '../domain/model.ts';
 import { fitsBoard, rotateCells } from '../domain/geometry.ts';
+import { nearestGridOrigin } from '../domain/freePlacement.ts';
 import { evaluate } from '../domain/mask.ts';
 import { applyCommand, placementsOf } from '../domain/session.ts';
 import type { LayoutMetrics } from '../presentation/layout.ts';
-import { canvasToGrid, gridToCanvas, pieceHitbox } from '../presentation/layout.ts';
+import {
+  canvasToGrid,
+  gridToCanvas,
+  pieceBoardOrigin,
+  pieceHitbox,
+} from '../presentation/layout.ts';
 
 export type DragSession = {
   pieceId: string;
@@ -27,6 +34,46 @@ export type DragUpdate = {
   snapCandidateId: string | null;
 };
 
+type SnapTarget = { x: number; y: number; candidateId: string };
+
+/**
+ * Đích hít khi tâm mảnh nằm ở ô `grid`: neo gần nhất (màn neo) hoặc giao
+ * điểm lưới gần nhất (màn đặt tự do). updateDrag và finishDrag cùng gọi hàm
+ * này nên vị trí xem trước luôn trùng vị trí thả (FP-05).
+ */
+function snapTarget(
+  level: Level,
+  piece: Piece,
+  turns: Turns,
+  grid: { x: number; y: number }
+): SnapTarget | null {
+  const halfFrame = piece.frameSize / 2;
+
+  if (level.placement === 'free') {
+    // Làm tròn trước khi tìm: lệnh drop gửi đúng số nguyên này khi không hít,
+    // và session.ts gọi lại nearestGridOrigin trên nó nên ra cùng kết quả.
+    const gx = Math.round(grid.x - halfFrame);
+    const gy = Math.round(grid.y - halfFrame);
+    const origin = nearestGridOrigin(piece, turns, gx, gy);
+    return origin ? { x: origin.x, y: origin.y, candidateId: `grid:${origin.x},${origin.y}` } : null;
+  }
+
+  const rotatedCells = rotateCells(piece.cells, piece.frameSize, turns);
+  // Tìm neo gần nhất trong bán kính hít: d <= 36 (6 ô, tương ứng 30px canvas).
+  // `grid` luôn là TÂM mảnh (pointerOffset tính từ tâm trong beginDrag); so
+  // với gốc neo sẽ cho hít nhầm khi tâm mảnh rơi gần gốc neo.
+  let best: Anchor | undefined;
+  let bestDistance = Infinity;
+  for (const anchor of piece.anchors) {
+    const d = (anchor.x + halfFrame - grid.x) ** 2 + (anchor.y + halfFrame - grid.y) ** 2;
+    if (d <= 36 && d < bestDistance && fitsBoard(rotatedCells, anchor.x, anchor.y)) {
+      best = anchor;
+      bestDistance = d;
+    }
+  }
+  return best ? { x: best.x, y: best.y, candidateId: best.id } : null;
+}
+
 export function beginDrag(
   state: PuzzleState,
   piece: Piece,
@@ -41,14 +88,11 @@ export function beginDrag(
   let pieceCenterY = pointerY;
 
   const halfFrame = piece.frameSize / 2;
+  const origin = pieceBoardOrigin(piece, originState);
 
-  if (originState.kind === 'snapped') {
-    const anchor = piece.anchors.find((a) => a.id === originState.anchorId) ?? piece.anchors[0];
-    const pos = gridToCanvas(anchor.x + halfFrame, anchor.y + halfFrame, layout);
-    pieceCenterX = pos.x;
-    pieceCenterY = pos.y;
-  } else if (originState.kind === 'temporary') {
-    const pos = gridToCanvas(originState.x + halfFrame, originState.y + halfFrame, layout);
+  if (origin) {
+    // Mảnh trên bàn (neo, giao điểm lưới hoặc vị trí tạm): tâm = gốc + nửa khung
+    const pos = gridToCanvas(origin.x + halfFrame, origin.y + halfFrame, layout);
     pieceCenterX = pos.x;
     pieceCenterY = pos.y;
   } else {
@@ -86,50 +130,30 @@ export function updateDrag(
     };
   }
 
+  const turns = drag.originState.turns;
   const halfFrame = piece.frameSize / 2;
   const pieceCanvasX = pointerX - drag.pointerOffset.x;
   const pieceCanvasY = pointerY - drag.pointerOffset.y;
   const grid = canvasToGrid(pieceCanvasX, pieceCanvasY, layout);
-
-  const rotatedCells = rotateCells(piece.cells, piece.frameSize, drag.originState.turns);
-
-  // Tìm neo gần nhất trong bán kính hít: d <= 36 (6 ô, tương ứng 24px canvas)
-  // Hỗ trợ cả trường hợp grid là tâm mảnh (kéo tự do) lẫn grid là góc top-left (unit test)
-  let best: Anchor | undefined;
-  let bestDistance = Infinity;
-  for (const anchor of piece.anchors) {
-    // `grid` luôn là TÂM mảnh (pointerOffset tính từ tâm trong beginDrag).
-    // So thêm với gốc neo sẽ cho hít nhầm khi tâm mảnh rơi gần gốc neo.
-    const d = (anchor.x + halfFrame - grid.x) ** 2 + (anchor.y + halfFrame - grid.y) ** 2;
-
-    if (d <= 36 && d < bestDistance && fitsBoard(rotatedCells, anchor.x, anchor.y)) {
-      best = anchor;
-      bestDistance = d;
-    }
-  }
+  const target = snapTarget(level, piece, turns, grid);
 
   let previewPlacement: Placement | null = null;
-  if (best) {
+
+  if (target) {
+    // Có đích hít (neo hoặc giao điểm): xem trước đặt đúng gốc đó
     previewPlacement = {
       pieceId: piece.id,
-      x: best.x,
-      y: best.y,
-      turns: drag.originState.turns,
+      x: target.x,
+      y: target.y,
+      turns,
     };
   } else {
-    // `grid` là tâm mảnh, nên gốc luôn bằng tâm trừ nửa khung. Trước đây chỗ
-    // này chọn giữa hai cách hiểu và đặt tâm vào vị trí gốc, làm mảnh nhảy
-    // xuống-phải đúng nửa khung.
+    // Không có đích hít nhưng nằm gọn trong bàn: xem trước tại điểm thả tự do
+    const rotatedCells = rotateCells(piece.cells, piece.frameSize, turns);
     const dropX = Math.round(grid.x - halfFrame);
     const dropY = Math.round(grid.y - halfFrame);
-
     if (fitsBoard(rotatedCells, dropX, dropY)) {
-      previewPlacement = {
-        pieceId: piece.id,
-        x: dropX,
-        y: dropY,
-        turns: drag.originState.turns,
-      };
+      previewPlacement = { pieceId: piece.id, x: dropX, y: dropY, turns };
     }
   }
 
@@ -152,7 +176,7 @@ export function updateDrag(
   return {
     previewPlacement,
     previewMask,
-    snapCandidateId: best ? best.id : null,
+    snapCandidateId: target ? target.candidateId : null,
   };
 }
 
@@ -184,37 +208,21 @@ export function finishDrag(
   const grid = canvasToGrid(pieceCanvasX, pieceCanvasY, layout);
 
   if (piece) {
-    const rotatedCells = rotateCells(piece.cells, piece.frameSize, drag.originState.turns);
+    const turns = drag.originState.turns;
+    const target = snapTarget(level, piece, turns, grid);
 
-    // Kiểm tra neo gần nhất trong bán kính hít: d <= 36
-    let best: Anchor | undefined;
-    let bestDistance = Infinity;
-    for (const anchor of piece.anchors) {
-      // `grid` luôn là TÂM mảnh (pointerOffset tính từ tâm trong beginDrag).
-      // So thêm với gốc neo sẽ cho hít nhầm khi tâm mảnh rơi gần gốc neo.
-      const d = (anchor.x + halfFrame - grid.x) ** 2 + (anchor.y + halfFrame - grid.y) ** 2;
-
-      if (d <= 36 && d < bestDistance && fitsBoard(rotatedCells, anchor.x, anchor.y)) {
-        best = anchor;
-        bestDistance = d;
-      }
-    }
-
-    if (best) {
-      // Hút chuẩn xác vào neo đã tìm thấy
+    if (target) {
+      // Hút chuẩn xác vào neo hoặc giao điểm đã thấy lúc xem trước
       return applyCommand(level, drag.committedState, {
         type: 'drop',
         pieceId: drag.pieceId,
-        x: best.x,
-        y: best.y,
+        x: target.x,
+        y: target.y,
       });
     }
 
-    // Nếu không gần neo nhưng vẫn thả trong bàn cờ:
-    // Căn chỉnh tọa độ top-left để tâm hình thoi trùng với vị trí chuột thả
-    // `grid` là tâm mảnh, nên gốc luôn bằng tâm trừ nửa khung. Trước đây chỗ
-    // này chọn giữa hai cách hiểu và đặt tâm vào vị trí gốc, làm mảnh nhảy
-    // xuống-phải đúng nửa khung.
+    // Không hít nhưng vẫn thả trong bàn: gốc = tâm − nửa khung
+    const rotatedCells = rotateCells(piece.cells, piece.frameSize, turns);
     const dropX = Math.round(grid.x - halfFrame);
     const dropY = Math.round(grid.y - halfFrame);
 

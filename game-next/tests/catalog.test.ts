@@ -195,3 +195,20 @@ describe('Manifest 28 màn trong catalog (CH-02)', () => {
     expect(() => loadLevel('4-1', 'harness')).toThrow('unavailable:4-1');
   });
 });
+
+describe('Màn dev thử chế độ đặt tự do (spec D)', () => {
+  test('dev-free-placement nạp được ở harness, mỗi mảnh một neo A', () => {
+    const level = loadLevel('dev-free-placement', 'harness');
+    expect(level.placement).toBe('free');
+    expect(level.pieces.map((p) => [p.id, p.frameSize, p.anchors.map((a) => a.id)])).toEqual([
+      ['S1', 48, ['A']],
+      ['D1', 48, ['A']],
+      ['T1', 48, ['A']],
+      ['T2', 48, ['A']],
+    ]);
+  });
+
+  test('màn dev không bao giờ nạp ở campaign', () => {
+    expect(() => loadLevel('dev-free-placement', 'campaign')).toThrow('unavailable:dev-free-placement');
+  });
+});

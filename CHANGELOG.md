@@ -4,6 +4,63 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-04 - Add dev-only free-placement harness level
+
+- Registered `FREE_DEMO_SOURCE` as `dev-free-placement` in `game-next/src/content/devLevels.ts` (dev server and harness only, never in the manifest or campaign).
+- Added catalog and PlayController tests: the level loads in harness, pieces snap to `grid:<x>,<y>` candidates and the level is won; added screenshots `docs/testing/levels/screens/dev-free-placement-{play,drag,win}.png`.
+- Verification: the new tests failed before registration and passed after; typecheck, all tests, `content:validate` and `build` passed; the build contains no `dev-free-placement` string; screenshots checked by eye.
+
+
+### 2026-10-04 - Skip kit decoys on free-placement pieces
+
+- `piece`, `row` and `concentric` in `game-next/src/content/kit.ts` accept `placement: 'free'` and then emit only anchor A, ignoring `decoys`.
+- Verification: the new kit tests failed before the change and passed after; typecheck and all tests passed.
+
+
+### 2026-10-04 - Route authoring reports through the solver and gate unproven levels
+
+- `searchSolutions` in `game-next/src/content/authoringReport.ts` now uses `solveLevel`; `SolutionReport` adds `proven`, `poseCounts` and `elapsedMs`; identical pieces swapping count as one solution (the twins test now expects 1).
+- Free-level reports list pose counts, solve time and proof status; unproven reports carry a warning; free-level SVGs draw only anchor A.
+- Added `releaseBlocker`; `scripts/validate-content.ts --release` rejects unproven levels without `allowUnproven`, and `scripts/author-level.ts` warns but still writes.
+- Verification: the new report tests failed before the change and passed after; typecheck, all tests, `content:validate` and `content:author -- --all` passed with no diff in committed levels or reports.
+
+
+### 2026-10-04 - Add hashed meet-in-the-middle level solver
+
+- Added `game-next/src/content/solver.ts`: pose spaces for anchor and free levels, 64-bit XOR cell hashing from a fixed seed, balanced split with a 5,000,000 option limit, typed-array hash table, exact mask re-check and canonical keys so identical pieces swapping count once.
+- Exported `FREE_DEMO_SOURCE` (4 frame-48 pieces, anchor A only) from `game-next/src/content/devLevels.ts` as the shared free-placement fixture.
+- Added `game-next/tests/solver.test.ts` with 1/2/0-solution fixtures, identical-piece swap, fewer-piece case, limit cut-off, a 32x32 brute-force cross-check and a regression over every authored source.
+- Verification: `npx vitest run tests/solver.test.ts` failed before the module existed and passed after with the prototype-computed counts; typecheck and all tests passed.
+
+
+### 2026-10-04 - Share grid snapping between drag preview, drop and renderer
+
+- `game-next/src/application/drag.ts` resolves the snap target once per call (`snapTarget`): anchors on anchor levels, `nearestGridOrigin` on free levels with `grid:<x>,<y>` candidate ids, so preview and drop always agree.
+- `game-next/src/presentation/BoardRenderer.ts` draws placed pieces like snapped ones, includes them in parity layers and highlights the target silhouette by grid candidate on free levels.
+- Verification: the drag sweep test and renderer parity test failed before the change and passed after; typecheck and all tests passed.
+
+### 2026-10-04 - Snap free-placement drops to grid intersections in the session
+
+- Added the `placed` piece state in `game-next/src/domain/model.ts`; `game-next/src/domain/session.ts` snaps drops on free levels through `nearestGridOrigin`, rotates placed pieces in place and rejects out-of-bounds rotations.
+- Added `pieceBoardOrigin` in `game-next/src/presentation/layout.ts` and used it for hit testing; `snappedCount` in `game-next/src/application/playController.ts` counts placed pieces.
+- Verification: the new session and hitbox tests in `tests/freePlacement.test.ts` failed before the change and passed after; typecheck and all tests passed.
+
+
+### 2026-10-04 - Add placement mode to level data and validator
+
+- Added `PlacementMode` and required `Level.placement` in `game-next/src/domain/model.ts`; optional `placement` and `allowUnproven` in `game-next/src/content/document.ts`.
+- `game-next/src/content/validate.ts` defaults `placement` to `anchors` and rejects `invalid-placement`, `free-placement-extra-anchor`, `free-placement-off-grid`, `free-placement-distractors` and `invalid-allow-unproven`.
+- `buildLevelDocument` copies both fields only when present, so committed anchor-mode JSON is unchanged.
+- Verification: the new content and authoring tests failed before the change and passed after; typecheck, all tests, `content:validate` and `content:author -- --all` passed with no JSON diff.
+
+
+### 2026-10-04 - Add grid-intersection snapping helper for free placement
+
+- Added `GRID_STEP`, `SNAP_RADIUS_SQ` and `nearestGridOrigin` in `game-next/src/domain/freePlacement.ts` (spec D FP-03): nearest fitting multiple-of-8 origin within 6 cells, ties by smaller y then x.
+- Added `game-next/tests/freePlacement.test.ts` for mid-board, edge, rotated-fit and tie-break cases.
+- Verification: `npx vitest run tests/freePlacement.test.ts` failed before the module existed and passed after; `npm run typecheck` and `npm test` passed.
+
+
 ### 2026-10-03 - Complete Plan C approval gate
 
 - `docs/ai/STATUS.md` and `docs/ai/DOCS-INDEX.md`: marked Plan C complete and recorded its merge to `main`.

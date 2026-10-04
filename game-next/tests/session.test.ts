@@ -60,6 +60,7 @@ describe('Puzzle Session Commands and State Machine', () => {
       chapter: 1,
       contentRevision: 'test',
       rotationEnabled: false,
+      placement: 'anchors',
       targetMask: new Uint8Array(GRID_WIDTH * GRID_HEIGHT),
       pieces: [
         {
@@ -94,6 +95,7 @@ describe('Puzzle Session Commands and State Machine', () => {
       chapter: 2,
       contentRevision: 'test',
       rotationEnabled: false,
+      placement: 'anchors',
       targetMask,
       pieces: [
         { id: 'P1', frameSize: 2, cells: [[0, 0]], anchors: [{ id: 'A', x: 20, y: 20 }], color: 'amber' },
@@ -170,6 +172,7 @@ describe('Puzzle Session Commands and State Machine', () => {
       chapter: 4,
       contentRevision: 'test',
       rotationEnabled: true,
+      placement: 'anchors',
       targetMask,
       pieces: [
         {

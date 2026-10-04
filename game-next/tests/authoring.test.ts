@@ -148,7 +148,7 @@ describe('luật neo nhiễu KIT-03', () => {
     expect(source.pieces[0].anchors).toHaveLength(5);
   });
 
-  test('sau khi lọc chỉ còn một nghiệm; giữ neo trùng thì có nghiệm thứ hai', () => {
+  test('sau khi lọc chỉ còn một nghiệm; giữ neo trùng hai mảnh giống hệt đổi chỗ vẫn chỉ tính một nghiệm (FP-08)', () => {
     const doc = buildLevelDocument(twoCircles());
     expect(validateLevel(doc).ok).toBe(true);
     expect(searchSolutions(doc).solutionCount).toBe(1);
@@ -157,7 +157,7 @@ describe('luật neo nhiễu KIT-03', () => {
     const unsafe = structuredClone(doc);
     unsafe.pieces[0].anchors.push({ id: 'B', x: 88, y: 16 });
     unsafe.pieces[1].anchors.push({ id: 'C', x: 80, y: 16 });
-    expect(searchSolutions(unsafe).solutionCount).toBe(2);
+    expect(searchSolutions(unsafe).solutionCount).toBe(1);
   });
 
   test('bỏ neo nhiễu vượt biên bàn, giữ neo A', () => {
@@ -260,3 +260,23 @@ describe('vừa bàn tính theo ô thật', () => {
     expect(checkSourceGeometry(sourceWith(negative)).join('\n')).toMatch(/vượt biên bàn/);
   });
 });
+
+describe('buildLevelDocument chép chế độ đặt (spec D)', () => {
+  test('chép placement và allowUnproven; màn neo không sinh khoá placement', () => {
+    const free: LevelSource = {
+      ...cloneSource(songTinh),
+      id: 'test-free-copy',
+      placement: 'free',
+      allowUnproven: { reason: 'thử' },
+      pieces: cloneSource(songTinh).pieces.map((p) => ({ ...p, anchors: p.anchors.slice(0, 1) })),
+      distractors: [],
+    };
+    const doc = buildLevelDocument(free);
+    expect(doc.placement).toBe('free');
+    expect(doc.allowUnproven).toEqual({ reason: 'thử' });
+    const anchors = buildLevelDocument(cloneSource(songTinh));
+    expect('placement' in anchors).toBe(false);
+    expect('allowUnproven' in anchors).toBe(false);
+  });
+});
+

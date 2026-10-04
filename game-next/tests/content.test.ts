@@ -311,3 +311,83 @@ describe('Hình tròn, bình hành và khung theo loại hình (spec A)', () => 
     expect(validateLevel(makeAdjacentFixture()).ok).toBe(true);
   });
 });
+
+describe('Chế độ đặt mảnh (spec D, FP-01/FP-02)', () => {
+  const freeSource: LevelSource = {
+    id: 'test-free',
+    title: 'Đặt tự do thử',
+    chapter: 2,
+    order: 900,
+    contentRevision: 't1',
+    rotationEnabled: false,
+    placement: 'free',
+    pieces: [
+      { id: 'S1', shapeKind: 'square', orientation: 0, frameSize: 48, anchors: [{ id: 'A', x: 16, y: 16 }] },
+      { id: 'D1', shapeKind: 'diamond', orientation: 0, frameSize: 48, anchors: [{ id: 'A', x: 64, y: 64 }] },
+    ],
+    sampleSolutions: [
+      [
+        { pieceId: 'S1', anchorId: 'A', turns: 0 },
+        { pieceId: 'D1', anchorId: 'A', turns: 0 },
+      ],
+    ],
+    learningObjective: 'thử',
+    difficultyEstimate: 1,
+    distractors: [],
+    ftueSteps: [],
+  };
+
+  function codesOf(doc: unknown): string[] {
+    const result = validateLevel(doc);
+    return result.ok ? [] : result.issues.map((i) => i.code);
+  }
+
+  test('thiếu placement thì validator coi là anchors', () => {
+    const result = validateLevel(makeAdjacentFixture());
+    expect(result.ok).toBe(true);
+    if (result.ok) expect(result.level.placement).toBe('anchors');
+  });
+
+  test('màn free hợp lệ mang placement free', () => {
+    const result = validateLevel(buildLevelDocument(freeSource));
+    expect(result.ok).toBe(true);
+    if (result.ok) expect(result.level.placement).toBe('free');
+  });
+
+  test('placement lạ bị từ chối', () => {
+    const doc = buildLevelDocument(freeSource);
+    (doc as { placement?: string }).placement = 'grid';
+    expect(codesOf(doc)).toContain('invalid-placement');
+  });
+
+  test('màn free có neo thứ hai hoặc neo không tên A bị từ chối', () => {
+    const extra = buildLevelDocument(freeSource);
+    extra.pieces[0].anchors.push({ id: 'B', x: 24, y: 16 });
+    expect(codesOf(extra)).toContain('free-placement-extra-anchor');
+    const renamed = buildLevelDocument(freeSource);
+    renamed.pieces[1].anchors[0].id = 'Z';
+    expect(codesOf(renamed)).toContain('free-placement-extra-anchor');
+  });
+
+  test('màn free có neo lệch lưới bị từ chối', () => {
+    const doc = buildLevelDocument(freeSource);
+    doc.pieces[0].anchors[0].x = 20;
+    expect(codesOf(doc)).toContain('free-placement-off-grid');
+  });
+
+  test('màn free không được khai báo distractors', () => {
+    const doc = buildLevelDocument(freeSource);
+    doc.distractors = [{ pieceId: 'S1', anchorId: 'A', reason: 'thử' }];
+    expect(codesOf(doc)).toContain('free-placement-distractors');
+  });
+
+  test('allowUnproven phải có lý do', () => {
+    const empty = buildLevelDocument(freeSource);
+    empty.allowUnproven = { reason: '   ' };
+    expect(codesOf(empty)).toContain('invalid-allow-unproven');
+    const ok = buildLevelDocument(freeSource);
+    ok.allowUnproven = { reason: 'Đã chơi thử, không thấy nghiệm thứ hai' };
+    expect(validateLevel(ok).ok).toBe(true);
+  });
+});
+

@@ -4,10 +4,12 @@ import type { LevelSource } from '../src/content/authoring.ts';
 import { DEV_LEVEL_DOCUMENTS } from '../src/content/devLevels.ts';
 import type { LevelDocument } from '../src/content/document.ts';
 import {
+  releaseBlocker,
   renderPreviewSvg,
   renderReportMarkdown,
   searchSolutions,
 } from '../src/content/authoringReport.ts';
+import { FREE_DEMO_SOURCE } from '../src/content/devLevels.ts';
 import { LEVEL_SOURCES } from '../src/content/sources/index.ts';
 
 const songTinh = buildLevelDocument(LEVEL_SOURCES['1-1']);
@@ -18,29 +20,30 @@ describe('searchSolutions', () => {
     expect(report.solutionCount).toBe(1);
     expect(report.fewerPieceSolutions).toBe(0);
     expect(report.distractors.map((d) => d.changedCells)).toEqual([1280, 1280]);
+    expect(report.proven).toBe(true);
   });
 
-  test('đếm được nghiệm thứ hai khi hai mảnh giống nhau đổi chỗ được', () => {
+  test('hai mảnh giống hệt đổi chỗ cho nhau chỉ tính một nghiệm (FP-08)', () => {
     const twins: LevelSource = {
       ...structuredClone(LEVEL_SOURCES['1-1']),
       id: 'test-twins',
       pieces: [
-        { id: 'S1', shapeKind: 'square', orientation: 0, frameSize: 48, anchors: [{ id: 'A', x: 16, y: 56 }, { id: 'B', x: 64, y: 56 }] },
-        { id: 'S2', shapeKind: 'square', orientation: 0, frameSize: 48, anchors: [{ id: 'A', x: 64, y: 56 }, { id: 'B', x: 16, y: 56 }] },
+        { id: 'S1', shapeKind: 'square', orientation: 0, frameSize: 48, anchors: [{ id: 'A', x: 16, y: 56 }] },
+        { id: 'S2', shapeKind: 'square', orientation: 0, frameSize: 48, anchors: [{ id: 'A', x: 64, y: 56 }] },
       ],
       sampleSolutions: [
         [
           { pieceId: 'S1', anchorId: 'A', turns: 0 },
           { pieceId: 'S2', anchorId: 'A', turns: 0 },
         ],
-        [
-          { pieceId: 'S1', anchorId: 'B', turns: 0 },
-          { pieceId: 'S2', anchorId: 'B', turns: 0 },
-        ],
       ],
       distractors: [],
     };
-    expect(searchSolutions(buildLevelDocument(twins)).solutionCount).toBe(2);
+    const doc = buildLevelDocument(twins);
+    // Thêm neo đổi chỗ sau khi dựng, để không phụ thuộc luật lọc neo nhiễu KIT-03 của plan B
+    doc.pieces[0].anchors.push({ id: 'B', x: 64, y: 56 });
+    doc.pieces[1].anchors.push({ id: 'B', x: 16, y: 56 });
+    expect(searchSolutions(doc).solutionCount).toBe(1);
   });
 
   test('báo nghiệm ít mảnh hơn khi có mảnh thừa không cần dùng', () => {
@@ -87,5 +90,43 @@ describe('ảnh xem trước vẽ được hai hình mới', () => {
     expect(circle[1].trim().split(' ')).toHaveLength(32);
     const para = svg.match(/<polygon data-piece="P1" points="([^"]+)"/)!;
     expect(para[1].trim().split(' ')).toHaveLength(4);
+  });
+});
+
+describe('Báo cáo và cổng phát hành cho màn đặt tự do (spec D)', () => {
+  const demo = buildLevelDocument(FREE_DEMO_SOURCE);
+
+  test('báo cáo màn free ghi số tư thế, thời gian giải và đã chứng minh', () => {
+    const report = searchSolutions(demo);
+    expect(report).toMatchObject({ solutionCount: 1, fewerPieceSolutions: 0, proven: true });
+    const md = renderReportMarkdown(demo, report);
+    expect(md).toContain('- Chế độ đặt: tự do (hít vào mọi giao điểm lưới)');
+    expect(md).toContain('- Số tư thế mỗi mảnh: S1 165, D1 165, T1 165, T2 198');
+    expect(md).toMatch(/- Thời gian giải: \d+ ms/);
+    expect(md).toContain('- Đã chứng minh: có');
+    expect(md).not.toContain('Chưa chứng minh');
+  });
+
+  test('báo cáo chưa chứng minh có dòng cảnh báo; màn neo không có khối đặt tự do', () => {
+    const md = renderReportMarkdown(demo, { ...searchSolutions(demo), proven: false });
+    expect(md).toContain('**Chưa chứng minh được nghiệm duy nhất**');
+    const anchors = renderReportMarkdown(songTinh, searchSolutions(songTinh));
+    expect(anchors).not.toContain('Chế độ đặt');
+    expect(anchors).not.toContain('Chưa chứng minh');
+  });
+
+  test('SVG màn free chỉ vẽ neo A, không có nét đứt gây nhiễu', () => {
+    const svg = renderPreviewSvg(demo);
+    expect(svg.match(/<circle /g)).toHaveLength(4);
+    expect(svg).toContain('T2.A');
+    expect(svg).not.toContain('stroke-dasharray');
+  });
+
+  test('releaseBlocker chặn màn chưa chứng minh trừ khi có allowUnproven', () => {
+    const report = searchSolutions(demo);
+    expect(releaseBlocker(demo, report)).toBeNull();
+    expect(releaseBlocker(demo, { ...report, proven: false })).toBe('unproven-unique-solution');
+    const allowed = { ...demo, allowUnproven: { reason: 'Đã chơi thử' } };
+    expect(releaseBlocker(allowed, { ...report, proven: false })).toBeNull();
   });
 });

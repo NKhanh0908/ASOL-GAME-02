@@ -1,4 +1,4 @@
-import type { Orientation, ShapeKind } from '../domain/model.ts';
+import type { Orientation, PlacementMode, ShapeKind } from '../domain/model.ts';
 import { isValidFrame, isValidOrientation, mirrorOrientation } from '../domain/shapes.ts';
 import { ANCHOR_STEP } from './authoring.ts';
 import type { PieceSource } from './authoring.ts';
@@ -6,7 +6,12 @@ import type { PieceSource } from './authoring.ts';
 /** Độ lệch neo nhiễu [dx, dy] so với neo A, đơn vị ô logic (bội của 8). */
 export type DecoyOffsets = ReadonlyArray<readonly [number, number]>;
 
-export type PieceOptions = { orientation?: Orientation; decoys?: DecoyOffsets };
+export type PieceOptions = {
+  orientation?: Orientation;
+  decoys?: DecoyOffsets;
+  /** 'free': màn đặt tự do, bỏ qua decoys (mọi giao điểm lưới đã là neo nhiễu) */
+  placement?: PlacementMode;
+};
 
 /** Mô tả một mảnh trong `concentric`: cùng tâm, khác hình/khung/hướng. */
 export type PieceSpec = {
@@ -54,7 +59,7 @@ export function piece(
       `piece ${id}: tâm (${cx}, ${cy}) cho gốc khung (${x}, ${y}), không phải bội của ${ANCHOR_STEP}`
     );
   }
-  const decoys = opts.decoys ?? [];
+  const decoys = opts?.placement === 'free' ? [] : (opts?.decoys ?? []);
   if (decoys.length > DECOY_IDS.length) {
     throw new Error(`piece ${id}: tối đa ${DECOY_IDS.length} neo nhiễu (B–F), nhận ${decoys.length}`);
   }
@@ -99,9 +104,17 @@ export function mirrorY(p: PieceSource, axisY: number, newId: string): PieceSour
 }
 
 /** Nhiều mảnh chung một tâm khung. */
-export function concentric(center: readonly [number, number], specs: readonly PieceSpec[]): PieceSource[] {
+export function concentric(
+  center: readonly [number, number],
+  specs: readonly PieceSpec[],
+  opts?: { placement?: PlacementMode }
+): PieceSource[] {
   return specs.map((s) =>
-    piece(s.id, s.kind, s.size, center, { orientation: s.orientation, decoys: s.decoys })
+    piece(s.id, s.kind, s.size, center, {
+      orientation: s.orientation,
+      decoys: s.decoys,
+      placement: opts?.placement,
+    })
   );
 }
 

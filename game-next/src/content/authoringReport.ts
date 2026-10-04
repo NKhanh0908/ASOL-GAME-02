@@ -2,10 +2,16 @@ import { GRID_HEIGHT, GRID_WIDTH, TOTAL_CELLS } from '../domain/model.ts';
 import { shapePolygon } from '../domain/shapes.ts';
 import type { DroppedDecoy } from './authoring.ts';
 import type { LevelDocument } from './document.ts';
+import { solveLevel } from './solver.ts';
 
 export type SolutionReport = {
   solutionCount: number;
   fewerPieceSolutions: number;
+  /** false khi bộ giải dừng vì vượt giới hạn (FP-09) */
+  proven: boolean;
+  /** Số tư thế trên bàn của từng mảnh (không tính khay) */
+  poseCounts: number[];
+  elapsedMs: number;
   distractors: Array<{
     pieceId: string;
     anchorId: string | null;
@@ -41,25 +47,13 @@ function diffCount(a: Uint8Array, b: Uint8Array): number {
 }
 
 /**
- * Duyệt mọi tổ hợp neo/khay của các mảnh (turns = 0). Với 2–4 mảnh và 1–3 neo
- * mỗi mảnh, số tổ hợp tối đa vài trăm nên duyệt hết là đủ nhanh.
+ * Đếm nghiệm bằng bộ giải chung (spec D, FP-10): màn neo duyệt "neo của mảnh
+ * + khay", màn free duyệt mọi giao điểm lưới. Hai mảnh giống hệt đổi chỗ chỉ
+ * tính một nghiệm. Số ô đổi của từng tư thế gây nhiễu vẫn tính như trước.
  */
 export function searchSolutions(doc: LevelDocument): SolutionReport {
   const target = targetMaskOf(doc);
-  let combos: number[][] = [[]];
-  for (const piece of doc.pieces) {
-    const options = [-1, ...piece.anchors.map((_, i) => i)];
-    combos = combos.flatMap((c) => options.map((o) => [...c, o]));
-  }
-
-  let solutionCount = 0;
-  let fewerPieceSolutions = 0;
-  for (const choice of combos) {
-    if (diffCount(maskFor(doc, choice), target) === 0) {
-      solutionCount++;
-      if (choice.includes(-1)) fewerPieceSolutions++;
-    }
-  }
+  const solved = solveLevel(doc);
 
   const base = doc.pieces.map((piece) => {
     const step = doc.sampleSolutions[0]?.find((s) => s.pieceId === piece.id);
@@ -85,7 +79,19 @@ export function searchSolutions(doc: LevelDocument): SolutionReport {
     };
   });
 
-  return { solutionCount, fewerPieceSolutions, distractors };
+  return {
+    solutionCount: solved.solutionCount,
+    fewerPieceSolutions: solved.fewerPieceSolutions,
+    proven: solved.proven,
+    poseCounts: solved.poseCounts,
+    elapsedMs: solved.elapsedMs,
+    distractors,
+  };
+}
+
+/** Lý do chặn phát hành (FP-09): chưa chứng minh nghiệm duy nhất và người review chưa ghi allowUnproven. */
+export function releaseBlocker(doc: LevelDocument, report: SolutionReport): string | null {
+  return !report.proven && doc.allowUnproven === undefined ? 'unproven-unique-solution' : null;
 }
 
 const DROP_REASON_TEXT: Readonly<Record<DroppedDecoy['reason'], string>> = {
@@ -118,6 +124,19 @@ export function renderReportMarkdown(
     `- Số mảnh: ${doc.pieces.length}; số ô mục tiêu: ${doc.targetCells.length}`,
     `- Số nghiệm: ${report.solutionCount}`,
     `- Nghiệm dùng ít mảnh hơn: ${report.fewerPieceSolutions}`,
+    ...(report.proven
+      ? []
+      : [
+          '- **Chưa chứng minh được nghiệm duy nhất** (vượt giới hạn bộ giải); phát hành cần `allowUnproven` kèm lý do.',
+        ]),
+    ...(doc.placement === 'free'
+      ? [
+          '- Chế độ đặt: tự do (hít vào mọi giao điểm lưới)',
+          `- Số tư thế mỗi mảnh: ${doc.pieces.map((p, i) => `${p.id} ${report.poseCounts[i]}`).join(', ')}`,
+          `- Thời gian giải: ${Math.round(report.elapsedMs)} ms`,
+          `- Đã chứng minh: ${report.proven ? 'có' : 'không'}`,
+        ]
+      : []),
     '',
     '## Tư thế gây nhiễu',
     '',
@@ -209,6 +228,8 @@ export function renderPreviewSvg(doc: LevelDocument): string {
   // Neo: chấm tại gốc khung, kèm nhãn
   doc.pieces.forEach((piece, index) => {
     for (const anchor of piece.anchors) {
+      // Màn free: mọi giao điểm đã là neo nhiễu nên chỉ vẽ neo A (vị trí đúng)
+      if (doc.placement === 'free' && anchor.id !== 'A') continue;
       const cx = anchor.x * SCALE;
       const cy = anchor.y * SCALE;
       out.push(`<circle cx="${cx}" cy="${cy}" r="4" fill="${PIECE_COLORS[index % PIECE_COLORS.length]}"/>`);

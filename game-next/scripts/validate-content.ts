@@ -3,6 +3,8 @@ import { resolve } from 'node:path';
 import { campaignManifest } from '../src/content/manifest.ts';
 import { validateLevel } from '../src/content/validate.ts';
 import { makeAdjacentFixture } from '../src/content/fixtures.ts';
+import { releaseBlocker, searchSolutions } from '../src/content/authoringReport.ts';
+import type { LevelDocument } from '../src/content/document.ts';
 import { releaseGate } from '../src/content/chapters.ts';
 
 const isReleaseMode = process.argv.includes('--release');
@@ -32,6 +34,18 @@ for (const entry of campaignManifest) {
     if (!res.ok) {
       console.error(`[validate-content] FAIL: Level ${entry.id} invalid:`, res.issues);
       process.exit(1);
+    }
+    // Release: bộ giải phải chứng minh nghiệm duy nhất, trừ khi người review ghi allowUnproven (FP-09)
+    if (isReleaseMode) {
+      const doc = raw as LevelDocument;
+      const blocker = releaseBlocker(doc, searchSolutions(doc));
+      if (blocker) {
+        console.error(
+          `[validate-content] FAIL: Level ${entry.id} ${blocker}: chưa chứng minh được nghiệm duy nhất; ` +
+            'cần ghi allowUnproven kèm lý do vào nguồn.'
+        );
+        process.exit(1);
+      }
     }
     validatedCount++;
     console.log(`[validate-content] PASS: Level ${entry.id} (${entry.title}) validated.`);

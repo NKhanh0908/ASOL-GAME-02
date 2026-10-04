@@ -57,6 +57,13 @@ function authorOne(id: string): boolean {
     `[author-level] ${id}: ${doc.targetCells.length} ô mục tiêu, ${report.solutionCount} nghiệm, ` +
       `${report.fewerPieceSolutions} nghiệm ít mảnh hơn`
   );
+  if (!report.proven) {
+    // Vẫn ghi file (FP-09); chỉ --release mới chặn
+    console.warn(
+      `[author-level] CẢNH BÁO ${id}: chưa chứng minh được nghiệm duy nhất (vượt giới hạn bộ giải); ` +
+        'content:validate --release sẽ chặn nếu nguồn thiếu allowUnproven'
+    );
+  }
   if (report.fewerPieceSolutions > 0) {
     console.error(`[author-level] FAIL ${id}: có nghiệm dùng ít mảnh hơn dự định`);
     return false;

@@ -12,6 +12,7 @@ import type {
 import { TOTAL_CELLS } from './model.ts';
 import { fitsBoard, rotateCells } from './geometry.ts';
 import { evaluate, matchesTarget } from './mask.ts';
+import { nearestGridOrigin } from './freePlacement.ts';
 
 /**
  * Khởi tạo trạng thái ban đầu của màn chơi với tất cả mảnh nằm trong khay (tray) ở góc 0°.
@@ -35,7 +36,10 @@ export function createPuzzle(level: Level): PuzzleState {
 export function placementsOf(level: Level, state: PuzzleState): Placement[] {
   const placements: Placement[] = [];
   for (const [pieceId, pState] of Object.entries(state.pieces)) {
-    if (pState.kind === 'snapped') {
+    if (pState.kind === 'placed') {
+      // Màn đặt tự do: gốc khung nằm ngay trong trạng thái (FP-04)
+      placements.push({ pieceId, x: pState.x, y: pState.y, turns: pState.turns });
+    } else if (pState.kind === 'snapped') {
       const piece = level.pieces.find((p) => p.id === pieceId);
       if (!piece) continue;
       const anchor = piece.anchors.find((a) => a.id === pState.anchorId);
@@ -179,6 +183,24 @@ export function applyCommand(level: Level, state: PuzzleState, command: Command)
         };
       }
       nextPieceState = { kind: 'snapped', anchorId: currentPieceState.anchorId, turns: nextTurns };
+    } else if (currentPieceState.kind === 'placed') {
+      // Xoay tại chỗ: giữ gốc khung; vượt biên thì từ chối như mảnh đã khớp neo
+      if (!fitsBoard(nextRotatedCells, currentPieceState.x, currentPieceState.y)) {
+        return {
+          accepted: false,
+          outcome: 'out-of-bounds',
+          state,
+          mask: currentMask,
+          changed: [],
+          becameWon: false,
+        };
+      }
+      nextPieceState = {
+        kind: 'placed',
+        x: currentPieceState.x,
+        y: currentPieceState.y,
+        turns: nextTurns,
+      };
     } else if (currentPieceState.kind === 'temporary') {
       if (!fitsBoard(nextRotatedCells, currentPieceState.x, currentPieceState.y)) {
         return {
@@ -259,38 +281,43 @@ export function applyCommand(level: Level, state: PuzzleState, command: Command)
     }
 
     const currentPieceState = state.pieces[command.pieceId];
-    const rotatedCells = rotateCells(piece.cells, piece.frameSize, currentPieceState.turns);
-
-    // Tìm neo gần nhất trong bán kính 6 ô (d^2 <= 36)
-    // Phép so d < bestDistance giữ neo đứng trước khi khoảng cách bằng nhau (tie)
-    let best: Anchor | undefined;
-    let bestDistance = Infinity;
-    for (const anchor of piece.anchors) {
-      const d = (anchor.x - command.x) ** 2 + (anchor.y - command.y) ** 2;
-      if (d <= 36 && d < bestDistance && fitsBoard(rotatedCells, anchor.x, anchor.y)) {
-        best = anchor;
-        bestDistance = d;
-      }
-    }
-
+    const turns = currentPieceState.turns;
     let nextPieceState: PieceState;
     let outcome: Outcome;
 
-    if (best) {
-      nextPieceState = {
-        kind: 'snapped',
-        anchorId: best.id,
-        turns: currentPieceState.turns,
-      };
-      outcome = 'snapped';
+    if (level.placement === 'free') {
+      // Màn đặt tự do: hít vào giao điểm lưới gần nhất mà mảnh vừa bàn (FP-03).
+      // Outcome vẫn là 'snapped' để FTUE, telemetry và hiệu ứng snap dùng chung.
+      const origin = nearestGridOrigin(piece, turns, command.x, command.y);
+      if (origin) {
+        nextPieceState = { kind: 'placed', x: origin.x, y: origin.y, turns };
+        outcome = 'snapped';
+      } else {
+        nextPieceState = { kind: 'temporary', x: command.x, y: command.y, turns };
+        outcome = 'temporary';
+      }
     } else {
-      nextPieceState = {
-        kind: 'temporary',
-        x: command.x,
-        y: command.y,
-        turns: currentPieceState.turns,
-      };
-      outcome = 'temporary';
+      const rotatedCells = rotateCells(piece.cells, piece.frameSize, turns);
+
+      // Tìm neo gần nhất trong bán kính 6 ô (d^2 <= 36)
+      // Phép so d < bestDistance giữ neo đứng trước khi khoảng cách bằng nhau (tie)
+      let best: Anchor | undefined;
+      let bestDistance = Infinity;
+      for (const anchor of piece.anchors) {
+        const d = (anchor.x - command.x) ** 2 + (anchor.y - command.y) ** 2;
+        if (d <= 36 && d < bestDistance && fitsBoard(rotatedCells, anchor.x, anchor.y)) {
+          best = anchor;
+          bestDistance = d;
+        }
+      }
+
+      if (best) {
+        nextPieceState = { kind: 'snapped', anchorId: best.id, turns };
+        outcome = 'snapped';
+      } else {
+        nextPieceState = { kind: 'temporary', x: command.x, y: command.y, turns };
+        outcome = 'temporary';
+      }
     }
 
     const nextPieces = {
