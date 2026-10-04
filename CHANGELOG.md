@@ -4,6 +4,12 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-04 - Support loading studio levels in harness mode
+
+- `game-next/src/content/catalog.ts`: added `import.meta.glob('./studio/levels/*.json', ...)` when DEV, supporting studio level loading in harness mode with optional `studioLevelsOverride`. Search order prioritizes manifest -> dev levels -> studio levels; campaign mode strictly rejects studio levels.
+- `game-next/tests/catalog.test.ts`: added tests verifying harness mode loads studio levels and campaign mode rejects them.
+- Verification: tests failed before implementation and passed after; `npm run typecheck` and all 564 vitest tests passed.
+
 ### 2026-10-04 - Add studio dev server plugin and Vite configuration
 
 - Added `game-next/scripts/studio/studioPlugin.ts`: Vite dev plugin serving `GET /__studio/list`, `POST /__studio/save`, and `POST /__studio/delete` with CSRF protection (Content-Type 415, Origin 403) and 1 MB body limit (413).
