@@ -195,3 +195,32 @@ describe('concentric và row', () => {
     expect(() => row('S', 'square', 32, [24, 40], [32, 0], 0)).toThrow(/số nguyên ≥ 1/);
   });
 });
+
+describe('Hàm ghép hình ở chế độ đặt tự do (spec D mục 5)', () => {
+  test('piece bỏ neo nhiễu khi placement là free', () => {
+    const withDecoys = piece('S1', 'square', 48, [40, 64], { decoys: NUDGE });
+    expect(withDecoys.anchors.length).toBeGreaterThan(1);
+    const free = piece('S1', 'square', 48, [40, 64], { decoys: NUDGE, placement: 'free' });
+    expect(free.anchors).toEqual([{ id: 'A', x: 16, y: 40 }]);
+  });
+
+  test('row và concentric cũng bỏ neo nhiễu', () => {
+    const rowPieces = row('R', 'square', 48, [40, 64], [48, 0], 2, { decoys: CROSS, placement: 'free' });
+    expect(rowPieces.map((p) => p.anchors)).toEqual([
+      [{ id: 'A', x: 16, y: 40 }],
+      [{ id: 'A', x: 64, y: 40 }],
+    ]);
+    const rings = concentric(
+      [64, 80],
+      [
+        { id: 'S1', kind: 'square', size: 48, decoys: NUDGE },
+        { id: 'D1', kind: 'diamond', size: 48, decoys: NUDGE },
+      ],
+      { placement: 'free' }
+    );
+    expect(rings.map((p) => p.anchors)).toEqual([
+      [{ id: 'A', x: 40, y: 56 }],
+      [{ id: 'A', x: 40, y: 56 }],
+    ]);
+  });
+});

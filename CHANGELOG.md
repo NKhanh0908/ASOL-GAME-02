@@ -4,6 +4,12 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-04 - Skip kit decoys on free-placement pieces
+
+- `piece`, `row` and `concentric` in `game-next/src/content/kit.ts` accept `placement: 'free'` and then emit only anchor A, ignoring `decoys`.
+- Verification: the new kit tests failed before the change and passed after; typecheck and all tests passed.
+
+
 ### 2026-10-04 - Route authoring reports through the solver and gate unproven levels
 
 - `searchSolutions` in `game-next/src/content/authoringReport.ts` now uses `solveLevel`; `SolutionReport` adds `proven`, `poseCounts` and `elapsedMs`; identical pieces swapping count as one solution (the twins test now expects 1).
