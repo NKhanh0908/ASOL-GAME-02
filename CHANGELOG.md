@@ -4,6 +4,14 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-04 - Add content:promote script and campaign promotion pipeline
+
+- Added `game-next/src/content/promote.ts`: implements `sourceFromDocument`, `registerInCatalog`, `updateManifestLine`, `updateAuthoredLevels`, and `promoteStudioLevel` to safely promote studio levels to campaign targets with single-solution validation.
+- Added `game-next/scripts/promote-level.ts`: CLI entrypoint for `npm run content:promote -- <studio-id> <target-id>`.
+- Modified `game-next/package.json`: added `"content:promote"` npm script.
+- Added `game-next/tests/promote.test.ts`: test coverage for document-to-source conversion, catalog and manifest updating, single-solution enforcement, rotation rule validation, and full promote workflow.
+- Verification: tests failed before implementation and passed after; `npm run typecheck`, `npm test` (all 573 tests) and `npm run build` passed.
+
 ### 2026-10-04 - Support loading studio levels in harness mode
 
 - `game-next/src/content/catalog.ts`: added `import.meta.glob('./studio/levels/*.json', ...)` when DEV, supporting studio level loading in harness mode with optional `studioLevelsOverride`. Search order prioritizes manifest -> dev levels -> studio levels; campaign mode strictly rejects studio levels.

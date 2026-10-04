@@ -1,0 +1,293 @@
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { afterEach, beforeEach, describe, expect, test } from 'vitest';
+import rawSongTinh from '../src/content/levels/1-1.json';
+import type { LevelDocument } from '../src/content/document.ts';
+import {
+  promoteStudioLevel,
+  registerInCatalog,
+  sourceFromDocument,
+  updateAuthoredLevels,
+  updateManifestLine,
+} from '../src/content/promote.ts';
+import { saveStudioLevel } from '../src/content/studioStore.ts';
+
+const TMP_ROOT = resolve(process.cwd(), 'tests/.tmp-promote');
+
+describe('sourceFromDocument (spec E, ST-08)', () => {
+  const doc = rawSongTinh as unknown as LevelDocument;
+
+  test('chuyển LevelDocument sang LevelSource bỏ các trường tự sinh', () => {
+    const source = sourceFromDocument(doc);
+    expect(source.id).toBe(doc.id);
+    expect(source.title).toBe(doc.title);
+    expect((source as any).schemaVersion).toBeUndefined();
+    expect((source as any).board).toBeUndefined();
+    expect((source as any).targetCells).toBeUndefined();
+    expect(source.pieces).toHaveLength(doc.pieces.length);
+    for (const p of source.pieces) {
+      expect((p as any).cells).toBeUndefined();
+      expect((p as any).color).toBeUndefined();
+      expect(p.frameSize).toBeDefined();
+      expect(p.anchors).toBeDefined();
+    }
+  });
+
+  test('áp dụng override id, chapter, order từ manifest', () => {
+    const source = sourceFromDocument(doc, {
+      id: '4-1',
+      chapter: 4,
+      order: 23,
+    });
+    expect(source.id).toBe('4-1');
+    expect(source.chapter).toBe(4);
+    expect(source.order).toBe(23);
+    expect(source.title).toBe(doc.title);
+    expect(source.contentRevision).toBe(doc.contentRevision);
+  });
+});
+
+describe('Helper cập nhật file (promote)', () => {
+  test('registerInCatalog thêm import và documents entry theo thứ tự id', () => {
+    const mockCatalog = [
+      "import songTinh from './levels/1-1.json';",
+      "import haiDang from './levels/1-4.json';",
+      '',
+      'const documents: Record<string, unknown> = {',
+      "  '1-1': songTinh,",
+      "  '1-4': haiDang,",
+      '};',
+    ].join('\n');
+
+    const result = registerInCatalog(mockCatalog, '1-2', 'baoThap');
+    expect(result).toContain("import baoThap from './levels/1-2.json';");
+    expect(result).toContain("  '1-2': baoThap,");
+
+    const lines = result.split('\n');
+    const idx11 = lines.findIndex((l) => l.includes("'1-1'"));
+    const idx12 = lines.findIndex((l) => l.includes("'1-2'"));
+    const idx14 = lines.findIndex((l) => l.includes("'1-4'"));
+    expect(idx12).toBeGreaterThan(idx11);
+    expect(idx12).toBeLessThan(idx14);
+  });
+
+  test('updateManifestLine đổi planned sang validated và gắn dataPath', () => {
+    const mockManifest = [
+      'export const campaignManifest = [',
+      "  { id: '1-1', title: 'Song Tinh', chapter: 1, order: 1, contentRevision: 'v1', status: 'approved', dataPath: 'src/content/levels/1-1.json' },",
+      "  { id: '4-1', title: 'La Bàn Gió', chapter: 4, order: 23, contentRevision: 'v0.1', status: 'planned' },",
+      '];',
+    ].join('\n');
+
+    const result = updateManifestLine(mockManifest, {
+      id: '4-1',
+      title: 'Studio Song Tinh',
+      chapter: 4,
+      order: 23,
+      contentRevision: 'studio-rev-1',
+    });
+
+    expect(result).toContain(
+      "{ id: '4-1', title: 'Studio Song Tinh', chapter: 4, order: 23, contentRevision: 'studio-rev-1', status: 'validated', dataPath: 'src/content/levels/4-1.json' }"
+    );
+    expect(result).not.toContain("status: 'planned'");
+  });
+
+  test('updateAuthoredLevels thêm id mới vào set AUTHORED_LEVELS', () => {
+    const mockTestCode = "const AUTHORED_LEVELS = new Set(['1-2', '1-4']);";
+    const result = updateAuthoredLevels(mockTestCode, '1-3');
+    expect(result).toBe("const AUTHORED_LEVELS = new Set(['1-2', '1-3', '1-4']);");
+  });
+});
+
+describe('promoteStudioLevel (spec E, ST-08)', () => {
+  beforeEach(() => {
+    rmSync(TMP_ROOT, { recursive: true, force: true });
+    mkdirSync(resolve(TMP_ROOT, 'game-next/src/content/sources'), { recursive: true });
+    mkdirSync(resolve(TMP_ROOT, 'game-next/src/content/levels'), { recursive: true });
+    mkdirSync(resolve(TMP_ROOT, 'game-next/tests'), { recursive: true });
+    mkdirSync(resolve(TMP_ROOT, 'docs/testing/levels'), { recursive: true });
+
+    // Mock manifest.ts
+    writeFileSync(
+      resolve(TMP_ROOT, 'game-next/src/content/manifest.ts'),
+      [
+        "import type { ManifestEntry } from './document.ts';",
+        'export const campaignManifest: readonly ManifestEntry[] = [',
+        "  { id: '1-1', title: 'Song Tinh', chapter: 1, order: 1, contentRevision: 'v1', status: 'approved', dataPath: 'src/content/levels/1-1.json' },",
+        "  { id: '4-1', title: 'La Bàn Gió', chapter: 4, order: 23, contentRevision: 'v0.1', status: 'planned' },",
+        '];',
+      ].join('\n'),
+      'utf8'
+    );
+
+    // Mock catalog.ts
+    writeFileSync(
+      resolve(TMP_ROOT, 'game-next/src/content/catalog.ts'),
+      [
+        "import songTinh from './levels/1-1.json';",
+        'const documents: Record<string, unknown> = {',
+        "  '1-1': songTinh,",
+        '};',
+      ].join('\n'),
+      'utf8'
+    );
+
+    // Mock sources/index.ts
+    writeFileSync(
+      resolve(TMP_ROOT, 'game-next/src/content/sources/index.ts'),
+      [
+        "import { songTinh } from './1-1.ts';",
+        'export const LEVEL_SOURCES: Record<string, LevelSource> = {',
+        "  '1-1': songTinh,",
+        '};',
+      ].join('\n'),
+      'utf8'
+    );
+
+    // Mock tests/content.test.ts
+    writeFileSync(
+      resolve(TMP_ROOT, 'game-next/tests/content.test.ts'),
+      "const AUTHORED_LEVELS = new Set(['1-1']);\n",
+      'utf8'
+    );
+  });
+
+  afterEach(() => {
+    rmSync(TMP_ROOT, { recursive: true, force: true });
+  });
+
+  test('từ chối khi studio-id không tồn tại', () => {
+    const res = promoteStudioLevel({
+      studioId: 'non-existent',
+      targetId: '4-1',
+      root: TMP_ROOT,
+    });
+    expect(res.ok).toBe(false);
+    if (!res.ok) {
+      expect(res.error).toContain('studio-not-found');
+    }
+  });
+
+  test('từ chối khi target-id không ở trạng thái planned', () => {
+    // Lưu một màn studio hợp lệ
+    const source = sourceFromDocument(rawSongTinh as unknown as LevelDocument, {
+      id: 'studio-valid',
+      title: 'Studio Valid',
+    });
+    const saveRes = saveStudioLevel({
+      source,
+      root: TMP_ROOT,
+      manifestIds: new Set(['1-1', '4-1']),
+      sourceIds: new Set(['1-1']),
+    });
+    expect(saveRes.ok).toBe(true);
+
+    // Thử promote vào 1-1 (đã approved)
+    const res = promoteStudioLevel({
+      studioId: 'studio-valid',
+      targetId: '1-1',
+      root: TMP_ROOT,
+    });
+    expect(res.ok).toBe(false);
+    if (!res.ok) {
+      expect(res.error).toContain('target-not-planned');
+    }
+  });
+
+  test('promote thành công: sinh file campaign, cập nhật index, catalog, manifest, test, và xoá studio', () => {
+    // Lưu một màn studio hợp lệ cho Chapter 4 (bật xoay)
+    const source = sourceFromDocument(rawSongTinh as unknown as LevelDocument, {
+      id: 'studio-valid',
+      title: 'Studio Song Tinh',
+      chapter: 4,
+    });
+    source.rotationEnabled = true;
+
+    const saveRes = saveStudioLevel({
+      source,
+      root: TMP_ROOT,
+      manifestIds: new Set(['1-1', '4-1']),
+      sourceIds: new Set(['1-1']),
+    });
+    expect(saveRes.ok).toBe(true);
+
+    const res = promoteStudioLevel({
+      studioId: 'studio-valid',
+      targetId: '4-1',
+      root: TMP_ROOT,
+    });
+
+    expect(res.ok).toBe(true);
+    if (res.ok) {
+      expect(res.targetId).toBe('4-1');
+
+      // 1. Nguồn campaign đã ghi
+      const campaignSourcePath = resolve(TMP_ROOT, 'game-next/src/content/sources/4-1.ts');
+      expect(existsSync(campaignSourcePath)).toBe(true);
+
+      // 2. sources/index.ts đã cập nhật
+      const indexText = readFileSync(resolve(TMP_ROOT, 'game-next/src/content/sources/index.ts'), 'utf8');
+      expect(indexText).toContain("import { studioSongTinh } from './4-1.ts';");
+      expect(indexText).toContain("'4-1': studioSongTinh,");
+
+      // 3. JSON level đã ghi
+      const jsonPath = resolve(TMP_ROOT, 'game-next/src/content/levels/4-1.json');
+      expect(existsSync(jsonPath)).toBe(true);
+
+      // 4. SVG preview & report đã ghi
+      expect(existsSync(resolve(TMP_ROOT, 'docs/testing/levels/4-1.svg'))).toBe(true);
+      expect(existsSync(resolve(TMP_ROOT, 'docs/testing/levels/4-1-report.md'))).toBe(true);
+
+      // 5. catalog.ts đã cập nhật
+      const catalogText = readFileSync(resolve(TMP_ROOT, 'game-next/src/content/catalog.ts'), 'utf8');
+      expect(catalogText).toContain("import studioSongTinh from './levels/4-1.json';");
+      expect(catalogText).toContain("'4-1': studioSongTinh,");
+
+      // 6. manifest.ts đã cập nhật
+      const manifestText = readFileSync(resolve(TMP_ROOT, 'game-next/src/content/manifest.ts'), 'utf8');
+      expect(manifestText).toContain("status: 'validated'");
+      expect(manifestText).toContain("dataPath: 'src/content/levels/4-1.json'");
+
+      // 7. tests/content.test.ts đã cập nhật AUTHORED_LEVELS
+      const testText = readFileSync(resolve(TMP_ROOT, 'game-next/tests/content.test.ts'), 'utf8');
+      expect(testText).toContain("'4-1'");
+
+      // 8. 4 file studio đã bị xoá
+      expect(existsSync(resolve(TMP_ROOT, 'game-next/src/content/studio/sources/studio-valid.ts'))).toBe(false);
+      expect(existsSync(resolve(TMP_ROOT, 'game-next/src/content/studio/levels/studio-valid.json'))).toBe(false);
+      expect(existsSync(resolve(TMP_ROOT, 'docs/testing/levels/studio/studio-valid.svg'))).toBe(false);
+      expect(existsSync(resolve(TMP_ROOT, 'docs/testing/levels/studio/studio-valid-report.md'))).toBe(false);
+    }
+  });
+
+  test('từ chối khi quy tắc xoay của chương đích không thỏa mãn', () => {
+    // Nguồn không bật xoay
+    const source = sourceFromDocument(rawSongTinh as unknown as LevelDocument, {
+      id: 'studio-no-rot',
+      title: 'Studio No Rot',
+      chapter: 1,
+    });
+    source.rotationEnabled = false;
+
+    const saveRes = saveStudioLevel({
+      source,
+      root: TMP_ROOT,
+      manifestIds: new Set(['1-1', '4-1']),
+      sourceIds: new Set(['1-1']),
+    });
+    expect(saveRes.ok).toBe(true);
+
+    // Promote vào 4-1 (Chương 4 bắt buộc rotationEnabled: true)
+    const res = promoteStudioLevel({
+      studioId: 'studio-no-rot',
+      targetId: '4-1',
+      root: TMP_ROOT,
+    });
+    expect(res.ok).toBe(false);
+    if (!res.ok) {
+      expect(res.error).toContain('authoring-validation-failed');
+    }
+  });
+});
+
