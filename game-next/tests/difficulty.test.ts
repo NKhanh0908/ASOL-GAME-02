@@ -495,6 +495,202 @@ describe('scoreDifficulty - Hiệu chỉnh 6 màn Chương 1', () => {
   }
 });
 
+describe('scoreDifficulty - Hiệu chỉnh 16 màn spec C (Chương 2 và Chương 3)', () => {
+  const EXPECTED_SPEC_C: Record<
+    string,
+    {
+      pieces: number;
+      choices: number;
+      hollow: number;
+      revive: number;
+      nearMiss: number;
+      hiddenEdges: number;
+      raw: number;
+      score: 1 | 2 | 3 | 4 | 5;
+    }
+  > = {
+    '2-1': {
+      pieces: 1 / 6,
+      choices: 4 / 20,
+      hollow: 576 / 2304,
+      revive: 0 / 1728,
+      nearMiss: 1 - 352 / 1728,
+      hiddenEdges: 94 / 428,
+      raw: 0.2717,
+      score: 3,
+    },
+    '2-2': {
+      pieces: 1 / 6,
+      choices: 4 / 20,
+      hollow: 512 / 4096,
+      revive: 0 / 3584,
+      nearMiss: 1 - 728 / 3584,
+      hiddenEdges: 4 / 570,
+      raw: 0.2168,
+      score: 2,
+    },
+    '2-3': {
+      pieces: 2 / 6,
+      choices: 6 / 20,
+      hollow: 384 / 4096,
+      revive: 128 / 3712,
+      nearMiss: 1 - 192 / 3712,
+      hiddenEdges: 4 / 632,
+      raw: 0.298,
+      score: 3,
+    },
+    '2-4': {
+      pieces: 2 / 6,
+      choices: 6 / 20,
+      hollow: 384 / 3584,
+      revive: 128 / 3200,
+      nearMiss: 1 - 192 / 3200,
+      hiddenEdges: 4 / 570,
+      raw: 0.2988,
+      score: 3,
+    },
+    '2-5': {
+      pieces: 3 / 6,
+      choices: 8 / 20,
+      hollow: 1284 / 3196,
+      revive: 512 / 1912,
+      nearMiss: 1 - 224 / 1912,
+      hiddenEdges: 2 / 636,
+      raw: 0.4,
+      score: 3,
+    },
+    '2-6': {
+      pieces: 3 / 6,
+      choices: 8 / 20,
+      hollow: 1536 / 4096,
+      revive: 512 / 2560,
+      nearMiss: 1 - 448 / 2560,
+      hiddenEdges: 24 / 764,
+      raw: 0.3875,
+      score: 3,
+    },
+    '3-1': {
+      pieces: 2 / 6,
+      choices: 6 / 20,
+      hollow: 1116 / 5148,
+      revive: 128 / 4032,
+      nearMiss: 1 - 192 / 4032,
+      hiddenEdges: 4 / 574,
+      raw: 0.3108,
+      score: 3,
+    },
+    '3-2': {
+      pieces: 3 / 6,
+      choices: 8 / 20,
+      hollow: 1232 / 6400,
+      revive: 0 / 5168,
+      nearMiss: 1 - 248 / 5168,
+      hiddenEdges: 192 / 734,
+      raw: 0.4144,
+      score: 3,
+    },
+    '3-3': {
+      pieces: 3 / 6,
+      choices: 8 / 20,
+      hollow: 312 / 2616,
+      revive: 0 / 2304,
+      nearMiss: 1 - 184 / 2304,
+      hiddenEdges: 10 / 516,
+      raw: 0.3538,
+      score: 3,
+    },
+    '3-4': {
+      pieces: 3 / 6,
+      choices: 8 / 20,
+      hollow: 720 / 5036,
+      revive: 0 / 4316,
+      nearMiss: 1 - 448 / 4316,
+      hiddenEdges: 68 / 638,
+      raw: 0.37,
+      score: 3,
+    },
+    '3-5': {
+      pieces: 3 / 6,
+      choices: 7 / 20,
+      hollow: 217 / 4163,
+      revive: 0 / 3946,
+      nearMiss: 1 - 456 / 3946,
+      hiddenEdges: 68 / 698,
+      raw: 0.3449,
+      score: 3,
+    },
+    '3-6': {
+      pieces: 1, // 6/6
+      choices: 13 / 20,
+      hollow: 256 / 4096,
+      revive: 0 / 3840,
+      nearMiss: 1 - 184 / 3840,
+      hiddenEdges: 68 / 788,
+      raw: 0.5288,
+      score: 5,
+    },
+    '3-7': {
+      pieces: 4 / 6,
+      choices: 10 / 20,
+      hollow: 288 / 4192,
+      revive: 0 / 3904,
+      nearMiss: 1 - 256 / 3904,
+      hiddenEdges: 8 / 822,
+      raw: 0.4073,
+      score: 3,
+    },
+    '3-8': {
+      pieces: 3 / 6,
+      choices: Math.log2(3 * 4 * 4 * 4) / 20,
+      hollow: 812 / 5164,
+      revive: 0 / 4352,
+      nearMiss: 1 - 224 / 4352,
+      hiddenEdges: 66 / 732,
+      raw: 0.3708,
+      score: 3,
+    },
+    '3-9': {
+      pieces: 2 / 6,
+      choices: 6 / 20,
+      hollow: 980 / 2560,
+      revive: 812 / 1580,
+      nearMiss: 1 - 512 / 1580,
+      hiddenEdges: 16 / 574,
+      raw: 0.3383,
+      score: 3,
+    },
+    '3-10': {
+      pieces: 4 / 6,
+      choices: 10 / 20,
+      hollow: 2732 / 7200,
+      revive: 1364 / 4468,
+      nearMiss: 1 - 192 / 4468,
+      hiddenEdges: 8 / 1084,
+      raw: 0.4718,
+      score: 4,
+    },
+  };
+
+  for (const [id, expected] of Object.entries(EXPECTED_SPEC_C)) {
+    test(`Màn ${id} khớp chính xác các thành phần và điểm độ khó`, () => {
+      const source = LEVEL_SOURCES[id];
+      expect(source).toBeDefined();
+      const doc = buildLevelDocument(source);
+      const report = searchSolutions(doc);
+      const res = scoreDifficulty(doc, report);
+
+      expect(res.parts.pieces).toBeCloseTo(expected.pieces, 4);
+      expect(res.parts.choices).toBeCloseTo(expected.choices, 4);
+      expect(res.parts.hollow).toBeCloseTo(expected.hollow, 4);
+      expect(res.parts.revive).toBeCloseTo(expected.revive, 4);
+      expect(res.parts.nearMiss).toBeCloseTo(expected.nearMiss, 4);
+      expect(res.parts.hiddenEdges).toBeCloseTo(expected.hiddenEdges, 4);
+      expect(res.raw).toBeCloseTo(expected.raw, 4);
+      expect(res.score).toBe(expected.score);
+    });
+  }
+});
+
 describe('collectWarnings', () => {
   test('cảnh báo difficulty-mismatch khi lệch > 1 và không cảnh báo khi lệch <= 1', () => {
     const doc = buildLevelDocument(LEVEL_SOURCES['1-1']); // difficultyEstimate: 1

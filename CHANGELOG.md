@@ -4,6 +4,12 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-04 - Expand difficulty calibration test over 16 spec C levels
+
+- `game-next/tests/difficulty.test.ts`: added calibration suite asserting exact parts, raw score and discrete difficulty for all 16 levels in Chapters 2 and 3 (2-1..2-6 and 3-1..3-10).
+- Verification: all 29 tests in `tests/difficulty.test.ts` passed; `npm run typecheck` and all 519 tests in `npm test` passed.
+
+
 ### 2026-10-04 - Add difficulty warnings to authoring reports
 
 - `game-next/src/content/authoringReport.ts`: `renderReportMarkdown` accepts optional `warnings` parameter and renders `## Cảnh báo` section when warnings exist.
