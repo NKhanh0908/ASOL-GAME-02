@@ -20,11 +20,12 @@ import {
 import type { LayoutMetrics } from './layout.ts';
 
 import { SkyBackdrop } from './SkyBackdrop.ts';
-import { COLOR_TOKENS } from './designTokens.ts';
+import { COLOR_NUMBERS, COLOR_TOKENS, DEPTH_TOKENS, TYPO_TOKENS } from './designTokens.ts';
 import { TextureFactory } from './TextureFactory.ts';
 
 import { PauseDialog } from './PauseDialog.ts';
 import { TargetBadge } from './TargetBadge.ts';
+import { t, getLevelTitle } from './i18n.ts';
 
 export class PlayScene extends Phaser.Scene {
   private level!: Level;
@@ -75,8 +76,8 @@ export class PlayScene extends Phaser.Scene {
     const layout = computeLayout(view.width, view.height, designSafeArea(this));
     this.layout = layout;
 
-    // 1. Nền trời dùng chung
-    this.sky = new SkyBackdrop(this, { seed: 2, drift: false });
+    // 1. Nền trời dùng chung (bật drift để mây tinh vân và dải ngân hà trôi nhẹ nhàng)
+    this.sky = new SkyBackdrop(this, { seed: 2, drift: true });
 
     const progressRepo = createProgressRepository(
       localStorage,
@@ -166,6 +167,8 @@ export class PlayScene extends Phaser.Scene {
       const hit = this.controller.onPointerDown(pointer.worldX, pointer.worldY, layout);
       if (hit) {
         this.refreshView();
+      } else {
+        this.spawnCosmicInteraction(pointer.worldX, pointer.worldY);
       }
     });
 
@@ -200,6 +203,9 @@ export class PlayScene extends Phaser.Scene {
     if (this.controller.getSnapshot().phase === 'won') {
       this.boardRenderer.setVictoryMode(true);
       this.hud.showWinModal(this.level.victoryVerse);
+    } else {
+      // Thông báo banner chào đón đầu màn chơi
+      this.showLevelStartToast(layout);
     }
 
     // Chỉ dùng khi phát triển: tự kéo mảnh để chụp ảnh kiểm tra thị giác.
@@ -391,6 +397,139 @@ export class PlayScene extends Phaser.Scene {
       this.pauseDialog.close();
     } else {
       this.pauseDialog.open();
+    }
+  }
+
+  /**
+   * Banner chào đón đầu màn chơi (Level Start Toast)
+   * Xuất hiện với hiệu ứng pop-in đàn hồi, giữ 1.25s rồi trôi nhẹ lên trên và biến mất.
+   */
+  private showLevelStartToast(layout: LayoutMetrics): void {
+    const chapterNum = this.level.id.split('-')[0] ?? '1';
+    const localizedTitle = getLevelTitle(this.level.id, this.level.title);
+
+    const cx = layout.boardBounds.x + layout.boardBounds.width / 2;
+    const cy = layout.boardBounds.y + layout.boardBounds.height * 0.42;
+
+    const toastContainer = this.add.container(cx, cy).setDepth(120);
+
+    const toastW = 380;
+    const toastH = 92;
+
+    // Bóng đổ sẫm màu
+    const shadow = this.add.graphics();
+    shadow.fillStyle(0x050a1a, 0.75);
+    shadow.fillRoundedRect(-toastW / 2 + 4, -toastH / 2 + 6, toastW, toastH, 24);
+
+    // Tấm thẻ kính saphire rực rỡ
+    const card = this.add.graphics();
+    card.fillStyle(0x131b4d, 0.94);
+    card.fillRoundedRect(-toastW / 2, -toastH / 2, toastW, toastH, 24);
+
+    // Lớp tráng gương phía trên
+    card.fillStyle(0xffffff, 0.12);
+    card.fillRoundedRect(-toastW / 2 + 10, -toastH / 2 + 4, toastW - 20, 20, 10);
+
+    // Viền kép ngọc vàng và băng lam
+    card.lineStyle(2.5, 0xffd23f, 0.9);
+    card.strokeRoundedRect(-toastW / 2, -toastH / 2, toastW, toastH, 24);
+    card.lineStyle(1.2, 0x7fd8ff, 0.65);
+    card.strokeRoundedRect(-toastW / 2 + 4, -toastH / 2 + 4, toastW - 8, toastH - 8, 20);
+
+    // Dòng trên: Tên chương (CHƯƠNG 1 / CHAPTER 1)
+    const chapterText = this.add
+      .text(0, -toastH / 2 + 24, `${t('chapter_prefix').toUpperCase()} ${chapterNum}`, {
+        fontFamily: TYPO_TOKENS.fontFamily.display,
+        fontSize: '14px',
+        color: '#FFD23F',
+        stroke: '#22145A',
+        strokeThickness: 2,
+      })
+      .setOrigin(0.5);
+
+    // Dòng dưới: Tiêu đề màn (Màn 1-3 · Cánh Chim Điềm Báo)
+    const titleText = this.add
+      .text(0, -toastH / 2 + 56, `${t('level_prefix')} ${this.level.id} · ${localizedTitle}`, {
+        fontFamily: TYPO_TOKENS.fontFamily.display,
+        fontSize: '24px',
+        color: '#FFFFFF',
+        stroke: '#16215A',
+        strokeThickness: 3,
+      })
+      .setOrigin(0.5);
+
+    toastContainer.add([shadow, card, chapterText, titleText]);
+
+    // Hoạt cảnh pop-in, giữ 1.25s rồi trôi lên và biến mất
+    toastContainer.setScale(0.65);
+    toastContainer.setAlpha(0);
+
+    this.tweens.add({
+      targets: toastContainer,
+      scaleX: 1,
+      scaleY: 1,
+      alpha: 1,
+      duration: 380,
+      ease: 'Back.easeOut',
+      onComplete: () => {
+        this.time.delayedCall(1250, () => {
+          this.tweens.add({
+            targets: toastContainer,
+            y: cy - 28,
+            alpha: 0,
+            scaleX: 0.95,
+            scaleY: 0.95,
+            duration: 320,
+            ease: 'Quad.easeIn',
+            onComplete: () => toastContainer.destroy(),
+          });
+        });
+      },
+    });
+  }
+
+  /**
+   * Tạo sóng lượng tử và chùm bụi sao khi chạm vào khoảng trống bầu trời
+   */
+  private spawnCosmicInteraction(x: number, y: number): void {
+    const ripple = this.add.graphics().setDepth(DEPTH_TOKENS.backgroundSky + 4);
+    const rippleData = { radius: 8, alpha: 0.85 };
+    this.tweens.add({
+      targets: rippleData,
+      radius: 65,
+      alpha: 0,
+      duration: 500,
+      ease: 'Cubic.easeOut',
+      onUpdate: () => {
+        ripple.clear();
+        ripple.lineStyle(2.5, 0x7fd8ff, rippleData.alpha);
+        ripple.strokeCircle(x, y, rippleData.radius);
+      },
+      onComplete: () => ripple.destroy(),
+    });
+
+    const colors = [0xffd23f, 0x7fd8ff, 0xffffff];
+    for (let i = 0; i < 6; i++) {
+      const p = this.add.graphics().setDepth(DEPTH_TOKENS.backgroundSky + 5);
+      const col = colors[i % colors.length];
+      p.fillStyle(col, 0.9);
+      p.fillCircle(0, 0, 4);
+      p.setPosition(x, y);
+
+      const angle = Math.random() * Math.PI * 2;
+      const dist = 30 + Math.random() * 50;
+
+      this.tweens.add({
+        targets: p,
+        x: x + Math.cos(angle) * dist,
+        y: y + Math.sin(angle) * dist,
+        scaleX: 0,
+        scaleY: 0,
+        alpha: 0,
+        duration: 450 + Math.random() * 200,
+        ease: 'Quad.easeOut',
+        onComplete: () => p.destroy(),
+      });
     }
   }
 }

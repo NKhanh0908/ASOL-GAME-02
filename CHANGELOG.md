@@ -4,6 +4,29 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-05 - Casual 3D tactile action buttons, moving gameplay galaxy, level start banner, and dialog redesign
+
+Mobile visual polish based on device screenshots (`docs/screenshots/mobile/m1/`):
+
+- `game-next/src/presentation/MenuScene.ts`:
+  - Upgraded primary CTA button ("Bắt đầu" / "Tiếp tục") to a tactile 3D amber candy block (360x84px) with 6px deep purple shadow bevel (`#22145A`), bright gold gradient with specular gloss sheen, play jewel icon, enlarged `Baloo 2` typography (28px title, 15px subtitle), and tactile press depression on pointerdown.
+  - Upgraded secondary button ("Chọn màn chơi") to an ice crystal glass 3D button (360x62px) with double glowing borders (`#7FD8FF`), 4-cell constellation grid icon, enlarged `Baloo 2` text (22px), and tactile bounce.
+- `game-next/src/presentation/PlayScene.ts`:
+  - Activated moving cosmic sky galaxy in gameplay by switching `SkyBackdrop` config to `drift: true`.
+  - Added background cosmic touch interactions: tapping outside the puzzle board spawns expanding quantum ripple rings and radiant stardust sparkles.
+  - Added celebratory `LevelStartToast` banner: pops in with elastic scale at the center of the board upon level start, showing chapter and localized level title (e.g. "CHƯƠNG 1 · Màn 1-3 · Cánh Chim Điềm Báo"), holds for 1.25s, then gracefully floats up and fades out.
+- `game-next/src/presentation/PauseDialog.ts`:
+  - Redesigned dialog into an astrological glass card (420x400px) with double ice/gold borders and drop shadow.
+  - Replaced classical serif with casual `Baloo 2` 30px title and converted all 3 navigation actions into 3D tactile buttons: Primary amber 3D button (Resume), secondary ice crystal 3D button (Restart), and muted tertiary glass button (Level Select).
+- `game-next/src/presentation/SettingsDialog.ts`:
+  - Redesigned dialog frame to match casual astrological card styling (460x520px) with `Baloo 2` 28px title and 3D circular close button.
+  - Upgraded language switcher into a 3D pill slider with warm amber active tab and `Baloo 2` 16px labels.
+  - Upgraded toggle options to 3D juicy switches with thick rounded tracks and tactile circular thumbs with specular highlights.
+  - Replaced flat reset text with a styled warning badge card and upgraded two-step deletion confirmation modal with `Baloo 2` typography and 3D buttons.
+- `game-next/src/presentation/i18n.ts`:
+  - Added `chapter_prefix` key ("Chương" / "Chapter") to support localized level start banners.
+- Verification: 704/704 vitest tests pass across 51 test suites (including 59 font coverage assertions verifying `Baloo 2` covers all new and existing Vietnamese strings); `npm run typecheck` clean; `npm run build` succeeds; `npm run android:sync` updates Capacitor Android web bundle; GitNexus `detect_changes()` verified.
+
 ### 2026-10-05 - Cinematic studio splash, MIRROR title entrance & loop, and interactive star sky
 
 - `game-next/src/presentation/SplashScene.ts`:

@@ -37,6 +37,7 @@ export const TRANSLATIONS = {
 
     // LevelSelectScene
     level_select_title: 'Chòm Sao Tiên Tri',
+    chapter_prefix: 'Chương',
     level_prefix: 'Màn',
 
     // Gameplay & HUD
@@ -77,6 +78,7 @@ export const TRANSLATIONS = {
 
     // LevelSelectScene
     level_select_title: 'Prophecy Constellations',
+    chapter_prefix: 'Chapter',
     level_prefix: 'Level',
 
     // Gameplay & HUD

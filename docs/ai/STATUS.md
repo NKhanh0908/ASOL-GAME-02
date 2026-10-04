@@ -5,8 +5,8 @@ Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; k
 ## Now
 
 - Branch: `feat/mobile-display-tier0` (branched from `main`, not merged).
-- Product state: Plan E (Level Studio) merged to `main`. Tier 0 and Tier 2 of mobile display work implemented. Casual visual branding implemented: Icon 1 (Ngọc Đôi) for app/web icons, Logo Option 2 (Gương Đôi) for MenuScene, and Baloo 2 typography. Bilingual (VI/EN) i18n system with instant toggle. Extended 4.5s cinematic SplashScene with Alpaca Solutions origami unfold and soft navy transition. Animated entrance drop & bounce for MIRROR title with idle light sweep and letter jiggle. Moving star sky with touch/drag stardust and ripple particle effects.
-- Next step: reviewer play-test of the splash screen, bilingual support, and casual menu on debug APK.
+- Product state: Casual visual branding and juicy mobile polish implemented. 3D tactile action buttons in `MenuScene` with enlarged typography and icons. Gameplay sky galaxy drift activated with background cosmic touch ripples. Level start toast banner in `PlayScene` celebrating chapter and level name with elastic entrance. Astrological card modals with 3D tactile buttons in `PauseDialog` and `SettingsDialog` using `Baloo 2` typography, juicy switches, and 3D language pill selector.
+- Next step: reviewer play-test on debug APK (`docs/screenshots/mobile/m1/` improvements).
 
 ## Streams
 

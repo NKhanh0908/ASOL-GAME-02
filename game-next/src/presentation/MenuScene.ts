@@ -148,75 +148,185 @@ export class MenuScene extends Phaser.Scene {
       .setOrigin(0.5);
     this.uiContainer.add(subtitleText);
 
-    // Nút Bắt đầu / Tiếp tục chính (Primary Hero CTA Button - Khối vàng đặc)
-    const btnWidth = 340;
-    const btnHeight = 72;
+    // -------------------------------------------------------------
+    // 1. NÚT CHÍNH: BẮT ĐẦU / TIẾP TỤC (Hero 3D Tactile Juicy Button)
+    // -------------------------------------------------------------
+    const btnWidth = 360;
+    const btnHeight = 84;
     const btnX = 360;
-    const btnY = 830;
+    const btnY = 820;
 
-    const btnBg = this.add.graphics();
-    btnBg.fillStyle(COLOR_NUMBERS.amberSolid, 1.0);
-    btnBg.fillRoundedRect(btnX - btnWidth / 2, btnY - btnHeight / 2, btnWidth, btnHeight, 20);
+    const primaryBtnContainer = this.add.container(btnX, btnY);
 
+    // Lớp đế đổ bóng 3D dày 6px màu tím sẫm
+    const btnShadow = this.add.graphics();
+    btnShadow.fillStyle(0x22145a, 1.0);
+    btnShadow.fillRoundedRect(-btnWidth / 2, -btnHeight / 2 + 6, btnWidth, btnHeight, 26);
+
+    // Mặt nút gradient vàng hổ phách tươi sáng
+    const btnFace = this.add.graphics();
+    btnFace.fillStyle(0xffa800, 1.0);
+    btnFace.fillRoundedRect(-btnWidth / 2, -btnHeight / 2, btnWidth, btnHeight - 4, 26);
+    btnFace.fillStyle(0xffd54f, 0.95);
+    btnFace.fillRoundedRect(-btnWidth / 2 + 2, -btnHeight / 2 + 2, btnWidth - 4, (btnHeight - 8) * 0.65, 24);
+
+    // Vệt bóng gương lấp lánh (Specular Gloss)
+    btnFace.fillStyle(0xffffff, 0.35);
+    btnFace.fillRoundedRect(-btnWidth / 2 + 18, -btnHeight / 2 + 6, btnWidth - 36, 16, 8);
+
+    // Đường viền tím sẫm sắc nét
+    btnFace.lineStyle(3, 0x3b2779, 1.0);
+    btnFace.strokeRoundedRect(-btnWidth / 2, -btnHeight / 2, btnWidth, btnHeight, 26);
+
+    // Icon Tam giác Play nổi khối bên trái
+    const playIcon = this.add.graphics();
+    playIcon.fillStyle(0x22145a, 1.0);
+    playIcon.beginPath();
+    playIcon.moveTo(-btnWidth / 2 + 36, -11);
+    playIcon.lineTo(-btnWidth / 2 + 52, 0);
+    playIcon.lineTo(-btnWidth / 2 + 36, 11);
+    playIcon.closePath();
+    playIcon.fillPath();
+    playIcon.fillStyle(0xffffff, 0.7);
+    playIcon.beginPath();
+    playIcon.moveTo(-btnWidth / 2 + 38, -7);
+    playIcon.lineTo(-btnWidth / 2 + 45, 0);
+    playIcon.lineTo(-btnWidth / 2 + 38, -1);
+    playIcon.closePath();
+    playIcon.fillPath();
+
+    // Tiêu đề nút chính (Baloo 2 28px đậm nét)
     const mainBtnText = this.add
-      .text(btnX, btnY - 12, btnLabelText, {
+      .text(14, -12, btnLabelText, {
         fontFamily: TYPO_TOKENS.fontFamily.display,
-        fontSize: '22px',
+        fontSize: '28px',
         color: '#22145A',
         fontStyle: 'bold',
       })
       .setOrigin(0.5);
 
+    // Phụ đề tên màn chơi (15px rõ ràng)
     const localizedTitle = getLevelTitle(targetLevel.id, targetLevel.title);
     const subBtnText = this.add
-      .text(btnX, btnY + 14, `${targetLevel.id} · ${localizedTitle}`, {
+      .text(14, 18, `${targetLevel.id} · ${localizedTitle}`, {
         fontFamily: TYPO_TOKENS.fontFamily.sans,
-        fontSize: '13px',
+        fontSize: '15px',
         color: '#3E2A00',
+        fontStyle: 'bold',
       })
       .setOrigin(0.5);
 
     const btnZone = this.add
-      .zone(btnX, btnY, btnWidth, btnHeight)
+      .zone(0, 0, btnWidth, btnHeight)
       .setInteractive({ useHandCursor: true });
+
     btnZone.on('pointerdown', () => {
+      primaryBtnContainer.y = btnY + 4;
+      primaryBtnContainer.setScale(0.97);
+    });
+
+    btnZone.on('pointerup', () => {
       btnZone.disableInteractive();
-      this.animateButtonTap(mainBtnText, () => {
-        this.scene.start('PlayScene', { levelId: targetLevel.id });
+      this.tweens.add({
+        targets: primaryBtnContainer,
+        y: btnY,
+        scaleX: 1,
+        scaleY: 1,
+        duration: 90,
+        ease: 'Back.easeOut',
+        onComplete: () => {
+          this.scene.start('PlayScene', { levelId: targetLevel.id });
+        },
       });
     });
 
-    this.uiContainer.add([btnBg, mainBtnText, subBtnText, btnZone]);
+    btnZone.on('pointerout', () => {
+      primaryBtnContainer.y = btnY;
+      primaryBtnContainer.setScale(1);
+    });
 
-    // Nút phụ "Chọn màn" (Secondary Button - Viền kính xanh trong suốt)
-    const secBtnY = 930;
-    const secBtnBg = this.add.graphics();
-    secBtnBg.fillStyle(COLOR_NUMBERS.boardSurfaceTop, 0.7);
-    secBtnBg.fillRoundedRect(btnX - btnWidth / 2, secBtnY - 28, btnWidth, 56, 18);
-    secBtnBg.lineStyle(1.8, COLOR_NUMBERS.icePrimary, 0.85);
-    secBtnBg.strokeRoundedRect(btnX - btnWidth / 2, secBtnY - 28, btnWidth, 56, 18);
+    primaryBtnContainer.add([btnShadow, btnFace, playIcon, mainBtnText, subBtnText, btnZone]);
+    this.uiContainer.add(primaryBtnContainer);
+
+    // -------------------------------------------------------------
+    // 2. NÚT PHỤ: CHỌN MÀN CHƠI (Ice Crystal Glass 3D Button)
+    // -------------------------------------------------------------
+    const secBtnY = 926;
+    const secHeight = 62;
+    const secBtnContainer = this.add.container(btnX, secBtnY);
+
+    // Đế đổ bóng 3D tối màu
+    const secShadow = this.add.graphics();
+    secShadow.fillStyle(0x0e1438, 1.0);
+    secShadow.fillRoundedRect(-btnWidth / 2, -secHeight / 2 + 4, btnWidth, secHeight, 22);
+
+    // Mặt kính băng saphire viền ngọc
+    const secFace = this.add.graphics();
+    secFace.fillStyle(COLOR_NUMBERS.boardSurfaceTop, 0.92);
+    secFace.fillRoundedRect(-btnWidth / 2, -secHeight / 2, btnWidth, secHeight - 3, 22);
+
+    // Lớp tráng gương phía trên
+    secFace.fillStyle(0xffffff, 0.16);
+    secFace.fillRoundedRect(-btnWidth / 2 + 14, -secHeight / 2 + 4, btnWidth - 28, 14, 7);
+
+    // Viền đôi ngọc băng phát quang
+    secFace.lineStyle(2.5, COLOR_NUMBERS.icePrimary, 0.95);
+    secFace.strokeRoundedRect(-btnWidth / 2, -secHeight / 2, btnWidth, secHeight - 3, 22);
+    secFace.lineStyle(1.0, 0xffffff, 0.45);
+    secFace.strokeRoundedRect(-btnWidth / 2 + 4, -secHeight / 2 + 3, btnWidth - 8, secHeight - 9, 18);
+
+    // Icon lưới 4 ô chiêm tinh
+    const secIcon = this.add.graphics();
+    const iconX = -btnWidth / 2 + 40;
+    secIcon.fillStyle(0x7fd8ff, 0.9);
+    secIcon.fillRoundedRect(iconX - 10, -10, 8, 8, 2);
+    secIcon.fillRoundedRect(iconX + 2, -10, 8, 8, 2);
+    secIcon.fillRoundedRect(iconX - 10, 2, 8, 8, 2);
+    secIcon.fillRoundedRect(iconX + 2, 2, 8, 8, 2);
 
     const secBtnText = this.add
-      .text(btnX, secBtnY, t('btn_select_level'), {
+      .text(14, 0, t('btn_select_level'), {
         fontFamily: TYPO_TOKENS.fontFamily.display,
-        fontSize: '17px',
-        color: COLOR_TOKENS.text.primary,
+        fontSize: '22px',
+        color: '#FFFFFF',
+        stroke: '#141C48',
+        strokeThickness: 3,
       })
       .setOrigin(0.5);
 
     const secBtnZone = this.add
-      .zone(btnX, secBtnY, btnWidth, 56)
+      .zone(0, 0, btnWidth, secHeight)
       .setInteractive({ useHandCursor: true });
+
     secBtnZone.on('pointerdown', () => {
+      secBtnContainer.y = secBtnY + 3;
+      secBtnContainer.setScale(0.97);
+    });
+
+    secBtnZone.on('pointerup', () => {
       secBtnZone.disableInteractive();
-      this.animateButtonTap(secBtnText, () => {
-        if (this.scene.get('LevelSelectScene')) {
-          this.scene.start('LevelSelectScene');
-        }
+      this.tweens.add({
+        targets: secBtnContainer,
+        y: secBtnY,
+        scaleX: 1,
+        scaleY: 1,
+        duration: 90,
+        ease: 'Back.easeOut',
+        onComplete: () => {
+          if (this.scene.get('LevelSelectScene')) {
+            this.scene.start('LevelSelectScene');
+          }
+        },
       });
     });
 
-    this.uiContainer.add([secBtnBg, secBtnText, secBtnZone]);
+    secBtnZone.on('pointerout', () => {
+      secBtnContainer.y = secBtnY;
+      secBtnContainer.setScale(1);
+    });
+
+    secBtnContainer.add([secShadow, secFace, secIcon, secBtnText, secBtnZone]);
+    this.uiContainer.add(secBtnContainer);
 
     // Chân trang phiên bản
     const footerText = this.add
