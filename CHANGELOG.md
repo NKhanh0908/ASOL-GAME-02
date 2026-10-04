@@ -4,6 +4,12 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-04 - Update status and documentation index for Plan E phases E1 and E2
+
+- Updated `docs/ai/STATUS.md`: recorded completion of E1 (difficulty scoring) and E2 (studio backend infrastructure), reaching Stop Point 2.
+- Updated `docs/ai/DOCS-INDEX.md`: marked E1 and E2 rows as done on `feat/level-studio-e2`.
+- Verification: git status clean, all 573 tests passing.
+
 ### 2026-10-04 - Add content:promote script and campaign promotion pipeline
 
 - Added `game-next/src/content/promote.ts`: implements `sourceFromDocument`, `registerInCatalog`, `updateManifestLine`, `updateAuthoredLevels`, and `promoteStudioLevel` to safely promote studio levels to campaign targets with single-solution validation.
