@@ -95,7 +95,7 @@ describe('Design Tokens Validation', () => {
   });
 
   test('giữ nguyên font và thời gian animation chuẩn', () => {
-    expect(TYPO_TOKENS.fontFamily.serif).toContain('Playfair Display');
+    expect(TYPO_TOKENS.fontFamily.serif).toContain('Baloo 2');
     expect(TYPO_TOKENS.fontFamily.sans).toContain('Be Vietnam Pro');
     expect(ANIM_TOKENS.duration.snapMs).toBe(120);
     expect(ANIM_TOKENS.duration.overlapInversionMs).toBe(150);

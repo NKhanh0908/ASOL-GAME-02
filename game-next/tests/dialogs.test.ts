@@ -2,7 +2,8 @@ import { describe, expect, test } from 'vitest';
 import { loadLevel } from '../src/content/catalog.ts';
 import { validateLevel } from '../src/content/validate.ts';
 import { makeAdjacentFixture } from '../src/content/fixtures.ts';
-import { VICTORY_LABELS } from '../src/presentation/hudText.ts';
+import { getVictoryLabels } from '../src/presentation/hudText.ts';
+import { setLocale } from '../src/presentation/i18n.ts';
 
 describe('Danger Action Confirmation Gate', () => {
   test('xóa tiến trình bắt buộc phải qua trạng thái xác nhận trước khi thực thi', () => {
@@ -54,11 +55,20 @@ describe('Màn hoàn thành theo mockup improve-v1', () => {
   });
 
   test('nhãn màn hoàn thành đúng chuỗi mockup và không viết hoa toàn bộ', () => {
-    expect(VICTORY_LABELS.title).toBe('Hoàn thành');
-    expect(VICTORY_LABELS.next).toBe('Màn tiếp theo');
-    expect(VICTORY_LABELS.levelSelect).toBe('Chọn màn');
-    for (const text of Object.values(VICTORY_LABELS)) {
+    setLocale('vi');
+    const labels = getVictoryLabels();
+    expect(labels.title).toBe('Hoàn thành');
+    expect(labels.next).toBe('Màn tiếp theo');
+    expect(labels.levelSelect).toBe('Chọn màn');
+    for (const text of Object.values(labels)) {
       expect(text).not.toBe(text.toUpperCase());
     }
+  });
+
+  test('nhãn màn hoàn thành đổi theo ngôn ngữ', () => {
+    setLocale('en');
+    expect(getVictoryLabels().title).not.toBe('Hoàn thành');
+    setLocale('vi');
+    expect(getVictoryLabels().title).toBe('Hoàn thành');
   });
 });

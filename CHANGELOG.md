@@ -4,6 +4,120 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-05 - Casual 3D tactile action buttons, moving gameplay galaxy, level start banner, and dialog redesign
+
+Mobile visual polish based on device screenshots (`docs/screenshots/mobile/m1/`):
+
+- `game-next/src/presentation/MenuScene.ts`:
+  - Upgraded primary CTA button ("Bắt đầu" / "Tiếp tục") to a tactile 3D amber candy block (360x84px) with 6px deep purple shadow bevel (`#22145A`), bright gold gradient with specular gloss sheen, play jewel icon, enlarged `Baloo 2` typography (28px title, 15px subtitle), and tactile press depression on pointerdown.
+  - Upgraded secondary button ("Chọn màn chơi") to an ice crystal glass 3D button (360x62px) with double glowing borders (`#7FD8FF`), 4-cell constellation grid icon, enlarged `Baloo 2` text (22px), and tactile bounce.
+- `game-next/src/presentation/PlayScene.ts`:
+  - Activated moving cosmic sky galaxy in gameplay by switching `SkyBackdrop` config to `drift: true`.
+  - Added background cosmic touch interactions: tapping outside the puzzle board spawns expanding quantum ripple rings and radiant stardust sparkles.
+  - Added celebratory `LevelStartToast` banner: pops in with elastic scale at the center of the board upon level start, showing chapter and localized level title (e.g. "CHƯƠNG 1 · Màn 1-3 · Cánh Chim Điềm Báo"), holds for 1.25s, then gracefully floats up and fades out.
+- `game-next/src/presentation/PauseDialog.ts`:
+  - Redesigned dialog into an astrological glass card (420x400px) with double ice/gold borders and drop shadow.
+  - Replaced classical serif with casual `Baloo 2` 30px title and converted all 3 navigation actions into 3D tactile buttons: Primary amber 3D button (Resume), secondary ice crystal 3D button (Restart), and muted tertiary glass button (Level Select).
+- `game-next/src/presentation/SettingsDialog.ts`:
+  - Redesigned dialog frame to match casual astrological card styling (460x520px) with `Baloo 2` 28px title and 3D circular close button.
+  - Upgraded language switcher into a 3D pill slider with warm amber active tab and `Baloo 2` 16px labels.
+  - Upgraded toggle options to 3D juicy switches with thick rounded tracks and tactile circular thumbs with specular highlights.
+  - Replaced flat reset text with a styled warning badge card and upgraded two-step deletion confirmation modal with `Baloo 2` typography and 3D buttons.
+- `game-next/src/presentation/i18n.ts`:
+  - Added `chapter_prefix` key ("Chương" / "Chapter") to support localized level start banners.
+- Verification: 704/704 vitest tests pass across 51 test suites (including 59 font coverage assertions verifying `Baloo 2` covers all new and existing Vietnamese strings); `npm run typecheck` clean; `npm run build` succeeds; `npm run android:sync` updates Capacitor Android web bundle; GitNexus `detect_changes()` verified.
+
+### 2026-10-05 - Cinematic studio splash, MIRROR title entrance & loop, and interactive star sky
+
+- `game-next/src/presentation/SplashScene.ts`:
+  - Extended studio splash sequence to 4.5s with staggered origami polygon unfolding (0.0–1.4s), typography slide-in with expanding mirror bar and reflection (1.0–1.8s), light sweep sheen with sparkling stars (1.8–2.6s), and a 1.5s brand appreciation hold (2.6–4.1s).
+  - Added seamless cinematic color-morph transition: white background dissolves into the deep navy `#1A2470` of `MenuScene` with soft alpha fade over 650ms.
+- `game-next/src/presentation/MenuScene.ts`:
+  - Added staggered entrance animation to the MIRROR title letters: individual letters drop from above with casual elastic bounce (`Back.easeOut`, 70ms step delay) and settle into their tilt angles; mirror bar expands horizontally with a jewel sparkle; reflection fades in underneath.
+  - Added idle loop animations: gentle sine wave floating bob, periodic light sheen sweep across the gold face and mirror bar (every 4.5s), and occasional playful casual letter jiggle (every 6.5s).
+  - Activated moving cosmic sky (`SkyBackdrop` with `drift: true`) so stars drift continuously.
+  - Added interactive cosmic touch responses: tapping/clicking spawns an expanding quantum ripple wave and a burst of radiant stardust sparkles; dragging creates a trailing stardust particle path.
+- Verification: 702/702 vitest tests pass across 51 test suites; `npm run typecheck` clean; `npm run build` succeeds; `npm run android:sync` updates Capacitor Android web bundle; GitNexus `detect_changes()` reports changes isolated to `SplashScene` and `MenuScene`.
+
+### 2026-10-04 - Replace Fredoka with Baloo 2 and finish wiring the HUD to i18n
+
+Review of the branding commits (f17f609, 93a172f).
+
+- Fixed mixed typefaces in Vietnamese display text. Google Fonts publishes Fredoka with the hebrew, latin and latin-ext subsets only - there is no vietnamese subset - so U+1EA0-1EF1 fell outside every declared range and the browser substituted a fallback face per character. 8 of the 10 prominent display strings were affected, splitting single words: "Bắt đầu" (ầ ắ), "Tiếp tục" (ế ụ), "Chọn màn chơi" (ọ), "Cài Đặt Chiêm Tinh" (ặ), "Tạm Dừng" (ạ ừ). Replaced with Baloo 2, which was already the declared fallback, matches the rounded casual tone and ships a vietnamese subset. `game-next/public/fonts/` gains 6 Baloo 2 woff2 files (138 KB) and loses the 4 Fredoka ones; `src/style.css`, `src/presentation/designTokens.ts` and `src/main.ts` updated accordingly.
+- Added `game-next/tests/displayFontCoverage.test.ts`: parses the `@font-face` rules out of `style.css` and asserts the display family covers U+1EA0-1EF9 and every string in `TRANSLATIONS`. This class of bug breaks no build and fails no other test - it is only visible on a device - so it needs an automated guard. Verified the guard bites: with Fredoka's real ranges, 82 of the 90 code points in that block are uncovered.
+- Finished the i18n wiring. `Hud.ts` still imported the hardcoded Vietnamese `VICTORY_LABELS` and `SNAP_HINT_TEXT`, so the victory modal and the snap hint stayed Vietnamese in English mode while the match counter translated. It now calls `getVictoryLabels()` and `getSnapHintText()`, read at build time rather than at module load. Deleted the duplicate constants from `hudText.ts` - that duplication was the source of the drift - and moved the tests onto the accessors, adding a case that asserts the labels actually change with the locale.
+
+### 2026-10-04 - Bilingual i18n system and studio splash intro
+
+- Added `game-next/src/presentation/i18n.ts`: `vi`/`en` dictionaries, `t()` with `{param}` interpolation, `getLocale`/`setLocale` persisted to `localStorage` under `mirror.rebuild.locale`, an `onLocaleChange` observer and `getLevelTitle` for English level names. Guards `typeof window` and wraps storage access, so it loads under vitest's node environment.
+- Added `game-next/src/presentation/SplashScene.ts`: studio intro shown before the menu, registered first in the scene list in `src/main.ts` and skipped when a launch parameter targets another scene.
+- Routed `MenuScene`, `SettingsDialog`, `PauseDialog`, `LevelSelectScene` and `hudText` through `t()`; `SettingsDialog` gains a language row that switches locale and rebuilds the menu.
+- Added `game-next/tests/i18n.test.ts`.
+- Verification: covered by the suite run below. Note: `onLocaleChange` is exercised only by its test - the menu rebuild goes through a `(this.scene as any).buildMainMenu(...)` cast in `SettingsDialog.ts`, which works today because the dialog is only opened from `MenuScene`.
+
+### 2026-10-04 - Dual jewel app icon, casual mirror logo and display typography
+
+- Replaced the Android launcher icons across every mipmap density and `ic_launcher_background.xml`.
+- Added web icons and favicons (`game-next/public/icon.svg`, `icon-192.png`, `icon-512.png`, `favicon.svg`, `favicon.png`, `apple-touch-icon.png`, `assets/studio.svg`) and linked them from `index.html`, whose title becomes "Mirror".
+- Reworked the `MenuScene` logo treatment and introduced a `display` typography token.
+- Verification: covered by the suite run below.
+
+Verification for the three entries above: 702/702 vitest tests pass across 51 suites; `npm run typecheck` and `npm run build` clean; `npm run android:sync` plus `gradlew assembleDebug` produce a debug APK. The Fredoka subset claim was checked against the Google Fonts API, not assumed. **Not yet verified on hardware.**
+
+### 2026-10-04 - Bilingual i18n system and Alpaca Solutions studio splash intro
+
+- Created `game-next/src/presentation/i18n.ts`: reactive translation manager supporting Vietnamese (`vi`) and English (`en`), persisting choice to `localStorage` (`mirror.rebuild.locale`), with full dictionary coverage for menu, settings, pause, level select, HUD and localized level names.
+- Added quick `VI | EN` pill toggle button to `MenuScene.ts` top bar and language selector row inside `SettingsDialog.ts`.
+- Integrated `t(...)` translations and localized level names across `MenuScene.ts`, `SettingsDialog.ts`, `PauseDialog.ts`, `LevelSelectScene.ts`, and `hudText.ts`.
+- Added unit tests in `game-next/tests/i18n.test.ts` covering default locale, English switching, parameter interpolation, level title translation, and reactive listeners.
+- Created `game-next/src/presentation/SplashScene.ts` featuring the Alpaca Solutions studio intro on a pure white background (`#FFFFFF`):
+  - Renders the origami logo sharply from `docs/gdd/assets/studio.svg` (copied to `game-next/public/assets/studio.svg`) with an ambient gold/purple glow and floating physics.
+  - "Alpaca Solutions" brand text in `Fredoka` font with mirror bar and inverted glass reflection beneath, matching the Gương Đôi concept.
+  - Entrance timeline: elastic logo pop-in (0.7s), expanding mirror bar and slide-in typography (0.4-0.9s), light sweep sheen and twinkling stars (0.8-1.4s), followed by a 1.5s hold before smooth camera fade-out into `MenuScene` without requiring touch.
+- Registered `SplashScene` in `game-next/src/main.ts` as the primary startup scene while bypassing it on specific launch targets (`?scene=play|levelSelect`).
+- Verification: 644/644 vitest tests pass (including 5 new in `tests/i18n.test.ts`); `npm run typecheck` clean; `npm run build` succeeds; `npm run android:sync` copies web assets and updates Capacitor Android; GitNexus `detect_changes()` verified.
+
+### 2026-10-04 - Casual branding: Dual Jewels app icon, Gương Đôi title logo, and Fredoka typography
+
+- Added self-hosted Fredoka font files (`fredoka-600/700` Latin and Latin-ext covering English and complete Vietnamese diacritics) to `game-next/public/fonts/`.
+- Updated `game-next/src/style.css` with `@font-face` declarations for Fredoka, and added them to `REQUIRED_FACES` in `game-next/src/main.ts` for clean pre-boot loading.
+- Updated `game-next/src/presentation/designTokens.ts`: `TYPO_TOKENS.fontFamily.display` and `serif` aliases point to Fredoka while preserving Be Vietnam Pro for body text, level titles, and long descriptions.
+- Redesigned `game-next/src/presentation/MenuScene.ts` to implement Logo Casual Option 2 (Gương Đôi) featuring 3D gold rounded lettering on a cyan mirror bar with an inverted reflection below, and replaced the astrological prophecy seal with the interactive Dual Jewels (Ngọc Đôi) emblem showing the Parity XOR hollow core with a pulsing center sparkle.
+- Generated app icons for web (`favicon.svg`, `icon.svg`, `favicon.png`, `icon-192.png`, `icon-512.png`, `apple-touch-icon.png`) and updated `game-next/index.html`.
+- Generated Android launcher icons across all densities (`mdpi`, `hdpi`, `xhdpi`, `xxhdpi`, `xxxhdpi` for `ic_launcher`, `ic_launcher_round`, and `ic_launcher_foreground`), and updated `ic_launcher_background.xml` with purple-violet gradient `#A774FF` -> `#5A1FC7`.
+- Verification: 639/639 vitest tests pass (`tests/designTokens.test.ts`, `tests/hud.test.ts`, `tests/menu.test.ts` updated to match Fredoka); `npm run typecheck` passes with zero errors; `npm run build` succeeds cleanly; GitNexus `detect_changes()` reports 8 symbols across 2 processes with medium risk.
+
+### 2026-10-04 - Elastic vertical layout, seamless backdrop, safe-area aware HUD (Tier 2)
+
+Device play-test of the Tier 0 build (`docs/screenshots/mobile/m0/`) confirmed immersive mode, crisp text and the Cormorant switch, but showed the play area still boxed into the 720x1280 frame with a visible seam at the top and bottom bands.
+
+- Fixed the seam. `game-next/src/presentation/SkyBackdrop.ts`: `paintSky` now renders the gradient canvas at the real visible height and offsets the nebulae by the frame origin, and `bleedSky` is gone. The old approach filled the overflow with the raw first and last gradient stop, but the pink nebula at (648, 966) with radius 360 reaches y=1326, so the frame edge was never the bare stop colour and the joint always stepped. A canvas gradient clamps outside its endpoints, so painting the full height removes the boundary instead of trying to match across it.
+- Fixed the dialog overlays. `SettingsDialog.ts` and `PauseDialog.ts` sized their dimming rectangle to 720x1280 and centred their container on (360, 640), so on a tall screen the overflow stayed undimmed as two bright bands. Both now use `designViewBounds`.
+- `game-next/src/presentation/viewport.ts`: added `computeDesignHeight` (design height follows the device aspect, width stays 720), `safeAreaToDesignUnits` and `readSafeAreaCssPx`. `computeDesignView` now returns a view anchored at the origin rather than a frame centred on 1280.
+- `game-next/src/presentation/designViewport.ts`: the camera shows the whole elastic view; added `designSafeArea`, which reads `env(safe-area-inset-*)` once through a probe element and caches it.
+- `game-next/src/presentation/layout.ts`: `computeLayout(designWidth, designHeight, safeArea)` distributes vertically - header pinned below the top inset, bottom bar above the bottom inset, tray above the bar, board centred in what remains and clamped so the target badge never rides over the chapter subtitle. Added `targetBadgeY`, `designHeight` and `safeArea` to `LayoutMetrics`. The board stays 640x800 and `cellPixel` stays 5, so grid maths, hit testing and `BoardRenderer` are untouched.
+- `game-next/src/presentation/Hud.ts`: takes the layout and anchors the header row, the bottom button row, the victory card and the input blocker to it instead of `LAYOUT_TOKENS.bottomBar.y` and fixed offsets.
+- `game-next/src/presentation/TargetBadge.ts`: follows `layout.targetBadgeY` instead of a hardcoded y=178.
+- `game-next/src/presentation/MenuScene.ts`: the main block keeps its tuned 1280 composition and is shifted to centre on the real height; the settings button and the version line anchor to the top and bottom insets.
+- `game-next/src/presentation/LevelSelectScene.ts`: header background extends to y=0 under the notch while its controls sit below the inset, and the scroll limit uses the real height rather than 1280.
+- Verification: 639/639 vitest tests pass across 49 suites, including 24 new in `tests/layoutElastic.test.ts` covering 9:16, 9:19.5 and 9:21 with and without insets - no overlap between tray, board and bottom bar, nothing outside the view, and **the 9:16 case reproduces the original artboard exactly** (board y=200, tray y=1016, bottom bar y=1164), which is the no-regression guarantee. `npm run typecheck` and `npm run build` clean; `android:sync` plus `gradlew assembleDebug` rebuild the debug APK. GitNexus `detect_changes` reports 37 symbols over 29 processes; `gridToCanvas`, `canvasToGrid`, `pieceHitbox` and `pieceBoardOrigin` appear as touched because their file changed, but their bodies are unchanged and they follow the board through `layout.boardBounds` by design. **Not yet verified on hardware.**
+
+### 2026-10-04 - Fix the Android letterbox, render at device resolution, self-host fonts
+
+Tier 0 of the mobile display work. Screenshots from a 1080x2460 device (`docs/screenshots/mobile/`) showed a large black band above the game, none below, a visible status bar, and soft text.
+
+- Fixed the black band. `game-next/src/style.css`: removed the flex centering from `#game`. Phaser's `autoCenter` already centers the canvas by writing `style.marginTop` (`ScaleManager.updateCenter`), and a flex parent centers the canvas' margin box on top of that, so the offset was applied twice and pushed the canvas to y=405 instead of y=270.
+- Added `game-next/src/presentation/viewport.ts`: `computeViewport` sizes the drawing buffer to physical pixels (devicePixelRatio capped at 3), `computeDesignView` reports the design-space area a given buffer actually shows. Phaser-free, so it is unit tested directly.
+- Added `game-next/src/presentation/designViewport.ts`: `applyDesignViewport` restores the 720x1280 design coordinate space with a camera zoom, and wraps each scene's `add.text` factory so every label rasterises at device resolution. Wrapping the factory covers all 41 text call sites at once.
+- Modified `game-next/src/main.ts`: the game is sized to the physical pixel buffer with `Scale.NONE`, so the canvas is no longer upscaled. Game construction moved into an async `bootstrap()` because top-level await does not build.
+- Modified `game-next/src/presentation/{MenuScene,PlayScene,LevelSelectScene,FixtureScene}.ts`: call `applyDesignViewport` at the top of `create()`. `PlayScene` and `LevelSelectScene` now read `pointer.worldX/worldY` instead of `pointer.x/y`, which camera zoom would otherwise offset silently, breaking drag-and-drop and map scrolling.
+- Modified `game-next/src/presentation/SkyBackdrop.ts`: the sky and star layers follow the visible design area instead of the 720x1280 frame, and `bleedSky` extends the first and last gradient stop into the overflow, so screens taller than 9:16 show sky rather than a flat band.
+- Modified `game-next/android/.../MainActivity.java`: immersive sticky mode, drawing through the display cutout, re-applied on `onWindowFocusChanged` so the bars stay hidden after returning from background. No new Capacitor plugin; the manifest already locked portrait.
+- Replaced the `fonts.googleapis.com` `@import` with 18 self-hosted woff2 files in `game-next/public/fonts/` (Be Vietnam Pro 400/500/600/700, Cormorant Garamond 600/700; Latin, Latin-ext and Vietnamese subsets; 320 KB). `main.ts` now calls `document.fonts.load` for each face before building the game: Phaser draws text on a canvas, and setting `ctx.font` does not trigger a webfont download, so `document.fonts.ready` alone would have resolved before the fonts arrived.
+- Switched the display face from Playfair Display to Cormorant Garamond in `game-next/src/presentation/designTokens.ts`, raising `heroTitle` 52px to 60px and `modalTitle` 44px to 50px because Cormorant is lighter on the navy background. Updated the three tests that pinned the old face and size.
+- Known limitation: `TextureFactory` and `GridPainter` still bake buttons, icons and the grid at design size, so those bitmaps are upscaled exactly as before. Text and all vector drawing are now crisp. Deferred deliberately because the fix would touch 18 image call sites, four inside `BoardRenderer` (CRITICAL).
+- Verification: 615/615 vitest tests pass across 48 suites (10 new in `tests/viewport.test.ts`); `npm run typecheck` and `npm run build` clean; `npm run android:sync` plus `gradlew assembleDebug` produce a 5.9 MB debug APK with the fonts in `dist/fonts/`. GitNexus `detect_changes` reports 20 changed symbols over 26 processes, all of them `create` flows of the four scenes, with no Domain or Application symbol touched. The double-centering cause was confirmed by reading `ScaleManager.updateCenter` rather than from a device. **Not yet verified on hardware** - the reviewer play-test is the stop point.
+
 ### 2026-10-04 - Merge Plan E (Level Studio) into main
 
 - Merged `feat/level-studio-e3` containing Phases E1, E2, and E3 into `main`.

@@ -3,11 +3,12 @@ import { COLOR_TOKENS, LAYOUT_TOKENS, TYPO_TOKENS } from '../src/presentation/de
 import {
   HUD_LEVEL_TITLE_MAX_WIDTH,
   HUD_LEVEL_TITLE_MIN_SIZE,
-  SNAP_HINT_TEXT,
+  getSnapHintText,
   VICTORY_VERSE_FONT_SIZE,
   fitHudTitleFontSize,
   formatMatchCount,
 } from '../src/presentation/hudText.ts';
+import { setLocale } from '../src/presentation/i18n.ts';
 import { chapterInfo, chapterOfLevelId } from '../src/content/chapters.ts';
 
 describe('Hud Behavioral Logic and Visual Standards', () => {
@@ -31,16 +32,20 @@ describe('Hud Behavioral Logic and Visual Standards', () => {
     const sampleTitle = 'Màn 1-1 · Song Tinh';
     const isNotAllCaps = sampleTitle !== sampleTitle.toUpperCase();
     expect(isNotAllCaps).toBe(true);
-    expect(TYPO_TOKENS.fontFamily.serif).toContain('Playfair Display');
+    expect(TYPO_TOKENS.fontFamily.serif).toContain('Baloo 2');
     expect(TYPO_TOKENS.fontFamily.levelTitle).toContain('Be Vietnam Pro');
-    expect(TYPO_TOKENS.fontFamily.levelTitle).not.toContain('Playfair Display');
+    // Tên màn phải giữ font sans: serif/display chỉ nhúng 600/700 nên thiếu nét
+    // thường, và dấu tiếng Việt dày đặc đọc tại cỡ nhỏ kém hơn hẳn.
+    expect(TYPO_TOKENS.fontFamily.levelTitle).not.toContain('Baloo 2');
   });
 });
 
 describe('HUD theo mockup improve-v1', () => {
   test('nhãn gợi ý thả mảnh dùng đúng chuỗi tiếng Việt, không viết hoa toàn bộ', () => {
-    expect(SNAP_HINT_TEXT).toBe('Thả để khớp');
-    expect(SNAP_HINT_TEXT).not.toBe(SNAP_HINT_TEXT.toUpperCase());
+    setLocale('vi');
+    const hint = getSnapHintText();
+    expect(hint).toBe('Thả để khớp');
+    expect(hint).not.toBe(hint.toUpperCase());
   });
 
   test('thanh đếm mảnh hiển thị đúng định dạng n/m', () => {

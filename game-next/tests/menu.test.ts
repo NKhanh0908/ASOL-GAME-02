@@ -48,6 +48,8 @@ describe('Màn chính theo mockup improve-v1', () => {
   });
 
   test('tiêu đề game dùng cỡ chữ hero của bộ token', () => {
-    expect(TYPO_TOKENS.fontSize.heroTitle).toBe('52px');
+    // Nâng từ 52px khi đổi sang Cormorant Garamond: nét nó mảnh hơn Playfair
+    // nên cùng cỡ sẽ chìm trên nền navy.
+    expect(TYPO_TOKENS.fontSize.heroTitle).toBe('60px');
   });
 });

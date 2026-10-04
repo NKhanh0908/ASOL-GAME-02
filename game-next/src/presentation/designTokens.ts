@@ -71,16 +71,26 @@ export const COLOR_NUMBERS = {
 
 export const TYPO_TOKENS = {
   fontFamily: {
-    serif: "'Playfair Display', Georgia, serif",
+    /**
+     * Baloo 2 (bo tròn, casual) cho tiêu đề, modal title, hero title và nút chính.
+     *
+     * KHÔNG dùng Fredoka: Google Fonts chỉ phát hành Fredoka với subset hebrew,
+     * latin và latin-ext — không có vietnamese. Dải U+1EA0–1EF1 (ạ ắ ầ ế ọ ụ ữ
+     * ặ ừ …) rơi ra ngoài, nên "Bắt đầu" bị vẽ nửa Fredoka nửa font hệ thống.
+     * Baloo 2 cùng chất bo tròn và có đủ bộ chữ tiếng Việt.
+     * `tests/displayFontCoverage.test.ts` canh không cho lặp lại lỗi này.
+     */
+    display: "'Baloo 2', -apple-system, sans-serif",
+    serif: "'Baloo 2', -apple-system, sans-serif",
     sans: "'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
     /** Tên level cần bộ glyph tiếng Việt đầy đủ, kể cả khi webfont chưa tải. */
     levelTitle: "'Be Vietnam Pro', 'Segoe UI', Arial, sans-serif",
   },
   fontSize: {
-    heroTitle: '52px',
+    heroTitle: '60px',
     headerTitle: '52px',
     sectionHeader: '32px',
-    modalTitle: '44px',
+    modalTitle: '50px',
     bodyPrimary: '28px',
     buttonLabel: '26px',
     caption: '24px',

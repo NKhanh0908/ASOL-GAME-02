@@ -9,8 +9,10 @@ import type { ProgressRepository } from '../application/progressPort.ts';
 import { ANIM_TOKENS, COLOR_NUMBERS, COLOR_TOKENS, TYPO_TOKENS } from './designTokens.ts';
 import { TEXTURE_KEYS, TextureFactory } from './TextureFactory.ts';
 import { SkyBackdrop } from './SkyBackdrop.ts';
+import { applyDesignViewport, designSafeArea, designViewBounds } from './designViewport.ts';
 import { formatProgress } from './hudText.ts';
 import { layoutCampaignMap } from './constellationLayout.ts';
+import { t, getLevelTitle } from './i18n.ts';
 
 type NodeInfo = {
   id: string;
@@ -44,6 +46,7 @@ export class LevelSelectScene extends Phaser.Scene {
   private isDragging = false;
   private dragStartY = 0;
   private containerStartY = 0;
+  private safe = { top: 0, right: 0, bottom: 0, left: 0 };
   private minY = -2000;
   private maxY = 0;
 
@@ -60,6 +63,8 @@ export class LevelSelectScene extends Phaser.Scene {
   }
 
   create(): void {
+    applyDesignViewport(this);
+    this.safe = designSafeArea(this);
     TextureFactory.generateAll(this);
 
     this.progressRepo = createProgressRepository(localStorage, campaignManifest, 'oracle-v1');
@@ -104,31 +109,36 @@ export class LevelSelectScene extends Phaser.Scene {
   }
 
   private buildHeader(completedCount: number, totalCount: number): void {
+    // Header phủ từ mép trên thật xuống, kể cả phần dưới notch: nền phải liền
+    // tới y=0 chứ không chỉ từ lề an toàn, nếu không sẽ hở một dải trời ở trên.
+    const top = this.safe.top;
+    const view = designViewBounds(this);
+
     // Nền header mờ dần xuống dưới (Soft gradient fade thay cho kẻ ngang)
     const headerBg = this.add.graphics();
     headerBg.fillStyle(COLOR_NUMBERS.skyTop, 0.96);
-    headerBg.fillRect(0, 0, 720, 96);
+    headerBg.fillRect(0, 0, view.width, top + 96);
 
-    // Gradient mờ dần từ y=96 đến y=136
+    // Gradient mờ dần trong 40 đơn vị kế tiếp
     for (let h = 0; h < 40; h++) {
       const alpha = 0.96 * (1 - h / 40);
       headerBg.fillStyle(COLOR_NUMBERS.skyTop, alpha);
-      headerBg.fillRect(0, 96 + h, 720, 1);
+      headerBg.fillRect(0, top + 96 + h, view.width, 1);
     }
 
     // Nút Menu tròn 80px (Vùng chạm 96px, chuẩn 1dp = 2px)
     const backBtn = this.add
-      .image(56, 56, TEXTURE_KEYS.btnCircle80)
+      .image(56, top + 56, TEXTURE_KEYS.btnCircle80)
       .setSize(96, 96)
       .setInteractive({ useHandCursor: true });
-    const backIcon = this.add.image(56, 56, TEXTURE_KEYS.iconMenuBack).setScale(1.25);
+    const backIcon = this.add.image(56, top + 56, TEXTURE_KEYS.iconMenuBack).setScale(1.25);
     backBtn.on('pointerdown', () => {
       this.scene.start('MenuScene');
     });
 
     // Tiêu đề trang 32px serif
     const headerTitle = this.add
-      .text(360, 56, 'Chòm Sao Tiên Tri', {
+      .text(360, top + 56, t('level_select_title'), {
         fontFamily: TYPO_TOKENS.fontFamily.serif,
         fontSize: '32px',
         color: COLOR_TOKENS.text.primary,
@@ -330,8 +340,9 @@ export class LevelSelectScene extends Phaser.Scene {
         badgeBg.lineStyle(1.5, COLOR_NUMBERS.amberSolid, 0.9);
         badgeBg.strokeRoundedRect(-130, -18, 260, 36, 18);
 
+        const localizedTitle = getLevelTitle(node.id, node.title);
         const badgeText = this.add
-          .text(0, 0, `✦ ${node.id} · ${node.title} ✦`, {
+          .text(0, 0, `✦ ${node.id} · ${localizedTitle} ✦`, {
             fontFamily: TYPO_TOKENS.fontFamily.sans,
             fontSize: '18px',
             color: COLOR_TOKENS.amberGold.solidPrimary,
@@ -393,7 +404,7 @@ export class LevelSelectScene extends Phaser.Scene {
     }
 
     // Giới hạn cuộn cho bản đồ
-    this.minY = Math.min(0, 1280 - layout.totalHeight);
+    this.minY = Math.min(0, designViewBounds(this).height - layout.totalHeight);
 
     // Dev có thể cuộn tới màn bất kỳ qua ?focus=<id>; mặc định là màn hiện tại
     const focusNode = this.focusLevelId ? nodes.find((n) => n.id === this.focusLevelId) : undefined;
@@ -401,17 +412,19 @@ export class LevelSelectScene extends Phaser.Scene {
   }
 
   private setupScrolling(): void {
+    // worldY chứ không phải y: camera có zoom nên toạ độ màn hình không còn
+    // trùng toạ độ thiết kế, dùng nhầm thì ngưỡng header và quãng cuộn đều lệch.
     this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
-      if (pointer.y > 100) {
+      if (pointer.worldY > this.safe.top + 100) {
         this.isDragging = true;
-        this.dragStartY = pointer.y;
+        this.dragStartY = pointer.worldY;
         this.containerStartY = this.mapContainer.y;
       }
     });
 
     this.input.on('pointermove', (pointer: Phaser.Input.Pointer) => {
       if (this.isDragging) {
-        const dy = pointer.y - this.dragStartY;
+        const dy = pointer.worldY - this.dragStartY;
         let targetY = this.containerStartY + dy;
         targetY = Phaser.Math.Clamp(targetY, this.minY, this.maxY);
         this.mapContainer.y = targetY;
