@@ -4,6 +4,14 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-04 - Add studio dev server plugin and Vite configuration
+
+- Added `game-next/scripts/studio/studioPlugin.ts`: Vite dev plugin serving `GET /__studio/list`, `POST /__studio/save`, and `POST /__studio/delete` with CSRF protection (Content-Type 415, Origin 403) and 1 MB body limit (413).
+- Added `game-next/vite.config.ts`: configures `studioPlugin` only during dev (`command === 'serve'`) and restricts `rollupOptions.input` strictly to `index.html`.
+- Added `game-next/tests/studioPlugin.test.ts`: test coverage for HTTP status codes 200, 400, 403, 409, 413, 415.
+- Verification: tests failed before implementation and passed after; `npm run build` produced bundle excluding studio files; `npm run typecheck` and all 562 tests passed.
+
+
 ### 2026-10-04 - Add studio level storage system
 
 - Added `game-next/src/content/studioStore.ts`: implements `saveStudioLevel`, `deleteStudioLevel`, `listStudioLevels`, path safety validation, and ID pattern validation.
