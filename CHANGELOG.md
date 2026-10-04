@@ -4,6 +4,15 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-04 - Implement core logic for Level Studio (Phase E3-1)
+
+- Added `game-next/src/studio/state.ts`: implements `StudioState`, `studioReducer`, `cloneLevelSource`, `computeDecoyReason`, and `isDirty`.
+- Added `game-next/src/studio/keys.ts`: implements `keyToAction` mapping keyboard shortcuts (`R`, `Shift+R`, `Delete`, `Ctrl+D`, arrow keys) to studio actions.
+- Added `game-next/src/studio/geometry.ts`: implements `layerCounts`, `outlinePath` (boundary SVG path generation for overlapping layers), and `snapAndClamp` (grid snapping and frame boundary clamping).
+- Added `game-next/src/studio/checkQueue.ts`: implements `createCheckQueue` with 300 ms debounce, single in-flight run enforcement, and stale result marking.
+- Added `game-next/tests/studioState.test.ts`, `studioKeys.test.ts`, `studioGeometry.test.ts`, `studioCheckQueue.test.ts`: test coverage for all pure logic modules.
+- Verification: all 28 new tests passed; full test suite passes with 601 tests across 46 suites; typecheck clean.
+
 ### 2026-10-04 - Update status and documentation index for Plan E phases E1 and E2
 
 - Updated `docs/ai/STATUS.md`: recorded completion of E1 (difficulty scoring) and E2 (studio backend infrastructure), reaching Stop Point 2.
