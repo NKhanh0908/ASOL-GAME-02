@@ -3,7 +3,7 @@ import { campaignManifest } from '../content/manifest.ts';
 import { resolveNextCampaignLevel } from '../domain/campaign.ts';
 import { createProgressRepository } from '../infrastructure/progressRepository.ts';
 import type { ProgressRepository } from '../application/progressPort.ts';
-import { COLOR_NUMBERS, COLOR_TOKENS, LAYOUT_TOKENS, TYPO_TOKENS } from './designTokens.ts';
+import { COLOR_NUMBERS, COLOR_TOKENS, DEPTH_TOKENS, LAYOUT_TOKENS, TYPO_TOKENS } from './designTokens.ts';
 import { TEXTURE_KEYS, TextureFactory } from './TextureFactory.ts';
 import { SkyBackdrop } from './SkyBackdrop.ts';
 import { applyDesignViewport, designSafeArea, designViewBounds } from './designViewport.ts';
@@ -16,6 +16,10 @@ export class MenuScene extends Phaser.Scene {
   private emblemGraphics!: Phaser.GameObjects.Graphics;
   private sparkleGraphics!: Phaser.GameObjects.Graphics;
   private uiContainer!: Phaser.GameObjects.Container;
+  private mirrorLogoContainer?: Phaser.GameObjects.Container;
+  private logoSheenGraphics?: Phaser.GameObjects.Graphics;
+  private letterObjects: { main: Phaser.GameObjects.Text; shadow: Phaser.GameObjects.Text; baseY: number }[] = [];
+  private lastTrailTime = 0;
 
   private blockOffsetY = 0;
   private viewHeight: number = LAYOUT_TOKENS.canvas.height;
@@ -35,8 +39,8 @@ export class MenuScene extends Phaser.Scene {
     this.progressRepo = createProgressRepository(localStorage, campaignManifest, 'oracle-v1');
     const { progress } = this.progressRepo.read();
 
-    // 1. Nền trời dùng chung (gradient, nebula, trăng, trường sao)
-    this.sky = new SkyBackdrop(this, { seed: 1, drift: false });
+    // 1. Nền trời dùng chung có trường sao trôi nhẹ nhàng (drift: true)
+    this.sky = new SkyBackdrop(this, { seed: 1, drift: true });
 
     const view = designViewBounds(this);
     this.safe = designSafeArea(this);
@@ -50,6 +54,9 @@ export class MenuScene extends Phaser.Scene {
     // 3. UI Container chính
     this.uiContainer = this.add.container(0, this.blockOffsetY);
     this.buildMainMenu(progress.completed);
+
+    // 4. Thiết lập tương tác chạm bụi sao & sóng lượng tử trên bầu trời
+    this.setupCosmicSkyInteractions();
   }
 
   private buildMainMenu(completedLevels: readonly string[]): void {
@@ -224,9 +231,16 @@ export class MenuScene extends Phaser.Scene {
 
   /**
    * Dựng cụm logo MIRROR phong cách Phương án 2 (Gương Đôi)
-   * Chữ vàng tròn mập, đứng trên thanh gương cyan phản chiếu lật ngược
+   * Có hiệu ứng xuất hiện thả rơi đàn hồi và loop hoạt cảnh trôi / quét sáng
    */
   private buildCasualMirrorLogo(): void {
+    if (this.mirrorLogoContainer) {
+      this.mirrorLogoContainer.destroy();
+    }
+    this.letterObjects = [];
+    this.mirrorLogoContainer = this.add.container(0, 0);
+    this.uiContainer.add(this.mirrorLogoContainer);
+
     const letters = [
       { char: 'M', dx: -180, rot: -4 },
       { char: 'I', dx: -110, rot: 3 },
@@ -240,7 +254,8 @@ export class MenuScene extends Phaser.Scene {
     const barY = 248;
 
     // 1. Bóng phản chiếu màu kính cyan bên dưới thanh gương (Mirror Reflection)
-    for (const item of letters) {
+    for (let i = 0; i < letters.length; i++) {
+      const item = letters[i];
       const x = 360 + item.dx;
       const refY = barY + 36;
       const refText = this.add
@@ -254,11 +269,20 @@ export class MenuScene extends Phaser.Scene {
         .setOrigin(0.5)
         .setAngle(item.rot)
         .setScale(1, -0.75)
-        .setAlpha(0.25);
-      this.uiContainer.add(refText);
+        .setAlpha(0);
+      this.mirrorLogoContainer.add(refText);
+
+      this.tweens.add({
+        targets: refText,
+        alpha: 0.25,
+        duration: 500,
+        delay: 250 + i * 50,
+        ease: 'Cubic.easeOut',
+      });
     }
 
-    // 2. Thanh gương kính cyan (Mirror Bar) ở giữa
+    // 2. Thanh gương kính cyan (Mirror Bar) ở giữa mở rộng từ tâm
+    const barContainer = this.add.container(0, 0);
     const barWidth = 470;
     const barHeight = 18;
     const barBg = this.add.graphics();
@@ -286,20 +310,34 @@ export class MenuScene extends Phaser.Scene {
     centerJewel.fillPoints(jewelPts, true);
     centerJewel.lineStyle(3.5, 0x3b2779, 1.0);
     centerJewel.strokePoints(jewelPts, true);
-
-    // Ngôi sao nhỏ ở tâm viên ngọc
     centerJewel.fillStyle(0xffffff, 0.9);
     centerJewel.fillCircle(360, barY, 2.5);
 
-    this.uiContainer.add([barBg, centerJewel]);
+    barContainer.add([barBg, centerJewel]);
+    barContainer.setScale(0, 1);
+    this.mirrorLogoContainer.add(barContainer);
 
-    // 3. Cụm chữ chính MIRROR màu vàng hổ phách nổi khối
-    for (const item of letters) {
+    this.tweens.add({
+      targets: barContainer,
+      scaleX: 1,
+      duration: 550,
+      ease: 'Back.easeOut',
+      onComplete: () => {
+        // Flash lấp lánh tại tâm ngọc khi thanh gương bung mở
+        const flash = this.add.graphics();
+        this.drawSparkle(360, barY, 14, 0xffffff, 1.0);
+        this.time.delayedCall(300, () => flash.destroy());
+      },
+    });
+
+    // 3. Cụm chữ chính MIRROR màu vàng hổ phách thả rơi đàn hồi
+    for (let i = 0; i < letters.length; i++) {
+      const item = letters[i];
       const x = 360 + item.dx;
 
       // Lớp bóng đổ đậm (Deep shadow)
       const shadowText = this.add
-        .text(x, logoY + 7, item.char, {
+        .text(x, logoY - 50 + 7, item.char, {
           fontFamily: TYPO_TOKENS.fontFamily.display,
           fontSize: '76px',
           color: '#22145A',
@@ -307,11 +345,12 @@ export class MenuScene extends Phaser.Scene {
           strokeThickness: 14,
         })
         .setOrigin(0.5)
-        .setAngle(item.rot);
+        .setAngle(0)
+        .setAlpha(0);
 
       // Chữ chính màu vàng có viền tím đậm (Gold face with purple outline)
       const mainText = this.add
-        .text(x, logoY, item.char, {
+        .text(x, logoY - 50, item.char, {
           fontFamily: TYPO_TOKENS.fontFamily.display,
           fontSize: '76px',
           color: '#FFD23F',
@@ -319,10 +358,242 @@ export class MenuScene extends Phaser.Scene {
           strokeThickness: 14,
         })
         .setOrigin(0.5)
-        .setAngle(item.rot);
+        .setAngle(0)
+        .setAlpha(0);
 
-      this.uiContainer.add([shadowText, mainText]);
+      this.mirrorLogoContainer.add([shadowText, mainText]);
+      this.letterObjects.push({ main: mainText, shadow: shadowText, baseY: logoY });
+
+      // Staggered drop & bounce
+      this.tweens.add({
+        targets: shadowText,
+        y: logoY + 7,
+        alpha: 1,
+        angle: item.rot,
+        duration: 520,
+        delay: i * 70,
+        ease: 'Back.easeOut',
+      });
+
+      this.tweens.add({
+        targets: mainText,
+        y: logoY,
+        alpha: 1,
+        angle: item.rot,
+        duration: 520,
+        delay: i * 70,
+        ease: 'Back.easeOut',
+      });
     }
+
+    // 4. Hoạt cảnh lặp (Idle Loop Animation)
+    // A. Nhấp nhô bồng bềnh
+    this.tweens.add({
+      targets: this.mirrorLogoContainer,
+      y: -4,
+      duration: 2200,
+      yoyo: true,
+      repeat: -1,
+      ease: 'Sine.easeInOut',
+    });
+
+    // B. Lớp vẽ tia sáng tráng gương lướt qua (Light Sheen Sweep)
+    this.logoSheenGraphics = this.add.graphics();
+    this.mirrorLogoContainer.add(this.logoSheenGraphics);
+
+    // C. Bộ đếm thời gian lặp tia sáng (mỗi 4.5s)
+    this.time.addEvent({
+      delay: 4500,
+      loop: true,
+      callback: () => this.playLogoSheenSweep(),
+    });
+
+    // D. Bộ đếm thời gian nhún nhảy tinh nghịch (mỗi 6.5s)
+    this.time.addEvent({
+      delay: 6500,
+      loop: true,
+      callback: () => this.playLetterJiggle(),
+    });
+  }
+
+  /**
+   * Quét tia sáng óng ánh ngang qua chữ MIRROR vàng và thanh gương
+   */
+  private playLogoSheenSweep(): void {
+    if (!this.logoSheenGraphics) return;
+    const sweep = { progress: -0.2 };
+    this.tweens.add({
+      targets: sweep,
+      progress: 1.2,
+      duration: 650,
+      ease: 'Quad.easeInOut',
+      onUpdate: () => {
+        if (!this.logoSheenGraphics) return;
+        this.logoSheenGraphics.clear();
+        const curX = Phaser.Math.Linear(120, 600, sweep.progress);
+        const yTop = 135;
+        const yBottom = 265;
+
+        // Dải sáng nghiêng 30 độ
+        this.logoSheenGraphics.fillStyle(0xffffff, 0.4);
+        this.logoSheenGraphics.beginPath();
+        this.logoSheenGraphics.moveTo(curX - 22, yTop);
+        this.logoSheenGraphics.lineTo(curX + 22, yTop);
+        this.logoSheenGraphics.lineTo(curX - 10, yBottom);
+        this.logoSheenGraphics.lineTo(curX - 54, yBottom);
+        this.logoSheenGraphics.closePath();
+        this.logoSheenGraphics.fillPath();
+
+        // Lõi sáng rực rỡ
+        this.logoSheenGraphics.fillStyle(0xffffff, 0.75);
+        this.logoSheenGraphics.beginPath();
+        this.logoSheenGraphics.moveTo(curX - 7, yTop);
+        this.logoSheenGraphics.lineTo(curX + 7, yTop);
+        this.logoSheenGraphics.lineTo(curX - 25, yBottom);
+        this.logoSheenGraphics.lineTo(curX - 39, yBottom);
+        this.logoSheenGraphics.closePath();
+        this.logoSheenGraphics.fillPath();
+      },
+      onComplete: () => {
+        this.logoSheenGraphics?.clear();
+      },
+    });
+  }
+
+  /**
+   * Một chữ cái nhún nhảy nhẹ nhàng tạo nét vui tươi casual
+   */
+  private playLetterJiggle(): void {
+    if (this.letterObjects.length === 0) return;
+    const targets = [3, 4, 5]; // R, O, R
+    const pick = targets[Math.floor(Math.random() * targets.length)];
+    const letter = this.letterObjects[pick];
+    if (!letter) return;
+
+    this.tweens.add({
+      targets: letter.main,
+      y: letter.baseY - 10,
+      duration: 180,
+      yoyo: true,
+      ease: 'Quad.easeOut',
+    });
+    this.tweens.add({
+      targets: letter.shadow,
+      y: letter.baseY + 7 - 10,
+      duration: 180,
+      yoyo: true,
+      ease: 'Quad.easeOut',
+    });
+  }
+
+  /**
+   * Thiết lập tương tác chạm bụi sao & sóng lượng tử khi người chơi ấn vào bầu trời
+   */
+  private setupCosmicSkyInteractions(): void {
+    this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
+      this.spawnCosmicInteraction(pointer.worldX, pointer.worldY);
+    });
+
+    this.input.on('pointermove', (pointer: Phaser.Input.Pointer) => {
+      if (pointer.isDown) {
+        const now = Date.now();
+        if (now - this.lastTrailTime > 45) {
+          this.lastTrailTime = now;
+          this.spawnStardustTrail(pointer.worldX, pointer.worldY);
+        }
+      }
+    });
+  }
+
+  /**
+   * Tạo chùm bụi sao và sóng lượng tử tỏa ra từ điểm chạm
+   */
+  private spawnCosmicInteraction(x: number, y: number): void {
+    // 1. Sóng lượng tử (Cosmic Ripple) lan tỏa
+    const ripple = this.add.graphics().setDepth(DEPTH_TOKENS.backgroundSky + 4);
+    const rippleData = { radius: 8, alpha: 0.85 };
+    this.tweens.add({
+      targets: rippleData,
+      radius: 65,
+      alpha: 0,
+      duration: 520,
+      ease: 'Cubic.easeOut',
+      onUpdate: () => {
+        ripple.clear();
+        ripple.lineStyle(2.5, 0x7fd8ff, rippleData.alpha);
+        ripple.strokeCircle(x, y, rippleData.radius);
+        ripple.lineStyle(1.2, 0xffffff, rippleData.alpha * 0.7);
+        ripple.strokeCircle(x, y, rippleData.radius * 0.7);
+      },
+      onComplete: () => ripple.destroy(),
+    });
+
+    // 2. Chùm 7 hạt bụi sao phát quang bay tỏa ra
+    const colors = [0xffd23f, 0x7fd8ff, 0xffffff, 0xffe899];
+    for (let i = 0; i < 7; i++) {
+      const p = this.add.graphics().setDepth(DEPTH_TOKENS.backgroundSky + 5);
+      const col = colors[i % colors.length];
+      const r = 6 + Math.random() * 5;
+
+      p.fillStyle(col, 1.0);
+      p.beginPath();
+      p.moveTo(0, -r);
+      p.lineTo(r * 0.25, -r * 0.25);
+      p.lineTo(r, 0);
+      p.lineTo(r * 0.25, r * 0.25);
+      p.lineTo(0, r);
+      p.lineTo(-r * 0.25, r * 0.25);
+      p.lineTo(-r, 0);
+      p.lineTo(-r * 0.25, -r * 0.25);
+      p.closePath();
+      p.fillPath();
+
+      p.setPosition(x, y);
+
+      const angle = Math.random() * Math.PI * 2;
+      const dist = 35 + Math.random() * 65;
+      const targetX = x + Math.cos(angle) * dist;
+      const targetY = y + Math.sin(angle) * dist;
+
+      this.tweens.add({
+        targets: p,
+        x: targetX,
+        y: targetY,
+        scaleX: 0,
+        scaleY: 0,
+        alpha: 0,
+        rotation: (Math.random() > 0.5 ? 1 : -1) * Math.PI,
+        duration: 480 + Math.random() * 250,
+        ease: 'Quad.easeOut',
+        onComplete: () => p.destroy(),
+      });
+    }
+  }
+
+  /**
+   * Tạo vệt đuôi bụi sao khi người chơi vuốt lướt ngón tay
+   */
+  private spawnStardustTrail(x: number, y: number): void {
+    const p = this.add.graphics().setDepth(DEPTH_TOKENS.backgroundSky + 5);
+    const col = Math.random() > 0.5 ? 0xffd23f : 0x7fd8ff;
+    const r = 4 + Math.random() * 3;
+
+    p.fillStyle(col, 0.9);
+    p.fillCircle(0, 0, r);
+    p.fillStyle(0xffffff, 1.0);
+    p.fillCircle(0, 0, r * 0.4);
+    p.setPosition(x, y);
+
+    this.tweens.add({
+      targets: p,
+      scaleX: 0,
+      scaleY: 0,
+      alpha: 0,
+      y: y + 10,
+      duration: 380,
+      ease: 'Quad.easeOut',
+      onComplete: () => p.destroy(),
+    });
   }
 
   private openSettings(): void {

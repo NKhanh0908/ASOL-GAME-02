@@ -4,6 +4,18 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-05 - Cinematic studio splash, MIRROR title entrance & loop, and interactive star sky
+
+- `game-next/src/presentation/SplashScene.ts`:
+  - Extended studio splash sequence to 4.5s with staggered origami polygon unfolding (0.0–1.4s), typography slide-in with expanding mirror bar and reflection (1.0–1.8s), light sweep sheen with sparkling stars (1.8–2.6s), and a 1.5s brand appreciation hold (2.6–4.1s).
+  - Added seamless cinematic color-morph transition: white background dissolves into the deep navy `#1A2470` of `MenuScene` with soft alpha fade over 650ms.
+- `game-next/src/presentation/MenuScene.ts`:
+  - Added staggered entrance animation to the MIRROR title letters: individual letters drop from above with casual elastic bounce (`Back.easeOut`, 70ms step delay) and settle into their tilt angles; mirror bar expands horizontally with a jewel sparkle; reflection fades in underneath.
+  - Added idle loop animations: gentle sine wave floating bob, periodic light sheen sweep across the gold face and mirror bar (every 4.5s), and occasional playful casual letter jiggle (every 6.5s).
+  - Activated moving cosmic sky (`SkyBackdrop` with `drift: true`) so stars drift continuously.
+  - Added interactive cosmic touch responses: tapping/clicking spawns an expanding quantum ripple wave and a burst of radiant stardust sparkles; dragging creates a trailing stardust particle path.
+- Verification: 702/702 vitest tests pass across 51 test suites; `npm run typecheck` clean; `npm run build` succeeds; `npm run android:sync` updates Capacitor Android web bundle; GitNexus `detect_changes()` reports changes isolated to `SplashScene` and `MenuScene`.
+
 ### 2026-10-04 - Replace Fredoka with Baloo 2 and finish wiring the HUD to i18n
 
 Review of the branding commits (f17f609, 93a172f).
