@@ -7,3 +7,14 @@ game/android/app/build/
 game/android/local.properties
 *.log
 .shots/
+
+# OpenClaw agent persona/memory (Sunny + Rynl)
+/SOUL.md
+/IDENTITY.md
+/USER.md
+/MEMORY.md
+/DREAMS.md
+/HEARTBEAT.md
+/TOOLS.md
+/BOOTSTRAP.md
+/memory/
