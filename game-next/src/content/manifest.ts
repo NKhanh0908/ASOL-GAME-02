@@ -36,3 +36,8 @@ export const campaignManifest: readonly ManifestEntry[] = [
   { id: '4-5', title: 'Thánh Giá Thiên Cầu', chapter: 4, order: 27, contentRevision: 'v0.1', status: 'planned' },
   { id: '4-6', title: 'Đại Ấn Tiên Tri', chapter: 4, order: 28, contentRevision: 'v0.1', status: 'planned' },
 ];
+
+/** Kiểm tra một id có phải là mã màn thuộc chiến dịch hay không */
+export function isCampaignId(id: string): boolean {
+  return campaignManifest.some((m) => m.id === id);
+}

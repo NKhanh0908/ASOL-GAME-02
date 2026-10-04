@@ -54,6 +54,9 @@ async function run() {
   // Wait 3 seconds for scripts and solves
   await new Promise(r => setTimeout(r, 3000));
 
+  const appLen = await send('Runtime.evaluate', { expression: 'document.getElementById("app")?.innerHTML.length' });
+  console.log('App innerHTML length:', appLen);
+
   // Take screenshot
   const shot = await send('Page.captureScreenshot', { format: 'png' });
   if (shot && shot.data) {

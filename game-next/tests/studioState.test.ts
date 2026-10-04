@@ -188,12 +188,40 @@ describe('studioReducer và StudioState', () => {
     }
   });
 
-  test('tắt rotationEnabled đưa toàn bộ turns nghiệm về 0', () => {
+  test('tắt rotationEnabled đưa toàn bộ turns nghiệm về 0 và chuyển chapter về 1 nếu đang là 4', () => {
     let state = createInitialState(levelTemplate);
+    state.source.chapter = 4;
     state.source.rotationEnabled = true;
     state.source.sampleSolutions[0][0].turns = 2;
 
     state = studioReducer(state, { type: 'set-rotation', enabled: false });
+    expect(state.source.rotationEnabled).toBe(false);
+    expect(state.source.chapter).toBe(1);
+    expect(state.source.sampleSolutions[0][0].turns).toBe(0);
+  });
+
+  test('bật rotationEnabled tự động đồng bộ chapter sang 4', () => {
+    let state = createInitialState(levelTemplate);
+    expect(state.source.chapter).toBe(1);
+    expect(state.source.rotationEnabled).toBe(false);
+
+    state = studioReducer(state, { type: 'set-rotation', enabled: true });
+    expect(state.source.rotationEnabled).toBe(true);
+    expect(state.source.chapter).toBe(4);
+  });
+
+  test('đổi field chapter sang 4 tự động bật rotation, đổi về 1..3 tự động tắt rotation', () => {
+    let state = createInitialState(levelTemplate);
+    expect(state.source.rotationEnabled).toBe(false);
+
+    state = studioReducer(state, { type: 'set-field', field: 'chapter', value: 4 });
+    expect(state.source.chapter).toBe(4);
+    expect(state.source.rotationEnabled).toBe(true);
+
+    state.source.sampleSolutions[0][0].turns = 3;
+
+    state = studioReducer(state, { type: 'set-field', field: 'chapter', value: 2 });
+    expect(state.source.chapter).toBe(2);
     expect(state.source.rotationEnabled).toBe(false);
     expect(state.source.sampleSolutions[0][0].turns).toBe(0);
   });

@@ -394,6 +394,20 @@ export function studioReducer(state: StudioState, action: StudioAction): StudioS
       if (action.field === 'title' && typeof action.value === 'string') {
         source.contentRevision = `${slugFromTitle(action.value)}-v1`;
       }
+      if (action.field === 'chapter') {
+        const chap = Number(action.value) as Chapter;
+        source.chapter = chap;
+        if (chap === 4) {
+          source.rotationEnabled = true;
+        } else {
+          source.rotationEnabled = false;
+          if (source.sampleSolutions && source.sampleSolutions[0]) {
+            for (const s of source.sampleSolutions[0]) {
+              s.turns = 0;
+            }
+          }
+        }
+      }
       return {
         ...state,
         source,
@@ -418,9 +432,16 @@ export function studioReducer(state: StudioState, action: StudioAction): StudioS
     case 'set-rotation': {
       const source = deepClone(state.source);
       source.rotationEnabled = action.enabled;
-      if (!action.enabled && source.sampleSolutions && source.sampleSolutions[0]) {
-        for (const s of source.sampleSolutions[0]) {
-          s.turns = 0;
+      if (action.enabled) {
+        source.chapter = 4;
+      } else {
+        if (source.chapter === 4) {
+          source.chapter = 1;
+        }
+        if (source.sampleSolutions && source.sampleSolutions[0]) {
+          for (const s of source.sampleSolutions[0]) {
+            s.turns = 0;
+          }
         }
       }
       return {

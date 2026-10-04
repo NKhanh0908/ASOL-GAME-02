@@ -1,7 +1,8 @@
 import type { Chapter, PlacementMode, Turns } from '../domain/model.ts';
 import type { AuthorResult } from '../content/authorLevel.ts';
 import type { StudioAction, StudioState } from './state.ts';
-import { isDirty } from './state.ts';
+import { cloneLevelSource, isDirty } from './state.ts';
+import { isCampaignId } from '../content/manifest.ts';
 import { saveStudioLevelApi } from './api.ts';
 
 export type InspectorOptions = {
@@ -84,6 +85,12 @@ export function createInspector(options: InspectorOptions): Inspector {
     }
 
     // ID (Readonly)
+    const isCampaign = isCampaignId(source.id);
+    const idContainer = document.createElement('div');
+    idContainer.style.display = 'flex';
+    idContainer.style.flexDirection = 'column';
+    idContainer.style.gap = '4px';
+
     const idInput = document.createElement('input');
     idInput.type = 'text';
     idInput.value = source.id;
@@ -93,7 +100,16 @@ export function createInspector(options: InspectorOptions): Inspector {
     idInput.style.color = '#64748b';
     idInput.style.border = '1px solid #1e294b';
     idInput.style.borderRadius = '4px';
-    addRow('Mã màn (ID - chỉ đọc)', idInput);
+    idContainer.appendChild(idInput);
+
+    if (isCampaign) {
+      const campTag = document.createElement('div');
+      campTag.textContent = '⚠️ Màn Chiến dịch (chỉ đọc) — bấm Lưu sẽ yêu cầu đổi mã Studio';
+      campTag.style.fontSize = '11px';
+      campTag.style.color = '#f59e0b';
+      idContainer.appendChild(campTag);
+    }
+    addRow('Mã màn (ID - chỉ đọc)', idContainer);
 
     // Title
     const titleInput = document.createElement('input');
@@ -421,8 +437,15 @@ export function createInspector(options: InspectorOptions): Inspector {
     actions.style.gap = '8px';
 
     // Save button
+    const isCamp = isCampaignId(source.id);
     const saveBtn = document.createElement('button');
-    saveBtn.textContent = isSaving ? 'Đang lưu...' : 'LƯU (Save)';
+    if (isSaving) {
+      saveBtn.textContent = 'Đang lưu...';
+    } else if (isCamp) {
+      saveBtn.textContent = 'LƯU BẢN STUDIO (Clone & Lưu)';
+    } else {
+      saveBtn.textContent = 'LƯU (Save)';
+    }
     saveBtn.style.padding = '10px';
     saveBtn.style.borderRadius = '6px';
     saveBtn.style.border = 'none';
@@ -433,7 +456,7 @@ export function createInspector(options: InspectorOptions): Inspector {
     const canSave = latestCheck?.ok && !isSaving;
     saveBtn.disabled = !canSave;
     if (canSave) {
-      saveBtn.style.backgroundColor = '#f59e0b';
+      saveBtn.style.backgroundColor = isCamp ? '#d97706' : '#f59e0b';
       saveBtn.style.color = '#000000';
     } else {
       saveBtn.style.backgroundColor = '#1e294b';
@@ -442,16 +465,42 @@ export function createInspector(options: InspectorOptions): Inspector {
 
     saveBtn.onclick = async () => {
       if (!canSave) return;
+
+      let targetSource = source;
+      if (isCampaignId(source.id)) {
+        const suggestedId = `mau-${source.id}`;
+        const newId = prompt(
+          `Màn "${source.id}" thuộc Chiến dịch nên không thể lưu đè.\nVui lòng nhập mã Studio mới để tạo bản lưu:`,
+          suggestedId
+        );
+        if (!newId) return;
+        if (!/^[a-z0-9-]{1,32}$/.test(newId)) {
+          alert('Mã màn chỉ gồm chữ thường, số và gạch ngang (tối đa 32 ký tự).');
+          return;
+        }
+        if (isCampaignId(newId)) {
+          alert(`Mã "${newId}" trùng với màn trong chiến dịch. Vui lòng chọn mã khác (bắt đầu bằng mau- hoặc studio-).`);
+          return;
+        }
+        targetSource = cloneLevelSource(source, newId);
+        options.dispatch({ type: 'load-source', source: targetSource });
+        window.location.hash = `#${newId}`;
+      }
+
       isSaving = true;
       render();
       try {
-        const res = await saveStudioLevelApi(source);
+        const res = await saveStudioLevelApi(targetSource);
         if (res.ok) {
           options.dispatch({ type: 'mark-saved' });
           options.onSaved();
-          alert(`Đã lưu màn "${source.id}" thành công!`);
+          alert(`Đã lưu màn "${targetSource.id}" thành công!`);
         } else {
-          alert(`Lỗi khi lưu: ${res.error}`);
+          if (res.error === 'id-clash-campaign') {
+            alert(`Lỗi khi lưu: Mã màn "${targetSource.id}" trùng với màn chiến dịch. Vui lòng đổi mã khác.`);
+          } else {
+            alert(`Lỗi khi lưu: ${res.error}`);
+          }
         }
       } catch (err) {
         alert(`Lỗi kết nối: ${(err as Error).message}`);

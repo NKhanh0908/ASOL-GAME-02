@@ -4,6 +4,15 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-04 - Fix id-clash-campaign when saving campaign levels and sync rotation with chapter in Studio
+
+- Modified `game-next/src/content/manifest.ts`: exported `isCampaignId(id)` helper to check if an ID belongs to `campaignManifest`.
+- Modified `game-next/src/studio/state.ts`: synchronized `chapter` and `rotationEnabled` in `studioReducer`. Setting `chapter: 4` or toggling `rotationEnabled: true` automatically enables both; switching away from Chapter 4 automatically disables rotation and resets turns to 0. Resolves validator error `chapter-rotation-disabled`.
+- Modified `game-next/src/studio/inspector.ts`: added campaign reference badge `⚠️ Màn Chiến dịch (chỉ đọc)` on ID field; updated Save button to `LƯU BẢN STUDIO (Clone & Lưu)` when viewing campaign levels, prompting the user for a new studio ID and cloning/saving seamlessly instead of failing with `id-clash-campaign`.
+- Modified `game-next/src/studio/library.ts`: prevented creating or cloning levels with IDs that clash with campaign manifest.
+- Added test cases in `game-next/tests/studioState.test.ts`: verified chapter and rotation two-way synchronization in reducer.
+- Verification: `npm run typecheck` passed, all 605 tests passed across 47 suites, browser CDP capture verified `✓ Hợp lệ` upon rotation toggle and proper clone-save workflow.
+
 ### 2026-10-04 - Complete Level Studio frontend UI and acceptance evidence (Phases E3-2 & E3-3)
 
 - Added `game-next/studio.html`: dedicated Level Studio interface page with dark cosmic aesthetic, responsive 3-column layout.

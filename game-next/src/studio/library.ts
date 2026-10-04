@@ -1,4 +1,4 @@
-import { campaignManifest } from '../content/manifest.ts';
+import { campaignManifest, isCampaignId } from '../content/manifest.ts';
 import type { StudioLevelSummary } from '../content/studioStore.ts';
 import { levelTemplate } from '../content/sources/_template.ts';
 import { sourceFromDocument } from '../content/sourceFromDocument.ts';
@@ -89,6 +89,10 @@ export function createLibrary(options: LibraryOptions): Library {
         alert('Mã màn chỉ gồm chữ thường, số và gạch ngang (tối đa 32 ký tự)');
         return;
       }
+      if (isCampaignId(id)) {
+        alert(`Mã "${id}" trùng với màn chiến dịch. Vui lòng chọn mã khác (bắt đầu bằng mau- hoặc studio-).`);
+        return;
+      }
       const newSource = cloneLevelSource(levelTemplate, id);
       options.dispatch({ type: 'load-source', source: newSource });
       window.location.hash = `#${id}`;
@@ -107,10 +111,15 @@ export function createLibrary(options: LibraryOptions): Library {
     cloneBtn.style.fontWeight = 'bold';
     cloneBtn.style.cursor = 'pointer';
     cloneBtn.onclick = () => {
-      const id = prompt(`Nhập mã clone từ "${currentId}":`);
+      const suggested = isCampaignId(currentId) ? `mau-${currentId}` : `${currentId}-copy`;
+      const id = prompt(`Nhập mã clone từ "${currentId}":`, suggested);
       if (!id) return;
       if (!/^[a-z0-9-]{1,32}$/.test(id)) {
         alert('Mã màn chỉ gồm chữ thường, số và gạch ngang (tối đa 32 ký tự)');
+        return;
+      }
+      if (isCampaignId(id)) {
+        alert(`Mã "${id}" trùng với màn chiến dịch. Vui lòng chọn mã khác (bắt đầu bằng mau- hoặc studio-).`);
         return;
       }
       const cloned = cloneLevelSource(state.source, id);
