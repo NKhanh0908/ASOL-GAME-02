@@ -4,6 +4,13 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-04 - Add in-memory level authoring pipeline
+
+- Added `game-next/src/content/authorLevel.ts`: implements `authorLevel(source)` running the full authoring pipeline in memory, generating document, solution report, difficulty score, warnings, JSON, SVG and markdown.
+- Added `game-next/tests/authorLevel.test.ts`: verified byte-exact match on 1-1 against committed assets and non-throwing error handling for invalid sources.
+- Verification: tests failed before implementation and passed after; `npm run typecheck` and all 546 tests passed.
+
+
 ### 2026-10-04 - Add level source code serializer
 
 - Added `game-next/src/content/serializeSource.ts`: implements `serializeLevelSource(source, constName)` emitting clean TypeScript source matching `sources/` formatting standards.
