@@ -4,18 +4,17 @@ Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; k
 
 ## Now
 
-- Branch: `feat/mobile-display-tier0` (branched from `main`, not merged).
-- Product state: Casual visual branding and juicy mobile polish implemented. 3D tactile action buttons in `MenuScene` with enlarged typography and icons. Gameplay sky galaxy drift activated with background cosmic touch ripples. Level start toast banner in `PlayScene` celebrating chapter and level name with elastic entrance. Astrological card modals with 3D tactile buttons in `PauseDialog` and `SettingsDialog` using `Baloo 2` typography, juicy switches, and 3D language pill selector.
-- Next step: reviewer play-test on debug APK (`docs/screenshots/mobile/m1/` improvements).
+- Branch: `main` (clean, merged from `feat/mobile-display-tier0`).
+- Product state: Plan E (Level Studio) and Mobile Display Tier 0/2 + Casual visual branding merged to `main`. Full casual juicy aesthetic: Icon 1 (Ngọc Đôi) for app/web, Logo Option 2 (Gương Đôi) for Menu, Baloo 2 typography, 3D tactile buttons, moving star galaxy, level start banner, bilingual VI/EN i18n, and redesigned dialogs.
+- Next step: review plans for F motion stream or G audio stream.
 
 ## Streams
 
 | Stream | State | Entry doc |
 |--------|-------|-----------|
 | Level system A → B → C/D → E | complete; Plan E merged to `main` | `docs/ai/DOCS-INDEX.md` rows A–E |
-| MD mobile display (Tier 0 + Tier 2) | implemented, awaiting device play-test | `docs/superpowers/plans/2026-10-04-mobile-display-quick-wins.md` |
-| Casual visual branding + Studio Splash | implemented on current branch | `docs/gdd/assets/` mockups |
-| Bilingual i18n (VI / EN) | implemented on current branch | `src/presentation/i18n.ts` |
+| MD mobile display (Tier 0 + Tier 2) | complete; merged to `main` | `docs/superpowers/plans/2026-10-04-mobile-display-quick-wins.md` |
+| BR casual branding, splash & bilingual | complete; merged to `main` | `docs/gdd/assets/` mockups |
 | F motion (F1 → F2 → F3) | specs approved, plans ready, not started | `docs/superpowers/plans/2026-10-03-f-motion-index.md` |
 | C chapter 2 + Hoa Pham | complete; all 16 levels approved and available in campaign order | `docs/superpowers/plans/2026-10-02-c-chapter-2-hoa-pham-levels.md` |
 | G audio (G0 → G1 → G2) | spec approved, plans written, not started | `docs/superpowers/plans/2026-10-03-g-audio-index.md` |
@@ -23,8 +22,7 @@ Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; k
 
 ## Open decisions / blockers
 
-- MD: Tier 0 passed its device play-test (`docs/screenshots/mobile/m0/`). Tier 2, casual branding, and splash awaiting hardware play-test.
-- MD: safe-area insets are read once and cached. In immersive mode most devices report zero, so the inset paths are covered by unit tests rather than by the play-test.
+- MD: Tier 0 and Tier 2 merged to `main`. Safe-area insets are read once and cached.
 - F1 §3.3 edited after approval; F2 plans list 7 spec departures — review at F stop point 1.
 - G: plans await review at G stop point 1 (9 spec departures listed in the index). G0 can start now; G1/G2 wait for F2.
 
