@@ -4,6 +4,14 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-04 - Add difficulty warnings to authoring reports
+
+- `game-next/src/content/authoringReport.ts`: `renderReportMarkdown` accepts optional `warnings` parameter and renders `## Cảnh báo` section when warnings exist.
+- `game-next/scripts/author-level.ts`: computes difficulty score and warnings via `scoreDifficulty` and `collectWarnings`, passing warnings to `renderReportMarkdown`.
+- `game-next/tests/authoringReport.test.ts` & `game-next/tests/difficulty.test.ts`: added tests for warning formatting and mismatch threshold detection.
+- Verification: tests failed before implementation and passed after; `npm run typecheck` and all 503 tests passed; `npm run content:author -- --all` ran cleanly with 0 diff on committed reports.
+
+
 ### 2026-10-04 - Add automated difficulty scoring and Chapter 1 calibration
 
 - Added `game-next/src/content/difficulty.ts`: implements `scoreDifficulty` with 6 components (`pieces`, `choices`, `hollow`, `revive`, `nearMiss`, `hiddenEdges`), `DIFFICULTY_WEIGHTS`, `DIFFICULTY_THRESHOLDS`, and `collectWarnings`.

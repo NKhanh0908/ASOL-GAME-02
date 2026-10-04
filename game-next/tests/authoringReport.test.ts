@@ -129,4 +129,17 @@ describe('Báo cáo và cổng phát hành cho màn đặt tự do (spec D)', ()
     const allowed = { ...demo, allowUnproven: { reason: 'Đã chơi thử' } };
     expect(releaseBlocker(allowed, { ...report, proven: false })).toBeNull();
   });
+
+  test('renderReportMarkdown in mục Cảnh báo khi có cảnh báo và ẩn khi rỗng', () => {
+    const report = searchSolutions(songTinh);
+    const withoutWarnings = renderReportMarkdown(songTinh, report, []);
+    expect(withoutWarnings).not.toContain('## Cảnh báo');
+
+    const withWarnings = renderReportMarkdown(songTinh, report, [], [
+      { code: 'difficulty-mismatch', message: 'Độ khó lệch quá 1' },
+    ]);
+    expect(withWarnings).toContain('## Cảnh báo');
+    expect(withWarnings).toContain('- `difficulty-mismatch`: Độ khó lệch quá 1');
+  });
 });
+

@@ -1,6 +1,7 @@
 import { GRID_HEIGHT, GRID_WIDTH, TOTAL_CELLS } from '../domain/model.ts';
 import { shapePolygon } from '../domain/shapes.ts';
 import type { DroppedDecoy } from './authoring.ts';
+import type { LevelWarning } from './difficulty.ts';
 import type { LevelDocument } from './document.ts';
 import { solveLevel } from './solver.ts';
 
@@ -102,7 +103,8 @@ const DROP_REASON_TEXT: Readonly<Record<DroppedDecoy['reason'], string>> = {
 export function renderReportMarkdown(
   doc: LevelDocument,
   report: SolutionReport,
-  dropped: readonly DroppedDecoy[] = []
+  dropped: readonly DroppedDecoy[] = [],
+  warnings: readonly LevelWarning[] = []
 ): string {
   // Chỉ thêm mục khi có neo bị bỏ, để báo cáo các màn cũ không đổi
   const droppedLines =
@@ -114,6 +116,16 @@ export function renderReportMarkdown(
           '| Mảnh | Neo | Lý do |',
           '|---|---|---|',
           ...dropped.map((d) => `| ${d.pieceId} | ${d.anchorId} | ${DROP_REASON_TEXT[d.reason]} |`),
+          '',
+        ];
+  // Chỉ thêm mục khi có cảnh báo (DF-03)
+  const warningLines =
+    warnings.length === 0
+      ? []
+      : [
+          '## Cảnh báo',
+          '',
+          ...warnings.map((w) => `- \`${w.code}\`: ${w.message}`),
           '',
         ];
   const lines = [
@@ -138,6 +150,7 @@ export function renderReportMarkdown(
         ]
       : []),
     '',
+    ...warningLines,
     '## Tư thế gây nhiễu',
     '',
     '| Mảnh | Neo | Lý do | Số ô đổi so với mục tiêu |',

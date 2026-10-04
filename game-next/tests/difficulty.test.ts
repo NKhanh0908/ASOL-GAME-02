@@ -6,6 +6,7 @@ import { LEVEL_SOURCES } from '../src/content/sources/index.ts';
 import {
   DIFFICULTY_THRESHOLDS,
   DIFFICULTY_WEIGHTS,
+  collectWarnings,
   scoreDifficulty,
 } from '../src/content/difficulty.ts';
 
@@ -493,3 +494,24 @@ describe('scoreDifficulty - Hiệu chỉnh 6 màn Chương 1', () => {
     });
   }
 });
+
+describe('collectWarnings', () => {
+  test('cảnh báo difficulty-mismatch khi lệch > 1 và không cảnh báo khi lệch <= 1', () => {
+    const doc = buildLevelDocument(LEVEL_SOURCES['1-1']); // difficultyEstimate: 1
+    const report = searchSolutions(doc);
+    const score = scoreDifficulty(doc, report); // score: 1
+
+    expect(collectWarnings(doc, score)).toEqual([]);
+
+    // Giả lập điểm lệch 1: estimate 1, score 2 -> không cảnh báo
+    expect(collectWarnings(doc, { ...score, score: 2 })).toEqual([]);
+
+    // Giả lập điểm lệch 2: estimate 1, score 3 -> cảnh báo
+    const warnings = collectWarnings(doc, { ...score, score: 3 });
+    expect(warnings).toHaveLength(1);
+    expect(warnings[0].code).toBe('difficulty-mismatch');
+    expect(warnings[0].message).toContain('3');
+    expect(warnings[0].message).toContain('1');
+  });
+});
+
