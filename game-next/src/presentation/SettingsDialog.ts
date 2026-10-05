@@ -4,6 +4,7 @@ import { COLOR_NUMBERS, COLOR_TOKENS, TYPO_TOKENS } from './designTokens.ts';
 import { designViewBounds } from './designViewport.ts';
 import { TEXTURE_KEYS } from './TextureFactory.ts';
 import { t, getLocale, setLocale } from './i18n.ts';
+import { setMotionScale } from './transitions/motion.ts';
 
 export class SettingsDialog {
   private scene: Phaser.Scene;
@@ -96,9 +97,10 @@ export class SettingsDialog {
     this.createToggleRow(
       -modalH / 2 + 252,
       t('setting_reduce_motion'),
-      false,
-      (_val) => {
-        // Tùy chọn accessibility
+      this.progressRepo.read().progress.settings.reducedMotion,
+      (on) => {
+        this.progressRepo.setReducedMotion(on);
+        setMotionScale(on ? 0 : 1);
       }
     );
 

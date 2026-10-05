@@ -4,6 +4,11 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-05 - Persist the reduced-motion setting (F1 task 4)
+
+- Added `settings.reducedMotion` (default `false`, legacy saves read as `false` without recovery) and `setReducedMotion` to the progress repository; wired the previously empty "Giảm chuyển động" toggle in `SettingsDialog` to persist the value and update the global motion scale.
+- Verification: three new progress tests failed before the change, then passed; `npm run typecheck` and `npm test` passed.
+
 ### 2026-10-05 - Add choreography steps and route tables (F1 task 3)
 
 - Added `game-next/src/presentation/transitions/choreography.ts` (enter/exit poses that always return to the natural pose, step tables with even stagger), `routes.ts` (step tables and special-effect timings for all seven routes) and `stardust.ts` (at most 30 particles with fixed alpha).

@@ -25,6 +25,7 @@ export function createProgressRepository(
       completed: [],
       settings: {
         showTarget: true,
+        reducedMotion: false,
       },
     };
   }
@@ -88,11 +89,16 @@ export function createProgressRepository(
           ? parsed.settings.showTarget
           : true;
 
+      const reducedMotion =
+        parsed.settings && typeof parsed.settings.reducedMotion === 'boolean'
+          ? parsed.settings.reducedMotion
+          : false;
+
       const progress: Progress = {
         version: 1,
         campaignRevision: revision,
         completed: validCompleted,
-        settings: { showTarget },
+        settings: { showTarget, reducedMotion },
       };
 
       memorySnapshot = progress;
@@ -186,6 +192,14 @@ export function createProgressRepository(
       };
 
       return saveToStorage(nextProgress);
+    },
+
+    setReducedMotion(on: boolean): LoadResult {
+      const current = readFromStorage().progress;
+      return saveToStorage({
+        ...current,
+        settings: { ...current.settings, reducedMotion: on },
+      });
     },
 
     reset(): LoadResult {
