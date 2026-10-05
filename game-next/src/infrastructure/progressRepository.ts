@@ -27,6 +27,8 @@ export function createProgressRepository(
         showTarget: true,
         reducedMotion: false,
         haptics: true,
+        music: true,
+        sfx: true,
       },
     };
   }
@@ -100,11 +102,21 @@ export function createProgressRepository(
           ? parsed.settings.haptics
           : true;
 
+      const music =
+        parsed.settings && typeof parsed.settings.music === 'boolean'
+          ? parsed.settings.music
+          : true;
+
+      const sfx =
+        parsed.settings && typeof parsed.settings.sfx === 'boolean'
+          ? parsed.settings.sfx
+          : true;
+
       const progress: Progress = {
         version: 1,
         campaignRevision: revision,
         completed: validCompleted,
-        settings: { showTarget, reducedMotion, haptics },
+        settings: { showTarget, reducedMotion, haptics, music, sfx },
       };
 
       memorySnapshot = progress;
@@ -213,6 +225,22 @@ export function createProgressRepository(
       return saveToStorage({
         ...current,
         settings: { ...current.settings, haptics: on },
+      });
+    },
+
+    setMusic(on: boolean): LoadResult {
+      const current = readFromStorage().progress;
+      return saveToStorage({
+        ...current,
+        settings: { ...current.settings, music: on },
+      });
+    },
+
+    setSfx(on: boolean): LoadResult {
+      const current = readFromStorage().progress;
+      return saveToStorage({
+        ...current,
+        settings: { ...current.settings, sfx: on },
       });
     },
 

@@ -132,7 +132,7 @@ describe('Cài đặt Giảm chuyển động', () => {
     repo.setShowTarget(false);
     repo.setReducedMotion(true);
     const again = createProgressRepository(storage, campaignManifest, 'oracle-v1');
-    expect(again.read().progress.settings).toEqual({ showTarget: false, reducedMotion: true, haptics: true });
+    expect(again.read().progress.settings).toEqual({ showTarget: false, reducedMotion: true, haptics: true, music: true, sfx: true });
   });
 
   test('bản lưu cũ thiếu trường đọc ra false, không bị coi là hỏng', () => {
@@ -168,8 +168,48 @@ describe('Cài đặt Rung phản hồi', () => {
     repo.setReducedMotion(true);
     repo.setHaptics(false);
     expect(createProgressRepository(storage, campaignManifest, 'oracle-v1').read().progress.settings)
-      .toEqual({ showTarget: true, reducedMotion: true, haptics: false });
+      .toEqual({ showTarget: true, reducedMotion: true, haptics: false, music: true, sfx: true });
   });
 });
 
 
+
+describe('Audio settings', () => {
+  test('both default on', () => {
+    const repo = createProgressRepository(createMockStorage(), campaignManifest, 'oracle-v1');
+    expect(repo.read().progress.settings.music).toBe(true);
+    expect(repo.read().progress.settings.sfx).toBe(true);
+  });
+
+  test('saved independently of other settings', () => {
+    const storage = createMockStorage();
+    const repo = createProgressRepository(storage, campaignManifest, 'oracle-v1');
+    repo.setMusic(false);
+    repo.setSfx(false);
+    repo.setSfx(true);
+    const again = createProgressRepository(storage, campaignManifest, 'oracle-v1');
+    expect(again.read().progress.settings).toEqual({
+      showTarget: true,
+      reducedMotion: false,
+      haptics: true,
+      music: false,
+      sfx: true,
+    });
+  });
+
+  test('a legacy save without the keys reads true and is not marked recovered', () => {
+    const storage = createMockStorage();
+    createProgressRepository(storage, campaignManifest, 'oracle-v1').read();
+    const raw = JSON.parse(storage.getItem('mirror.rebuild.progress.v1') ?? '{}') as {
+      settings: Record<string, unknown>;
+    };
+    delete raw.settings.music;
+    delete raw.settings.sfx;
+    storage.setItem('mirror.rebuild.progress.v1', JSON.stringify(raw));
+
+    const loaded = createProgressRepository(storage, campaignManifest, 'oracle-v1').read();
+    expect(loaded.progress.settings.music).toBe(true);
+    expect(loaded.progress.settings.sfx).toBe(true);
+    expect(loaded.recovered).toBe(false);
+  });
+});

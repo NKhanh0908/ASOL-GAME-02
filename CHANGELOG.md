@@ -4,6 +4,13 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-05 - Music manifest and the music/sfx settings (GS task 9a)
+
+- Added `game-next/src/infrastructure/audioManifest.ts` listing only the two reviewer-sourced tracks (`TrackId`, `TRACK_IDS`, `AudioLicense`, `AUDIO_LICENSES`, `MusicAsset`, `MUSIC_ASSETS`, `musicUrls`); sound effects have no entry because they are synthesized. The music `source` title, author and url are blank and the licence is a placeholder: the metadata is deferred to Task 9b, when the reviewer supplies the tracks. The test asserting sources are allowed and linked is omitted until then and lands in Task 9b.
+- Added `Progress.settings.music` and `Progress.settings.sfx` (default `true`) with `setMusic` / `setSfx` in `game-next/src/application/progressPort.ts` and `game-next/src/infrastructure/progressRepository.ts`, following the existing `haptics` path. No schema version bump; legacy saves read `true` without being marked recovered.
+- `game-next/tests/audioManifest.test.ts` (new) and `game-next/tests/progress.test.ts` (three new cases; two older exact-match settings expectations widened with `music: true, sfx: true`).
+- Verification: new tests failed first (manifest unresolved, 3 settings cases on `undefined`), then passed. `npm run typecheck` clean; full `npm test` 78 files / 932 tests green (baseline 77 / 926); `npm run build` clean. GitNexus `impact` on `createProgressRepository` reported HIGH (4 direct callers) before editing; `detect_changes` run on the staged set.
+
 ### 2026-10-05 - Apply the GS1 final-review fixes
 
 - `game-next/tests/audioSynthPortable.test.ts`: the portability guard now walks `src/audio-synth/` recursively and catches `from`, bare `import`, dynamic `import()`, `require()` and `export ... from` in any quote style, and rejects any path containing a `..` segment. A self-test covers each form.
