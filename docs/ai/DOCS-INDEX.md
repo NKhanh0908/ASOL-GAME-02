@@ -21,7 +21,7 @@ Paths below are relative to `docs/superpowers/`.
 | E | Level studio | specs/2026-10-02-e-level-studio-design.md | plans/2026-10-02-e-level-studio.md (index) | done | E1, E2, E3 approved and merged to `main` |
 | E1–E2 | Studio backend & difficulty | spec E §8 | plans/2026-10-02-e1-difficulty.md, e2-studio-backend.md | done | Completed on feat/level-studio-e2; all 573 tests pass |
 | E3 | Studio frontend UI & acceptance | spec E §8 | plans/2026-10-02-e3-1-logic.md, e3-2-board-page.md, e3-3-check-acceptance.md | done | Completed on feat/level-studio-e3; acceptance evidence in docs/testing/studio/ |
-| F1 | Motion foundation + scene transitions | specs/2026-10-03-f1-scene-transitions-design.md | plans/2026-10-03-f-motion-index.md (read first), f1-1-nen-tang, f1-2-director, f1-3-dan-dung | in_progress | F1 Tasks 1–6 completed on `feat/motion-f1`; next is F1-3 (Tasks 7–10) |
+| F1 | Motion foundation + scene transitions | specs/2026-10-03-f1-scene-transitions-design.md | plans/2026-10-03-f-motion-index.md (read first), f1-1-nen-tang, f1-2-director, f1-3-dan-dung | done | Tasks 1–10 completed on feat/motion-f1; awaiting reviewer stop point 2 |
 | F2 | In-level game feel | specs/2026-10-03-f2-in-level-game-feel-design.md | plans/2026-10-03-f2-1-logic, f2-2-renderer, f2-3-phan-hoi | approved | Plans list 7 spec departures to review; not started |
 | F3 | Motion acceptance tools | specs/2026-10-03-f3-motion-acceptance-design.md | plans/2026-10-03-f3-motion-acceptance.md | approved | Not started |
 | BR | Branding, splash and bilingual i18n | — (no spec; reviewer-authored) | — (no plan) | done | Merged to `main`. Dual jewels icon, Gương Đôi logo, Baloo 2 typography, studio splash, bilingual i18n, and 3D tactile UI polish |

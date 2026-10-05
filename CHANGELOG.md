@@ -4,6 +4,11 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-05 - Complete F1 scene transitions
+
+- Documented the transition entry point in `game-next/README.md`.
+- Verification: `npm run typecheck`, `npm test`, `npm run content:validate` and `npm run build` passed; spec F1 sections 2–3 cross-checked. Device acceptance is tracked by plan F3.
+
 ### 2026-10-05 - Choreograph the play scene (F1 task 9)
 
 - Split the board into base, grid and top layers centred on (360, 600), made the four cardinal runes visible above the grid (previously hidden under the board surface), added per-placement target reveal and a gold-frame toggle to `BoardRenderer`, and exposed animatable HUD and target-badge parts.
