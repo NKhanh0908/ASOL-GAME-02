@@ -4,6 +4,15 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-05 - GS Tasks 1-7 complete: synth engine, patches and Audio Lab
+
+Controller wrap-up at reviewer stop point 1. The per-task changes are in the seven entries below; this entry records the gate.
+
+- Status: GS Tasks 1-7 are implemented, reviewed and committed on `feat/audio-synth`. `docs/ai/STATUS.md` and `docs/ai/DOCS-INDEX.md` updated to say the stream is waiting on the reviewer's listening pass in the Audio Lab.
+- Execution note: a prior agent completed Task 1 and crashed mid-Task-2; its unreviewed work-in-progress was set aside rather than adopted and Task 2 was redone from the brief under a red-test gate. Its preflight rulings were reviewed and kept — one of them corrected a genuinely weak summing test in the Task 3 brief.
+- Two review rounds caught defects worth naming: a seed-stride test that passed even with `SEED_STRIDE = 0`, and an Audio Lab that could show one cue's render and patch body under another cue's name, which would have had the reviewer copy the wrong sound. Both were my plan's defects, not the implementers'.
+- Verification: `npm run typecheck` clean; `npm test` 76 files / 920 tests passing; `npm run build` clean with `grep -rl audiolab dist/` finding nothing; `npm run content:validate` 22 levels pass. Re-running `npm run audio:author -- --all` leaves `git status` empty, so the committed listening copies in `docs/testing/audio/` are byte-identical to a fresh render. GitNexus `detect_changes` ran on every task but reports 0 symbols for all of them: its index lives at the main checkout, not this worktree, so it is not evidence here and the repo needs re-indexing after merge.
+
 ### 2026-10-05 - Audio Lab fix round 1 (GS task 7)
 
 - `game-next/src/devtools/audiolab/guard.ts`: added `ViewMemory` (last good render kept per cue) and `sliderLabel`. `main.ts` now paints a cue's own last good render, or a blank canvas/stats/textarea, when its patch is invalid, so a stale render from another cue can never sit under the selected cue (Copy could have handed out the wrong patch body). Slider captions show the full path (`layers[2].source.carrierHz = 880`); `audiolab.html` stacks caption above slider to fit.
