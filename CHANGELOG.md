@@ -4,6 +4,15 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-06 - VR0 implementation plan
+
+- Added `docs/superpowers/plans/2026-10-06-vr0-motion-language.md`: two TDD tasks adding `quartOut` to the `EASES` registry and declaring the four `MOTION_FAMILIES`, with no call-site changes. Written for sequential inline execution at the reviewer's request.
+- Corrected VR0 spec §3.2 while planning: `MOTION_FAMILIES` moves from `designTokens.ts` to `transitions/motion.ts`. `designTokens.ts` imports nothing and must stay a leaf module, so a family table there referencing `EaseName` would create an import cycle — the same trap `ARCHITECTURE.md` already records for `src/content/audio/root.ts`.
+- Plan self-review caught a type error before it reached an executor: a single `MotionFamily` shape with optional `tapMs`/`standardMs` typechecks at the definition but makes `MOTION_FAMILIES.ui.tapMs` a `number | undefined` at every call site, breaking the plan's own test. Replaced with one type per family plus a generic `motionFamily<K>` that preserves the specific type.
+- The plan guards its own scope: Task 2 Step 6 diffs against `HEAD~2` and instructs the executor to revert if any scene file appears, since adopting the families is VR1's work.
+- Marked VR0 `approved` in `docs/ai/DOCS-INDEX.md`.
+- Verification: planning only, no code touched; plan self-reviewed for spec coverage, placeholders and type consistency against the real exports of `transitions/motion.ts` and `designTokens.ts`.
+
 ### 2026-10-06 - VR0 motion language spec; VR3 assessment decomposed
 
 - Added `docs/superpowers/specs/2026-10-06-vr0-motion-language-design.md`. The gameplay animation assessment's §8 is foundational and cross-cutting, so it is split out as VR0 and sequenced **before VR1**: four motion families (`ui`, `glass`, `magic`, `piece`) layered over the existing `EASES` registry, plus the one missing ease `quartOut`. No call site changes in VR0 itself.

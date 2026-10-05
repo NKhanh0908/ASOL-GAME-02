@@ -91,10 +91,19 @@ It is the only ease the assessment names that the registry lacks.
 
 ### 3.2 Add the family table
 
-`MOTION_FAMILIES` in `designTokens.ts`, keyed by family name, each entry giving
-its ease name and its durations. `ANIM_TOKENS.duration` stays where it is and
-keeps its current values; the family table references them rather than
-duplicating numbers, so there is one source for each duration.
+`MOTION_FAMILIES` goes in `transitions/motion.ts`, beside `EASES` — **not** in
+`designTokens.ts`.
+
+`designTokens.ts` imports nothing; it is a leaf module, and `motion.ts` imports
+from it. Putting the family table in `designTokens.ts` while it references
+`EaseName` from `motion.ts` would create an import cycle and destroy that leaf
+property. This is the same trap `ARCHITECTURE.md` already records for
+`src/content/audio/root.ts`.
+
+Placed in `motion.ts`, the table sits next to the registry it references and can
+still read `ANIM_TOKENS.duration` from `designTokens.ts`. Each entry gives its
+ease name and its durations, referencing `ANIM_TOKENS` rather than duplicating
+numbers, so there is one source for each duration.
 
 ### 3.3 No call sites change in this spec
 
