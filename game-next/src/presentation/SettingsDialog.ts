@@ -1,9 +1,11 @@
+import { Capacitor } from '@capacitor/core';
 import Phaser from 'phaser';
 import type { ProgressRepository } from '../application/progressPort.ts';
 import { COLOR_NUMBERS, COLOR_TOKENS, TYPO_TOKENS } from './designTokens.ts';
 import { designViewBounds } from './designViewport.ts';
 import { TEXTURE_KEYS } from './TextureFactory.ts';
 import { t, getLocale, setLocale } from './i18n.ts';
+import { setMotionScale } from './transitions/motion.ts';
 
 export class SettingsDialog {
   private scene: Phaser.Scene;
@@ -96,20 +98,25 @@ export class SettingsDialog {
     this.createToggleRow(
       -modalH / 2 + 252,
       t('setting_reduce_motion'),
-      false,
-      (_val) => {
-        // Tùy chọn accessibility
+      this.progressRepo.read().progress.settings.reducedMotion,
+      (on) => {
+        this.progressRepo.setReducedMotion(on);
+        setMotionScale(on ? 0 : 1);
       }
     );
 
-    // Toggle 3: Rung phản hồi (nếu thiết bị hỗ trợ)
-    const hasVibration = typeof navigator !== 'undefined' && 'vibrate' in navigator;
-    if (hasVibration) {
+    // Toggle 3: Rung phản hồi — Android WebView không đáng tin ở navigator.vibrate,
+    // nên hiện khi chạy native (plugin Haptics) hoặc trình duyệt có vibrate
+    const canVibrate =
+      Capacitor.isNativePlatform() || (typeof navigator !== 'undefined' && 'vibrate' in navigator);
+    if (canVibrate) {
       this.createToggleRow(
         -modalH / 2 + 324,
         t('setting_haptics'),
-        true,
-        (_val) => {}
+        this.progressRepo.read().progress.settings.haptics,
+        (on) => {
+          this.progressRepo.setHaptics(on);
+        }
       );
     }
 

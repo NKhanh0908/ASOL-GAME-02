@@ -23,7 +23,7 @@ Quyết định đã chốt với người review:
 | Quyết định | Giá trị |
 |---|---|
 | Cách vẽ mảnh | Vẽ mỗi mảnh một lần thành texture, hiển thị bằng `Image`. Chỉ vùng giao chẵn/lẻ còn dùng Graphics |
-| Cường độ | Tinh tế: thao tác 80–260 ms, nhấn mạnh vùng giao XOR. Phần thưởng lớn dồn vào chuỗi thắng khoảng 1800 ms |
+| Cường độ | Tinh tế: thao tác 80–260 ms, nhấn mạnh vùng giao XOR. Phần thưởng lớn dồn vào chuỗi thắng khoảng 2800 ms |
 | Rung | Có, dùng `@capacitor/haptics`. Nối nút "Rung phản hồi" đang để trống |
 
 **Ngoài phạm vi:** âm thanh, đổi luật hay bố cục, chuyển cảnh giữa các scene (F1), hiệu ứng ở Menu và Bản đồ.
@@ -153,24 +153,24 @@ Quy tắc phụ:
 - Nút Xoay đổi trạng thái bật/tắt bằng alpha 0.3 ↔ 1 trong 150 ms, không đổi tức thời.
 - Input không bị khoá trong các hiệu ứng thao tác. Nhấc một mảnh đang tween thì tween bị huỷ và mảnh tiếp tục từ `Pose` hiện tại, không bị giật.
 
-## 4. Chuỗi thắng — 1800 ms
+## 4. Chuỗi thắng — 2800 ms
 
 Chạy trên một `TransitionTimeline`. Mốc 0 là lúc mảnh cuối bắt đầu snap.
 
 | Mốc | Hành động |
 |---|---|
-| 0–180 | Snap bình thường của mảnh cuối (mục 3) |
-| 180–300 | Nghỉ một nhịp. Bầu trời tối thêm 10% trong 300 ms (`BackgroundScene` của F1) |
-| 300–900 | Các mảnh sáng lần lượt theo thứ tự `targetPlacements`, cách 90 ms. Mỗi mảnh có một lớp phủ sáng: cùng texture, `setTintFill(0xFFF4CC)`, additive, alpha 0 → 0.6 → 0 trong 260 ms |
-| 700–1100 | Một vệt sáng amber chạy quanh viền silhouette mục tiêu (dash offset trên đa giác ngoài), alpha 1 → 0 |
-| 900 | Camera flash dịu 300 ms (`249, 199, 79`). Hai vòng cộng hưởng từ trọng tâm như hiện tại (amber 160 px, ice 180 px trễ 160 ms). Tối đa 30 hạt bụi sao bung ra; alpha mỗi hạt cố định khi sinh rồi mờ dần, không random mỗi khung hình. `notify('success')` |
-| 1000–1400 | Khung bia chuyển từ kính sang vàng: hai `Image` chồng nhau, alpha chéo nhau, thay cho `setTexture`. Khay và các ô chứa mờ đi trong 300 ms thay vì `setVisible(false)` |
-| 1200–1800 | Thẻ thắng trượt lên y +60 → 0, alpha 0 → 1. Nhãn, tên màn, câu thơ và hai nút hiện so le 80 ms |
-| Sau 1800 | Viền bia nhấp nháy nhẹ (`victoryPulse`) mỗi khung hình theo `delta` thật. Vòng thiên văn quay nhanh gấp 3 như hiện tại |
+| 0–200 | Snap bình thường của mảnh cuối (mục 3) |
+| 200–600 | Nghỉ một nhịp. Bầu trời tối thêm 12% trong 400 ms (`BackgroundScene` của F1) |
+| 400–1200 | Các mảnh sáng lần lượt theo thứ tự `targetPlacements`, cách 120 ms. Mỗi mảnh có một lớp phủ sáng additive, alpha 0 → 0.7 → 0 trong 350 ms |
+| 900–1500 | Một vệt sáng amber chạy quanh viền từng placement của nghiệm mẫu, alpha 1 → 0 |
+| 1300 | Camera flash dịu 350 ms (`249, 199, 79`). Hai vòng cộng hưởng từ trọng tâm (amber 160 px, ice 180 px trễ 200 ms), mỗi vòng 800 ms. Tối đa 30 hạt bụi sao bung ra trong 1100 ms; alpha mỗi hạt cố định khi sinh rồi mờ dần, không random mỗi khung hình. `notify('success')` |
+| 1400–2000 | Khung bia chuyển từ kính sang vàng trong 600 ms. Khay và các ô chứa mờ đi trong 400 ms |
+| 2000–2800 | Thẻ thắng trượt lên y +60 → 0, alpha 0 → 1. Nhãn, tên màn, câu thơ và hai nút hiện so le 100 ms |
+| Sau 2800 | Viền bia nhấp nháy nhẹ (`victoryPulse`) mỗi khung hình theo `delta` thật. Vòng thiên văn quay nhanh gấp 3 như hiện tại |
 
 - Chạm bất kỳ trong lúc chạy chuỗi: `complete()` đưa về trạng thái cuối (khung vàng, thẻ hiện, không còn hạt).
 - "Đặt lại" từ thẻ thắng chạy ngược phần thẻ và khung trong 300 ms, rồi tới `reset`.
-- Bỏ ánh chớp `cameras.main.flash(350, …)` hiện tại ở mốc 0: ánh sáng dời về mốc 900, sau nhịp nghỉ.
+- Bỏ ánh chớp `cameras.main.flash(350, …)` hiện tại ở mốc 0: ánh sáng dời về mốc 1300, sau nhịp nghỉ.
 
 ## 5. Giảm chuyển động
 
@@ -218,7 +218,7 @@ Sau F2, tuyến `menu-to-play` của F1 (mốc 950–1350) cho từng mảnh rơ
   - Rotate bị từ chối sinh `rotate-blocked`.
   - Snap tạo giao 2 lớp sinh `overlap-hollow`; giao 3 lớp sinh `overlap-revive`.
   - Snap mảnh cuối sinh `snap` rồi `won`.
-- `victorySequence.test.ts`: tổng 1800 ms, các mốc khớp token, số hạt ≤ 30, `complete()` để lại khung vàng và thẻ hiện.
+- `victorySequence.test.ts`: tổng 2800 ms, các mốc khớp token, số hạt ≤ 30, `complete()` để lại khung vàng và thẻ hiện.
 - `haptics.test.ts`: với plugin giả, ánh xạ sự kiện → lời gọi theo bảng mục 3. `haptics = false` thì không gọi. Plugin ném lỗi thì nuốt lỗi.
 - `playController`: `getSnapshot()` không gọi `evaluate`, kiểm bằng spy. Kéo trong cùng một ô không tính lại mask.
 - `boardRendererLayers.test.ts`: cập nhật theo thứ tự lớp mới (mảnh `Image` dưới lớp vùng giao, mảnh đang kéo trên cùng).
@@ -253,7 +253,7 @@ Phát hiện khi đối chiếu với code thật; plan F2 (`2026-10-03-f2-1-log
 4. Lề texture là 25% mỗi phía (không phải 22%): hào quang phóng 1,22 lần quanh trọng tâm tràn khoảng 0,165 cạnh khung với tam giác vuông.
 5. Texture không vẽ trong `create()`: `update()` vẽ một mảnh mỗi khung, xong trước mốc 950 ms khi mảnh rơi vào khay (giữ ngưỡng P-04 của F3).
 6. `feedbackEvents` nhận thêm `subject: { command: 'move' | 'rotate' | 'reset'; pieceId: string | null }`, vì lệnh xoay bị từ chối không mang id mảnh.
-7. Vòng cộng hưởng lúc thắng rút còn 600 ms để chuỗi kết thúc đúng 1800 ms.
+7. Vòng cộng hưởng ban đầu rút còn 600 ms để khớp thiết kế 1800 ms; sau nghiệm thu, người duyệt chủ đích kéo toàn chuỗi lên 2800 ms với vòng 800 ms và các mốc ở mục 4.
 8. Vệt sáng lúc thắng chạy quanh từng placement của nghiệm mẫu (chưa có phép hợp đa giác); ở Chương 1 kết quả như nhau.
 9. Bóng đổ alpha 0 khi không nhấc (thay vì 0.2), để không làm tối mép vùng giao.
 10. `@capacitor/haptics` chọn bản 8.0.2 (peer `@capacitor/core >=8.0.0`).

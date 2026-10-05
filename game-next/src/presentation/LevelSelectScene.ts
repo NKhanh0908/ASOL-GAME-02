@@ -6,13 +6,18 @@ import type { LevelAccessMode } from '../domain/campaign.ts';
 import type { Chapter } from '../domain/model.ts';
 import { createProgressRepository } from '../infrastructure/progressRepository.ts';
 import type { ProgressRepository } from '../application/progressPort.ts';
-import { ANIM_TOKENS, COLOR_NUMBERS, COLOR_TOKENS, TYPO_TOKENS } from './designTokens.ts';
+import { ANIM_TOKENS, COLOR_NUMBERS, COLOR_TOKENS, LAYOUT_TOKENS, TYPO_TOKENS } from './designTokens.ts';
 import { TEXTURE_KEYS, TextureFactory } from './TextureFactory.ts';
-import { SkyBackdrop } from './SkyBackdrop.ts';
 import { applyDesignViewport, designSafeArea, designViewBounds } from './designViewport.ts';
 import { formatProgress } from './hudText.ts';
 import { layoutCampaignMap } from './constellationLayout.ts';
 import { t, getLevelTitle } from './i18n.ts';
+import { director } from './transitions/SceneDirector.ts';
+import type { Choreographed, TransitionContext } from './transitions/SceneDirector.ts';
+import type { TransitionTimeline } from './transitions/TransitionTimeline.ts';
+import { applySteps, orderByDistance } from './transitions/choreography.ts';
+import type { Parts, Poseable } from './transitions/choreography.ts';
+import { MAP_OUT_TO_MENU, MAP_OUT_TO_PLAY, MAP_SPECIAL, mapIn } from './transitions/routes.ts';
 
 type NodeInfo = {
   id: string;
@@ -32,14 +37,18 @@ const CHAPTER_TINTS: Readonly<Record<Chapter, { color: number; alpha: number }>>
   4: { color: 0xffb86b, alpha: 0.06 }, // Luân Chuyển: hổ phách hoàng hôn
 };
 
-export class LevelSelectScene extends Phaser.Scene {
+export class LevelSelectScene extends Phaser.Scene implements Choreographed {
+  readonly directorKey = 'LevelSelectScene' as const;
   private progressRepo!: ProgressRepository;
   private mapContainer!: Phaser.GameObjects.Container;
   private headerContainer!: Phaser.GameObjects.Container;
   private toastContainer?: Phaser.GameObjects.Container;
   private focusLevelId?: string;
 
-  private sky!: SkyBackdrop;
+  private nodeViews: Array<{ info: NodeInfo; container: Phaser.GameObjects.Container }> = [];
+  private linkParts: Poseable[] = [];
+  private tappedIndex: number | null = null;
+
   private mode: LevelAccessMode = 'campaign';
   private previewCompletedThrough?: string;
 
@@ -76,9 +85,6 @@ export class LevelSelectScene extends Phaser.Scene {
       this.previewCompletedThrough
     );
 
-    // 1. Nền trời dùng chung; màn chọn màn cho sao trôi xuống
-    this.sky = new SkyBackdrop(this, { seed: 3, drift: true });
-
     // 2. Container bản đồ chòm sao có thể cuộn dọc
     this.mapContainer = this.add.container(0, 0).setDepth(10);
 
@@ -102,10 +108,62 @@ export class LevelSelectScene extends Phaser.Scene {
         ease: 'Cubic.easeOut',
       });
     }
+
+    director.attach(this);
   }
 
-  update(_time: number, delta: number): void {
-    this.sky.update(delta);
+  public goToMenu(): void {
+    director.go(this, 'MenuScene', {}, { route: 'map-to-menu' });
+  }
+
+  private anchorIndex(): number {
+    const current = this.nodeViews.findIndex((v) => v.info.state === 'current');
+    return current >= 0 ? current : 0;
+  }
+
+  private transitionParts(anchor: number): Parts {
+    const ordered = orderByDistance(this.nodeViews.map((v) => v.container), anchor);
+    const tapped = this.nodeViews[anchor]?.container;
+    return {
+      header: [this.headerContainer],
+      nodes: ordered,
+      tappedNode: tapped ? [tapped] : [],
+      otherNodes: ordered.filter((c) => c !== tapped),
+      links: this.linkParts,
+    };
+  }
+
+  playIn(tl: TransitionTimeline, ctx: TransitionContext): void {
+    applySteps(tl, mapIn(ctx.from === 'PlayScene' ? 400 : 300), this.transitionParts(this.anchorIndex()), 'enter');
+  }
+
+  playOut(tl: TransitionTimeline, ctx: TransitionContext): void {
+    if (ctx.route === 'map-to-play') {
+      applySteps(tl, MAP_OUT_TO_PLAY, this.transitionParts(this.tappedIndex ?? this.anchorIndex()), 'exit');
+      if (ctx.origin) this.expandRing(tl, ctx.origin);
+    } else {
+      applySteps(tl, MAP_OUT_TO_MENU, this.transitionParts(this.anchorIndex()), 'exit');
+    }
+  }
+
+  /** Vòng sáng lan từ node vừa bấm tới bao trọn vị trí tấm bia của màn chơi */
+  private expandRing(tl: TransitionTimeline, origin: { x: number; y: number }): void {
+    const b = LAYOUT_TOKENS.board;
+    const corners = [
+      [b.x, b.y], [b.x + b.width, b.y], [b.x, b.y + b.height], [b.x + b.width, b.y + b.height],
+    ];
+    const maxRadius = Math.max(...corners.map(([x, y]) => Math.hypot(x - origin.x, y - origin.y)));
+    const ring = this.add.graphics().setDepth(200);
+    const state = { radius: MAP_SPECIAL.ringStartRadius, alpha: 0.9 };
+    const draw = () => {
+      ring.clear();
+      ring.fillStyle(COLOR_NUMBERS.icePrimary, state.alpha * 0.12);
+      ring.fillCircle(origin.x, origin.y, state.radius);
+      ring.lineStyle(3, COLOR_NUMBERS.icePrimary, state.alpha);
+      ring.strokeCircle(origin.x, origin.y, state.radius);
+    };
+    draw();
+    tl.at(0, state, { radius: maxRadius, alpha: 0.3 }, MAP_SPECIAL.ringMs, 'cubicOut', draw);
   }
 
   private buildHeader(completedCount: number, totalCount: number): void {
@@ -132,9 +190,7 @@ export class LevelSelectScene extends Phaser.Scene {
       .setSize(96, 96)
       .setInteractive({ useHandCursor: true });
     const backIcon = this.add.image(56, top + 56, TEXTURE_KEYS.iconMenuBack).setScale(1.25);
-    backBtn.on('pointerdown', () => {
-      this.scene.start('MenuScene');
-    });
+    backBtn.on('pointerdown', () => this.goToMenu());
 
     // Tiêu đề trang 32px serif
     const headerTitle = this.add
@@ -167,6 +223,9 @@ export class LevelSelectScene extends Phaser.Scene {
   }
 
   private buildConstellation(completedLevels: readonly string[]): NodeInfo | null {
+    this.nodeViews = [];
+    this.linkParts = [];
+
     // 1. Toạ độ nút và dải chương suy ra từ manifest (constellationLayout.ts)
     const layout = layoutCampaignMap(campaignManifest);
     const nodes: NodeInfo[] = layout.nodes.map((mapNode) => {
@@ -204,6 +263,7 @@ export class LevelSelectScene extends Phaser.Scene {
     // 3. Vẽ các đường cong Bezier mềm mại kết nối chòm sao (B3)
     const linesGraphics = this.add.graphics();
     this.mapContainer.add(linesGraphics);
+    this.linkParts.push(linesGraphics);
 
     for (let i = 0; i < nodes.length - 1; i++) {
       const p1 = nodes[i];
@@ -237,6 +297,7 @@ export class LevelSelectScene extends Phaser.Scene {
         // mockup, nên mô phỏng bằng một chấm tween theo các điểm của đường.
         const spark = this.add.circle(points[0].x, points[0].y, 4, COLOR_NUMBERS.amberGlow, 0.9);
         this.mapContainer.add(spark);
+        this.linkParts.push(spark);
         this.tweens.addCounter({
           from: 0,
           to: points.length - 1,
@@ -278,6 +339,7 @@ export class LevelSelectScene extends Phaser.Scene {
 
       chContainer.add([chBg, chText]);
       this.mapContainer.add(chContainer);
+      this.linkParts.push(chContainer);
     }
 
     // 5. Render từng Node màn chơi (B1, B4, B5: 72px canvas, touch 96px, chỉ hiện số)
@@ -392,15 +454,20 @@ export class LevelSelectScene extends Phaser.Scene {
         } else if (!node.available) {
           this.showToast(`Màn ${node.id} đang được tinh chỉnh`);
         } else {
-          this.scene.start('PlayScene', {
+          this.tappedIndex = this.nodeViews.findIndex((v) => v.info.id === node.id);
+          director.go(this, 'PlayScene', {
             levelId: node.id,
             mode: this.mode,
             previewCompletedThrough: this.previewCompletedThrough,
+          }, {
+            route: 'map-to-play',
+            origin: { x: node.x, y: node.y + this.mapContainer.y },
           });
         }
       });
 
       this.mapContainer.add(nodeContainer);
+      this.nodeViews.push({ info: node, container: nodeContainer });
     }
 
     // Giới hạn cuộn cho bản đồ

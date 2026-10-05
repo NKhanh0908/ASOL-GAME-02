@@ -119,3 +119,57 @@ describe('Campaign Progress and Persistence', () => {
     expect(reloaded.progress.settings.showTarget).toBe(false);
   });
 });
+
+describe('Cài đặt Giảm chuyển động', () => {
+  test('mặc định tắt', () => {
+    const repo = createProgressRepository(createMockStorage(), campaignManifest, 'oracle-v1');
+    expect(repo.read().progress.settings.reducedMotion).toBe(false);
+  });
+
+  test('ghi rồi đọc lại giữ đúng giá trị, không đụng showTarget', () => {
+    const storage = createMockStorage();
+    const repo = createProgressRepository(storage, campaignManifest, 'oracle-v1');
+    repo.setShowTarget(false);
+    repo.setReducedMotion(true);
+    const again = createProgressRepository(storage, campaignManifest, 'oracle-v1');
+    expect(again.read().progress.settings).toEqual({ showTarget: false, reducedMotion: true, haptics: true });
+  });
+
+  test('bản lưu cũ thiếu trường đọc ra false, không bị coi là hỏng', () => {
+    const legacy = JSON.stringify({
+      version: 1,
+      campaignRevision: 'oracle-v1',
+      completed: ['1-1'],
+      settings: { showTarget: true },
+    });
+    const storage = createMockStorage({ 'mirror.rebuild.progress.v1': legacy });
+    const result = createProgressRepository(storage, campaignManifest, 'oracle-v1').read();
+    expect(result.recovered).toBe(false);
+    expect(result.progress.completed).toEqual(['1-1']);
+    expect(result.progress.settings.reducedMotion).toBe(false);
+  });
+});
+
+describe('Cài đặt Rung phản hồi', () => {
+  test('mặc định bật, bản lưu cũ thiếu trường đọc là true', () => {
+    const repo = createProgressRepository(createMockStorage(), campaignManifest, 'oracle-v1');
+    expect(repo.read().progress.settings.haptics).toBe(true);
+    const legacy = JSON.stringify({
+      version: 1, campaignRevision: 'oracle-v1', completed: [], settings: { showTarget: true, reducedMotion: false },
+    });
+    const old = createProgressRepository(createMockStorage({ 'mirror.rebuild.progress.v1': legacy }), campaignManifest, 'oracle-v1');
+    expect(old.read().progress.settings.haptics).toBe(true);
+    expect(old.read().recovered).toBe(false);
+  });
+
+  test('setHaptics lưu và giữ các cài đặt khác', () => {
+    const storage = createMockStorage();
+    const repo = createProgressRepository(storage, campaignManifest, 'oracle-v1');
+    repo.setReducedMotion(true);
+    repo.setHaptics(false);
+    expect(createProgressRepository(storage, campaignManifest, 'oracle-v1').read().progress.settings)
+      .toEqual({ showTarget: true, reducedMotion: true, haptics: false });
+  });
+});
+
+

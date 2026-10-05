@@ -90,6 +90,27 @@ describe('Hitbox, Layout and Drag Transactions', () => {
     expect(transition.state).toEqual(state);
     expect(transition.state.pieces.D1).toEqual({ kind: 'tray', turns: 0 });
   });
+
+  test('updateDrag dùng lại mask xem trước khi placement không đổi', () => {
+    const state = createPuzzle(level);
+    const drag = beginDrag(state, pieceD1, 200, 1000, layout);
+    drag.pointerOffset = { x: 0, y: 0 };
+    const a = gridToCanvas(44, 96, layout);
+    const first = updateDrag(drag, level, a.x, a.y, layout);
+    const again = updateDrag(drag, level, a.x + 1, a.y + 1, layout, { previous: first });
+    expect(again.previewPlacement).toEqual(first.previewPlacement);
+    expect(again.previewMask).toBe(first.previewMask);
+  });
+
+  test('computePreviewMask false trả mask rỗng dùng chung', () => {
+    const state = createPuzzle(level);
+    const drag = beginDrag(state, pieceD1, 200, 1000, layout);
+    drag.pointerOffset = { x: 0, y: 0 };
+    const a = gridToCanvas(44, 96, layout);
+    const update = updateDrag(drag, level, a.x, a.y, layout, { computePreviewMask: false });
+    expect(update.snapCandidateId).toBe('A');
+    expect(update.previewMask.length).toBe(0);
+  });
 });
 
 describe('Thả mảnh: grid luôn là tâm mảnh', () => {

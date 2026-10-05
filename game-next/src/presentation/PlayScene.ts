@@ -1,13 +1,12 @@
 import Phaser from 'phaser';
-import type { Level } from '../domain/model.ts';
+import type { Level, PuzzleState, Transition } from '../domain/model.ts';
 import { GRID_WIDTH, GRID_HEIGHT } from '../domain/model.ts';
 import { loadLevel } from '../content/catalog.ts';
 import { campaignManifest } from '../content/manifest.ts';
 import { furthestLevelId, nextLevelId } from '../domain/campaign.ts';
 import { createProgressRepository } from '../infrastructure/progressRepository.ts';
-import { PlayController } from '../application/playController.ts';
+import { PlayController, type PlayViewSnapshot } from '../application/playController.ts';
 import { BoardRenderer } from './BoardRenderer.ts';
-import { maskCentroid } from '../domain/mask.ts';
 import { Hud } from './Hud.ts';
 import { applyDesignViewport, designSafeArea, designViewBounds } from './designViewport.ts';
 import {
@@ -19,25 +18,38 @@ import {
 } from './layout.ts';
 import type { LayoutMetrics } from './layout.ts';
 
-import { SkyBackdrop } from './SkyBackdrop.ts';
 import { COLOR_NUMBERS, COLOR_TOKENS, DEPTH_TOKENS, TYPO_TOKENS } from './designTokens.ts';
 import { TextureFactory } from './TextureFactory.ts';
 
 import { PauseDialog } from './PauseDialog.ts';
 import { TargetBadge } from './TargetBadge.ts';
 import { t, getLevelTitle } from './i18n.ts';
+import { director } from './transitions/SceneDirector.ts';
+import type { Choreographed, TransitionContext } from './transitions/SceneDirector.ts';
+import type { TransitionTimeline } from './transitions/TransitionTimeline.ts';
+import { choreographPlayIn, choreographPlayOut, type PlayTransitionView } from './transitions/playChoreography.ts';
 
-export class PlayScene extends Phaser.Scene {
+import { PieceTextureCache } from './PieceTextureCache.ts';
+import { FeedbackDirector } from './feedback/FeedbackDirector.ts';
+import { feedbackEvents, type FeedbackSubject } from './feedback/feedbackEvents.ts';
+import { createHaptics } from '../infrastructure/haptics.ts';
+import { capacitorHapticsDriver } from '../infrastructure/capacitorHaptics.ts';
+import { Capacitor } from '@capacitor/core';
+import type { BackgroundScene } from './BackgroundScene.ts';
+
+export class PlayScene extends Phaser.Scene implements Choreographed {
+  readonly directorKey = 'PlayScene' as const;
+  private loadFailed = false;
   private level!: Level;
   private mode: 'campaign' | 'harness' = 'campaign';
   private controller!: PlayController;
   private boardRenderer!: BoardRenderer;
+  private textureCache!: PieceTextureCache;
+  private feedback!: FeedbackDirector;
   private layout!: LayoutMetrics;
   private targetBadge!: TargetBadge;
   private hud!: Hud;
   private pauseDialog!: PauseDialog;
-  private sky!: SkyBackdrop;
-  private celebrationContainer: Phaser.GameObjects.Container | null = null;
   private previewCompletedThrough?: string;
 
   constructor() {
@@ -49,6 +61,7 @@ export class PlayScene extends Phaser.Scene {
     mode?: 'campaign' | 'harness';
     previewCompletedThrough?: string;
   }): void {
+    this.loadFailed = false;
     const levelId = data.levelId ?? '1-1';
     this.mode = data.mode ?? 'campaign';
     this.previewCompletedThrough = this.mode === 'harness'
@@ -62,12 +75,22 @@ export class PlayScene extends Phaser.Scene {
         this.level = loadLevel('1-1', this.mode);
       } catch (fallbackErr) {
         console.error('[PlayScene] Lỗi nghiêm trọng khi tải màn 1-1:', fallbackErr);
-        this.scene.start('MenuScene');
+        this.loadFailed = true;
       }
     }
   }
 
   create(): void {
+    if (this.loadFailed) {
+      // Không tải được cả 1-1: kết thúc chuyển cảnh đang chờ rồi về Menu
+      director.attach(this);
+      director.skip();
+      this.time.delayedCall(0, () => {
+        director.go(this, 'MenuScene', {}, { route: 'play-to-menu' });
+      });
+      return;
+    }
+
     applyDesignViewport(this);
     TextureFactory.generateAll(this);
     // Hệ toạ độ thiết kế, không phải kích thước bộ đệm: camera zoom đã quy đổi.
@@ -75,9 +98,6 @@ export class PlayScene extends Phaser.Scene {
     const view = designViewBounds(this);
     const layout = computeLayout(view.width, view.height, designSafeArea(this));
     this.layout = layout;
-
-    // 1. Nền trời dùng chung (bật drift để mây tinh vân và dải ngân hà trôi nhẹ nhàng)
-    this.sky = new SkyBackdrop(this, { seed: 2, drift: true });
 
     const progressRepo = createProgressRepository(
       localStorage,
@@ -93,15 +113,19 @@ export class PlayScene extends Phaser.Scene {
       savedProgress.settings.showTarget
     );
 
-    this.boardRenderer = new BoardRenderer(this, layout, this.level.pieces.length);
+    // Texture mảnh vẽ rải mỗi khung một mảnh trong update(), không vẽ trong
+    // create() để handoff của chuyển cảnh F1 không có khung > 50 ms.
+    this.textureCache = new PieceTextureCache(this, this.level, layout.cellPixel);
+    for (const piece of this.level.pieces) this.textureCache.enqueue(piece.id, 0);
+    this.events.once('shutdown', () => this.textureCache.destroy());
+
+    this.boardRenderer = new BoardRenderer(this, layout, this.level, this.textureCache);
     this.targetBadge = new TargetBadge(this, layout, this.level);
 
     this.pauseDialog = new PauseDialog(this, {
       onResume: () => {},
       onRestart: () => {
-        this.controller.onReset();
-        this.cleanupCelebration();
-        this.refreshView();
+        this.resetLevel();
       },
       onLevelSelect: () => {
         this.openLevelSelect();
@@ -115,57 +139,76 @@ export class PlayScene extends Phaser.Scene {
         onMenu: () => {
           this.pauseDialog.open();
         },
-      onReset: () => {
-        this.controller.onReset();
-        this.cleanupCelebration();
-        this.boardRenderer.setVictoryMode(false);
-        this.hud.hideWinModal();
-        this.refreshView();
-      },
-      onRotate: () => {
-        const transition = this.controller.onRotate();
-        this.refreshView();
-        if (transition?.becameWon) {
-          this.playCelebration(layout);
-        }
-      },
-      onToggleTarget: () => {
-        this.controller.onToggleTarget();
-        this.refreshView();
-      },
-      onLevelSelect: () => {
-        this.openLevelSelect();
-      },
-      onNextLevel: () => {
-        const nextId = nextLevelId(campaignManifest, this.level.id);
-        if (nextId) {
-          try {
-            // Kiểm tra đúng chế độ: campaign về menu nếu màn kế chưa approved.
-            loadLevel(nextId, this.mode);
-            this.scene.start('PlayScene', {
+        onReset: () => {
+          this.resetLevel();
+        },
+        onRotate: () => {
+          const pieceId = this.controller.getSnapshot().selectedPieceId;
+          const prev = this.controller.getPuzzleState();
+          this.commit(prev, this.controller.onRotate(), { command: 'rotate', pieceId });
+        },
+        onToggleTarget: () => {
+          this.controller.onToggleTarget();
+          this.refreshView();
+        },
+        onLevelSelect: () => {
+          this.openLevelSelect();
+        },
+        onNextLevel: () => {
+          const nextId = nextLevelId(campaignManifest, this.level.id);
+          let playable = false;
+          if (nextId) {
+            try {
+              // Kiểm tra đúng chế độ: campaign về menu nếu màn kế chưa approved.
+              loadLevel(nextId, this.mode);
+              playable = true;
+            } catch {
+              playable = false;
+            }
+          }
+          if (nextId && playable) {
+            director.go(this, 'PlayScene', {
               levelId: nextId,
               mode: this.mode,
               previewCompletedThrough: this.mode === 'harness'
-                ? furthestLevelId(
-                    campaignManifest,
-                    this.previewCompletedThrough,
-                    this.level.id
-                  )
+                ? furthestLevelId(campaignManifest, this.previewCompletedThrough, this.level.id)
                 : undefined,
-            });
-          } catch {
-            this.scene.start('MenuScene');
+            }, { route: 'next-level' });
+          } else {
+            director.go(this, 'MenuScene', {}, { route: 'play-to-menu' });
           }
-        } else {
-          this.scene.start('MenuScene');
-        }
+        },
       },
-    }, this.level.id, layout);
+      this.level.id,
+      layout
+    );
+
+    const haptics = createHaptics(
+      Capacitor.isNativePlatform() ? capacitorHapticsDriver() : null,
+      () => savedProgress.settings.haptics
+    );
+    this.feedback = new FeedbackDirector({
+      scene: this,
+      level: this.level,
+      layout,
+      board: this.boardRenderer,
+      hud: this.hud,
+      textures: this.textureCache,
+      haptics,
+      getState: () => this.controller.getPuzzleState(),
+      background: () => this.scene.get('BackgroundScene') as BackgroundScene | null,
+    });
 
     // Pointer events
     this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
+      if (this.feedback.isVictoryRunning()) {
+        this.feedback.skipVictory();
+        return;
+      }
       const hit = this.controller.onPointerDown(pointer.worldX, pointer.worldY, layout);
       if (hit) {
+        const pieceId = this.controller.getSnapshot().dragInfo?.pieceId;
+        if (pieceId) this.feedback.handle([{ type: 'lift', pieceId }]);
         this.refreshView();
       } else {
         this.spawnCosmicInteraction(pointer.worldX, pointer.worldY);
@@ -174,28 +217,20 @@ export class PlayScene extends Phaser.Scene {
 
     this.input.on('pointermove', (pointer: Phaser.Input.Pointer) => {
       this.controller.onPointerMove(pointer.worldX, pointer.worldY, layout);
-      this.refreshView();
     });
 
-    this.input.on('pointerup', (pointer: Phaser.Input.Pointer) => {
-      const transition = this.controller.onPointerUp(pointer.worldX, pointer.worldY, layout);
-      this.refreshView();
-      if (transition?.becameWon) {
-        this.playCelebration(layout);
-      }
-    });
-
-    this.input.on('pointerupoutside', (pointer: Phaser.Input.Pointer) => {
-      const transition = this.controller.onPointerUp(pointer.worldX, pointer.worldY, layout);
-      this.refreshView();
-      if (transition?.becameWon) {
-        this.playCelebration(layout);
-      }
-    });
+    const release = (pointer: Phaser.Input.Pointer) => {
+      const pieceId = this.controller.getSnapshot().dragInfo?.pieceId ?? null;
+      const prev = this.controller.getPuzzleState();
+      this.commit(prev, this.controller.onPointerUp(pointer.worldX, pointer.worldY, layout), { command: 'move', pieceId });
+    };
+    this.input.on('pointerup', release);
+    this.input.on('pointerupoutside', release);
 
     this.input.on('gameout', () => {
-      this.controller.onPointerCancel();
-      this.refreshView();
+      const pieceId = this.controller.getSnapshot().dragInfo?.pieceId ?? null;
+      const prev = this.controller.getPuzzleState();
+      this.commit(prev, this.controller.onPointerCancel(), { command: 'move', pieceId });
     });
 
     this.refreshView();
@@ -215,6 +250,85 @@ export class PlayScene extends Phaser.Scene {
       const mode = new URLSearchParams(window.location.search).get('autosolve');
       if (mode === 'win' || mode === 'drag') this.autosolve(mode, layout);
     }
+
+    director.attach(this);
+  }
+
+  update(_time: number, delta: number): void {
+    if (this.loadFailed) return;
+    this.textureCache.bakeNext();
+    this.feedback.tick(delta);
+    const snapshot = this.controller.getSnapshot();
+    this.boardRenderer.tick(delta, snapshot, this.controller.getPuzzleState().pieces);
+    this.hud.tickSnapHint(delta, this.snapHintTarget(snapshot));
+  }
+
+  private snapHintTarget(snapshot: PlayViewSnapshot): { x: number; y: number } | null {
+    const drag = snapshot.dragInfo;
+    if (!drag || drag.snapCandidateId === null) return null;
+    const piece = this.level.pieces.find((p) => p.id === drag.pieceId);
+    const radius = piece ? pieceRadiusPx(piece.frameSize, this.layout) : 120;
+    return { x: drag.x + radius * 0.8, y: drag.y + radius * 0.5 };
+  }
+
+  /** Áp kết quả một lệnh: phát phản hồi rồi cập nhật HUD */
+  private commit(prev: PuzzleState, transition: Transition | null, subject: FeedbackSubject): void {
+    if (!transition) return;
+    this.feedback.handle(feedbackEvents(prev, transition, this.level, subject));
+    this.refreshView();
+  }
+
+  private resetLevel(): void {
+    const run = () => {
+      const prev = this.controller.getPuzzleState();
+      this.commit(prev, this.controller.onReset(), { command: 'reset', pieceId: null });
+    };
+    if (this.controller.getSnapshot().phase === 'won') this.feedback.unwindVictory(run);
+    else run();
+  }
+
+  private transitionView(): PlayTransitionView {
+    const board = this.boardRenderer.getTransitionParts();
+    const hud = this.hud.getTransitionParts();
+    const state = this.controller.getPuzzleState();
+    const pieceCenters = this.level.pieces.flatMap((piece) => {
+      const s = state.pieces[piece.id];
+      if (!s || s.kind !== 'snapped') return [];
+      const anchor = piece.anchors.find((a) => a.id === s.anchorId);
+      return anchor ? [pieceCenterCanvas(piece.frameSize, anchor.x, anchor.y, this.layout)] : [];
+    });
+    return {
+      scene: this,
+      parts: {
+        board: board.board,
+        runes: board.runes,
+        rings: board.rings,
+        tray: board.tray,
+        trayPieces: board.trayPieces,
+        pieces: board.pieces,
+        targets: board.targets,
+        title: hud.title,
+        topButtons: [...hud.topButtons, this.targetBadge.getContainer()],
+        bottomBar: hud.bottomBar,
+        winCard: hud.winCard,
+      },
+      grid: board.grid,
+      boardBounds: this.layout.boardBounds,
+      targetCount: this.level.targetPlacements?.length ?? 0,
+      setTargetReveal: (values) => this.boardRenderer.setTargetReveal(values),
+      setFrameGold: (on) => this.boardRenderer.setFrameGold(on),
+      pieceCenters,
+    };
+  }
+
+  playIn(tl: TransitionTimeline, ctx: TransitionContext): void {
+    if (this.loadFailed) return;
+    choreographPlayIn(tl, ctx, this.transitionView());
+  }
+
+  playOut(tl: TransitionTimeline, ctx: TransitionContext): void {
+    if (this.loadFailed) return;
+    choreographPlayOut(tl, ctx, this.transitionView());
   }
 
   private autosolve(mode: 'win' | 'drag', layout: LayoutMetrics): void {
@@ -233,154 +347,21 @@ export class PlayScene extends Phaser.Scene {
         return;
       }
 
+      const prev = this.controller.getPuzzleState();
       const transition = this.controller.onPointerUp(target.x, target.y, layout);
-      this.refreshView();
-      if (transition?.becameWon) this.playCelebration(layout);
+      this.commit(prev, transition, { command: 'move', pieceId: piece.id });
     });
-  }
-
-  update(_time: number, delta: number): void {
-    this.sky.update(delta);
   }
 
   private refreshView(): void {
-    const snapshot = this.controller.getSnapshot();
-    const puzzleState = this.controller.getPuzzleState();
-
-    this.boardRenderer.render(this.level, snapshot, puzzleState.pieces);
-    this.hud.update(snapshot);
-
-    // Nhãn "Thả để khớp" chỉ hiện khi mảnh đang kéo trúng vùng hít
-    const drag = snapshot.dragInfo;
-    if (drag && drag.snapCandidateId !== null) {
-      const piece = this.level.pieces.find((p) => p.id === drag.pieceId);
-      const radius = piece ? pieceRadiusPx(piece.frameSize, this.layout) : 120;
-      this.hud.showSnapHint(drag.x + radius * 0.8, drag.y + radius * 0.5);
-    } else {
-      this.hud.hideSnapHint();
-    }
-  }
-
-  private playCelebration(layout: LayoutMetrics): void {
-    this.cleanupCelebration();
-
-    const celebration = this.add.container(0, 0).setDepth(90);
-    this.celebrationContainer = celebration;
-
-    // 1. Ánh chớp sao starlight flash dịu nhẹ
-    this.cameras.main.flash(350, 249, 199, 79, false);
-
-    // Trọng tâm hình mục tiêu (với 1-1 là tâm bàn, nơi hai thoi chạm đỉnh)
-    const centroid = maskCentroid(this.level.targetMask) ?? { x: GRID_WIDTH / 2, y: GRID_HEIGHT / 2 };
-    const center = gridToCanvas(centroid.x, centroid.y, layout);
-
-    // 2. Vòng sóng năng lượng cổ ngữ (Resonance Shockwave Rings)
-    const ringGraphics = this.add.graphics();
-    celebration.add(ringGraphics);
-
-    const ringState = { radius1: 10, alpha1: 0.9, radius2: 0, alpha2: 0 };
-    this.tweens.add({
-      targets: ringState,
-      radius1: 160,
-      alpha1: 0,
-      duration: 800,
-      ease: 'Cubic.easeOut',
-      onUpdate: () => {
-        ringGraphics.clear();
-        if (ringState.alpha1 > 0) {
-          ringGraphics.lineStyle(2.5, 0xffd166, ringState.alpha1);
-          ringGraphics.strokeCircle(center.x, center.y, ringState.radius1);
-        }
-        if (ringState.alpha2 > 0) {
-          ringGraphics.lineStyle(1.8, 0x4ecdc4, ringState.alpha2);
-          ringGraphics.strokeCircle(center.x, center.y, ringState.radius2);
-        }
-      },
-    });
-
-    this.time.delayedCall(160, () => {
-      ringState.radius2 = 10;
-      ringState.alpha2 = 0.8;
-      this.tweens.add({
-        targets: ringState,
-        radius2: 180,
-        alpha2: 0,
-        duration: 850,
-        ease: 'Cubic.easeOut',
-      });
-    });
-
-    // 3. Bung tỏa các hạt bụi sao stardust
-    const colors = [0xffd166, 0xf9c74f, 0x4ecdc4, 0xffffff];
-    const particleGraphics = this.add.graphics();
-    celebration.add(particleGraphics);
-
-    type Particle = {
-      x: number;
-      y: number;
-      targetX: number;
-      targetY: number;
-      currentX: number;
-      currentY: number;
-      radius: number;
-      color: number;
-    };
-
-    const particles: Particle[] = [];
-    for (let i = 0; i < 40; i++) {
-      const angle = Phaser.Math.FloatBetween(0, Math.PI * 2);
-      const dist = Phaser.Math.FloatBetween(40, 200);
-      particles.push({
-        x: center.x,
-        y: center.y,
-        targetX: center.x + Math.cos(angle) * dist,
-        targetY: center.y + Math.sin(angle) * dist,
-        currentX: center.x,
-        currentY: center.y,
-        radius: Phaser.Math.FloatBetween(1.5, 3.5),
-        color: colors[i % colors.length],
-      });
-    }
-
-    const tweenProgress = { t: 0 };
-    this.tweens.add({
-      targets: tweenProgress,
-      t: 1,
-      duration: 1100,
-      ease: 'Cubic.easeOut',
-      onUpdate: () => {
-        particleGraphics.clear();
-        const p = tweenProgress.t;
-        for (const pt of particles) {
-          pt.currentX = Phaser.Math.Linear(pt.x, pt.targetX, p);
-          pt.currentY = Phaser.Math.Linear(pt.y, pt.targetY, p);
-          const alpha = (1 - p) * Phaser.Math.FloatBetween(0.7, 1);
-          particleGraphics.fillStyle(pt.color, Math.max(0, alpha));
-          particleGraphics.fillCircle(pt.currentX, pt.currentY, pt.radius * (1 - p * 0.3));
-        }
-      },
-    });
-
-    // 4. Khung bàn đổi vàng, rồi hiện thẻ hoàn thành sau một nhịp để người
-    // chơi kịp thấy hai mảnh khớp. Thẻ thay chỗ khay, không đè lên bàn.
-    this.boardRenderer.setVictoryMode(true);
-    this.time.delayedCall(700, () => {
-      this.hud.showWinModal(this.level.victoryVerse);
-    });
-  }
-
-  private cleanupCelebration(): void {
-    if (this.celebrationContainer) {
-      this.celebrationContainer.destroy();
-      this.celebrationContainer = null;
-    }
+    this.hud.update(this.controller.getSnapshot());
   }
 
   private openLevelSelect(): void {
     const justCompleted = this.controller?.getSnapshot().phase === 'won'
       ? this.level.id
       : undefined;
-    this.scene.start('LevelSelectScene', {
+    director.go(this, 'LevelSelectScene', {
       mode: this.mode,
       previewCompletedThrough: this.mode === 'harness'
         ? furthestLevelId(
@@ -389,7 +370,7 @@ export class PlayScene extends Phaser.Scene {
             justCompleted
           )
         : undefined,
-    });
+    }, { route: 'play-to-map' });
   }
 
   public onHardwareBack(): void {

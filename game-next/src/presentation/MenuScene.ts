@@ -5,17 +5,31 @@ import { createProgressRepository } from '../infrastructure/progressRepository.t
 import type { ProgressRepository } from '../application/progressPort.ts';
 import { COLOR_NUMBERS, COLOR_TOKENS, DEPTH_TOKENS, LAYOUT_TOKENS, TYPO_TOKENS } from './designTokens.ts';
 import { TEXTURE_KEYS, TextureFactory } from './TextureFactory.ts';
-import { SkyBackdrop } from './SkyBackdrop.ts';
 import { applyDesignViewport, designSafeArea, designViewBounds } from './designViewport.ts';
 import { SettingsDialog } from './SettingsDialog.ts';
 import { t, getLocale, setLocale, getLevelTitle } from './i18n.ts';
+import { director } from './transitions/SceneDirector.ts';
+import type { Choreographed, TransitionContext } from './transitions/SceneDirector.ts';
+import type { TransitionTimeline } from './transitions/TransitionTimeline.ts';
+import { getMotionScale } from './transitions/motion.ts';
+import { applySteps } from './transitions/choreography.ts';
+import type { Parts } from './transitions/choreography.ts';
+import { MENU_OUT_TO_MAP, MENU_OUT_TO_PLAY, MENU_SPECIAL, menuIn } from './transitions/routes.ts';
 
-export class MenuScene extends Phaser.Scene {
+export class MenuScene extends Phaser.Scene implements Choreographed {
+  readonly directorKey = 'MenuScene' as const;
   private progressRepo!: ProgressRepository;
-  private sky!: SkyBackdrop;
   private emblemGraphics!: Phaser.GameObjects.Graphics;
   private sparkleGraphics!: Phaser.GameObjects.Graphics;
   private uiContainer!: Phaser.GameObjects.Container;
+  private titleBlock!: Phaser.GameObjects.Container;
+  private primaryButton!: Phaser.GameObjects.Container;
+  private secondaryButton!: Phaser.GameObjects.Container;
+  private settingsButton!: Phaser.GameObjects.Container;
+  private langPillContainer!: Phaser.GameObjects.Container;
+  private footer!: Phaser.GameObjects.Text;
+  /** Hệ số tốc độ vòng ấn; tween lên 4 khi đi vào màn chơi */
+  private readonly emblemMotion = { ringSpeed: 1 };
   private mirrorLogoContainer?: Phaser.GameObjects.Container;
   private logoSheenGraphics?: Phaser.GameObjects.Graphics;
   private letterObjects: { main: Phaser.GameObjects.Text; shadow: Phaser.GameObjects.Text; baseY: number }[] = [];
@@ -39,17 +53,14 @@ export class MenuScene extends Phaser.Scene {
     this.progressRepo = createProgressRepository(localStorage, campaignManifest, 'oracle-v1');
     const { progress } = this.progressRepo.read();
 
-    // 1. Nền trời dùng chung có trường sao trôi nhẹ nhàng (drift: true)
-    this.sky = new SkyBackdrop(this, { seed: 1, drift: true });
-
     const view = designViewBounds(this);
     this.safe = designSafeArea(this);
     this.blockOffsetY = (view.height - LAYOUT_TOKENS.canvas.height) / 2;
     this.viewHeight = view.height;
 
     // 2. Biểu tượng Ngọc Đôi (Dual Jewels XOR) lơ lửng ở trung tâm
-    this.emblemGraphics = this.add.graphics().setY(this.blockOffsetY);
-    this.sparkleGraphics = this.add.graphics().setY(this.blockOffsetY);
+    this.emblemGraphics = this.add.graphics().setPosition(360, 500 + this.blockOffsetY);
+    this.sparkleGraphics = this.add.graphics().setPosition(360, 500 + this.blockOffsetY);
 
     // 3. UI Container chính
     this.uiContainer = this.add.container(0, this.blockOffsetY);
@@ -57,6 +68,8 @@ export class MenuScene extends Phaser.Scene {
 
     // 4. Thiết lập tương tác chạm bụi sao & sóng lượng tử trên bầu trời
     this.setupCosmicSkyInteractions();
+
+    director.attach(this);
   }
 
   private buildMainMenu(completedLevels: readonly string[]): void {
@@ -82,20 +95,20 @@ export class MenuScene extends Phaser.Scene {
 
     const langPillBg = this.add.graphics();
     langPillBg.fillStyle(COLOR_NUMBERS.boardSurfaceTop, 0.85);
-    langPillBg.fillRoundedRect(pillX - pillW / 2, topY - pillH / 2, pillW, pillH, 19);
+    langPillBg.fillRoundedRect(-pillW / 2, -pillH / 2, pillW, pillH, 19);
     langPillBg.lineStyle(1.6, COLOR_NUMBERS.icePrimary, 0.8);
-    langPillBg.strokeRoundedRect(pillX - pillW / 2, topY - pillH / 2, pillW, pillH, 19);
+    langPillBg.strokeRoundedRect(-pillW / 2, -pillH / 2, pillW, pillH, 19);
 
     const activeBg = this.add.graphics();
     activeBg.fillStyle(COLOR_NUMBERS.amberSolid, 1.0);
     if (currentLoc === 'vi') {
-      activeBg.fillRoundedRect(pillX - pillW / 2 + 2, topY - pillH / 2 + 2, pillW / 2 - 2, pillH - 4, 17);
+      activeBg.fillRoundedRect(-pillW / 2 + 2, -pillH / 2 + 2, pillW / 2 - 2, pillH - 4, 17);
     } else {
-      activeBg.fillRoundedRect(pillX, topY - pillH / 2 + 2, pillW / 2 - 2, pillH - 4, 17);
+      activeBg.fillRoundedRect(0, -pillH / 2 + 2, pillW / 2 - 2, pillH - 4, 17);
     }
 
     const viText = this.add
-      .text(pillX - 22, topY, 'VI', {
+      .text(-22, 0, 'VI', {
         fontFamily: TYPO_TOKENS.fontFamily.display,
         fontSize: '15px',
         color: currentLoc === 'vi' ? '#22145A' : COLOR_TOKENS.text.secondary,
@@ -104,7 +117,7 @@ export class MenuScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     const enText = this.add
-      .text(pillX + 22, topY, 'EN', {
+      .text(22, 0, 'EN', {
         fontFamily: TYPO_TOKENS.fontFamily.display,
         fontSize: '15px',
         color: currentLoc === 'en' ? '#22145A' : COLOR_TOKENS.text.secondary,
@@ -113,7 +126,7 @@ export class MenuScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     const langHitZone = this.add
-      .zone(pillX, topY, pillW, pillH)
+      .zone(0, 0, pillW, pillH)
       .setInteractive({ useHandCursor: true });
     langHitZone.on('pointerdown', () => {
       const nextLoc = currentLoc === 'vi' ? 'en' : 'vi';
@@ -121,21 +134,22 @@ export class MenuScene extends Phaser.Scene {
       this.buildMainMenu(completedLevels);
     });
 
-    this.uiContainer.add([langPillBg, activeBg, viText, enText, langHitZone]);
+    this.langPillContainer = this.add.container(pillX, topY, [langPillBg, activeBg, viText, enText, langHitZone]);
 
     // Nút Cài đặt góc trên phải (x=664, y=52)
     const settingsBtn = this.add
-      .image(664, topY, TEXTURE_KEYS.btnCircle56)
+      .image(0, 0, TEXTURE_KEYS.btnCircle56)
       .setInteractive({ useHandCursor: true });
-    const settingsIcon = this.add.image(664, topY, TEXTURE_KEYS.iconGear);
+    const settingsIcon = this.add.image(0, 0, TEXTURE_KEYS.iconGear);
     settingsBtn.on('pointerdown', () => {
       this.animateButtonTap(settingsBtn, () => this.openSettings());
     });
-    this.uiContainer.add([settingsBtn, settingsIcon]);
+    this.settingsButton = this.add.container(664, topY, [settingsBtn, settingsIcon]);
 
     // -------------------------------------------------------------
     // LOGO PHƯƠNG ÁN 2: GƯƠNG ĐÔI (CASUAL LOGO WITH MIRROR REFLECTION)
     // -------------------------------------------------------------
+    this.titleBlock = this.add.container(0, 0);
     this.buildCasualMirrorLogo();
 
     // Dòng phụ đề phong cách casual
@@ -146,7 +160,7 @@ export class MenuScene extends Phaser.Scene {
         color: COLOR_TOKENS.text.secondary,
       })
       .setOrigin(0.5);
-    this.uiContainer.add(subtitleText);
+    this.titleBlock.add(subtitleText);
 
     // -------------------------------------------------------------
     // 1. NÚT CHÍNH: BẮT ĐẦU / TIẾP TỤC (Hero 3D Tactile Juicy Button)
@@ -235,7 +249,10 @@ export class MenuScene extends Phaser.Scene {
         duration: 90,
         ease: 'Back.easeOut',
         onComplete: () => {
-          this.scene.start('PlayScene', { levelId: targetLevel.id });
+          director.go(this, 'PlayScene', { levelId: targetLevel.id }, {
+            route: 'menu-to-play',
+            origin: { x: btnX, y: btnY },
+          });
         },
       });
     });
@@ -246,7 +263,7 @@ export class MenuScene extends Phaser.Scene {
     });
 
     primaryBtnContainer.add([btnShadow, btnFace, playIcon, mainBtnText, subBtnText, btnZone]);
-    this.uiContainer.add(primaryBtnContainer);
+    this.primaryButton = primaryBtnContainer;
 
     // -------------------------------------------------------------
     // 2. NÚT PHỤ: CHỌN MÀN CHƠI (Ice Crystal Glass 3D Button)
@@ -313,9 +330,7 @@ export class MenuScene extends Phaser.Scene {
         duration: 90,
         ease: 'Back.easeOut',
         onComplete: () => {
-          if (this.scene.get('LevelSelectScene')) {
-            this.scene.start('LevelSelectScene');
-          }
+          director.go(this, 'LevelSelectScene', {}, { route: 'menu-to-map' });
         },
       });
     });
@@ -326,7 +341,7 @@ export class MenuScene extends Phaser.Scene {
     });
 
     secBtnContainer.add([secShadow, secFace, secIcon, secBtnText, secBtnZone]);
-    this.uiContainer.add(secBtnContainer);
+    this.secondaryButton = secBtnContainer;
 
     // Chân trang phiên bản
     const footerText = this.add
@@ -336,7 +351,16 @@ export class MenuScene extends Phaser.Scene {
         color: COLOR_TOKENS.text.secondary,
       })
       .setOrigin(0.5);
-    this.uiContainer.add(footerText);
+    this.footer = footerText;
+
+    this.uiContainer.add([
+      this.langPillContainer,
+      this.settingsButton,
+      this.titleBlock,
+      this.primaryButton,
+      this.secondaryButton,
+      this.footer,
+    ]);
   }
 
   /**
@@ -349,7 +373,7 @@ export class MenuScene extends Phaser.Scene {
     }
     this.letterObjects = [];
     this.mirrorLogoContainer = this.add.container(0, 0);
-    this.uiContainer.add(this.mirrorLogoContainer);
+    this.titleBlock.add(this.mirrorLogoContainer);
 
     const letters = [
       { char: 'M', dx: -180, rot: -4 },
@@ -722,13 +746,35 @@ export class MenuScene extends Phaser.Scene {
     });
   }
 
-  override update(_time: number, delta: number): void {
-    // 1. Nền trời
-    this.sky.update(delta);
+  private transitionParts(): Parts {
+    return {
+      emblem: [this.emblemGraphics, this.sparkleGraphics],
+      titleBlock: [this.titleBlock],
+      primaryButton: [this.primaryButton],
+      buttons: [this.primaryButton, this.secondaryButton],
+      chrome: [this.titleBlock, this.secondaryButton, this.settingsButton, this.langPillContainer, this.footer],
+      corner: [this.settingsButton, this.langPillContainer, this.footer],
+    };
+  }
 
-    // 2. Chuyển động lơ lửng và nhịp thở của biểu tượng Ngọc Đôi (Icon 1 XOR)
-    this.ringAngle1 += delta * 0.0004;
-    this.ringAngle2 -= delta * 0.0003;
+  playIn(tl: TransitionTimeline, ctx: TransitionContext): void {
+    applySteps(tl, menuIn(ctx.from === 'LevelSelectScene' ? 'map' : 'play'), this.transitionParts(), 'enter');
+  }
+
+  playOut(tl: TransitionTimeline, ctx: TransitionContext): void {
+    if (ctx.route === 'menu-to-play') {
+      applySteps(tl, MENU_OUT_TO_PLAY, this.transitionParts(), 'exit');
+      tl.at(MENU_SPECIAL.spinAtMs, this.emblemMotion, { ringSpeed: MENU_SPECIAL.spinPeak }, MENU_SPECIAL.spinMs, 'cubicInOut');
+    } else {
+      applySteps(tl, MENU_OUT_TO_MAP, this.transitionParts(), 'exit');
+    }
+  }
+
+  override update(_time: number, delta: number): void {
+    // Chuyển động lơ lửng và nhịp thở của biểu tượng Ngọc Đôi (Icon 1 XOR)
+    const spin = this.emblemMotion.ringSpeed * getMotionScale();
+    this.ringAngle1 += delta * 0.0003 * spin;
+    this.ringAngle2 -= delta * 0.0002 * spin;
     this.pulseTime += delta * 0.003;
 
     this.renderDualJewelEmblem();
@@ -743,10 +789,10 @@ export class MenuScene extends Phaser.Scene {
     this.emblemGraphics.clear();
     this.sparkleGraphics.clear();
 
-    const cx = 360;
+    const cx = 0;
     // Nhấp nhô nhẹ nhàng
     const bobY = Math.sin(this.pulseTime * 0.7) * 5;
-    const cy = 520 + bobY;
+    const cy = bobY;
 
     // Vòng bụi sao xoay mờ ảo xung quanh (R = 150px)
     this.emblemGraphics.lineStyle(1.2, COLOR_NUMBERS.icePrimary, 0.25);

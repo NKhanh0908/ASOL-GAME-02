@@ -13,6 +13,145 @@ Brainstormed and specified a replacement for the sample-sourcing half of the G a
 - Effect on the existing chain: G0 and G1 Tasks 4-5 are deleted, Task 3 shrinks to the music assets, Tasks 8-9 swap the driver and drop the preload, and G2 is untouched. `ffmpeg-static` is no longer needed, so the dependency count is unchanged. Index departures 1, 2 and 4 are void.
 - Verification: spec self-review ran and fixed two internal contradictions (`webaudio.ts` overlapping `synthSfxDriver.ts`, and a report field describing pitch estimation that the design removes). No code changed. Committed from a separate worktree on `feat/audio-synth` so that in-flight F2 work on `feat/motion-f1` was untouched. GitNexus `detect_changes` reports docs-only changes and no affected symbols.
 
+### 2026-10-05 - Accept F2 motion and defer F3 acceptance tooling
+
+- Recorded Reviewer Stop Point 4 as passed for F1/F2 and documented the intentional 2800 ms victory sequence across the active F2/F3 specifications, motion plan index, architecture map, docs index, and status.
+- Kept F3 approved but deferred for later implementation and Android/device acceptance by the reviewer; `feat/motion-f2` may be integrated independently.
+- Verification: `npm run typecheck`, `npm test`, `npm run content:validate`, `npm run build`, `git diff --check`.
+
+### 2026-10-05 - Lengthen victory sequence to 2800 ms
+
+- Updated `game-next/src/presentation/designTokens.ts`: lengthened `VICTORY_TOKENS.totalMs` from 1800 ms to 2800 ms. Light wave now spans 400–1200 ms with 120 ms stagger, silhouette trace runs at 900–1500 ms, celestial rings & stardust burst expand at 1300–2400 ms, and the win card slides in gracefully at 2000–2800 ms (giving players ample time to appreciate the solved board and particle effects). Tap-to-skip remains responsive.
+- Updated `game-next/tests/victorySequence.test.ts` to match the 2800 ms timeline.
+- Verification: `tests/victorySequence.test.ts` (8/8 tests passed).
+
+### 2026-10-05 - Constrain desktop web viewport to portrait aspect ratio
+
+- Updated `game-next/src/presentation/viewport.ts`: `computeViewport` caps `safeCssWidth` at `safeCssHeight * (DESIGN_WIDTH / DESIGN_HEIGHT)` (9:16) on screens wider than portrait. This avoids massive scaling and squashed vertical coordinates on desktop/web while preserving mobile phones in portrait identically.
+- Updated `game-next/src/style.css`: added `max-width: calc(100vh * 720 / 1280)` and centered `#game` with `left: 50%; transform: translateX(-50%)`, adding a soft box-shadow against the cosmic background. Mobile portrait devices (where width <= max-width) remain 100vw x 100vh full-screen.
+- Added tests in `game-next/tests/viewport.test.ts` verifying desktop 1920x1080 bounds clamping to 9:16 portrait (~1280 design height) and mobile 390x844 preservation.
+- Verification: `npm run typecheck`, `npm test` (68 test files, 829 tests), `npm run content:validate`, `npm run build` all passed.
+
+### 2026-10-05 - Complete F2 in-level game feel (F2 task 10)
+
+- Pieces now drop into the tray individually during the F1 play-in (950-1350 ms, scale 0.6 → 1, ease backOut, span 180 ms) in `game-next/src/presentation/transitions/routes.ts`.
+- Documented the in-level game feel and feedback entry points in `game-next/README.md`.
+- Audited reduced-motion handling against spec F2 section 5 across all presentation and feedback modules.
+- Verification: `npm run typecheck`, `npm test` (68 test files, 827 tests), `npm run content:validate` (22 levels), and `npm run build` passed.
+
+### 2026-10-05 - Stage the 1800 ms victory sequence (F2 task 9)
+
+- Added `game-next/src/presentation/feedback/victorySequence.ts`: pure victory schedule (150 ms under reduced motion) with light timings, trace timings, ring and burst parameters, gold-frame crossfade, and win card slide with four staggered item groups.
+- Added `planBurst` and `burstAt` to `game-next/src/presentation/transitions/stardust.ts` for stardust particle bursts up to 30 particles.
+- Added `deepen` to `game-next/src/presentation/BackgroundScene.ts` for background sky darkening during victory.
+- Implemented `playVictory`, `skipVictory`, `unwindVictory`, and `burst` in `FeedbackDirector.ts`; updated `Hud.ts` with `playWinCard` and `unwindWinCard`.
+- Updated `PlayScene.ts`: removed old `playCelebration` and `celebrationContainer`, wired tap-to-skip in `pointerdown`, and used `unwindVictory` in `resetLevel`.
+- Verification: `tests/victorySequence.test.ts` and `tests/transitionRoutes.test.ts` passed; `npm run typecheck` and `npm test` (68 test files, 827 tests) passed.
+
+### 2026-10-05 - Add feedback director for operations and smooth hud (F2 task 8)
+
+- Updated `game-next/src/presentation/Hud.ts`: added `tickSnapHint`, `popCounterIcon`, `matchIconCenters`, and smooth rotate button alpha fade; removed obsolete `showSnapHint`/`hideSnapHint`.
+- Added `game-next/src/presentation/feedback/FeedbackDirector.ts`: handles visual and haptic feedback for lift, snap (bounce + ring + counter pop), return, rotate, rotate-blocked flash, overlap-hollow trace, overlap-revive star, and staggered reset animations using `TransitionTimeline`.
+- Wired `FeedbackDirector` into `game-next/src/presentation/PlayScene.ts`: updated pointer handlers to dispatch lift and commit state transitions via `feedbackEvents`, hooked HUD callbacks and `resetLevel`, and ticked feedback and HUD snap hint in `update()`.
+- Verification: `npm run typecheck` and `npm test` (67 test files, 818 tests) passed.
+
+### 2026-10-05 - Lock parity fade and overlap preview behaviour (F2 task 7)
+
+- Added `game-next/tests/boardRendererParity.test.ts`: verified that new overlap layers fade in from 0 to 1 over 150 ms and merge into the stable layer, `fadeOutParity` fades out a snapshot replica, and drag snap candidate over placed piece draws preview strokes.
+- Verification: `tests/boardRendererParity.test.ts`, `npm run typecheck` and `npm test` (67 test files, 818 tests) passed.
+
+### 2026-10-05 - Frame-based rendering with PieceView and BoardRenderer.tick (F2 task 6)
+
+- Added `game-next/src/presentation/PieceView.ts`: one container per piece holding texture-based shadow, body, and add-blended light images; applies frame-rate-independent smoothing, velocity tilt, bounce, shake, spin and flash.
+- Rewrote `game-next/src/presentation/BoardRenderer.ts` around `tick(dtMs, snapshot, pieces)`: uses `PieceView` for piece rendering, animates incoming parity layers via `overlapFadeMs`, smoothly steps target hover alphas, and draws preview strokes.
+- Updated `PlayScene.ts` to bake one piece per frame in `update()`, tick the board renderer, and throttle snap hint updates.
+- Verification: `tests/boardRendererLayers.test.ts` and `tests/boardRendererReveal.test.ts` updated and passing; full test suite (66 test files, 815 tests) and web build passed.
+
+### 2026-10-05 - Add piece texture cache with a memory budget (F2 task 5)
+
+- Added `game-next/src/presentation/PieceTextureCache.ts`: each piece orientation is baked once into a 360 px jewel body plus half-resolution black and white silhouettes (no `setTintFill`, so WebGL and Canvas share one path), one piece per frame, with synchronous `ensure` for rotations.
+- Measured budget: every Chapter 1 piece has `frameSize` 48 and no level rotates, so levels use 1.48-2.22 MiB; a rotating 6-piece level of 64-cell frames would exceed 24 MiB and automatically drops to 0.75 resolution (17.8 MiB).
+- Added the shared test helper `tests/helpers/fakeScene.ts`.
+- Verification: `tests/pieceTextureCache.test.ts` failed for the missing module, then passed; `npm run typecheck` and `npm test` (66 test files, 816 tests) passed.
+
+### 2026-10-05 - Add haptics port, cues, and persistent setting (F2 task 4)
+
+- Added `@capacitor/haptics` 8.0.2 (peer `@capacitor/core >=8.0.0`), a pure `HapticsPort` that swallows driver errors and respects the setting, a Capacitor driver (`capacitorHapticsDriver`), and the event-to-cue table from spec F2 section 3 (`HAPTIC_CUES`, `playCue`).
+- Added `settings.haptics` (default `true`, legacy saves read as `true`) with `setHaptics`; the "Rung phản hồi" toggle in `SettingsDialog` now persists and appears on native platforms or browsers with `navigator.vibrate`.
+- Verification: `tests/haptics.test.ts` and two progress tests failed before the change, then passed; `npm run typecheck` and `npm test` (65 test files, 806 tests) passed; `npm run build` succeeded.
+
+### 2026-10-05 - Derive feedback events from transitions (F2 task 3)
+
+- Added `game-next/src/presentation/feedback/parityDiff.ts` (stable layer keys, kept/added overlap layers, perimeter segments for edge traces) and `feedbackEvents.ts`, which turns a `Transition` plus the player command into snap, settle, return, rotate, blocked-rotation, overlap-hollow, overlap-revive, reset and won events. The command parameter is needed because a rejected rotation carries no piece id.
+- Verification: `tests/parityDiff.test.ts` and `tests/feedbackEvents.test.ts` failed for the missing modules, then passed; `npm run typecheck` and `npm test` (64 test files, 798 tests) passed.
+
+### 2026-10-05 - Add feedback tokens and piece pose math (F2 task 2)
+
+- Added `FEEDBACK_TOKENS` and `VICTORY_TOKENS` (victory rings shortened to 600 ms so the sequence fits 1800 ms) and `game-next/src/presentation/pieceMotion.ts`: frame-rate-independent exponential smoothing, magnet, velocity tilt, bounce/shake/flash curves and the target pose of a piece for tray, snapped, temporary and dragging states.
+- Verification: `tests/pieceMotion.test.ts` failed for the missing module, then passed; `npm run typecheck` and `npm test` (62 test files, 785 tests) passed.
+
+### 2026-10-05 - Stop redundant mask evaluation while dragging (F2 task 1)
+
+- `PlayController` now caches the committed mask and updates it only when the puzzle state changes; `getSnapshot()` no longer evaluates the 20,480-cell mask.
+- `updateDrag` accepts `computePreviewMask` and `previous`; the controller disables the unused preview mask, so a drag never calls `evaluate`.
+- Verification: `tests/playControllerCache.test.ts` (evaluate spy) and two new drag tests failed before the change, then passed; `npm run typecheck` and `npm test` (61 test files, 772 tests) passed.
+
+### 2026-10-05 - Fix responsive camera zoom in play choreography
+
+- Fixed `zoomCamera` in `playChoreography.ts` to scale relative to the camera's base `designScale` instead of resetting zoom to hardcoded 1.0; prevents mobile gameplay layouts from shrinking upon entering from menu or map.
+- Verification: `tests/playChoreography.test.ts` passed; `npm run typecheck` and `npm test` (60 test files, 767 tests) passed.
+
+### 2026-10-05 - Complete F1 scene transitions
+
+- Documented the transition entry point in `game-next/README.md`.
+- Verification: `npm run typecheck`, `npm test`, `npm run content:validate` and `npm run build` passed; spec F1 sections 2–3 cross-checked. Device acceptance is tracked by plan F3.
+
+### 2026-10-05 - Choreograph the play scene (F1 task 9)
+
+- Split the board into base, grid and top layers centred on (360, 600), made the four cardinal runes visible above the grid (previously hidden under the board surface), added per-placement target reveal and a gold-frame toggle to `BoardRenderer`, and exposed animatable HUD and target-badge parts.
+- Added `game-next/src/presentation/transitions/playChoreography.ts`: board rise (from the tapped node on the map route), radial grid reveal, staggered runes and targets with a glint sweep, camera breath, tray and HUD entry; next-level stardust implosion and frame flash; leave-to-map/menu collapse. Celestial rings stop under reduced motion.
+- Verification: `tests/boardRendererReveal.test.ts` failed for the missing method, then passed; `tests/boardRendererLayers.test.ts` unchanged and passing; `npm run typecheck` and `npm test` (766 tests) passed; manual dev-server check of all play routes, tap-to-skip and reduced motion.
+
+### 2026-10-05 - Choreograph constellation map transitions (F1 task 8)
+
+- Kept references to nodes, Bezier lines, sparks and chapter banners in `LevelSelectScene`; implemented map in/out transitions with distance-ordered node stagger radiating from the active/tapped node, header slide, and an expanding ice-ring pulse covering the board bounds when navigating to play.
+- Verification: `npm run typecheck` and `npm test` passed (58 test files, 765 tests).
+
+### 2026-10-05 - Choreograph the main menu (F1 task 7)
+
+- Grouped the menu title, buttons, settings, language pill, and footer into animatable containers and drew the Song Tinh emblem around its own origin; added menu in/out choreography (button collapse, staggered chrome, emblem descending into the board or flying to the map header, 4x ring spin) and stopped the emblem rings under reduced motion.
+- Verification: `npm run typecheck` and `npm test` (765 tests) passed; manual dev-server check of boot, menu → play and menu → map.
+
+- Added `game-next/src/presentation/transitions/SceneDirector.ts`: a transition state machine behind a `SceneHost` port (input lock, overlapping hand-off, tap or Back to skip, deferred input re-enable, same-scene restart for the next level, 150 ms crossfade under reduced motion) and its Phaser host.
+- `BackgroundScene` now owns the only sky; Menu, Level Select and Play no longer build their own. All 13 `scene.start` calls now go through the director; `main.ts` boots through it and skips an active transition on Android Back or backgrounding.
+- Verification: `tests/sceneDirector.test.ts` failed for the missing module and `tests/sceneStartGate.test.ts` listed five offending files, then both passed; `npm run typecheck` and `npm test` (765 tests) passed; web build succeeded.
+
+- Added `game-next/src/presentation/skyMood.ts` (menu/map/play moods, speed-weighted drift accumulation) and `BackgroundScene.ts`, which owns one `SkyBackdrop` and tweens its drift speed and dim layer.
+- Replaced the `drift` flag of `SkyBackdrop` with a tweenable `driftSpeed` and added a navy dim layer; existing scenes keep their own sky until the director task.
+- Verification: `tests/skyMood.test.ts` failed for the missing module, then passed; `npm run typecheck` and `npm test` passed.
+
+### 2026-10-05 - Persist the reduced-motion setting (F1 task 4)
+
+- Added `settings.reducedMotion` (default `false`, legacy saves read as `false` without recovery) and `setReducedMotion` to the progress repository; wired the previously empty "Giảm chuyển động" toggle in `SettingsDialog` to persist the value and update the global motion scale.
+- Verification: three new progress tests failed before the change, then passed; `npm run typecheck` and `npm test` passed.
+
+### 2026-10-05 - Add choreography steps and route tables (F1 task 3)
+
+- Added `game-next/src/presentation/transitions/choreography.ts` (enter/exit poses that always return to the natural pose, step tables with even stagger), `routes.ts` (step tables and special-effect timings for all seven routes) and `stardust.ts` (at most 30 particles with fixed alpha).
+- Verification: `tests/choreography.test.ts` and `tests/transitionRoutes.test.ts` failed for the missing modules, then passed; every in-phase ends exactly at its route total and `next-level` finishes its out-phase before the 800 ms restart; `npm run typecheck` and `npm test` passed.
+
+### 2026-10-05 - Add a self-clocked transition timeline (F1 task 2)
+
+- Added `game-next/src/presentation/transitions/TransitionTimeline.ts`: tweens and calls scheduled on route-relative milestones, driven by `advance`, with `complete()` that jumps every entry to its end state in milestone order exactly once.
+- Verification: `tests/transitionTimeline.test.ts` failed for the missing module, then passed; `npm run typecheck` and `npm test` passed.
+
+### 2026-10-05 - Add motion primitives for scene transitions (F1 task 1)
+
+- Added `game-next/src/presentation/transitions/motion.ts` (pure easing functions, `stagger`, `scaleTiming`, a global 0/1 motion scale) and `TRANSITION_TOKENS` with the seven routes from spec F1.
+- Verification: `tests/motion.test.ts` failed for the missing module, then passed; `npm run typecheck` and `npm test` passed.
+
+### 2026-10-05 - Casual 3D tactile action buttons, moving gameplay galaxy, level start banner, and dialog redesign
+
 Mobile visual polish based on device screenshots (`docs/screenshots/mobile/m1/`):
 
 - `game-next/src/presentation/MenuScene.ts`:

@@ -4,6 +4,7 @@ import {
   COLOR_NUMBERS,
   COLOR_TOKENS,
   DEPTH_TOKENS,
+  FEEDBACK_TOKENS,
   LAYOUT_TOKENS,
   TYPO_TOKENS,
 } from './designTokens.ts';
@@ -19,6 +20,11 @@ import {
   getSnapHintText,
   getVictoryLabels,
 } from './hudText.ts';
+import { enter, exit, type Poseable } from './transitions/choreography.ts';
+import { stepScalar } from './pieceMotion.ts';
+import { isReducedMotion } from './transitions/motion.ts';
+import type { TransitionTimeline } from './transitions/TransitionTimeline.ts';
+import type { VictoryPlan } from './feedback/victorySequence.ts';
 
 export type HudCallbacks = {
   onMenu: () => void;
@@ -34,6 +40,7 @@ export class Hud {
   private callbacks: HudCallbacks;
   private levelId: string;
 
+  private menuButton: Phaser.GameObjects.Container;
   private titleText: Phaser.GameObjects.Text;
   private subtitleText: Phaser.GameObjects.Text;
   private targetButton: Phaser.GameObjects.Container;
@@ -51,7 +58,11 @@ export class Hud {
   private matchBarText: Phaser.GameObjects.Text;
   private snapHint: Phaser.GameObjects.Container | null = null;
   private winVerseText!: Phaser.GameObjects.Text;
+  private winItems: Poseable[][] = [];
   private rotateAllowed = false;
+  private matchIconCenters: number[] = [];
+  private hint = { alpha: 0, x: 0, y: 0 };
+  private lastCanRotate: boolean | null = null;
   private readonly layout: LayoutMetrics;
 
   constructor(
@@ -76,14 +87,16 @@ export class Hud {
     const headerTop = this.layout.headerBounds.y;
 
     // 1. Nút Menu tròn 80px (Vùng chạm 96px, Góc trên trái: x=56, y=56)
+    this.menuButton = this.scene.add.container(56, headerTop + 56);
     const menuBtn = this.scene.add
-      .image(56, headerTop + 56, TEXTURE_KEYS.btnCircle80)
+      .image(0, 0, TEXTURE_KEYS.btnCircle80)
       .setSize(96, 96)
       .setInteractive({ useHandCursor: true });
-    const menuIcon = this.scene.add.image(56, headerTop + 56, TEXTURE_KEYS.iconMenuBack).setScale(1.25);
+    const menuIcon = this.scene.add.image(0, 0, TEXTURE_KEYS.iconMenuBack).setScale(1.25);
     menuBtn.on('pointerdown', () => {
       this.animateButtonTap(menuBtn, () => this.callbacks.onMenu());
     });
+    this.menuButton.add([menuBtn, menuIcon]);
 
     // 2. Tiêu đề màn chơi 36px + Dòng phụ Chương 24px (Giữa header: x=360)
     this.titleText = this.scene.add
@@ -286,6 +299,8 @@ export class Hud {
       .setInteractive({ useHandCursor: true });
     nextHit.on('pointerdown', () => this.callbacks.onNextLevel());
 
+    this.winItems = [[winLabel], [winTitle], [winVerse], [selectBtnBg, selectBtn, nextBtnBg, nextBtn]];
+
     this.winContainer.add([
       winOverlay,
       cardFrame,
@@ -317,12 +332,17 @@ export class Hud {
   public update(snapshot: PlayViewSnapshot): void {
     this.targetIcon.setTexture(snapshot.showTarget ? TEXTURE_KEYS.iconEyeOpen : TEXTURE_KEYS.iconEyeClosed);
 
-    if (snapshot.canRotate) {
-      this.rotateContainer.setAlpha(1.0);
-      this.rotateBtnBase.setInteractive({ useHandCursor: true });
-    } else {
-      this.rotateContainer.setAlpha(0.3);
-      this.rotateBtnBase.disableInteractive();
+    if (snapshot.canRotate !== this.lastCanRotate) {
+      this.lastCanRotate = snapshot.canRotate;
+      if (snapshot.canRotate) this.rotateBtnBase.setInteractive({ useHandCursor: true });
+      else this.rotateBtnBase.disableInteractive();
+      this.scene.tweens.killTweensOf(this.rotateContainer);
+      this.scene.tweens.add({
+        targets: this.rotateContainer,
+        alpha: snapshot.canRotate ? 1.0 : 0.3,
+        duration: FEEDBACK_TOKENS.rotateButtonFadeMs,
+        ease: 'Sine.easeInOut',
+      });
     }
 
     this.drawMatchBar(snapshot.snappedCount, snapshot.totalPieces);
@@ -338,6 +358,7 @@ export class Hud {
    */
   private drawMatchBar(matched: number, total: number): void {
     this.matchBarText.setText(formatMatchCount(matched, total));
+    this.matchIconCenters = [];
 
     const iconSize = 14;
     const iconGap = 10;
@@ -358,6 +379,7 @@ export class Hud {
 
     for (let i = 0; i < total; i++) {
       const cx = -width / 2 + padding + iconSize + i * (iconSize * 2 + iconGap);
+      this.matchIconCenters[i] = cx;
       drawJewel(g, {
         cx,
         cy: 0,
@@ -367,8 +389,8 @@ export class Hud {
     }
   }
 
-  /** Nhãn nổi cạnh mảnh khi kéo trúng vùng hít. */
-  public showSnapHint(x: number, y: number): void {
+  /** Nhãn "Thả để khớp": hiện/ẩn trong ~120 ms, bám mảnh với τ 60 ms */
+  public tickSnapHint(dtMs: number, target: { x: number; y: number } | null): void {
     if (!this.snapHint) {
       const bg = this.scene.add.graphics();
       bg.fillStyle(0xfff4d2, 1);
@@ -381,18 +403,48 @@ export class Hud {
           fontStyle: 'bold',
         })
         .setOrigin(0.5);
-      this.snapHint = this.scene.add
-        .container(0, 0, [bg, label])
-        .setDepth(DEPTH_TOKENS.hudControls);
+      this.snapHint = this.scene.add.container(0, 0, [bg, label]).setDepth(DEPTH_TOKENS.hudControls).setAlpha(0);
     }
-    this.snapHint.setPosition(x, y).setVisible(true);
+    const reduced = isReducedMotion();
+    const goal = target ? 1 : 0;
+    const fadeTau = FEEDBACK_TOKENS.hintMs / 3;
+    if (target && this.hint.alpha < 0.01) {
+      this.hint.x = target.x;
+      this.hint.y = target.y;
+    } else if (target) {
+      this.hint.x = reduced ? target.x : stepScalar(this.hint.x, target.x, dtMs, FEEDBACK_TOKENS.tau.hint);
+      this.hint.y = reduced ? target.y : stepScalar(this.hint.y, target.y, dtMs, FEEDBACK_TOKENS.tau.hint);
+    }
+    this.hint.alpha = stepScalar(this.hint.alpha, goal, dtMs, fadeTau);
+    if (Math.abs(this.hint.alpha - goal) < 0.01) this.hint.alpha = goal;
+    const scale = reduced ? 1 : 0.9 + 0.1 * this.hint.alpha;
+    this.snapHint
+      .setPosition(this.hint.x, this.hint.y)
+      .setAlpha(this.hint.alpha)
+      .setScale(scale)
+      .setVisible(this.hint.alpha > 0);
   }
 
-  public hideSnapHint(): void {
-    this.snapHint?.setVisible(false);
+  /** Biểu tượng thứ `index` trên thanh đếm bật 1.3 → 1 khi một mảnh khớp */
+  public popCounterIcon(index: number): void {
+    const cx = this.matchIconCenters[index];
+    if (cx === undefined || isReducedMotion()) return;
+    const pop = this.scene.add.graphics();
+    drawJewel(pop, { cx: 0, cy: 0, radius: 14, variant: 'solid' });
+    pop.setPosition(cx, 0).setScale(FEEDBACK_TOKENS.counterPopScale);
+    this.matchBar.add(pop);
+    this.scene.tweens.add({
+      targets: pop,
+      scaleX: 1,
+      scaleY: 1,
+      duration: FEEDBACK_TOKENS.counterPopMs,
+      ease: 'Back.easeOut',
+      onComplete: () => pop.destroy(),
+    });
   }
 
-  public showWinModal(victoryVerse?: string): void {
+  /** Nội dung và chỗ đứng của thẻ; không đụng tư thế để dàn dựng tự lo */
+  private prepareWinModal(victoryVerse?: string): void {
     this.winVerseText
       .setText(victoryVerse ? `“${victoryVerse}”` : '')
       .setVisible(Boolean(victoryVerse));
@@ -400,24 +452,53 @@ export class Hud {
     this.resetContainer.setVisible(false);
     this.rotateContainer.setVisible(false);
     this.matchBar.setVisible(false);
-    if (this.winContainer.visible) return;
-    this.winContainer.setAlpha(0).setVisible(true);
-    this.scene.tweens.add({
-      targets: this.winContainer,
-      alpha: 1,
-      duration: 500,
-      ease: 'Cubic.easeOut',
+    this.winContainer.setVisible(true);
+  }
+
+  /** Hiện ngay (khôi phục trạng thái đã thắng) */
+  public showWinModal(victoryVerse?: string): void {
+    this.winContainer.setPosition(0, 0).setAlpha(1);
+    this.prepareWinModal(victoryVerse);
+  }
+
+  /**
+   * Chuỗi thắng: thẻ trượt lên, bốn nhóm con hiện so le. Mọi `enter` lên lịch
+   * ngay (đặt tư thế lệch lúc thẻ còn ẩn); lời gọi hiện thẻ ở cùng mốc đứng
+   * sau các tween, nên `complete()` gói gọn trong một lượt xử lý.
+   */
+  public playWinCard(tl: TransitionTimeline, plan: VictoryPlan, victoryVerse?: string): void {
+    enter(tl, this.winContainer, plan.cardAtMs, plan.cardMs, { dy: plan.cardSlidePx, alpha: 0 });
+    this.winItems.forEach((group, i) => {
+      for (const item of group) {
+        enter(tl, item, plan.cardAtMs + i * plan.cardItemGapMs, plan.cardItemMs, { alpha: 0 });
+      }
     });
+    tl.call(plan.cardAtMs, () => this.prepareWinModal(victoryVerse));
+  }
+
+  public unwindWinCard(tl: TransitionTimeline, ms: number): void {
+    exit(tl, this.winContainer, 0, ms, { dy: 60, alpha: 0 });
+    tl.call(ms, () => this.hideWinModal());
   }
 
   public hideWinModal(): void {
-    this.winContainer.setVisible(false);
+    this.winContainer.setVisible(false).setPosition(0, 0).setAlpha(1);
     this.resetContainer.setVisible(true);
     this.rotateContainer.setVisible(this.rotateAllowed);
     this.matchBar.setVisible(true);
   }
 
+  public getTransitionParts(): { title: Poseable[]; topButtons: Poseable[]; bottomBar: Poseable[]; winCard: Poseable[] } {
+    return {
+      title: [this.titleText, this.subtitleText],
+      topButtons: [this.menuButton, this.targetButton],
+      bottomBar: [this.resetContainer, this.matchBar, this.rotateContainer],
+      winCard: [this.winContainer],
+    };
+  }
+
   public destroy(): void {
+    this.menuButton.destroy();
     this.matchBar.destroy();
     this.snapHint?.destroy();
     this.titleText.destroy();

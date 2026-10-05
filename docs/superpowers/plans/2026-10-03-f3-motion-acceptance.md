@@ -1765,7 +1765,7 @@ git commit -m "feat(dev): add fps overlay, perf windows and dev time scale"
 - Produces:
   - `type DemoPlan = { source: SceneKey; sourceData: object; target: SceneKey; targetData: object; prepareWin: boolean }`
   - `demoPlan(route: RouteId): DemoPlan`
-  - `DEMO_REST_MS = 600`, `DEMO_WIN_SETTLE_MS = 2000`
+  - `DEMO_REST_MS = 600`, `DEMO_WIN_SETTLE_MS = 3000`
   - `LevelSelectScene.demoOrigin(): { x: number; y: number }`
   - `class DemoRunner`: `constructor(game: Phaser.Game, route: RouteId, loop: boolean)`, `start(): void`
 
@@ -1831,8 +1831,8 @@ export type DemoPlan = {
 
 /** Nghỉ giữa hai lần lặp (spec F3 mục 2) */
 export const DEMO_REST_MS = 600;
-/** Đợi chuỗi thắng 1800 ms của F2 xong trước khi sang màn kế */
-export const DEMO_WIN_SETTLE_MS = 2000;
+/** Đợi chuỗi thắng 2800 ms của F2 xong trước khi sang màn kế, cộng đệm 200 ms */
+export const DEMO_WIN_SETTLE_MS = 3000;
 
 const PLAY_1_1 = { levelId: '1-1', mode: 'harness' } as const;
 const MAP = { mode: 'harness' } as const;
