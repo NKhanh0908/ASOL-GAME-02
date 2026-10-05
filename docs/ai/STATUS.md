@@ -1,11 +1,12 @@
-# Status — updated 2026-10-05 by Antigravity (bilingual UI & level titles localized)
+# Status — updated 2026-10-05 by Claude Code (Capacitor haptics Android wiring committed)
 
 Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; keep this file ≤ 60 lines.
 
 ## Now
 
 - Branch: `main` (merged `feat/audio-synth` @ `7c28b64`; feature branch kept for Task 9b). Main checkout D:\Working\ASOL\ASOL-GAME-02.
-- Carried on `main`: `feat/audio-synth`, app renamed to "Mirror", bilingual EN localization for level titles, chapter labels & HUD controls.
+- Carried on `main`: `feat/audio-synth`, app renamed to "Mirror", bilingual EN localization for level titles, chapter labels & HUD controls, and the Capacitor `@capacitor/haptics` Android gradle wiring.
+- Working tree clean; `main` is ahead of `origin/main` by 30 commits and needs a push.
 - Product state: GS & G2 audio integrated; HUD, LevelSelect, and Menu fully localized in Vietnamese and English.
 - Next step: GS Task 9b (music asset sourcing & metadata) awaiting reviewer tracks, then final audio acceptance checks.
 - Verified: typecheck clean, 84 files / 1036 tests pass, `npm run build` clean, Android debug APK assembleDebug built cleanly (`app-debug.apk`).

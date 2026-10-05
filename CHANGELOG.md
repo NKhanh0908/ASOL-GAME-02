@@ -4,6 +4,12 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-05 - Commit missing Capacitor haptics Android wiring
+
+- Committed the generated Capacitor sync output that was left uncommitted when `@capacitor/haptics` was added: `game-next/android/capacitor.settings.gradle` now includes the `:capacitor-haptics` project and `game-next/android/app/capacitor.build.gradle` declares it as a dependency. Without these, a fresh clone could not assemble the Android app with haptics support.
+- Added `/.superpowers/` to `.gitignore` (agent scratch patches and SDD working copies must not be tracked).
+- Verification: `npm test` 84 files / 1036 tests pass; GitNexus `detect_changes` reports 0 changed symbols, risk low (build config only, no TypeScript touched); `git status` clean after commit.
+
 ### 2026-10-05 - Localize level titles, chapter labels, and HUD controls in English
 
 - Localized HUD title and subtitle in `game-next/src/presentation/Hud.ts`: level title translates dynamically via `getLevelTitle(levelId, rawTitle)` (e.g. "Twin Stars"), and subtitle displays localized chapter and level prefixes (`Chapter I · Level 1-1`).
