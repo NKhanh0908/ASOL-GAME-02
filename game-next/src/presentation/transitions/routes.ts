@@ -94,8 +94,8 @@ export function playIn(variant: 'menu' | 'node' | 'next', center: Point, origin?
   }
   steps.push(
     { part: 'tray', atMs: 950, durationMs: 300, delta: { dy: 40, alpha: 0 } },
-    // F1 tween cả lớp mảnh như một khối; F2 cho từng mảnh rơi riêng
-    { part: 'trayPieces', atMs: 1000, durationMs: 350, delta: { dy: -60, alpha: 0 }, ease: 'backOut' },
+    // Từng mảnh rơi vào ô khay: y −60 → 0, scale 0.6 → 1, so le (spec F1 mục 3.1)
+    { part: 'trayPieces', atMs: 950, durationMs: 220, delta: { dy: -60, scale: 0.6, alpha: 0 }, ease: 'backOut', spanMs: 180 },
     { part: 'title', atMs: 1100, durationMs: 340, delta: { dy: -40, alpha: 0 }, spanMs: 60 },
     { part: 'topButtons', atMs: 1100, durationMs: 400, delta: { alpha: 0, scale: 0.8 }, ease: 'backOut' },
     { part: 'bottomBar', atMs: 1150, durationMs: 290, delta: { dy: 40, alpha: 0 }, spanMs: 60 }

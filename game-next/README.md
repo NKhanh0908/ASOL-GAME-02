@@ -27,3 +27,8 @@ Bản tái thiết (Rebuild) của trò chơi giải đố Mirror theo bộ đ�
 ### Chuyển cảnh
 
 Mọi lần đổi scene đi qua `director.go(...)` trong `src/presentation/transitions/SceneDirector.ts`; không gọi `scene.start` trực tiếp (test `sceneStartGate` chặn). Mỗi scene cài `playIn`/`playOut`; bảng bước của từng tuyến ở `transitions/routes.ts`. Bầu trời thuộc `BackgroundScene`.
+
+### Phản hồi trong màn
+
+Mảnh là `PieceView` (texture vẽ một lần trong `PieceTextureCache`, một mảnh mỗi khung). `BoardRenderer.tick()` chạy mỗi khung từ `PlayScene.update`; mọi lệnh người chơi đi qua `feedbackEvents()` rồi `FeedbackDirector.handle()`. Thời lượng ở `FEEDBACK_TOKENS` và `VICTORY_TOKENS` trong `designTokens.ts`.
+

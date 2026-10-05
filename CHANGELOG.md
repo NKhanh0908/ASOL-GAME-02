@@ -4,6 +4,13 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-05 - Complete F2 in-level game feel (F2 task 10)
+
+- Pieces now drop into the tray individually during the F1 play-in (950-1350 ms, scale 0.6 → 1, ease backOut, span 180 ms) in `game-next/src/presentation/transitions/routes.ts`.
+- Documented the in-level game feel and feedback entry points in `game-next/README.md`.
+- Audited reduced-motion handling against spec F2 section 5 across all presentation and feedback modules.
+- Verification: `npm run typecheck`, `npm test` (68 test files, 827 tests), `npm run content:validate` (22 levels), and `npm run build` passed.
+
 ### 2026-10-05 - Stage the 1800 ms victory sequence (F2 task 9)
 
 - Added `game-next/src/presentation/feedback/victorySequence.ts`: pure victory schedule (150 ms under reduced motion) with light timings, trace timings, ring and burst parameters, gold-frame crossfade, and win card slide with four staggered item groups.
