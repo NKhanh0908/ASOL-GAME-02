@@ -4,6 +4,11 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-05 - Add a self-clocked transition timeline (F1 task 2)
+
+- Added `game-next/src/presentation/transitions/TransitionTimeline.ts`: tweens and calls scheduled on route-relative milestones, driven by `advance`, with `complete()` that jumps every entry to its end state in milestone order exactly once.
+- Verification: `tests/transitionTimeline.test.ts` failed for the missing module, then passed; `npm run typecheck` and `npm test` passed.
+
 ### 2026-10-05 - Add motion primitives for scene transitions (F1 task 1)
 
 - Added `game-next/src/presentation/transitions/motion.ts` (pure easing functions, `stagger`, `scaleTiming`, a global 0/1 motion scale) and `TRANSITION_TOKENS` with the seven routes from spec F1.
