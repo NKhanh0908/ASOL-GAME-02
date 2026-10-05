@@ -36,6 +36,7 @@ import { createHaptics } from '../infrastructure/haptics.ts';
 import { capacitorHapticsDriver } from '../infrastructure/capacitorHaptics.ts';
 import { Capacitor } from '@capacitor/core';
 import type { BackgroundScene } from './BackgroundScene.ts';
+import { audioServices } from './audio/audioServices.ts';
 
 export class PlayScene extends Phaser.Scene implements Choreographed {
   readonly directorKey = 'PlayScene' as const;
@@ -195,6 +196,7 @@ export class PlayScene extends Phaser.Scene implements Choreographed {
       hud: this.hud,
       textures: this.textureCache,
       haptics,
+      audio: audioServices(this),
       getState: () => this.controller.getPuzzleState(),
       background: () => this.scene.get('BackgroundScene') as BackgroundScene | null,
     });

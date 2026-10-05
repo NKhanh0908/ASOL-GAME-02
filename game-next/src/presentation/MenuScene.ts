@@ -15,6 +15,7 @@ import { getMotionScale } from './transitions/motion.ts';
 import { applySteps } from './transitions/choreography.ts';
 import type { Parts } from './transitions/choreography.ts';
 import { MENU_OUT_TO_MAP, MENU_OUT_TO_PLAY, MENU_SPECIAL, menuIn } from './transitions/routes.ts';
+import { playUiCue } from './audio/uiCues.ts';
 
 export class MenuScene extends Phaser.Scene implements Choreographed {
   readonly directorKey = 'MenuScene' as const;
@@ -237,6 +238,7 @@ export class MenuScene extends Phaser.Scene implements Choreographed {
       .setInteractive({ useHandCursor: true });
 
     btnZone.on('pointerdown', () => {
+      playUiCue(this, 'tap');
       primaryBtnContainer.y = btnY + 4;
       primaryBtnContainer.setScale(0.97);
     });
@@ -318,6 +320,7 @@ export class MenuScene extends Phaser.Scene implements Choreographed {
       .setInteractive({ useHandCursor: true });
 
     secBtnZone.on('pointerdown', () => {
+      playUiCue(this, 'tap');
       secBtnContainer.y = secBtnY + 3;
       secBtnContainer.setScale(0.97);
     });

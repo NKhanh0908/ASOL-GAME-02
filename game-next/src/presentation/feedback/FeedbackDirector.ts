@@ -19,6 +19,8 @@ import { type FeedbackEvent, gridPolygon } from './feedbackEvents.ts';
 import { HAPTIC_CUES, playCue } from './hapticCues.ts';
 import { perimeterSegment } from './parityDiff.ts';
 import { victoryPlan, type VictoryPlan } from './victorySequence.ts';
+import type { AudioServices } from '../audio/audioServices.ts';
+import { playFeedbackAudio, playVictoryAudio } from './audioCues.ts';
 
 export type FeedbackDeps = {
   scene: Phaser.Scene;
@@ -28,6 +30,7 @@ export type FeedbackDeps = {
   hud: Hud;
   textures: PieceTextureCache;
   haptics: HapticsPort;
+  audio: AudioServices;
   getState(): PuzzleState;
   background(): BackgroundScene | null;
 };
@@ -51,6 +54,7 @@ export class FeedbackDirector {
   }
 
   handle(events: readonly FeedbackEvent[]): void {
+    playFeedbackAudio(this.deps.audio.sfx, events, this.deps.getState());
     for (const event of events) {
       playCue(this.deps.haptics, HAPTIC_CUES[event.type]);
       this.visual(event);
@@ -291,6 +295,7 @@ export class FeedbackDirector {
 
     tl.call(plan.burstAtMs, () => {
       this.deps.haptics.notify('success');
+      playVictoryAudio(this.deps.audio);
       if (plan.cameraFlash) scene.cameras.main.flash(VICTORY_TOKENS.flashMs, 249, 199, 79, false);
     });
     if (plan.rings || plan.particles > 0) this.burst(tl, plan);

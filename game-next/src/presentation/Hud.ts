@@ -25,6 +25,7 @@ import { stepScalar } from './pieceMotion.ts';
 import { isReducedMotion } from './transitions/motion.ts';
 import type { TransitionTimeline } from './transitions/TransitionTimeline.ts';
 import type { VictoryPlan } from './feedback/victorySequence.ts';
+import { playUiCue } from './audio/uiCues.ts';
 
 export type HudCallbacks = {
   onMenu: () => void;
@@ -126,6 +127,7 @@ export class Hud {
     this.targetIcon = this.scene.add.image(0, 0, TEXTURE_KEYS.iconEyeOpen);
 
     targetBtnBase.on('pointerdown', () => {
+      playUiCue(this.scene, 'tap');
       this.animateButtonTap(targetBtnBase, () => this.callbacks.onToggleTarget());
     });
     this.targetButton.add([targetBtnBase, this.targetIcon]);
@@ -280,7 +282,10 @@ export class Hud {
       .zone(innerLeft, btnTop, selectW, btnH)
       .setOrigin(0, 0)
       .setInteractive({ useHandCursor: true });
-    selectHit.on('pointerdown', () => this.callbacks.onLevelSelect());
+    selectHit.on('pointerdown', () => {
+      playUiCue(this.scene, 'tap');
+      this.callbacks.onLevelSelect();
+    });
 
     const nextBtnBg = this.scene.add
       .image(nextX, btnTop, TEXTURE_KEYS.victoryNextButton)
@@ -297,7 +302,10 @@ export class Hud {
       .zone(nextX, btnTop, 346, btnH)
       .setOrigin(0, 0)
       .setInteractive({ useHandCursor: true });
-    nextHit.on('pointerdown', () => this.callbacks.onNextLevel());
+    nextHit.on('pointerdown', () => {
+      playUiCue(this.scene, 'tap');
+      this.callbacks.onNextLevel();
+    });
 
     this.winItems = [[winLabel], [winTitle], [winVerse], [selectBtnBg, selectBtn, nextBtnBg, nextBtn]];
 

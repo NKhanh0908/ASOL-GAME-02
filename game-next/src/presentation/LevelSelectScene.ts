@@ -18,6 +18,7 @@ import type { TransitionTimeline } from './transitions/TransitionTimeline.ts';
 import { applySteps, orderByDistance } from './transitions/choreography.ts';
 import type { Parts, Poseable } from './transitions/choreography.ts';
 import { MAP_OUT_TO_MENU, MAP_OUT_TO_PLAY, MAP_SPECIAL, mapIn } from './transitions/routes.ts';
+import { playUiCue } from './audio/uiCues.ts';
 
 type NodeInfo = {
   id: string;
@@ -190,7 +191,10 @@ export class LevelSelectScene extends Phaser.Scene implements Choreographed {
       .setSize(96, 96)
       .setInteractive({ useHandCursor: true });
     const backIcon = this.add.image(56, top + 56, TEXTURE_KEYS.iconMenuBack).setScale(1.25);
-    backBtn.on('pointerdown', () => this.goToMenu());
+    backBtn.on('pointerdown', () => {
+      playUiCue(this, 'tap');
+      this.goToMenu();
+    });
 
     // Tiêu đề trang 32px serif
     const headerTitle = this.add
@@ -450,10 +454,13 @@ export class LevelSelectScene extends Phaser.Scene implements Choreographed {
       // Xử lý sự kiện chạm
       nodeSprite.on('pointerdown', () => {
         if (node.state === 'locked') {
+          playUiCue(this, 'locked');
           this.showToast(`Màn ${node.id} chưa mở khóa`);
         } else if (!node.available) {
+          playUiCue(this, 'locked');
           this.showToast(`Màn ${node.id} đang được tinh chỉnh`);
         } else {
+          playUiCue(this, 'node');
           this.tappedIndex = this.nodeViews.findIndex((v) => v.info.id === node.id);
           director.go(this, 'PlayScene', {
             levelId: node.id,

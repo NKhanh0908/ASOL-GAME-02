@@ -1,4 +1,4 @@
-# Status — updated 2026-10-05 by Antigravity (GS Task 12 complete)
+# Status — updated 2026-10-05 by Antigravity (G2 audio cues complete)
 
 Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; keep this file ≤ 60 lines.
 
@@ -6,9 +6,9 @@ Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; k
 
 - Branch: `feat/audio-synth` (from `main`, merged up to `f964e13`). Main checkout D:\Working\ASOL\ASOL-GAME-02.
 - Carried on this branch: `feat/menu-astronomy-taglines` merged in.
-- Product state: GS1 (Tasks 1–8) and GS2 (Tasks 9a, 10, 11, 12) complete and verified. Synthesized sound effects wired into the game through `AudioServices`, `SceneDirector`, `SettingsDialog`, and `main.ts`.
-- Next step: GS Task 9b (music asset sourcing & metadata) awaiting reviewer tracks, then G2 (cue table + pentatonic melodies + stinger) unedited.
-- Verified: typecheck clean, 82 files / 1004 tests pass, `npm run build` clean with no Audio Lab in `dist/`, `content:validate` 22 levels pass, Android debug APK assembleDebug successful.
+- Product state: GS (Tasks 1–8, 9a, 10–12) and G2 (Tasks 10–12) complete and verified. Full sound effects active across gameplay feedback (pentatonic rising chimes, settle, lift, rotate, swish, victory stinger) and UI surfaces (buttons, modals, constellation nodes).
+- Next step: GS Task 9b (music asset sourcing & metadata) awaiting reviewer tracks, then final audio acceptance checks.
+- Verified: typecheck clean, 84 files / 1026 tests pass, `npm run build` clean with no Audio Lab in `dist/`, `content:validate` 22 levels pass, Android debug APK assembleDebug successful.
 
 ## Streams
 
@@ -20,7 +20,7 @@ Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; k
 | F motion (F1 → F2 → F3) | F1 & F2 complete, accepted and on `main`; F3 approved but deferred | `docs/superpowers/plans/2026-10-03-f-motion-index.md` |
 | C chapter 2 + Hoa Pham | complete; all 16 levels approved and available in campaign order | `docs/superpowers/plans/2026-10-02-c-chapter-2-hoa-pham-levels.md` |
 | GS audio synthesis (Tasks 1–12) | GS1 & GS2 (Tasks 9a, 10, 11, 12) complete; Task 9b waits on music tracks | `docs/superpowers/plans/2026-10-05-gs-audio-synth-index.md` |
-| G audio (music, cues) | sourcing half superseded by GS; G2 cue plan still used unedited after GS | `docs/superpowers/plans/2026-10-03-g-audio-index.md` |
+| G audio (music, cues) | G2 (Tasks 10–12 cues) complete; music tracks pending in Task 9b | `docs/superpowers/plans/2026-10-03-g-audio-index.md` |
 | BF board-fit-by-cells | complete, merged to `main` with Plan C | `docs/superpowers/plans/2026-10-03-board-fit-by-cells.md` |
 
 ## Open decisions / blockers
@@ -37,3 +37,4 @@ Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; k
 - Synth renders are deterministic end to end — re-running `npm run audio:author -- --all` leaves `git status` empty.
 - Android debug build in sandbox may fail if Gradle cache lock is held outside sandbox; bypass sandbox mode or clean locks.
 - `AUDIO_REGISTRY_KEY = 'audio'` in `game.registry`: calls before `ready` fall back to `SILENT_AUDIO` without throwing.
+- Sound effect triggers: UI sounds route via `playUiCue(scene, event)`; gameplay snaps calculate pentatonic step from `placedCount`.

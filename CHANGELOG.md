@@ -4,6 +4,18 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-05 - Play feedback, victory and UI sound cues (G2 tasks 10–12)
+
+- Added `game-next/src/presentation/feedback/audioCues.ts` mapping gameplay feedback events to synthesized sound cues: pentatonic rising chime on snap based on board snap count (`PENTATONIC_STEPS`: C5, D5, E5, G5, A5, C6), soft tap on piece settle, swish on return/reset, and soft ticks on lift and rotate. `playVictoryAudio` sequences the 4-step C major arpeggio victory stinger (C5, E5, G5, C6) with 90 ms intervals.
+- Wired `FeedbackDirector` (`game-next/src/presentation/feedback/FeedbackDirector.ts`) to accept `AudioServices` in `FeedbackDeps` and trigger `playFeedbackAudio` upon events and `playVictoryAudio` at victory burst. `PlayScene` injects `audioServices(this)`.
+- Added `game-next/src/presentation/audio/uiCues.ts` (`uiCue`, `playUiCue`) and wired interactive sound cues across all UI surfaces:
+  - `MenuScene.ts`: button taps on play and settings.
+  - `LevelSelectScene.ts`: back button tap, constellation node selection tap, and locked level feedback.
+  - `Hud.ts`: target preview toggle and level navigation buttons.
+  - `PauseDialog.ts` & `SettingsDialog.ts`: modal open/close cues and setting toggle tap.
+- Added acceptance test checklist in `docs/testing/audio/g-acceptance.md` covering all 14 sound criteria (A-01 to A-14).
+- Verification: unit tests in `tests/audioCues.test.ts` (20 tests) and `tests/uiCues.test.ts` (2 tests) pass; full suite green (84 files / 1026 tests); `npm run typecheck` clean; `npm run build` clean; `npm run content:validate` 22 levels pass; GitNexus `detect_changes` verified on all touched presentation symbols.
+
 ### 2026-10-05 - Wire synthesized audio into the game (GS task 12)
 
 - Added `game-next/src/presentation/audio/audioServices.ts` (`AUDIO_REGISTRY_KEY`, `SILENT_AUDIO`, `audioServices`) and `tracks.ts` (`trackFor`).

@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { COLOR_NUMBERS, COLOR_TOKENS, TYPO_TOKENS } from './designTokens.ts';
 import { designViewBounds } from './designViewport.ts';
 import { t } from './i18n.ts';
+import { playUiCue } from './audio/uiCues.ts';
 
 export type PauseCallbacks = {
   onResume: () => void;
@@ -21,6 +22,7 @@ export class PauseDialog {
 
   public open(): void {
     if (this.container) return;
+    playUiCue(this.scene, 'open');
 
     const view = designViewBounds(this.scene);
     this.container = this.scene.add.container(view.width / 2, view.height / 2).setDepth(150);
@@ -249,6 +251,7 @@ export class PauseDialog {
 
   public close(): void {
     if (this.container) {
+      playUiCue(this.scene, 'close');
       this.container.destroy();
       this.container = undefined;
     }

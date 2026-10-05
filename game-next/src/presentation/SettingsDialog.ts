@@ -7,6 +7,7 @@ import { TEXTURE_KEYS } from './TextureFactory.ts';
 import { t, getLocale, setLocale } from './i18n.ts';
 import { setMotionScale } from './transitions/motion.ts';
 import { audioServices } from './audio/audioServices.ts';
+import { playUiCue } from './audio/uiCues.ts';
 
 export class SettingsDialog {
   private scene: Phaser.Scene;
@@ -22,6 +23,7 @@ export class SettingsDialog {
 
   public open(): void {
     if (this.container) return;
+    playUiCue(this.scene, 'open');
 
     const view = designViewBounds(this.scene);
     this.container = this.scene.add.container(view.width / 2, view.height / 2).setDepth(150);
@@ -323,6 +325,7 @@ export class SettingsDialog {
       isChecked = !isChecked;
       drawSwitch();
       onChange(isChecked);
+      playUiCue(this.scene, 'tap');
     });
 
     this.container.add([rowLabel, track, thumb, hitZone]);
@@ -403,6 +406,7 @@ export class SettingsDialog {
 
   public close(): void {
     if (this.container) {
+      playUiCue(this.scene, 'close');
       this.container.destroy();
       this.container = undefined;
       this.onCloseCallback?.();
