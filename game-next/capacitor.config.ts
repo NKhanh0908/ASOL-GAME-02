@@ -2,7 +2,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'com.nkhanh.mirror.rebuild',
-  appName: 'Mirror Rebuild',
+  appName: 'Mirror',
   webDir: 'dist',
 };
 

@@ -4,6 +4,11 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-05 - Rename Android app to Mirror
+
+- Updated `appName` in `game-next/capacitor.config.ts` and `strings.xml` (`app_name`, `title_activity_main`) from "Mirror Rebuild" to "Mirror".
+- Re-synced Capacitor assets and verified debug APK assembly (`assembleDebug`).
+
 ### 2026-10-05 - Update master game design document for v0.3.0
 
 - Updated `docs/gdd/master-gdd.md` to version 0.3.0 reflecting current architecture and production state:
