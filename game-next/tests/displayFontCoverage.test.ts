@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { TYPO_TOKENS } from '../src/presentation/designTokens.ts';
-import { TRANSLATIONS } from '../src/presentation/i18n.ts';
+import { MENU_TAGLINES, TRANSLATIONS } from '../src/presentation/i18n.ts';
 
 /**
  * Canh cho font hiển thị phủ được mọi chuỗi giao diện.
@@ -79,6 +79,15 @@ describe(`font hiển thị (${DISPLAY_FAMILY})`, () => {
   });
 
   it.each(Object.entries(TRANSLATIONS.en))('phủ trọn chuỗi tiếng Anh %s', (_key, text) => {
+    expect(uncovered(text, DISPLAY_RANGES)).toEqual([]);
+  });
+
+  // Phụ đề menu bốc ngẫu nhiên nên mọi câu đều phải vẽ được bằng font hiển thị.
+  it.each(MENU_TAGLINES.vi)('phủ trọn mẩu thiên văn tiếng Việt "%s"', (text) => {
+    expect(uncovered(text, DISPLAY_RANGES)).toEqual([]);
+  });
+
+  it.each(MENU_TAGLINES.en)('phủ trọn mẩu thiên văn tiếng Anh "%s"', (text) => {
     expect(uncovered(text, DISPLAY_RANGES)).toEqual([]);
   });
 });

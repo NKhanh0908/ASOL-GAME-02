@@ -7,7 +7,7 @@ import { COLOR_NUMBERS, COLOR_TOKENS, DEPTH_TOKENS, LAYOUT_TOKENS, TYPO_TOKENS }
 import { TEXTURE_KEYS, TextureFactory } from './TextureFactory.ts';
 import { applyDesignViewport, designSafeArea, designViewBounds } from './designViewport.ts';
 import { SettingsDialog } from './SettingsDialog.ts';
-import { t, getLocale, setLocale, getLevelTitle } from './i18n.ts';
+import { t, getLocale, setLocale, getLevelTitle, getRandomMenuTagline } from './i18n.ts';
 import { director } from './transitions/SceneDirector.ts';
 import type { Choreographed, TransitionContext } from './transitions/SceneDirector.ts';
 import type { TransitionTimeline } from './transitions/TransitionTimeline.ts';
@@ -152,12 +152,14 @@ export class MenuScene extends Phaser.Scene implements Choreographed {
     this.titleBlock = this.add.container(0, 0);
     this.buildCasualMirrorLogo();
 
-    // Dòng phụ đề phong cách casual
+    // Dòng phụ đề: mỗi lần dựng menu bốc một mẩu thiên văn ngẫu nhiên
     const subtitleText = this.add
-      .text(360, 316, t('menu_subtitle'), {
+      .text(360, 316, getRandomMenuTagline(), {
         fontFamily: TYPO_TOKENS.fontFamily.display,
         fontSize: '15px',
         color: COLOR_TOKENS.text.secondary,
+        align: 'center',
+        wordWrap: { width: 620 },
       })
       .setOrigin(0.5);
     this.titleBlock.add(subtitleText);

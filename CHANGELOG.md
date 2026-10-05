@@ -4,6 +4,15 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-05 - Rotate astronomy taglines on the menu subtitle
+
+- Replaced the fixed `menu_subtitle` key in `game-next/src/presentation/i18n.ts` with `MENU_TAGLINES` (20 short astronomy facts per locale) and `getRandomMenuTagline()`, which draws one line for the locale in use.
+- `game-next/src/presentation/MenuScene.ts` now renders that random line under the logo, centred and wrapped at 620 px so a longer fact still fits the 720 px design width. The menu is rebuilt on entry and on every VI/EN toggle, so the fact changes each time.
+- Reworded `version_footer`: `Mirror v0.2.1 · Nơi các vì sao hội tụ` (vi) and `Mirror v0.2.1 · Where The Stars Gather` (en), replacing the "Android preview" wording.
+- Extended `game-next/tests/displayFontCoverage.test.ts` to assert the display font covers every tagline — a random subtitle with a missing glyph would otherwise only show up on a real device.
+- Developed on `feat/menu-astronomy-taglines` off `main` (`6b1ba5b`) and merged into `feat/audio-synth` at the reviewer's request so both can be reviewed together. The merge conflicted only in `CHANGELOG.md` and `docs/ai/STATUS.md`; no source file overlaps the GS stream.
+- Verification: on the feature branch, `npm run typecheck` clean, `npm test` 68 files / 867 tests (829 on `main`, plus 40 new tagline cases, minus the 2 dropped `menu_subtitle` cases), `npm run build` clean. Re-verified on the merged tree: typecheck clean, `npm test` 78 files / 970 tests (932 on `feat/audio-synth`, same +40/−2), `npm run build` clean, `content:validate` 22 levels pass. GitNexus MCP failed to connect this session (CONNECT_TIMEOUT), so `impact` and `detect_changes` could not be run.
+
 ### 2026-10-05 - Music manifest and the music/sfx settings (GS task 9a)
 
 - Added `game-next/src/infrastructure/audioManifest.ts` listing only the two reviewer-sourced tracks (`TrackId`, `TRACK_IDS`, `AudioLicense`, `AUDIO_LICENSES`, `MusicAsset`, `MUSIC_ASSETS`, `musicUrls`); sound effects have no entry because they are synthesized. The music `source` title, author and url are blank and the licence is a placeholder: the metadata is deferred to Task 9b, when the reviewer supplies the tracks. The test asserting sources are allowed and linked is omitted until then and lands in Task 9b.

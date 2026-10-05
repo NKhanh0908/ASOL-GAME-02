@@ -1,10 +1,11 @@
-# Status — updated 2026-10-05 by Claude (GS1 final-review fixes)
+# Status — updated 2026-10-05 by Claude (menu taglines merged in)
 
 Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; keep this file ≤ 60 lines.
 
 ## Now
 
 - Branch: `feat/audio-synth` (from `main`, merged up to `f964e13`). It no longer has its own worktree; check it out in the main checkout (or any fresh worktree) to continue.
+- Also carried on this branch, by reviewer request: `feat/menu-astronomy-taglines` (from `main` at `f964e13`) is merged in. The menu subtitle now draws one of 20 astronomy facts per locale and the version footer reads "Nơi các vì sao hội tụ" / "Where The Stars Gather". It touches only `i18n.ts`, `MenuScene.ts` and `tests/displayFontCoverage.test.ts`, so it can be reviewed independently of GS.
 - Product state: F1 and F2 complete and merged to `main`. GS1 (Tasks 1-8) is complete and reviewed: the synth engine, Mirror's eight sound-effect patches, `npm run audio:author`, the Audio Lab, and the engine README and presets.
 - GS stop point 1 is cleared: the reviewer listened, the eight sounds were retuned by ear and approved, and the final whole-branch review passed. The branch is merge-ready.
 - Next step: GS2, wiring the engine into the game (`docs/superpowers/plans/2026-10-05-gs2-wiring.md`, Tasks 9-12), then G2 unedited. Task 9 is split because the reviewer has not supplied the two music tracks yet; Task 11 can run first.
