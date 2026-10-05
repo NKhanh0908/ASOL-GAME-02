@@ -174,6 +174,21 @@ export const ANIM_TOKENS = {
   },
 } as const;
 
+/** Chuyển cảnh giữa Menu, Bản đồ và Play (spec F1 mục 3) */
+export const TRANSITION_TOKENS = {
+  crossfadeMs: 150,
+  moodMs: 1000,
+  routes: {
+    'menu-to-play': { totalMs: 1500, handoffMs: 200 },
+    'map-to-play': { totalMs: 1500, handoffMs: 300 },
+    'next-level': { totalMs: 1500, handoffMs: 800 },
+    'play-to-map': { totalMs: 1000, handoffMs: 400 },
+    'play-to-menu': { totalMs: 1000, handoffMs: 400 },
+    'menu-to-map': { totalMs: 1000, handoffMs: 300 },
+    'map-to-menu': { totalMs: 1000, handoffMs: 300 },
+  },
+} as const;
+
 export const DEPTH_TOKENS = {
   backgroundSky: 0,
   celestialRings: 5,
