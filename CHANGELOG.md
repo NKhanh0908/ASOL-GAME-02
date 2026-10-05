@@ -4,6 +4,11 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-05 - Add choreography steps and route tables (F1 task 3)
+
+- Added `game-next/src/presentation/transitions/choreography.ts` (enter/exit poses that always return to the natural pose, step tables with even stagger), `routes.ts` (step tables and special-effect timings for all seven routes) and `stardust.ts` (at most 30 particles with fixed alpha).
+- Verification: `tests/choreography.test.ts` and `tests/transitionRoutes.test.ts` failed for the missing modules, then passed; every in-phase ends exactly at its route total and `next-level` finishes its out-phase before the 800 ms restart; `npm run typecheck` and `npm test` passed.
+
 ### 2026-10-05 - Add a self-clocked transition timeline (F1 task 2)
 
 - Added `game-next/src/presentation/transitions/TransitionTimeline.ts`: tweens and calls scheduled on route-relative milestones, driven by `advance`, with `complete()` that jumps every entry to its end state in milestone order exactly once.
