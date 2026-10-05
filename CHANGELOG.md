@@ -4,6 +4,13 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-05 - Add streaming music port (G task 7)
+
+- Added `MusicPort` (`game-next/src/infrastructure/music.ts`): two alternating `HTMLAudioElement`s with ramped crossfades, duck/hold/restore, settings toggle that pauses but keeps the track, lifecycle pause/resume, visibility handling, autoplay-block recovery on first gesture, warn-once errors. It is pure: every DOM touch goes through the injected `MusicEnv`. Browser wiring (`browserMusicEnv`) is in `game-next/src/infrastructure/browserAudioEnv.ts`.
+- Added `AUDIO_TOKENS` to `game-next/src/presentation/designTokens.ts` (including the per-cue volumes the cue table will read) and a test in `game-next/tests/designTokens.test.ts`.
+- `MusicOptions.files` is meant to be wired to `musicUrls` from `audioManifest.ts` by the later wiring task; the port itself does not import it. The music files are not in `public/audio/` yet.
+- Verification: `tests/music.test.ts` failed first (module not found) and the new token test failed (`AUDIO_TOKENS` undefined), then both passed (14 + 1 new tests); `npm run typecheck` clean; `npm test` 79 files / 985 tests passed (baseline 78 / 970); `npm run build` clean. GitNexus `impact` on `designTokens` found no symbol (stale index; change only adds a new const); `detect_changes` output recorded in the commit report.
+
 ### 2026-10-05 - Rotate astronomy taglines on the menu subtitle
 
 - Replaced the fixed `menu_subtitle` key in `game-next/src/presentation/i18n.ts` with `MENU_TAGLINES` (20 short astronomy facts per locale) and `getRandomMenuTagline()`, which draws one line for the locale in use.

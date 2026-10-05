@@ -9,6 +9,7 @@ import {
   GRID_TOKENS,
   GLASS_TOKENS,
   PIECE_TOKENS,
+  AUDIO_TOKENS,
 } from '../src/presentation/designTokens.ts';
 
 describe('Design Tokens Validation', () => {
@@ -107,5 +108,12 @@ describe('Design Tokens Validation', () => {
     expect(DEPTH_TOKENS.steleBoard).toBeLessThan(DEPTH_TOKENS.placedPieces);
     expect(DEPTH_TOKENS.placedPieces).toBeLessThan(DEPTH_TOKENS.draggingPiece);
     expect(DEPTH_TOKENS.draggingPiece).toBeLessThan(DEPTH_TOKENS.modalOverlay);
+  });
+  test('audio tokens keep music under effects and match spec G timings', () => {
+    expect(AUDIO_TOKENS.musicVolume).toBeLessThan(AUDIO_TOKENS.sfxVolume);
+    expect(AUDIO_TOKENS.duck).toEqual({ level: 0.3, holdMs: 1500, downMs: 200, upMs: 800 });
+    expect(AUDIO_TOKENS.maxVoices).toBe(6);
+    expect(AUDIO_TOKENS.repeatGapMs).toBe(40);
+    expect(AUDIO_TOKENS.overlapDelayMs).toBe(60);
   });
 });

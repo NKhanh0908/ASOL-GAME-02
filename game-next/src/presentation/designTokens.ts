@@ -277,3 +277,33 @@ export const DEPTH_TOKENS = {
   modalOverlay: 100,
   modalContent: 110,
 } as const;
+
+/** Audio levels and timings (spec G). Cue volumes are multiplied by the bus volume. */
+export const AUDIO_TOKENS = {
+  musicVolume: 0.45,
+  sfxVolume: 0.8,
+  maxVoices: 6,
+  repeatGapMs: 40,
+  toggleOutMs: 300,
+  toggleInMs: 1000,
+  bootFadeMs: 1000,
+  duck: { level: 0.3, holdMs: 1500, downMs: 200, upMs: 800 },
+  overlapDelayMs: 60,
+  cues: {
+    lift: 0.35,
+    snap: 0.8,
+    snapWin: 0.9,
+    settle: 0.4,
+    return: 0.3,
+    rotate: 0.4,
+    rotateRate: 1.12,
+    rotateBlocked: 0.6,
+    overlap: 0.6,
+    reset: 0.4,
+    stinger: 0.9,
+    uiTap: 0.4,
+    uiDialog: 0.35,
+    uiNode: 0.5,
+    uiLocked: 0.5,
+  },
+} as const;
