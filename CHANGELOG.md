@@ -4,6 +4,14 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-06 - Visual refactor VR2 spec: Level Select
+
+- Added `docs/superpowers/specs/2026-10-06-visual-refactor-level-select-design.md`, the second of three visual refactor specs. Covers the constellation strip in the victory card, completed nodes carrying their own target silhouette, the content-frontier node, and the VR1 glow ladder applied to the map.
+- Corrected four assumptions in the reviewer's assessment by reading the code, which is why the spec is cheaper than its effort estimates: the `unlocked` node state does occur but means "unlocked by progress, not yet released" (`LevelSelectScene.ts:242` with `campaign.ts:27`; manifest holds 22 approved and 6 planned of 28); auto-scroll to the current node already exists (`LevelSelectScene.ts:101-103`); per-chapter constellation shapes already have their machinery and Chapter III already uses one (`constellationLayout.ts:65`); and the completed-node thumbnail is reuse of `TargetBadge.drawTargetSilhouette`, not new work.
+- Corrected the Level Select column of the VR1 glow ladder in `docs/superpowers/specs/2026-10-05-visual-refactor-foundation-menu-design.md` §3.2: the `unlocked` state moves from tier 2 to tier 0 now that its meaning is known. VR1 is still `draft`, so nothing was implemented against the old table.
+- Added the VR2 row to `docs/ai/DOCS-INDEX.md`.
+- Verification: design-only change, no code touched; spec self-reviewed, which surfaced the VR1 glow-tier contradiction above and an unspecified label source in §3.3, both fixed inline.
+
 ### 2026-10-05 - Visual refactor VR1 spec: shared foundation and Main Menu
 
 - Added `docs/superpowers/specs/2026-10-05-visual-refactor-foundation-menu-design.md`, the first of three visual refactor specs. Covers the shared visual foundation (sky gradient, a four-tier glow ladder, the ◆ motif) plus the Main Menu; Level Select and Gameplay follow in VR2 and VR3 once their reviews arrive.

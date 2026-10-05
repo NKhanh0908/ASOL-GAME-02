@@ -76,9 +76,13 @@ at tier 3.
 | Tier | Meaning | Menu | Level Select | Gameplay |
 |---|---|---|---|---|
 | 3 — focus | The primary action. One per screen. | Continue button | Current level node | Piece being dragged |
-| 2 — active | Interactive, or in motion | Hero emblem | Unlocked nodes | Tray pieces, just-snapped cell |
+| 2 — active | Interactive, or in motion | Hero emblem | Completed nodes | Tray pieces, just-snapped cell |
 | 1 — structure | Frames and rules: visible, not inviting | Logo glass bar, secondary button | Constellation links | Board glass border, tray |
-| 0 — ground | **No glow.** Colour and opacity only | Logo, stars, fact caption | Locked nodes, chapter labels | Coordinate grid, target silhouette |
+| 0 — ground | **No glow.** Colour and opacity only | Logo, stars, fact caption | Locked nodes, frontier node, chapter labels | Coordinate grid, target silhouette |
+
+The Level Select column was corrected while writing VR2: the `unlocked` state
+turned out to mean "unlocked by progress but not yet released", so it belongs at
+tier 0 with the locked nodes rather than at tier 2. See VR2 §1.1.
 
 The tiers live in `designTokens.ts` as `GLOW_TIERS`, each entry giving the
 values an element needs to render its tier — outer radius, alpha, and colour —
