@@ -1,6 +1,5 @@
 import Phaser from 'phaser';
 import { campaignManifest } from '../content/manifest.ts';
-import { chapterLabel } from '../content/chapters.ts';
 import { levelAccess, resolveMapCompletedLevels } from '../domain/campaign.ts';
 import type { LevelAccessMode } from '../domain/campaign.ts';
 import type { Chapter } from '../domain/model.ts';
@@ -11,7 +10,7 @@ import { TEXTURE_KEYS, TextureFactory } from './TextureFactory.ts';
 import { applyDesignViewport, designSafeArea, designViewBounds } from './designViewport.ts';
 import { formatProgress } from './hudText.ts';
 import { layoutCampaignMap } from './constellationLayout.ts';
-import { t, getLevelTitle } from './i18n.ts';
+import { t, getLevelTitle, getChapterLabel } from './i18n.ts';
 import { director } from './transitions/SceneDirector.ts';
 import type { Choreographed, TransitionContext } from './transitions/SceneDirector.ts';
 import type { TransitionTimeline } from './transitions/TransitionTimeline.ts';
@@ -326,7 +325,7 @@ export class LevelSelectScene extends Phaser.Scene implements Choreographed {
       const chContainer = this.add.container(360, band.bannerY);
       // Mockup dùng chữ serif có hai gạch amber hai bên, không có nền
       const chText = this.add
-        .text(0, 0, chapterLabel(band.chapter), {
+        .text(0, 0, getChapterLabel(band.chapter), {
           fontFamily: TYPO_TOKENS.fontFamily.serif,
           fontSize: TYPO_TOKENS.fontSize.sectionHeader,
           color: COLOR_TOKENS.text.primary,
@@ -455,10 +454,10 @@ export class LevelSelectScene extends Phaser.Scene implements Choreographed {
       nodeSprite.on('pointerdown', () => {
         if (node.state === 'locked') {
           playUiCue(this, 'locked');
-          this.showToast(`Màn ${node.id} chưa mở khóa`);
+          this.showToast(t('toast_level_locked', { id: node.id }));
         } else if (!node.available) {
           playUiCue(this, 'locked');
-          this.showToast(`Màn ${node.id} đang được tinh chỉnh`);
+          this.showToast(t('toast_level_polishing', { id: node.id }));
         } else {
           playUiCue(this, 'node');
           this.tappedIndex = this.nodeViews.findIndex((v) => v.info.id === node.id);

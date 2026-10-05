@@ -1,14 +1,14 @@
-# Status — updated 2026-10-05 by Antigravity (audio-synth merged to main)
+# Status — updated 2026-10-05 by Antigravity (bilingual UI & level titles localized)
 
 Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; keep this file ≤ 60 lines.
 
 ## Now
 
 - Branch: `main` (merged `feat/audio-synth` @ `7c28b64`; feature branch kept for Task 9b). Main checkout D:\Working\ASOL\ASOL-GAME-02.
-- Carried on `main`: `feat/menu-astronomy-taglines`, GS audio synth engine, and G2 audio cues.
-- Product state: GS (Tasks 1–8, 9a, 10–12) and G2 (Tasks 10–12) complete and verified on `main`. Full sound effects active across gameplay feedback (pentatonic rising chimes, settle, lift, rotate, swish, victory stinger) and UI surfaces (buttons, modals, constellation nodes).
+- Carried on `main`: `feat/audio-synth`, app renamed to "Mirror", bilingual EN localization for level titles, chapter labels & HUD controls.
+- Product state: GS & G2 audio integrated; HUD, LevelSelect, and Menu fully localized in Vietnamese and English.
 - Next step: GS Task 9b (music asset sourcing & metadata) awaiting reviewer tracks, then final audio acceptance checks.
-- Verified: typecheck clean, 84 files / 1026 tests pass, `npm run build` clean with no Audio Lab in `dist/`, `content:validate` 22 levels pass, Android debug APK assembleDebug successful.
+- Verified: typecheck clean, 84 files / 1036 tests pass, `npm run build` clean, Android debug APK assembleDebug built cleanly (`app-debug.apk`).
 
 ## Streams
 

@@ -13,6 +13,7 @@ import { computeLayout } from './layout.ts';
 import type { LayoutMetrics } from './layout.ts';
 import { drawJewel } from './JewelShape.ts';
 import { CHAPTERS, chapterInfo, chapterOfLevelId } from '../content/chapters.ts';
+import { t, getLevelTitle } from './i18n.ts';
 import {
   VICTORY_VERSE_FONT_SIZE,
   fitHudTitleFontSize,
@@ -80,8 +81,9 @@ export class Hud {
 
     // Màn dev (mã không theo "<chương>-<số>") hiển thị như Chương I
     const chapter = chapterInfo(chapterOfLevelId(this.levelId) ?? 1) ?? CHAPTERS[0];
-    const chapterRoman = `Chương ${chapter.roman}`;
-    const levelName = title.includes('·') ? title.split('·')[1].trim() : title;
+    const chapterRoman = `${t('chapter_prefix')} ${chapter.roman}`;
+    const rawLevelName = title.includes('·') ? title.split('·')[1].trim() : title;
+    const levelName = getLevelTitle(this.levelId, rawLevelName);
 
     // Header bám mép trên đã trừ lề an toàn. Toạ độ y bên dưới là khoảng cách
     // tính từ đỉnh header trên artboard gốc, nên chỉ việc cộng thêm.
@@ -111,7 +113,7 @@ export class Hud {
     this.titleText.setFontSize(fitHudTitleFontSize(this.titleText.width));
 
     this.subtitleText = this.scene.add
-      .text(360, headerTop + 74, `${chapterRoman} · Màn ${this.levelId}`, {
+      .text(360, headerTop + 74, `${chapterRoman} · ${t('level_prefix')} ${this.levelId}`, {
         fontFamily: TYPO_TOKENS.fontFamily.sans,
         fontSize: '24px',
         color: COLOR_TOKENS.text.secondary,
@@ -150,7 +152,7 @@ export class Hud {
       .setInteractive({ useHandCursor: true });
     const resetIcon = this.scene.add.image(0, 0, TEXTURE_KEYS.iconReset).setScale(1.2);
     const resetLabel = this.scene.add
-      .text(0, 58, 'Đặt lại', {
+      .text(0, 58, t('btn_reset'), {
         fontFamily: TYPO_TOKENS.fontFamily.sans,
         fontSize: '22px',
         color: COLOR_TOKENS.text.secondary,
@@ -173,7 +175,7 @@ export class Hud {
       .setInteractive({ useHandCursor: true });
     this.rotateIcon = this.scene.add.image(0, 0, TEXTURE_KEYS.iconRotate).setScale(1.2);
     this.rotateLabel = this.scene.add
-      .text(0, 58, 'Xoay', {
+      .text(0, 58, t('btn_rotate'), {
         fontFamily: TYPO_TOKENS.fontFamily.sans,
         fontSize: '22px',
         color: COLOR_TOKENS.text.secondary,

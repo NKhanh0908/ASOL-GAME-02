@@ -1,5 +1,5 @@
 import { describe, expect, test, beforeEach } from 'vitest';
-import { getLocale, setLocale, t, getLevelTitle, onLocaleChange } from '../src/presentation/i18n.ts';
+import { getLocale, setLocale, t, getLevelTitle, getChapterLabel, onLocaleChange } from '../src/presentation/i18n.ts';
 
 describe('i18n translation system', () => {
   beforeEach(() => {
@@ -35,6 +35,34 @@ describe('i18n translation system', () => {
     setLocale('en');
     expect(getLevelTitle('1-1', 'Song Tinh')).toBe('Twin Stars');
     expect(getLevelTitle('9-9', 'Không Tồn Tại')).toBe('Không Tồn Tại');
+  });
+
+  test('dịch tên và nhãn chương theo ngôn ngữ', () => {
+    setLocale('vi');
+    expect(getChapterLabel(1)).toBe('Chương I · Khởi Nguyên');
+    expect(getChapterLabel(2)).toBe('Chương II · Giao Thoa');
+    expect(getChapterLabel(3)).toBe('Chương III · Họa Phẩm');
+    expect(getChapterLabel(4)).toBe('Chương IV · Luân Chuyển');
+
+    setLocale('en');
+    expect(getChapterLabel(1)).toBe('Chapter I · Genesis');
+    expect(getChapterLabel(2)).toBe('Chapter II · Intersections');
+    expect(getChapterLabel(3)).toBe('Chapter III · Pictures');
+    expect(getChapterLabel(4)).toBe('Chapter IV · Rotations');
+  });
+
+  test('dịch các nút HUD và thông báo toast', () => {
+    setLocale('vi');
+    expect(t('btn_reset')).toBe('Đặt lại');
+    expect(t('btn_rotate')).toBe('Xoay');
+    expect(t('toast_level_locked', { id: '1-2' })).toBe('Màn 1-2 chưa mở khóa');
+    expect(t('toast_level_polishing', { id: '2-1' })).toBe('Màn 2-1 đang được tinh chỉnh');
+
+    setLocale('en');
+    expect(t('btn_reset')).toBe('Reset');
+    expect(t('btn_rotate')).toBe('Rotate');
+    expect(t('toast_level_locked', { id: '1-2' })).toBe('Level 1-2 is locked');
+    expect(t('toast_level_polishing', { id: '2-1' })).toBe('Level 2-1 is being polished');
   });
 
   test('listener nhận được thông báo khi đổi ngôn ngữ', () => {

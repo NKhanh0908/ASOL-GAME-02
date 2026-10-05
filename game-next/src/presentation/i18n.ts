@@ -38,6 +38,8 @@ export const TRANSLATIONS = {
     level_select_title: 'Chòm Sao Tiên Tri',
     chapter_prefix: 'Chương',
     level_prefix: 'Màn',
+    toast_level_locked: 'Màn {id} chưa mở khóa',
+    toast_level_polishing: 'Màn {id} đang được tinh chỉnh',
 
     // Gameplay & HUD
     snap_hint: 'Thả để khớp',
@@ -45,6 +47,8 @@ export const TRANSLATIONS = {
     victory_title: 'Hoàn thành',
     victory_next: 'Màn tiếp theo',
     victory_level_select: 'Chọn màn',
+    btn_reset: 'Đặt lại',
+    btn_rotate: 'Xoay',
 
     // Studio
     studio_brand: 'Alpaca Solutions',
@@ -78,6 +82,8 @@ export const TRANSLATIONS = {
     level_select_title: 'Prophecy Constellations',
     chapter_prefix: 'Chapter',
     level_prefix: 'Level',
+    toast_level_locked: 'Level {id} is locked',
+    toast_level_polishing: 'Level {id} is being polished',
 
     // Gameplay & HUD
     snap_hint: 'Release to snap',
@@ -85,6 +91,8 @@ export const TRANSLATIONS = {
     victory_title: 'Completed',
     victory_next: 'Next Level',
     victory_level_select: 'Select Level',
+    btn_reset: 'Reset',
+    btn_rotate: 'Rotate',
 
     // Studio
     studio_brand: 'Alpaca Solutions',
@@ -245,3 +253,33 @@ export function getLevelTitle(levelId: string, fallbackTitle: string): string {
   }
   return fallbackTitle;
 }
+
+/** Tên các chương theo ngôn ngữ */
+export const CHAPTER_NAMES: Record<Locale, Record<number, string>> = {
+  vi: {
+    1: 'Khởi Nguyên',
+    2: 'Giao Thoa',
+    3: 'Họa Phẩm',
+    4: 'Luân Chuyển',
+  },
+  en: {
+    1: 'Genesis',
+    2: 'Intersections',
+    3: 'Pictures',
+    4: 'Rotations',
+  },
+};
+
+/** Lấy tên chương theo ngôn ngữ hiện tại */
+export function getChapterName(chapter: number, fallbackName?: string): string {
+  return CHAPTER_NAMES[currentLocale]?.[chapter] ?? fallbackName ?? CHAPTER_NAMES.vi[chapter] ?? `Chapter ${chapter}`;
+}
+
+/** Lấy nhãn đầy đủ của chương (ví dụ: "Chương I · Khởi Nguyên" hoặc "Chapter I · Genesis") */
+export function getChapterLabel(chapter: number, fallbackName?: string): string {
+  const roman = ['I', 'II', 'III', 'IV'][chapter - 1] ?? String(chapter);
+  const prefix = t('chapter_prefix');
+  const name = getChapterName(chapter, fallbackName);
+  return `${prefix} ${roman} · ${name}`;
+}
+

@@ -4,6 +4,16 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-05 - Localize level titles, chapter labels, and HUD controls in English
+
+- Localized HUD title and subtitle in `game-next/src/presentation/Hud.ts`: level title translates dynamically via `getLevelTitle(levelId, rawTitle)` (e.g. "Twin Stars"), and subtitle displays localized chapter and level prefixes (`Chapter I · Level 1-1`).
+- Localized bottom HUD action buttons in `game-next/src/presentation/Hud.ts`: "Đặt lại" -> `Reset` (`btn_reset`), "Xoay" -> `Rotate` (`btn_rotate`).
+- Localized chapter banners in `game-next/src/presentation/LevelSelectScene.ts`: replaced static `chapterLabel` with `getChapterLabel(band.chapter)` supporting English ("Chapter I · Genesis", "Chapter II · Intersections", "Chapter III · Pictures", "Chapter IV · Rotations").
+- Localized constellation locked / in-polish toasts in `game-next/src/presentation/LevelSelectScene.ts`: `toast_level_locked` ("Level {id} is locked") and `toast_level_polishing` ("Level {id} is being polished").
+- Added chapter translations (`CHAPTER_NAMES`, `getChapterName`, `getChapterLabel`) and new UI tokens to `game-next/src/presentation/i18n.ts`.
+- Added unit tests in `game-next/tests/i18n.test.ts` verifying chapter labels, HUD buttons, and toasts in both `vi` and `en` locales.
+- Verification: 84 test files / 1036 tests pass; `npm run typecheck` clean; `npm run build` clean; `npm run android:sync` synced; `assembleDebug` built APK at `game-next/android/app/build/outputs/apk/debug/app-debug.apk`; GitNexus `detect_changes` verified.
+
 ### 2026-10-05 - Rename Android app to Mirror
 
 - Updated `appName` in `game-next/capacitor.config.ts` and `strings.xml` (`app_name`, `title_activity_main`) from "Mirror Rebuild" to "Mirror".
