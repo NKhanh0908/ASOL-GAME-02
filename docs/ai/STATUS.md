@@ -5,8 +5,8 @@ Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; k
 ## Now
 
 - Branch: `feat/motion-f2` (branched from `feat/motion-f1`).
-- Product state: F2 Tasks 1–4 completed and verified (mask caching, feedback tokens, piece pose math, parity diff, feedback events, haptics port & settings).
-- Next step: F2 Giai đoạn 2/3 (Tasks 5–7 in `docs/superpowers/plans/2026-10-03-f2-2-renderer.md`).
+- Product state: F2 Tasks 1–5 completed and verified (mask caching, feedback tokens, piece pose math, parity diff, feedback events, haptics port & settings, piece texture cache & memory budget).
+- Next step: F2 Task 6 (`PieceView` container & visual states).
 
 ## Streams
 
@@ -15,14 +15,14 @@ Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; k
 | Level system A → B → C/D → E | complete; Plan E merged to `main` | `docs/ai/DOCS-INDEX.md` rows A–E |
 | MD mobile display (Tier 0 + Tier 2) | complete; merged to `main` | `docs/superpowers/plans/2026-10-04-mobile-display-quick-wins.md` |
 | BR casual branding, splash & bilingual | complete; merged to `main` | `docs/gdd/assets/` mockups |
-| F motion (F1 → F2 → F3) | in progress; F1 complete on `feat/motion-f1`, F2 Tasks 1–4 complete on `feat/motion-f2` | `docs/superpowers/plans/2026-10-03-f-motion-index.md` |
+| F motion (F1 → F2 → F3) | in progress; F1 complete on `feat/motion-f1`, F2 Tasks 1–5 complete on `feat/motion-f2` | `docs/superpowers/plans/2026-10-03-f-motion-index.md` |
 | C chapter 2 + Hoa Pham | complete; all 16 levels approved and available in campaign order | `docs/superpowers/plans/2026-10-02-c-chapter-2-hoa-pham-levels.md` |
 | G audio (G0 → G1 → G2) | spec approved, plans written, not started | `docs/superpowers/plans/2026-10-03-g-audio-index.md` |
 | BF board-fit-by-cells | complete, merged to `main` with Plan C | `docs/superpowers/plans/2026-10-03-board-fit-by-cells.md` |
 
 ## Open decisions / blockers
 
-- F2: Phase 1 (Tasks 1–4) complete. Proceeding to Phase 2 (Tasks 5–7: renderer integration). Stop Point 4 is after Task 10.
+- F2: Tasks 1–5 complete. Proceeding to Task 6 (`PieceView`). Reviewer Stop Point 4 is after Task 10.
 - G: plans await review at G stop point 1 (9 spec departures listed in the index). G0 can start now; G1/G2 wait for F2.
 
 ## Gotchas learned recently

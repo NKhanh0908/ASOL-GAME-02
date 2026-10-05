@@ -4,6 +4,13 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-05 - Add piece texture cache with a memory budget (F2 task 5)
+
+- Added `game-next/src/presentation/PieceTextureCache.ts`: each piece orientation is baked once into a 360 px jewel body plus half-resolution black and white silhouettes (no `setTintFill`, so WebGL and Canvas share one path), one piece per frame, with synchronous `ensure` for rotations.
+- Measured budget: every Chapter 1 piece has `frameSize` 48 and no level rotates, so levels use 1.48-2.22 MiB; a rotating 6-piece level of 64-cell frames would exceed 24 MiB and automatically drops to 0.75 resolution (17.8 MiB).
+- Added the shared test helper `tests/helpers/fakeScene.ts`.
+- Verification: `tests/pieceTextureCache.test.ts` failed for the missing module, then passed; `npm run typecheck` and `npm test` (66 test files, 816 tests) passed.
+
 ### 2026-10-05 - Add haptics port, cues, and persistent setting (F2 task 4)
 
 - Added `@capacitor/haptics` 8.0.2 (peer `@capacitor/core >=8.0.0`), a pure `HapticsPort` that swallows driver errors and respects the setting, a Capacitor driver (`capacitorHapticsDriver`), and the event-to-cue table from spec F2 section 3 (`HAPTIC_CUES`, `playCue`).
