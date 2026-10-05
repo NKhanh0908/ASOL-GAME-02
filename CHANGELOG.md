@@ -4,6 +4,16 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-05 - Visual refactor VR1 spec: shared foundation and Main Menu
+
+- Added `docs/superpowers/specs/2026-10-05-visual-refactor-foundation-menu-design.md`, the first of three visual refactor specs. Covers the shared visual foundation (sky gradient, a four-tier glow ladder, the ◆ motif) plus the Main Menu; Level Select and Gameplay follow in VR2 and VR3 once their reviews arrive.
+- Recorded the root finding behind the reviewer's eight menu issues: the `designTokens.ts` palette has drifted from the GDD v0.3.0 palette table and the two were never reconciled, so four of the eight issues share one cause. GDD v0.3.0 was published the same day (`eb40631`) but its palette table still carries the original values.
+- Recorded two live uses of `#4ECDC4`, the teal the GDD bans by name, in `game-next/src/presentation/feedback/FeedbackDirector.ts:323` and `game-next/src/presentation/transitions/stardust.ts:17`, plus a stray `#FFD166` at `FeedbackDirector.ts:322`. The spec adds a guard test so the teal cannot return a third time.
+- Identified the unexplained "small star ring" on the menu orbit (reviewer issue #4) as the tap ripple at `MenuScene.ts:663-665`, not a feature.
+- Reviewer decisions captured in spec §2: cut the purple while keeping current brightness; animate the full XOR overlap on the hero, accepting the Chapter 2 spoiler; layout option C; freeze the hero at its overlapped pose under Reduced Motion.
+- Added the VR1 row to `docs/ai/DOCS-INDEX.md`.
+- Verification: design-only change, no code touched; spec self-reviewed for placeholders, internal consistency, scope and ambiguity, which surfaced a missing GDD palette-table update in §5 and an underspecified `GLOW_TIERS` shape in §3.2, both fixed inline.
+
 ### 2026-10-05 - Audio acceptance passed: complete G and GS audio streams
 
 - Reviewer approved the audio experience across web and Android: dual-channel streaming background music (`music-sky` Starlit Night Sky & `music-stele` Meditative Silence), interactive pentatonic snap chimes, victory stinger, UI sound cues, and procedural studio splash intro.

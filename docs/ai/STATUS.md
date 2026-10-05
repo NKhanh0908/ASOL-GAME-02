@@ -1,4 +1,4 @@
-# Status — updated 2026-10-05 by Antigravity (Audio Stream G & GS complete and approved)
+# Status — updated 2026-10-06 by Claude Code (VR1 visual refactor spec drafted; audio G/GS complete)
 
 Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; keep this file ≤ 60 lines.
 
@@ -8,7 +8,7 @@ Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; k
 - Audio Streams G and GS: officially APPROVED and COMPLETED. Dual-channel streaming music (`music-sky.mp3` & `music-stele.mp3`), procedural WebAudio synth effects, interactive pentatonic snap chimes, UI cues, and studio splash sound intro.
 - Acceptance passed in `docs/testing/audio/g-acceptance.md`.
 - Android & Web assets synced via Capacitor.
-- Next step: next feature stream or release preparation.
+- Next step: reviewer reviews the VR1 visual refactor spec (`specs/2026-10-05-visual-refactor-foundation-menu-design.md`), then its implementation plan is written.
 - Verified: typecheck clean, 84 files / 1037 tests pass, `npm run build` clean, `npm run android:sync` clean.
 
 ## Streams
@@ -23,10 +23,13 @@ Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; k
 | GS audio synthesis (Tasks 1–12) | complete; approved by reviewer; acceptance passed | `docs/superpowers/plans/2026-10-05-gs-audio-synth-index.md` |
 | G audio (music, cues) | complete; dual-channel music & SFX approved | `docs/superpowers/plans/2026-10-03-g-audio-index.md` |
 | BF board-fit-by-cells | complete, merged to `main` with Plan C | `docs/superpowers/plans/2026-10-03-board-fit-by-cells.md` |
+| VR visual refactor (VR1 → VR2 → VR3) | VR1 spec drafted, awaiting reviewer; VR2 and VR3 wait on their assessments | `docs/superpowers/specs/2026-10-05-visual-refactor-foundation-menu-design.md` |
 
 ## Open decisions / blockers
 
 - Audio streams G & GS: complete and approved.
+- VR1 decisions are settled (cut purple, full XOR hero, layout C, freeze hero under Reduced Motion). VR2 and VR3 are blocked until the reviewer sends the Level Select and Gameplay assessments.
+- VR1 §2 decision 1 makes the code authoritative over the GDD palette, so `docs/gdd/master-gdd.md` §3.1 must be rewritten during VR1 implementation.
 - F3: approved, not started; the reviewer performs its Android/device checks during later execution.
 
 ## Gotchas learned recently
