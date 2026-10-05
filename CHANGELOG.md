@@ -4,7 +4,10 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
-### 2026-10-05 - Route every scene change through SceneDirector (F1 task 6)
+### 2026-10-05 - Choreograph the main menu (F1 task 7)
+
+- Grouped the menu title, buttons, settings, language pill, and footer into animatable containers and drew the Song Tinh emblem around its own origin; added menu in/out choreography (button collapse, staggered chrome, emblem descending into the board or flying to the map header, 4x ring spin) and stopped the emblem rings under reduced motion.
+- Verification: `npm run typecheck` and `npm test` (765 tests) passed; manual dev-server check of boot, menu → play and menu → map.
 
 - Added `game-next/src/presentation/transitions/SceneDirector.ts`: a transition state machine behind a `SceneHost` port (input lock, overlapping hand-off, tap or Back to skip, deferred input re-enable, same-scene restart for the next level, 150 ms crossfade under reduced motion) and its Phaser host.
 - `BackgroundScene` now owns the only sky; Menu, Level Select and Play no longer build their own. All 13 `scene.start` calls now go through the director; `main.ts` boots through it and skips an active transition on Android Back or backgrounding.
