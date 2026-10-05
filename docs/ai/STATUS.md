@@ -1,12 +1,13 @@
-# Status — updated 2026-10-05 by Codex
+# Status — updated 2026-10-05 by Claude
 
 Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; keep this file ≤ 60 lines.
 
 ## Now
 
-- Branch: `feat/motion-f2` (branched from `feat/motion-f1`).
+- Branch: `feat/menu-astronomy-taglines` (from `main` at `f964e13`), a one-off copy change: the menu subtitle now rotates through 20 astronomy facts per locale and the version footer reads "Nơi các vì sao hội tụ".
 - Product state: F1 and F2 are complete; Reviewer Stop Point 4 passed on 2026-10-05. The victory sequence intentionally lasts 2800 ms.
-- Next step: integrate `feat/motion-f2`. F3 remains approved but is deferred for later implementation and device acceptance by the reviewer.
+- Next step: the reviewer merges `feat/menu-astronomy-taglines`, then integrates `feat/motion-f2`. F3 remains approved but is deferred for later implementation and device acceptance by the reviewer.
+- The GS audio stream runs in parallel on `feat/audio-synth` (worktree `D:\Working\ASOL\ASOL-GAME-02-audio`); that branch carries its own STATUS, which is ahead of this one.
 
 ## Streams
 

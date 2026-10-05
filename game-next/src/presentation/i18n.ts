@@ -11,12 +11,11 @@ const LOCALE_STORAGE_KEY = 'mirror.rebuild.locale';
 export const TRANSLATIONS = {
   vi: {
     // MenuScene
-    menu_subtitle: 'Ghép bóng hình · Bí ẩn giao thoa',
     btn_start: 'Bắt đầu',
     btn_continue: 'Tiếp tục',
     btn_replay: 'Chơi lại',
     btn_select_level: 'Chọn màn chơi',
-    version_footer: 'Mirror v0.2.1 · Bản Thử Nghiệm Android',
+    version_footer: 'Mirror v0.2.1 · Nơi các vì sao hội tụ',
 
     // SettingsDialog
     settings_title: 'Cài Đặt Chiêm Tinh',
@@ -52,12 +51,11 @@ export const TRANSLATIONS = {
   },
   en: {
     // MenuScene
-    menu_subtitle: 'Silhouette Match · Parity Mystery',
     btn_start: 'Start',
     btn_continue: 'Continue',
     btn_replay: 'Replay',
     btn_select_level: 'Select Level',
-    version_footer: 'Mirror v0.2.1 · Android Preview',
+    version_footer: 'Mirror v0.2.1 · Where The Stars Gather',
 
     // SettingsDialog
     settings_title: 'Astrology Settings',
@@ -94,6 +92,58 @@ export const TRANSLATIONS = {
 } as const;
 
 export type TranslationKey = keyof typeof TRANSLATIONS.vi;
+
+/**
+ * Các mẩu thiên văn ngắn thay cho dòng phụ đề cố định dưới logo menu.
+ * Mỗi lần dựng lại menu sẽ bốc ngẫu nhiên một câu, để người chơi biết thêm
+ * một điều về bầu trời. Giữ mỗi câu dưới ~46 ký tự để vừa một dòng 15px.
+ */
+export const MENU_TAGLINES: Record<Locale, readonly string[]> = {
+  vi: [
+    'Ánh sáng Mặt Trời mất 8 phút để tới Trái Đất',
+    'Một ngày trên sao Kim dài hơn một năm của nó',
+    'Mặt Trăng rời xa Trái Đất 3,8 cm mỗi năm',
+    'Dải Ngân Hà có hơn 100 tỷ ngôi sao',
+    'Sao Hỏa đỏ vì bụi oxit sắt phủ khắp bề mặt',
+    'Sao Thổ có mật độ còn nhỏ hơn nước',
+    'Một năm ánh sáng dài gần 9.500 tỷ km',
+    'Một thìa sao neutron nặng hàng tỷ tấn',
+    'Mặt Trời chiếm 99,8% khối lượng Hệ Mặt Trời',
+    'Sao chổi Halley ghé qua mỗi 76 năm',
+    'Vũ trụ đã 13,8 tỷ năm tuổi',
+    'Thiên hà Tiên Nữ đang tiến về Dải Ngân Hà',
+    'Sao Mộc có hơn 90 mặt trăng đã xác nhận',
+    'Không gì thoát khỏi chân trời sự kiện hố đen',
+    'Sao Bắc Cực gần như đứng yên trên bầu trời',
+    'Mây trên sao Kim làm từ axit sunfuric',
+    'Olympus Mons trên sao Hỏa cao gần 22 km',
+    'Vết Đỏ Lớn của sao Mộc rộng hơn Trái Đất',
+    'Một năm sao Hải Vương bằng 165 năm Trái Đất',
+    'Nguyên tố trong cơ thể bạn sinh ra từ các vì sao',
+  ],
+  en: [
+    'Sunlight takes 8 minutes to reach Earth',
+    'A day on Venus is longer than its year',
+    'The Moon drifts 3.8 cm farther every year',
+    'The Milky Way holds over 100 billion stars',
+    'Mars is red from iron oxide dust',
+    'Saturn is less dense than water',
+    'One light year is about 9,500 billion km',
+    'A spoonful of neutron star weighs billions of tons',
+    'The Sun holds 99.8% of the solar system mass',
+    'Comet Halley passes by every 76 years',
+    'The universe is 13.8 billion years old',
+    'Andromeda is drifting toward the Milky Way',
+    'Jupiter has more than 90 confirmed moons',
+    'Nothing escapes a black hole event horizon',
+    'Polaris barely moves in the night sky',
+    'Venus has clouds made of sulfuric acid',
+    'Olympus Mons on Mars is nearly 22 km tall',
+    'Jupiter Great Red Spot is wider than Earth',
+    'One year on Neptune lasts 165 Earth years',
+    'The atoms in your body were forged in stars',
+  ],
+};
 
 /** Bản đồ tên màn chơi tiếng Anh tương ứng với campaign */
 export const LEVEL_TITLES_EN: Record<string, string> = {
@@ -180,6 +230,12 @@ export function t(key: TranslationKey, params?: Record<string, string | number>)
   }
 
   return text;
+}
+
+/** Bốc ngẫu nhiên một mẩu thiên văn theo ngôn ngữ hiện tại */
+export function getRandomMenuTagline(): string {
+  const list = MENU_TAGLINES[currentLocale] ?? MENU_TAGLINES.vi;
+  return list[Math.floor(Math.random() * list.length)];
 }
 
 /** Lấy tên màn chơi theo ngôn ngữ hiện tại */

@@ -4,6 +4,14 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-05 - Rotate astronomy taglines on the menu subtitle
+
+- Replaced the fixed `menu_subtitle` key in `game-next/src/presentation/i18n.ts` with `MENU_TAGLINES` (20 short astronomy facts per locale) and `getRandomMenuTagline()`, which draws one line for the locale in use.
+- `game-next/src/presentation/MenuScene.ts` now renders that random line under the logo, centred and wrapped at 620 px so a longer fact still fits the 720 px design width. The menu is rebuilt on entry and on every VI/EN toggle, so the fact changes each time.
+- Reworded `version_footer`: `Mirror v0.2.1 · Nơi các vì sao hội tụ` (vi) and `Mirror v0.2.1 · Where The Stars Gather` (en), replacing the "Android preview" wording.
+- Extended `game-next/tests/displayFontCoverage.test.ts` to assert the display font covers every tagline — a random subtitle with a missing glyph would otherwise only show up on a real device.
+- Verification: `npm run typecheck` clean; `npm test` 68 files / 867 tests pass (829 on `main` plus the 40 new tagline cases, minus the 2 dropped `menu_subtitle` cases); `npm run build` clean. GitNexus MCP failed to connect this session (CONNECT_TIMEOUT), so `impact` and `detect_changes` could not be run.
+
 ### 2026-10-05 - Accept F2 motion and defer F3 acceptance tooling
 
 - Recorded Reviewer Stop Point 4 as passed for F1/F2 and documented the intentional 2800 ms victory sequence across the active F2/F3 specifications, motion plan index, architecture map, docs index, and status.
