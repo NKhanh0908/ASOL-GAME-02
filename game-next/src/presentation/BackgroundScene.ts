@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { SkyBackdrop } from './SkyBackdrop.ts';
 import { SKY_MOODS } from './skyMood.ts';
 import type { MoodTarget, SkyMood } from './skyMood.ts';
+import { applyDesignViewport } from './designViewport.ts';
 
 /**
  * Bầu trời duy nhất của cả game, luôn nằm dưới cùng. Menu, Bản đồ và Play
@@ -11,10 +12,11 @@ export class BackgroundScene extends Phaser.Scene implements MoodTarget {
   private sky!: SkyBackdrop;
 
   constructor() {
-    super({ key: 'BackgroundScene' });
+    super({ key: 'BackgroundScene', active: true });
   }
 
   create(): void {
+    applyDesignViewport(this);
     this.sky = new SkyBackdrop(this, { seed: 1, driftSpeed: 0 });
   }
 

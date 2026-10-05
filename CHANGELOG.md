@@ -4,7 +4,11 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
-### 2026-10-05 - Add sky moods and a persistent background scene (F1 task 5)
+### 2026-10-05 - Route every scene change through SceneDirector (F1 task 6)
+
+- Added `game-next/src/presentation/transitions/SceneDirector.ts`: a transition state machine behind a `SceneHost` port (input lock, overlapping hand-off, tap or Back to skip, deferred input re-enable, same-scene restart for the next level, 150 ms crossfade under reduced motion) and its Phaser host.
+- `BackgroundScene` now owns the only sky; Menu, Level Select and Play no longer build their own. All 13 `scene.start` calls now go through the director; `main.ts` boots through it and skips an active transition on Android Back or backgrounding.
+- Verification: `tests/sceneDirector.test.ts` failed for the missing module and `tests/sceneStartGate.test.ts` listed five offending files, then both passed; `npm run typecheck` and `npm test` (765 tests) passed; web build succeeded.
 
 - Added `game-next/src/presentation/skyMood.ts` (menu/map/play moods, speed-weighted drift accumulation) and `BackgroundScene.ts`, which owns one `SkyBackdrop` and tweens its drift speed and dim layer.
 - Replaced the `drift` flag of `SkyBackdrop` with a tweenable `driftSpeed` and added a navy dim layer; existing scenes keep their own sky until the director task.

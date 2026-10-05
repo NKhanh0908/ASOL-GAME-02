@@ -5,14 +5,16 @@ import { createProgressRepository } from '../infrastructure/progressRepository.t
 import type { ProgressRepository } from '../application/progressPort.ts';
 import { COLOR_NUMBERS, COLOR_TOKENS, DEPTH_TOKENS, LAYOUT_TOKENS, TYPO_TOKENS } from './designTokens.ts';
 import { TEXTURE_KEYS, TextureFactory } from './TextureFactory.ts';
-import { SkyBackdrop } from './SkyBackdrop.ts';
 import { applyDesignViewport, designSafeArea, designViewBounds } from './designViewport.ts';
 import { SettingsDialog } from './SettingsDialog.ts';
 import { t, getLocale, setLocale, getLevelTitle } from './i18n.ts';
+import { director } from './transitions/SceneDirector.ts';
+import type { Choreographed, TransitionContext } from './transitions/SceneDirector.ts';
+import type { TransitionTimeline } from './transitions/TransitionTimeline.ts';
 
-export class MenuScene extends Phaser.Scene {
+export class MenuScene extends Phaser.Scene implements Choreographed {
+  readonly directorKey = 'MenuScene' as const;
   private progressRepo!: ProgressRepository;
-  private sky!: SkyBackdrop;
   private emblemGraphics!: Phaser.GameObjects.Graphics;
   private sparkleGraphics!: Phaser.GameObjects.Graphics;
   private uiContainer!: Phaser.GameObjects.Container;
@@ -39,9 +41,6 @@ export class MenuScene extends Phaser.Scene {
     this.progressRepo = createProgressRepository(localStorage, campaignManifest, 'oracle-v1');
     const { progress } = this.progressRepo.read();
 
-    // 1. Nền trời dùng chung có trường sao trôi nhẹ nhàng (drift: true)
-    this.sky = new SkyBackdrop(this, { seed: 1, driftSpeed: 0 });
-
     const view = designViewBounds(this);
     this.safe = designSafeArea(this);
     this.blockOffsetY = (view.height - LAYOUT_TOKENS.canvas.height) / 2;
@@ -57,6 +56,8 @@ export class MenuScene extends Phaser.Scene {
 
     // 4. Thiết lập tương tác chạm bụi sao & sóng lượng tử trên bầu trời
     this.setupCosmicSkyInteractions();
+
+    director.attach(this);
   }
 
   private buildMainMenu(completedLevels: readonly string[]): void {
@@ -235,7 +236,10 @@ export class MenuScene extends Phaser.Scene {
         duration: 90,
         ease: 'Back.easeOut',
         onComplete: () => {
-          this.scene.start('PlayScene', { levelId: targetLevel.id });
+          director.go(this, 'PlayScene', { levelId: targetLevel.id }, {
+            route: 'menu-to-play',
+            origin: { x: btnX, y: btnY },
+          });
         },
       });
     });
@@ -313,9 +317,7 @@ export class MenuScene extends Phaser.Scene {
         duration: 90,
         ease: 'Back.easeOut',
         onComplete: () => {
-          if (this.scene.get('LevelSelectScene')) {
-            this.scene.start('LevelSelectScene');
-          }
+          director.go(this, 'LevelSelectScene', {}, { route: 'menu-to-map' });
         },
       });
     });
@@ -722,11 +724,12 @@ export class MenuScene extends Phaser.Scene {
     });
   }
 
-  override update(_time: number, delta: number): void {
-    // 1. Nền trời
-    this.sky.update(delta);
+  playIn(_tl: TransitionTimeline, _ctx: TransitionContext): void {}
 
-    // 2. Chuyển động lơ lửng và nhịp thở của biểu tượng Ngọc Đôi (Icon 1 XOR)
+  playOut(_tl: TransitionTimeline, _ctx: TransitionContext): void {}
+
+  override update(_time: number, delta: number): void {
+    // Chuyển động lơ lửng và nhịp thở của biểu tượng Ngọc Đôi (Icon 1 XOR)
     this.ringAngle1 += delta * 0.0004;
     this.ringAngle2 -= delta * 0.0003;
     this.pulseTime += delta * 0.003;

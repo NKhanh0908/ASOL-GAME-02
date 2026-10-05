@@ -8,11 +8,13 @@ import { createProgressRepository } from '../infrastructure/progressRepository.t
 import type { ProgressRepository } from '../application/progressPort.ts';
 import { ANIM_TOKENS, COLOR_NUMBERS, COLOR_TOKENS, TYPO_TOKENS } from './designTokens.ts';
 import { TEXTURE_KEYS, TextureFactory } from './TextureFactory.ts';
-import { SkyBackdrop } from './SkyBackdrop.ts';
 import { applyDesignViewport, designSafeArea, designViewBounds } from './designViewport.ts';
 import { formatProgress } from './hudText.ts';
 import { layoutCampaignMap } from './constellationLayout.ts';
 import { t, getLevelTitle } from './i18n.ts';
+import { director } from './transitions/SceneDirector.ts';
+import type { Choreographed, TransitionContext } from './transitions/SceneDirector.ts';
+import type { TransitionTimeline } from './transitions/TransitionTimeline.ts';
 
 type NodeInfo = {
   id: string;
@@ -32,14 +34,14 @@ const CHAPTER_TINTS: Readonly<Record<Chapter, { color: number; alpha: number }>>
   4: { color: 0xffb86b, alpha: 0.06 }, // Luân Chuyển: hổ phách hoàng hôn
 };
 
-export class LevelSelectScene extends Phaser.Scene {
+export class LevelSelectScene extends Phaser.Scene implements Choreographed {
+  readonly directorKey = 'LevelSelectScene' as const;
   private progressRepo!: ProgressRepository;
   private mapContainer!: Phaser.GameObjects.Container;
   private headerContainer!: Phaser.GameObjects.Container;
   private toastContainer?: Phaser.GameObjects.Container;
   private focusLevelId?: string;
 
-  private sky!: SkyBackdrop;
   private mode: LevelAccessMode = 'campaign';
   private previewCompletedThrough?: string;
 
@@ -76,9 +78,6 @@ export class LevelSelectScene extends Phaser.Scene {
       this.previewCompletedThrough
     );
 
-    // 1. Nền trời dùng chung; màn chọn màn cho sao trôi xuống
-    this.sky = new SkyBackdrop(this, { seed: 3, driftSpeed: 1 });
-
     // 2. Container bản đồ chòm sao có thể cuộn dọc
     this.mapContainer = this.add.container(0, 0).setDepth(10);
 
@@ -102,11 +101,17 @@ export class LevelSelectScene extends Phaser.Scene {
         ease: 'Cubic.easeOut',
       });
     }
+
+    director.attach(this);
   }
 
-  update(_time: number, delta: number): void {
-    this.sky.update(delta);
+  public goToMenu(): void {
+    director.go(this, 'MenuScene', {}, { route: 'map-to-menu' });
   }
+
+  playIn(_tl: TransitionTimeline, _ctx: TransitionContext): void {}
+
+  playOut(_tl: TransitionTimeline, _ctx: TransitionContext): void {}
 
   private buildHeader(completedCount: number, totalCount: number): void {
     // Header phủ từ mép trên thật xuống, kể cả phần dưới notch: nền phải liền
@@ -132,9 +137,7 @@ export class LevelSelectScene extends Phaser.Scene {
       .setSize(96, 96)
       .setInteractive({ useHandCursor: true });
     const backIcon = this.add.image(56, top + 56, TEXTURE_KEYS.iconMenuBack).setScale(1.25);
-    backBtn.on('pointerdown', () => {
-      this.scene.start('MenuScene');
-    });
+    backBtn.on('pointerdown', () => this.goToMenu());
 
     // Tiêu đề trang 32px serif
     const headerTitle = this.add
@@ -392,10 +395,13 @@ export class LevelSelectScene extends Phaser.Scene {
         } else if (!node.available) {
           this.showToast(`Màn ${node.id} đang được tinh chỉnh`);
         } else {
-          this.scene.start('PlayScene', {
+          director.go(this, 'PlayScene', {
             levelId: node.id,
             mode: this.mode,
             previewCompletedThrough: this.previewCompletedThrough,
+          }, {
+            route: 'map-to-play',
+            origin: { x: node.x, y: node.y + this.mapContainer.y },
           });
         }
       });

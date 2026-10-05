@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { TYPO_TOKENS } from './designTokens.ts';
 import { applyDesignViewport, designViewBounds } from './designViewport.ts';
 import { TextureFactory } from './TextureFactory.ts';
+import { director } from './transitions/SceneDirector.ts';
 
 /**
  * Dữ liệu đỉnh đa giác từ studio.svg (Origami Alpaca Solutions)
@@ -106,7 +107,7 @@ export class SplashScene extends Phaser.Scene {
   private sparkleGroup: Phaser.GameObjects.Graphics[] = [];
 
   constructor() {
-    super({ key: 'SplashScene' });
+    super({ key: 'SplashScene', active: true });
   }
 
   create(): void {
@@ -451,7 +452,8 @@ export class SplashScene extends Phaser.Scene {
       duration: 650,
       ease: 'Cubic.easeInOut',
       onComplete: () => {
-        this.scene.start('MenuScene');
+        this.scene.stop('SplashScene');
+        director.boot('MenuScene', {});
       },
     });
   }

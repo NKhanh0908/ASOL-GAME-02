@@ -19,15 +19,19 @@ import {
 } from './layout.ts';
 import type { LayoutMetrics } from './layout.ts';
 
-import { SkyBackdrop } from './SkyBackdrop.ts';
 import { COLOR_NUMBERS, COLOR_TOKENS, DEPTH_TOKENS, TYPO_TOKENS } from './designTokens.ts';
 import { TextureFactory } from './TextureFactory.ts';
 
 import { PauseDialog } from './PauseDialog.ts';
 import { TargetBadge } from './TargetBadge.ts';
 import { t, getLevelTitle } from './i18n.ts';
+import { director } from './transitions/SceneDirector.ts';
+import type { Choreographed, TransitionContext } from './transitions/SceneDirector.ts';
+import type { TransitionTimeline } from './transitions/TransitionTimeline.ts';
 
-export class PlayScene extends Phaser.Scene {
+export class PlayScene extends Phaser.Scene implements Choreographed {
+  readonly directorKey = 'PlayScene' as const;
+  private loadFailed = false;
   private level!: Level;
   private mode: 'campaign' | 'harness' = 'campaign';
   private controller!: PlayController;
@@ -36,7 +40,6 @@ export class PlayScene extends Phaser.Scene {
   private targetBadge!: TargetBadge;
   private hud!: Hud;
   private pauseDialog!: PauseDialog;
-  private sky!: SkyBackdrop;
   private celebrationContainer: Phaser.GameObjects.Container | null = null;
   private previewCompletedThrough?: string;
 
@@ -49,6 +52,7 @@ export class PlayScene extends Phaser.Scene {
     mode?: 'campaign' | 'harness';
     previewCompletedThrough?: string;
   }): void {
+    this.loadFailed = false;
     const levelId = data.levelId ?? '1-1';
     this.mode = data.mode ?? 'campaign';
     this.previewCompletedThrough = this.mode === 'harness'
@@ -62,12 +66,22 @@ export class PlayScene extends Phaser.Scene {
         this.level = loadLevel('1-1', this.mode);
       } catch (fallbackErr) {
         console.error('[PlayScene] Lỗi nghiêm trọng khi tải màn 1-1:', fallbackErr);
-        this.scene.start('MenuScene');
+        this.loadFailed = true;
       }
     }
   }
 
   create(): void {
+    if (this.loadFailed) {
+      // Không tải được cả 1-1: kết thúc chuyển cảnh đang chờ rồi về Menu
+      director.attach(this);
+      director.skip();
+      this.time.delayedCall(0, () => {
+        director.go(this, 'MenuScene', {}, { route: 'play-to-menu' });
+      });
+      return;
+    }
+
     applyDesignViewport(this);
     TextureFactory.generateAll(this);
     // Hệ toạ độ thiết kế, không phải kích thước bộ đệm: camera zoom đã quy đổi.
@@ -75,9 +89,6 @@ export class PlayScene extends Phaser.Scene {
     const view = designViewBounds(this);
     const layout = computeLayout(view.width, view.height, designSafeArea(this));
     this.layout = layout;
-
-    // 1. Nền trời dùng chung (bật drift để mây tinh vân và dải ngân hà trôi nhẹ nhàng)
-    this.sky = new SkyBackdrop(this, { seed: 2, driftSpeed: 0 });
 
     const progressRepo = createProgressRepository(
       localStorage,
@@ -138,26 +149,26 @@ export class PlayScene extends Phaser.Scene {
       },
       onNextLevel: () => {
         const nextId = nextLevelId(campaignManifest, this.level.id);
+        let playable = false;
         if (nextId) {
           try {
             // Kiểm tra đúng chế độ: campaign về menu nếu màn kế chưa approved.
             loadLevel(nextId, this.mode);
-            this.scene.start('PlayScene', {
-              levelId: nextId,
-              mode: this.mode,
-              previewCompletedThrough: this.mode === 'harness'
-                ? furthestLevelId(
-                    campaignManifest,
-                    this.previewCompletedThrough,
-                    this.level.id
-                  )
-                : undefined,
-            });
+            playable = true;
           } catch {
-            this.scene.start('MenuScene');
+            playable = false;
           }
+        }
+        if (nextId && playable) {
+          director.go(this, 'PlayScene', {
+            levelId: nextId,
+            mode: this.mode,
+            previewCompletedThrough: this.mode === 'harness'
+              ? furthestLevelId(campaignManifest, this.previewCompletedThrough, this.level.id)
+              : undefined,
+          }, { route: 'next-level' });
         } else {
-          this.scene.start('MenuScene');
+          director.go(this, 'MenuScene', {}, { route: 'play-to-menu' });
         }
       },
     }, this.level.id, layout);
@@ -215,7 +226,13 @@ export class PlayScene extends Phaser.Scene {
       const mode = new URLSearchParams(window.location.search).get('autosolve');
       if (mode === 'win' || mode === 'drag') this.autosolve(mode, layout);
     }
+
+    director.attach(this);
   }
+
+  playIn(_tl: TransitionTimeline, _ctx: TransitionContext): void {}
+
+  playOut(_tl: TransitionTimeline, _ctx: TransitionContext): void {}
 
   private autosolve(mode: 'win' | 'drag', layout: LayoutMetrics): void {
     const pieces = this.level.pieces;
@@ -237,10 +254,6 @@ export class PlayScene extends Phaser.Scene {
       this.refreshView();
       if (transition?.becameWon) this.playCelebration(layout);
     });
-  }
-
-  update(_time: number, delta: number): void {
-    this.sky.update(delta);
   }
 
   private refreshView(): void {
@@ -380,7 +393,7 @@ export class PlayScene extends Phaser.Scene {
     const justCompleted = this.controller?.getSnapshot().phase === 'won'
       ? this.level.id
       : undefined;
-    this.scene.start('LevelSelectScene', {
+    director.go(this, 'LevelSelectScene', {
       mode: this.mode,
       previewCompletedThrough: this.mode === 'harness'
         ? furthestLevelId(
@@ -389,7 +402,7 @@ export class PlayScene extends Phaser.Scene {
             justCompleted
           )
         : undefined,
-    });
+    }, { route: 'play-to-map' });
   }
 
   public onHardwareBack(): void {

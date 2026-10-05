@@ -1,11 +1,16 @@
 import Phaser from 'phaser';
 import { App } from '@capacitor/app';
+import { BackgroundScene } from './presentation/BackgroundScene.ts';
 import { SplashScene } from './presentation/SplashScene.ts';
 import { MenuScene } from './presentation/MenuScene.ts';
 import { PlayScene } from './presentation/PlayScene.ts';
 import { LevelSelectScene } from './presentation/LevelSelectScene.ts';
 import { FixtureScene } from './presentation/FixtureScene.ts';
 import { setupAndroidLifecycle } from './infrastructure/lifecycle.ts';
+import { createProgressRepository } from './infrastructure/progressRepository.ts';
+import { campaignManifest } from './content/manifest.ts';
+import { director, PhaserSceneHost } from './presentation/transitions/SceneDirector.ts';
+import { setMotionScale } from './presentation/transitions/motion.ts';
 import { resolveLaunch } from './launchParams.ts';
 import { readViewport } from './presentation/viewport.ts';
 import './style.css';
@@ -21,6 +26,10 @@ window.addEventListener('unhandledrejection', (event) => {
 const launch = resolveLaunch(window.location.search, import.meta.env.DEV);
 
 const viewport = readViewport();
+
+const savedSettings = createProgressRepository(localStorage, campaignManifest, 'oracle-v1')
+  .read().progress.settings;
+setMotionScale(savedSettings.reducedMotion ? 0 : 1);
 
 /**
  * Các mặt chữ phải có mặt trước khi scene đầu tiên dựng chữ.
@@ -70,6 +79,8 @@ async function waitForFonts(timeoutMs = 3000): Promise<void> {
 async function bootstrap(): Promise<void> {
   await waitForFonts();
 
+  // BackgroundScene đứng đầu nên tự khởi động và luôn vẽ dưới cùng; các scene
+  // khác chỉ chạy khi SceneDirector gọi.
   const game = new Phaser.Game({
     type: Phaser.AUTO,
     parent: 'game',
@@ -84,31 +95,36 @@ async function bootstrap(): Promise<void> {
       mode: Phaser.Scale.NONE,
       autoCenter: Phaser.Scale.NO_CENTER,
     },
-    scene: [SplashScene, MenuScene, PlayScene, LevelSelectScene, FixtureScene],
+    scene: [BackgroundScene, SplashScene, MenuScene, PlayScene, LevelSelectScene, FixtureScene],
   });
+
+  director.setHost(new PhaserSceneHost(game));
 
   if (launch.scene !== 'MenuScene') {
     game.events.once('ready', () => {
       game.scene.stop('SplashScene');
-      game.scene.stop('MenuScene');
       if (launch.scene === 'PlayScene') {
-        game.scene.start('PlayScene', { levelId: launch.levelId, mode: launch.mode });
-      } else {
-        game.scene.start('LevelSelectScene', launch.focusLevelId ? { focusLevelId: launch.focusLevelId } : undefined);
+        director.boot('PlayScene', { levelId: launch.levelId, mode: launch.mode });
+      } else if (launch.scene === 'LevelSelectScene') {
+        director.boot('LevelSelectScene', launch.focusLevelId ? { focusLevelId: launch.focusLevelId } : {});
       }
     });
   }
 
   setupAndroidLifecycle({
     onHardwareBack: () => {
+      if (director.isTransitioning()) {
+        director.skip();
+        return;
+      }
       const activePlayScene = game.scene.getScene('PlayScene') as PlayScene;
-      const activeLevelSelect = game.scene.getScene('LevelSelectScene');
+      const activeLevelSelect = game.scene.getScene('LevelSelectScene') as LevelSelectScene;
       const activeSplashScene = game.scene.getScene('SplashScene');
 
       if (activePlayScene && activePlayScene.scene.isActive()) {
         activePlayScene.onHardwareBack();
       } else if (activeLevelSelect && activeLevelSelect.scene.isActive()) {
-        activeLevelSelect.scene.start('MenuScene');
+        activeLevelSelect.goToMenu();
       } else if (activeSplashScene && activeSplashScene.scene.isActive()) {
         App.exitApp();
       } else {
@@ -116,6 +132,7 @@ async function bootstrap(): Promise<void> {
       }
     },
     onBackground: () => {
+      director.skip();
       game.loop.sleep();
     },
     onResume: () => {
