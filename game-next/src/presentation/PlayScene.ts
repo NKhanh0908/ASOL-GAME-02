@@ -7,7 +7,6 @@ import { furthestLevelId, nextLevelId } from '../domain/campaign.ts';
 import { createProgressRepository } from '../infrastructure/progressRepository.ts';
 import { PlayController, type PlayViewSnapshot } from '../application/playController.ts';
 import { BoardRenderer } from './BoardRenderer.ts';
-import { maskCentroid } from '../domain/mask.ts';
 import { Hud } from './Hud.ts';
 import { applyDesignViewport, designSafeArea, designViewBounds } from './designViewport.ts';
 import {
@@ -51,7 +50,6 @@ export class PlayScene extends Phaser.Scene implements Choreographed {
   private targetBadge!: TargetBadge;
   private hud!: Hud;
   private pauseDialog!: PauseDialog;
-  private celebrationContainer: Phaser.GameObjects.Container | null = null;
   private previewCompletedThrough?: string;
 
   constructor() {
@@ -203,6 +201,10 @@ export class PlayScene extends Phaser.Scene implements Choreographed {
 
     // Pointer events
     this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
+      if (this.feedback.isVictoryRunning()) {
+        this.feedback.skipVictory();
+        return;
+      }
       const hit = this.controller.onPointerDown(pointer.worldX, pointer.worldY, layout);
       if (hit) {
         const pieceId = this.controller.getSnapshot().dragInfo?.pieceId;
@@ -274,16 +276,15 @@ export class PlayScene extends Phaser.Scene implements Choreographed {
     if (!transition) return;
     this.feedback.handle(feedbackEvents(prev, transition, this.level, subject));
     this.refreshView();
-    if (transition.becameWon) this.playCelebration(this.layout); // Task 9 chuyển vào FeedbackDirector
   }
 
   private resetLevel(): void {
-    const prev = this.controller.getPuzzleState();
-    const transition = this.controller.onReset();
-    this.cleanupCelebration();
-    this.boardRenderer.setVictoryMode(false);
-    this.hud.hideWinModal();
-    this.commit(prev, transition, { command: 'reset', pieceId: null });
+    const run = () => {
+      const prev = this.controller.getPuzzleState();
+      this.commit(prev, this.controller.onReset(), { command: 'reset', pieceId: null });
+    };
+    if (this.controller.getSnapshot().phase === 'won') this.feedback.unwindVictory(run);
+    else run();
   }
 
   private transitionView(): PlayTransitionView {
@@ -354,121 +355,6 @@ export class PlayScene extends Phaser.Scene implements Choreographed {
 
   private refreshView(): void {
     this.hud.update(this.controller.getSnapshot());
-  }
-
-  private playCelebration(layout: LayoutMetrics): void {
-    this.cleanupCelebration();
-
-    const celebration = this.add.container(0, 0).setDepth(90);
-    this.celebrationContainer = celebration;
-
-    // 1. Ánh chớp sao starlight flash dịu nhẹ
-    this.cameras.main.flash(350, 249, 199, 79, false);
-
-    // Trọng tâm hình mục tiêu (với 1-1 là tâm bàn, nơi hai thoi chạm đỉnh)
-    const centroid = maskCentroid(this.level.targetMask) ?? { x: GRID_WIDTH / 2, y: GRID_HEIGHT / 2 };
-    const center = gridToCanvas(centroid.x, centroid.y, layout);
-
-    // 2. Vòng sóng năng lượng cổ ngữ (Resonance Shockwave Rings)
-    const ringGraphics = this.add.graphics();
-    celebration.add(ringGraphics);
-
-    const ringState = { radius1: 10, alpha1: 0.9, radius2: 0, alpha2: 0 };
-    this.tweens.add({
-      targets: ringState,
-      radius1: 160,
-      alpha1: 0,
-      duration: 800,
-      ease: 'Cubic.easeOut',
-      onUpdate: () => {
-        ringGraphics.clear();
-        if (ringState.alpha1 > 0) {
-          ringGraphics.lineStyle(2.5, 0xffd166, ringState.alpha1);
-          ringGraphics.strokeCircle(center.x, center.y, ringState.radius1);
-        }
-        if (ringState.alpha2 > 0) {
-          ringGraphics.lineStyle(1.8, 0x4ecdc4, ringState.alpha2);
-          ringGraphics.strokeCircle(center.x, center.y, ringState.radius2);
-        }
-      },
-    });
-
-    this.time.delayedCall(160, () => {
-      ringState.radius2 = 10;
-      ringState.alpha2 = 0.8;
-      this.tweens.add({
-        targets: ringState,
-        radius2: 180,
-        alpha2: 0,
-        duration: 850,
-        ease: 'Cubic.easeOut',
-      });
-    });
-
-    // 3. Bung tỏa các hạt bụi sao stardust
-    const colors = [0xffd166, 0xf9c74f, 0x4ecdc4, 0xffffff];
-    const particleGraphics = this.add.graphics();
-    celebration.add(particleGraphics);
-
-    type Particle = {
-      x: number;
-      y: number;
-      targetX: number;
-      targetY: number;
-      currentX: number;
-      currentY: number;
-      radius: number;
-      color: number;
-    };
-
-    const particles: Particle[] = [];
-    for (let i = 0; i < 40; i++) {
-      const angle = Phaser.Math.FloatBetween(0, Math.PI * 2);
-      const dist = Phaser.Math.FloatBetween(40, 200);
-      particles.push({
-        x: center.x,
-        y: center.y,
-        targetX: center.x + Math.cos(angle) * dist,
-        targetY: center.y + Math.sin(angle) * dist,
-        currentX: center.x,
-        currentY: center.y,
-        radius: Phaser.Math.FloatBetween(1.5, 3.5),
-        color: colors[i % colors.length],
-      });
-    }
-
-    const tweenProgress = { t: 0 };
-    this.tweens.add({
-      targets: tweenProgress,
-      t: 1,
-      duration: 1100,
-      ease: 'Cubic.easeOut',
-      onUpdate: () => {
-        particleGraphics.clear();
-        const p = tweenProgress.t;
-        for (const pt of particles) {
-          pt.currentX = Phaser.Math.Linear(pt.x, pt.targetX, p);
-          pt.currentY = Phaser.Math.Linear(pt.y, pt.targetY, p);
-          const alpha = (1 - p) * Phaser.Math.FloatBetween(0.7, 1);
-          particleGraphics.fillStyle(pt.color, Math.max(0, alpha));
-          particleGraphics.fillCircle(pt.currentX, pt.currentY, pt.radius * (1 - p * 0.3));
-        }
-      },
-    });
-
-    // 4. Khung bàn đổi vàng, rồi hiện thẻ hoàn thành sau một nhịp để người
-    // chơi kịp thấy hai mảnh khớp. Thẻ thay chỗ khay, không đè lên bàn.
-    this.boardRenderer.setVictoryMode(true);
-    this.time.delayedCall(700, () => {
-      this.hud.showWinModal(this.level.victoryVerse);
-    });
-  }
-
-  private cleanupCelebration(): void {
-    if (this.celebrationContainer) {
-      this.celebrationContainer.destroy();
-      this.celebrationContainer = null;
-    }
   }
 
   private openLevelSelect(): void {

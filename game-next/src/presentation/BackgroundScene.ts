@@ -40,4 +40,16 @@ export class BackgroundScene extends Phaser.Scene implements MoodTarget {
       ease: 'Sine.easeInOut',
     });
   }
+
+  /** Chuỗi thắng: trời tối thêm `extraDim` so với mood play. setMood kế tiếp sẽ đưa về. */
+  deepen(extraDim: number, durationMs: number): void {
+    if (!this.sky) return;
+    this.tweens.killTweensOf(this.sky.moodState);
+    this.tweens.add({
+      targets: this.sky.moodState,
+      dim: SKY_MOODS.play.dim + extraDim,
+      duration: durationMs,
+      ease: 'Sine.easeOut',
+    });
+  }
 }

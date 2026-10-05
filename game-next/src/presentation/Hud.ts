@@ -20,9 +20,11 @@ import {
   getSnapHintText,
   getVictoryLabels,
 } from './hudText.ts';
-import type { Poseable } from './transitions/choreography.ts';
+import { enter, exit, type Poseable } from './transitions/choreography.ts';
 import { stepScalar } from './pieceMotion.ts';
 import { isReducedMotion } from './transitions/motion.ts';
+import type { TransitionTimeline } from './transitions/TransitionTimeline.ts';
+import type { VictoryPlan } from './feedback/victorySequence.ts';
 
 export type HudCallbacks = {
   onMenu: () => void;
@@ -56,6 +58,7 @@ export class Hud {
   private matchBarText: Phaser.GameObjects.Text;
   private snapHint: Phaser.GameObjects.Container | null = null;
   private winVerseText!: Phaser.GameObjects.Text;
+  private winItems: Poseable[][] = [];
   private rotateAllowed = false;
   private matchIconCenters: number[] = [];
   private hint = { alpha: 0, x: 0, y: 0 };
@@ -296,6 +299,8 @@ export class Hud {
       .setInteractive({ useHandCursor: true });
     nextHit.on('pointerdown', () => this.callbacks.onNextLevel());
 
+    this.winItems = [[winLabel], [winTitle], [winVerse], [selectBtnBg, selectBtn, nextBtnBg, nextBtn]];
+
     this.winContainer.add([
       winOverlay,
       cardFrame,
@@ -438,7 +443,8 @@ export class Hud {
     });
   }
 
-  public showWinModal(victoryVerse?: string): void {
+  /** Nội dung và chỗ đứng của thẻ; không đụng tư thế để dàn dựng tự lo */
+  private prepareWinModal(victoryVerse?: string): void {
     this.winVerseText
       .setText(victoryVerse ? `“${victoryVerse}”` : '')
       .setVisible(Boolean(victoryVerse));
@@ -446,18 +452,37 @@ export class Hud {
     this.resetContainer.setVisible(false);
     this.rotateContainer.setVisible(false);
     this.matchBar.setVisible(false);
-    if (this.winContainer.visible) return;
-    this.winContainer.setAlpha(0).setVisible(true);
-    this.scene.tweens.add({
-      targets: this.winContainer,
-      alpha: 1,
-      duration: 500,
-      ease: 'Cubic.easeOut',
+    this.winContainer.setVisible(true);
+  }
+
+  /** Hiện ngay (khôi phục trạng thái đã thắng) */
+  public showWinModal(victoryVerse?: string): void {
+    this.winContainer.setPosition(0, 0).setAlpha(1);
+    this.prepareWinModal(victoryVerse);
+  }
+
+  /**
+   * Chuỗi thắng: thẻ trượt lên, bốn nhóm con hiện so le. Mọi `enter` lên lịch
+   * ngay (đặt tư thế lệch lúc thẻ còn ẩn); lời gọi hiện thẻ ở cùng mốc đứng
+   * sau các tween, nên `complete()` gói gọn trong một lượt xử lý.
+   */
+  public playWinCard(tl: TransitionTimeline, plan: VictoryPlan, victoryVerse?: string): void {
+    enter(tl, this.winContainer, plan.cardAtMs, plan.cardMs, { dy: plan.cardSlidePx, alpha: 0 });
+    this.winItems.forEach((group, i) => {
+      for (const item of group) {
+        enter(tl, item, plan.cardAtMs + i * plan.cardItemGapMs, plan.cardItemMs, { alpha: 0 });
+      }
     });
+    tl.call(plan.cardAtMs, () => this.prepareWinModal(victoryVerse));
+  }
+
+  public unwindWinCard(tl: TransitionTimeline, ms: number): void {
+    exit(tl, this.winContainer, 0, ms, { dy: 60, alpha: 0 });
+    tl.call(ms, () => this.hideWinModal());
   }
 
   public hideWinModal(): void {
-    this.winContainer.setVisible(false);
+    this.winContainer.setVisible(false).setPosition(0, 0).setAlpha(1);
     this.resetContainer.setVisible(true);
     this.rotateContainer.setVisible(this.rotateAllowed);
     this.matchBar.setVisible(true);

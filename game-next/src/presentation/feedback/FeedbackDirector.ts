@@ -1,8 +1,10 @@
 import Phaser from 'phaser';
 import type { Level, Piece, PuzzleState } from '../../domain/model.ts';
+import { GRID_WIDTH, GRID_HEIGHT } from '../../domain/model.ts';
+import { maskCentroid } from '../../domain/mask.ts';
 import type { BackgroundScene } from '../BackgroundScene.ts';
 import type { BoardRenderer } from '../BoardRenderer.ts';
-import { COLOR_NUMBERS, DEPTH_TOKENS, FEEDBACK_TOKENS } from '../designTokens.ts';
+import { COLOR_NUMBERS, DEPTH_TOKENS, FEEDBACK_TOKENS, VICTORY_TOKENS } from '../designTokens.ts';
 import type { Hud } from '../Hud.ts';
 import type { LayoutMetrics } from '../layout.ts';
 import { gridToCanvas, pieceRadiusPx } from '../layout.ts';
@@ -11,10 +13,12 @@ import { lightAlpha } from '../pieceMotion.ts';
 import type { Pt } from '../polygonClip.ts';
 import { isReducedMotion, scaleTiming } from '../transitions/motion.ts';
 import { TransitionTimeline } from '../transitions/TransitionTimeline.ts';
+import { burstAt, planBurst } from '../transitions/stardust.ts';
 import type { HapticsPort } from '../../infrastructure/haptics.ts';
-import type { FeedbackEvent } from './feedbackEvents.ts';
+import { type FeedbackEvent, gridPolygon } from './feedbackEvents.ts';
 import { HAPTIC_CUES, playCue } from './hapticCues.ts';
 import { perimeterSegment } from './parityDiff.ts';
+import { victoryPlan, type VictoryPlan } from './victorySequence.ts';
 
 export type FeedbackDeps = {
   scene: Phaser.Scene;
@@ -39,6 +43,8 @@ const toGeom = (pts: readonly Pt[]) => pts.map((p) => new Phaser.Geom.Point(p.x,
 export class FeedbackDirector {
   private readonly deps: FeedbackDeps;
   private effects: TransitionTimeline[] = [];
+  private victory: TransitionTimeline | null = null;
+  private victoryCleanup: Array<() => void> = [];
 
   constructor(deps: FeedbackDeps) {
     this.deps = deps;
@@ -52,8 +58,24 @@ export class FeedbackDirector {
   }
 
   tick(dtMs: number): void {
+    if (this.victory) {
+      this.victory.advance(dtMs);
+      if (this.victory.isFinished()) this.victoryCleanup = [];
+    }
     for (const tl of this.effects) tl.advance(dtMs);
     this.effects = this.effects.filter((tl) => !tl.isFinished());
+  }
+
+  isVictoryRunning(): boolean {
+    return this.victory !== null && !this.victory.isFinished();
+  }
+
+  /** Chạm khi đang chạy: khung vàng, thẻ hiện, không còn hạt */
+  skipVictory(): void {
+    if (!this.victory) return;
+    this.victory.complete(); // chạy mọi call còn lại: setVictoryMode(true), hiện thẻ
+    for (const clean of this.victoryCleanup) clean();
+    this.victoryCleanup = [];
   }
 
   protected fx(): TransitionTimeline {
@@ -134,7 +156,7 @@ export class FeedbackDirector {
         this.resetPieces();
         return;
       case 'won':
-        // Task 9: this.playVictory();
+        this.playVictory();
         return;
     }
   }
@@ -228,5 +250,106 @@ export class FeedbackDirector {
       view.glideTo(tray, scaleTiming(F.resetMs), 'cubicOut', scaleTiming(F.resetStaggerMs * k));
       k++;
     });
+  }
+
+  playVictory(): void {
+    const { scene, board, hud, level, layout } = this.deps;
+    const plan = victoryPlan(level.pieces.length, isReducedMotion());
+    const tl = new TransitionTimeline();
+    this.victory = tl;
+
+    if (plan.skyDim) {
+      const dim = plan.skyDim;
+      tl.call(dim.atMs, () => this.deps.background()?.deepen(dim.extra, dim.ms));
+    }
+
+    level.pieces.forEach((piece, i) => {
+      const start = plan.lightStartsMs[i];
+      if (start === undefined) return;
+      tl.call(start, () => board.getPieceView(piece.id)?.play('light', plan.lightMs, plan.lightPeak));
+    });
+
+    if (plan.traceMs > 0) {
+      for (const placement of level.targetPlacements ?? []) {
+        const piece = level.pieces.find((p) => p.id === placement.pieceId);
+        if (!piece) continue;
+        const pts = gridPolygon(piece, placement.x, placement.y, placement.turns).map((p: Pt) => gridToCanvas(p.x, p.y, layout));
+        const g = scene.add.graphics().setDepth(DEPTH_TOKENS.draggingPiece + 1);
+        this.victoryCleanup.push(() => g.destroy());
+        const s = { p: 0 };
+        const draw = () => {
+          g.clear();
+          const seg = perimeterSegment(pts, s.p, 0.3);
+          if (seg.length < 2) return;
+          g.lineStyle(3, COLOR_NUMBERS.amberGlow, 1 - s.p);
+          g.strokePoints(toGeom(seg), false, false);
+        };
+        tl.at(plan.traceAtMs, s, { p: 1 }, plan.traceMs, 'cubicInOut', draw);
+        tl.call(plan.traceAtMs + plan.traceMs, () => g.destroy());
+      }
+    }
+
+    tl.call(plan.burstAtMs, () => {
+      this.deps.haptics.notify('success');
+      if (plan.cameraFlash) scene.cameras.main.flash(VICTORY_TOKENS.flashMs, 249, 199, 79, false);
+    });
+    if (plan.rings || plan.particles > 0) this.burst(tl, plan);
+
+    const gold = board.getGoldFrame();
+    if (gold) tl.at(plan.frameAtMs, gold, { alpha: 1 }, plan.frameMs, 'sineInOut');
+    for (const part of board.getTrayParts()) tl.at(plan.frameAtMs, part, { alpha: 0 }, plan.trayFadeMs, 'linear');
+    tl.call(plan.frameAtMs + Math.max(plan.frameMs, plan.trayFadeMs), () => board.setVictoryMode(true));
+
+    hud.playWinCard(tl, plan, level.victoryVerse);
+    tl.advance(0);
+  }
+
+  private burst(tl: TransitionTimeline, plan: VictoryPlan): void {
+    const { scene, level, layout } = this.deps;
+    const centroid = maskCentroid(level.targetMask) ?? { x: GRID_WIDTH / 2, y: GRID_HEIGHT / 2 };
+    const c = gridToCanvas(centroid.x, centroid.y, layout);
+    const g = scene.add.graphics().setDepth(90);
+    this.victoryCleanup.push(() => g.destroy());
+    const particles = planBurst(c, plan.particles);
+    const s = { r1: 10, a1: 0, r2: 10, a2: 0, t: 0 };
+    const draw = () => {
+      g.clear();
+      if (s.a1 > 0) { g.lineStyle(2.5, 0xffd166, s.a1); g.strokeCircle(c.x, c.y, s.r1); }
+      if (s.a2 > 0) { g.lineStyle(1.8, 0x4ecdc4, s.a2); g.strokeCircle(c.x, c.y, s.r2); }
+      for (const p of particles) {
+        const d = burstAt(p, s.t);
+        if (d.alpha <= 0) continue;
+        g.fillStyle(p.color, d.alpha);
+        g.fillCircle(d.x, d.y, d.radius);
+      }
+    };
+    const T = VICTORY_TOKENS;
+    if (plan.rings) {
+      tl.call(plan.burstAtMs, () => { s.a1 = 0.9; });
+      tl.at(plan.burstAtMs, s, { r1: 160, a1: 0 }, T.ringMs, 'cubicOut', draw);
+      tl.call(plan.burstAtMs + T.ringGapMs, () => { s.a2 = 0.8; });
+      tl.at(plan.burstAtMs + T.ringGapMs, s, { r2: 180, a2: 0 }, T.ringMs, 'cubicOut', draw);
+    }
+    if (particles.length > 0) tl.at(plan.burstAtMs, s, { t: 1 }, plan.particleMs, 'cubicOut', draw);
+    tl.call(plan.burstAtMs + Math.max(plan.particleMs, T.ringGapMs + T.ringMs), () => g.destroy());
+  }
+
+  /** Đặt lại từ thẻ thắng: thẻ và khung chạy ngược 300 ms (≤ 150 khi Giảm chuyển động) rồi mới đặt lại */
+  unwindVictory(onDone: () => void): void {
+    if (this.victory && !this.victory.isFinished()) this.skipVictory();
+    this.victory = null;
+    const { board, hud } = this.deps;
+    const ms = isReducedMotion() ? VICTORY_TOKENS.reducedMs : VICTORY_TOKENS.unwindMs;
+    const tl = this.fx();
+    board.setTrayVisible(true, 0);
+    hud.unwindWinCard(tl, ms);
+    const gold = board.getGoldFrame();
+    if (gold) tl.at(0, gold, { alpha: 0 }, ms, 'sineInOut');
+    for (const part of board.getTrayParts()) tl.at(0, part, { alpha: 1 }, ms, 'linear');
+    tl.call(ms, () => {
+      board.setVictoryMode(false);
+      onDone();
+    });
+    tl.advance(0);
   }
 }

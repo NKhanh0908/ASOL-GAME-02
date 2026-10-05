@@ -15,7 +15,7 @@ import {
   menuIn,
   playIn,
 } from '../src/presentation/transitions/routes.ts';
-import { STARDUST_MAX, dustAt, planStardust } from '../src/presentation/transitions/stardust.ts';
+import { STARDUST_MAX, burstAt, dustAt, planBurst, planStardust } from '../src/presentation/transitions/stardust.ts';
 
 const R = TRANSITION_TOKENS.routes;
 const center = { x: 360, y: 600 };
@@ -110,5 +110,18 @@ describe('bụi sao', () => {
     expect(dustAt(p, 1).alpha).toBeCloseTo(0, 9);
     expect(dustAt(p, 0.5).alpha).toBeCloseTo(p.alpha, 9);
     expect(dustAt(p, 1).x).toBe(center.x);
+  });
+
+  test('planBurst: bung từ tâm ra ngoài trong 40–200 px, alpha cố định, tối đa 30', () => {
+    const ps = planBurst(center, 99, seq([0.25, 0.5, 0.75]));
+    expect(ps).toHaveLength(STARDUST_MAX);
+    for (const p of ps) {
+      expect(p.x0).toBe(center.x);
+      const d = Math.hypot(p.x1 - center.x, p.y1 - center.y);
+      expect(d).toBeGreaterThanOrEqual(40);
+      expect(d).toBeLessThanOrEqual(200);
+    }
+    expect(burstAt(ps[0], 1).alpha).toBe(0);
+    expect(burstAt(ps[0], 0).alpha).toBe(ps[0].alpha);
   });
 });

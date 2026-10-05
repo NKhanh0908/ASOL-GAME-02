@@ -4,6 +4,15 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-05 - Stage the 1800 ms victory sequence (F2 task 9)
+
+- Added `game-next/src/presentation/feedback/victorySequence.ts`: pure victory schedule (150 ms under reduced motion) with light timings, trace timings, ring and burst parameters, gold-frame crossfade, and win card slide with four staggered item groups.
+- Added `planBurst` and `burstAt` to `game-next/src/presentation/transitions/stardust.ts` for stardust particle bursts up to 30 particles.
+- Added `deepen` to `game-next/src/presentation/BackgroundScene.ts` for background sky darkening during victory.
+- Implemented `playVictory`, `skipVictory`, `unwindVictory`, and `burst` in `FeedbackDirector.ts`; updated `Hud.ts` with `playWinCard` and `unwindWinCard`.
+- Updated `PlayScene.ts`: removed old `playCelebration` and `celebrationContainer`, wired tap-to-skip in `pointerdown`, and used `unwindVictory` in `resetLevel`.
+- Verification: `tests/victorySequence.test.ts` and `tests/transitionRoutes.test.ts` passed; `npm run typecheck` and `npm test` (68 test files, 827 tests) passed.
+
 ### 2026-10-05 - Add feedback director for operations and smooth hud (F2 task 8)
 
 - Updated `game-next/src/presentation/Hud.ts`: added `tickSnapHint`, `popCounterIcon`, `matchIconCenters`, and smooth rotate button alpha fade; removed obsolete `showSnapHint`/`hideSnapHint`.
