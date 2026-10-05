@@ -4,10 +4,12 @@ import { MUSIC_ROOT_HZ } from '../root.ts';
 /**
  * Crystal bell, one clear pitch, an octave above the music root.
  *
- * A ratio of 3.5 is deliberately not a whole number: the partials it creates
- * do not line up with the harmonic series, and that mismatch is what the ear
- * reads as struck glass or metal rather than an organ pipe. The modulation
- * index falls away fast, so the strike is bright and the tail is pure.
+ * Tuned for clarity rather than weight. A whole-number ratio of 3 keeps the
+ * partials on the harmonic series, which reads as struck crystal instead of
+ * the clangier metal an inharmonic ratio gives, and a low modulation index
+ * means few sidebands to begin with. The index collapses within 110 ms, so
+ * there is just enough edge to hear the strike before the tail goes pure.
+ * The lowpass trims the very top, where the harshness lives.
  */
 export const bell: Patch = {
   durationMs: 1400,
@@ -17,12 +19,13 @@ export const bell: Patch = {
       source: {
         kind: 'fm',
         carrierHz: MUSIC_ROOT_HZ * 2,
-        ratio: 3.5,
-        index: 6,
-        indexEnv: { attackMs: 0, decayMs: 180, curve: 'exp' },
+        ratio: 3,
+        index: 2.5,
+        indexEnv: { attackMs: 0, decayMs: 110, curve: 'exp' },
       },
-      env: { attackMs: 2, decayMs: 1398, curve: 'exp' },
+      filter: { kind: 'lowpass', hz: 6500, q: 0.7 },
+      env: { attackMs: 5, decayMs: 1395, curve: 'exp' },
     },
   ],
-  normalize: { peak: 0.9 },
+  normalize: { peak: 0.78 },
 };

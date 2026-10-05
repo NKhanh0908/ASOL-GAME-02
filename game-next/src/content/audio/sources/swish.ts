@@ -7,9 +7,9 @@ export const swish: Patch = {
   layers: [
     {
       source: { kind: 'noise', color: 'white' },
-      filter: { kind: 'bandpass', hz: 4000, q: 1.2, sweepToHz: 800 },
+      filter: { kind: 'bandpass', hz: 2800, q: 1, sweepToHz: 600 },
       env: { attackMs: 60, decayMs: 440, curve: 'lin' },
     },
   ],
-  normalize: { peak: 0.5 },
+  normalize: { peak: 0.4 },
 };

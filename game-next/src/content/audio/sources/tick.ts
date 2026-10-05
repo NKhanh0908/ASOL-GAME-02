@@ -1,15 +1,30 @@
 import type { Patch } from '../../../audio-synth/patch.ts';
+import { MUSIC_ROOT_HZ } from '../root.ts';
 
-/** Very light glass tap: a high noise burst, gone almost before it registers. */
+/**
+ * Very light glass tap. This is the most-heard sound in the game — it plays on
+ * every lift, every rotate and every UI press — so it has to stay out of the way.
+ *
+ * It is a pitched ping, not a noise burst. Highpassed white noise reads as a hiss
+ * and is the harshest way to make a tick; two octaves above the music root with a
+ * whisper of FM gives the same "glass" cue while sitting inside the key, so it
+ * blends with the music instead of cutting across it.
+ */
 export const tick: Patch = {
-  durationMs: 120,
+  durationMs: 130,
   seed: 102,
   layers: [
     {
-      source: { kind: 'noise', color: 'white' },
-      filter: { kind: 'highpass', hz: 6000, q: 0.8 },
-      env: { attackMs: 1, decayMs: 59, curve: 'exp' },
+      source: {
+        kind: 'fm',
+        carrierHz: MUSIC_ROOT_HZ * 4,
+        ratio: 2.7,
+        index: 1.2,
+        indexEnv: { attackMs: 0, decayMs: 25, curve: 'exp' },
+      },
+      filter: { kind: 'lowpass', hz: 5200, q: 0.7 },
+      env: { attackMs: 4, decayMs: 95, curve: 'exp' },
     },
   ],
-  normalize: { peak: 0.5 },
+  normalize: { peak: 0.32 },
 };

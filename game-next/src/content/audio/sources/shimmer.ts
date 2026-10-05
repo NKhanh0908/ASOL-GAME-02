@@ -11,19 +11,19 @@ export const shimmer: Patch = {
   seed: 106,
   layers: [
     {
-      source: { kind: 'sine', hz: MUSIC_ROOT_HZ * 8, glideToHz: MUSIC_ROOT_HZ * 8 + 2 },
-      env: { attackMs: 10, decayMs: 880, curve: 'exp' },
+      source: { kind: 'sine', hz: MUSIC_ROOT_HZ * 6, glideToHz: MUSIC_ROOT_HZ * 6 + 2 },
+      env: { attackMs: 25, decayMs: 865, curve: 'exp' },
     },
     {
-      source: { kind: 'sine', hz: MUSIC_ROOT_HZ * 10, glideToHz: MUSIC_ROOT_HZ * 10 - 3 },
-      env: { attackMs: 20, decayMs: 860, curve: 'exp' },
+      source: { kind: 'sine', hz: MUSIC_ROOT_HZ * 8, glideToHz: MUSIC_ROOT_HZ * 8 - 3 },
+      env: { attackMs: 40, decayMs: 850, curve: 'exp' },
       gain: 0.7,
     },
     {
-      source: { kind: 'sine', hz: MUSIC_ROOT_HZ * 12, glideToHz: MUSIC_ROOT_HZ * 12 + 4 },
-      env: { attackMs: 35, decayMs: 840, curve: 'exp' },
+      source: { kind: 'sine', hz: MUSIC_ROOT_HZ * 10, glideToHz: MUSIC_ROOT_HZ * 10 + 4 },
+      env: { attackMs: 60, decayMs: 830, curve: 'exp' },
       gain: 0.5,
     },
   ],
-  normalize: { peak: 0.5 },
+  normalize: { peak: 0.38 },
 };

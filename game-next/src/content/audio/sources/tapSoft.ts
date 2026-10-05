@@ -7,9 +7,9 @@ export const tapSoft: Patch = {
   layers: [
     {
       source: { kind: 'sine', hz: 180 },
-      filter: { kind: 'lowpass', hz: 900, q: 0.7 },
-      env: { attackMs: 3, decayMs: 120, curve: 'exp' },
+      filter: { kind: 'lowpass', hz: 750, q: 0.7 },
+      env: { attackMs: 6, decayMs: 120, curve: 'exp' },
     },
   ],
-  normalize: { peak: 0.6 },
+  normalize: { peak: 0.5 },
 };

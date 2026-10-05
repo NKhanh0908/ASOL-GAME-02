@@ -14,11 +14,11 @@ const voice = (semitones: number, startMs: number, decayMs: number) =>
     source: {
       kind: 'fm' as const,
       carrierHz: STEP(semitones),
-      ratio: 3.5,
-      index: 5,
-      indexEnv: { attackMs: 0, decayMs: 200, curve: 'exp' as const },
+      ratio: 3,
+      index: 2.5,
+      indexEnv: { attackMs: 0, decayMs: 120, curve: 'exp' as const },
     },
-    env: { attackMs: 3, decayMs, curve: 'exp' as const },
+    env: { attackMs: 6, decayMs, curve: 'exp' as const },
   });
 
 export const stingerWin: Patch = {
@@ -30,5 +30,5 @@ export const stingerWin: Patch = {
     voice(7, 360, 2600),
     voice(12, 620, 2900),
   ],
-  normalize: { peak: 0.95 },
+  normalize: { peak: 0.82 },
 };

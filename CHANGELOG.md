@@ -4,6 +4,16 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-05 - Retune the sound effects after the first listening pass (GS stop point 1)
+
+The reviewer found the set harsh overall, wanted the clicks gentler, and wanted the lift and drop sounds clearer.
+
+- `game-next/src/content/audio/sources/tick.ts`: rebuilt. It was a white-noise burst highpassed at 6 kHz, which is a hiss and the harshest way to make a tick, and it carried no pitch. It is now a low-index FM ping two octaves above the music root (ratio 2.7, index 1.2) behind a 5.2 kHz lowpass, with a 4 ms attack and peak 0.32 instead of 0.5. It is the most-heard sound in the game — lift, rotate and every UI press — and being in key it now blends with the music instead of cutting across it.
+- `game-next/src/content/audio/sources/bell.ts`: the snap sound. Ratio 3.5 to 3 and index 6 to 2.5, so the partials sit on the harmonic series and there are far fewer of them — struck crystal rather than clanging metal. Index decay 180 to 110 ms, attack 2 to 5 ms, a new 6.5 kHz lowpass, peak 0.9 to 0.78.
+- Softened across the set: `tapSoft` lowpass 900 to 750 Hz and attack 3 to 6 ms; `thud` attack 2 to 4 ms with its noise layer at gain 0.28 and 320 Hz; `shimmer` partials moved down from 8x/10x/12x to 6x/8x/10x of the root with attacks roughly doubled; `swish` sweep starting at 2.8 kHz instead of 4 kHz. Every peak target came down. `hollow` was already a slow airy swell and is unchanged.
+- Regenerated `docs/testing/audio/` with `npm run audio:author -- --all`.
+- Verification: `npm run typecheck` clean; `npm test` 76 files / 920 tests passing, including the sound brief's length limits with `tick` now at 130 ms against its 150 ms cap; `audio:author` reported no key over its limit. These are principled DSP changes — less high-frequency content, slower attacks, lower modulation index — and the reviewer judges the result by ear, since no agent can hear it.
+
 ### 2026-10-05 - GS Tasks 1-7 complete: synth engine, patches and Audio Lab
 
 Controller wrap-up at reviewer stop point 1. The per-task changes are in the seven entries below; this entry records the gate.

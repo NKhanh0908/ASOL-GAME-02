@@ -6,11 +6,11 @@ Result: all 8 within the limit.
 
 | key | duration | limit | peak | rms | pitch |
 |---|---|---|---|---|---|
-| bell | 1400 ms | 1500 ms | 0.900 | 0.241 | 587.32 Hz |
-| tick | 120 ms | 150 ms | 0.500 | 0.067 | — |
-| tap-soft | 220 ms | 300 ms | 0.600 | 0.124 | 180.00 Hz |
-| thud | 350 ms | 400 ms | 0.800 | 0.169 | 120.00 Hz |
+| bell | 1400 ms | 1500 ms | 0.780 | 0.200 | 587.32 Hz |
+| tick | 130 ms | 150 ms | 0.320 | 0.073 | 1174.64 Hz |
+| tap-soft | 220 ms | 300 ms | 0.500 | 0.105 | 180.00 Hz |
+| thud | 350 ms | 400 ms | 0.680 | 0.145 | 120.00 Hz |
 | hollow | 900 ms | 1000 ms | 0.537 | 0.120 | — |
-| shimmer | 900 ms | 1000 ms | 0.500 | 0.087 | 2349.28 Hz |
-| swish | 520 ms | 600 ms | 0.500 | 0.076 | — |
-| stinger-win | 3600 ms | 5000 ms | 0.950 | 0.177 | 587.32 Hz |
+| shimmer | 900 ms | 1000 ms | 0.380 | 0.070 | 1761.96 Hz |
+| swish | 520 ms | 600 ms | 0.400 | 0.056 | — |
+| stinger-win | 3600 ms | 5000 ms | 0.820 | 0.159 | 587.32 Hz |

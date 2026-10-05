@@ -10,14 +10,14 @@ export const thud: Patch = {
   layers: [
     {
       source: { kind: 'sine', hz: 120, glideToHz: 60 },
-      env: { attackMs: 2, decayMs: 220, curve: 'exp' },
+      env: { attackMs: 4, decayMs: 220, curve: 'exp' },
     },
     {
       source: { kind: 'noise', color: 'white' },
-      filter: { kind: 'lowpass', hz: 400, q: 0.7 },
+      filter: { kind: 'lowpass', hz: 320, q: 0.7 },
       env: { attackMs: 1, decayMs: 90, curve: 'exp' },
-      gain: 0.4,
+      gain: 0.28,
     },
   ],
-  normalize: { peak: 0.8 },
+  normalize: { peak: 0.68 },
 };
