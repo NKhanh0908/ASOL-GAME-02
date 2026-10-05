@@ -4,6 +4,15 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-05 - Audio patch renderer (GS task 3)
+
+- Added `game-next/src/audio-synth/normalize.ts` (`measure`, `applyNormalize`) and `game-next/src/audio-synth/render.ts` (`renderPatch`, `FADE_OUT_MS = 3`). Each layer is built, filtered, shaped by its envelope, scaled by gain and summed at its `startMs`; the mix is then faded out and normalized.
+- An `rms` target applies the exact rms scale and hard-limits each sample to +/-0.99 instead of lowering the scale; a `peak` target scales the loudest sample onto the target.
+- The 3 ms fade runs before normalization, so a peak inside the fade window still hits its target, and the last sample is exactly 0.
+- Each layer draws from its own seeded PRNG stream, so adding a layer leaves earlier layers byte-identical.
+- Added `game-next/tests/audioRender.test.ts`.
+- Verification: `tests/audioRender.test.ts` failed first (cannot resolve `normalize.ts`), then passed (25 tests), including distinguishable-layer summing and gain tests. `npm run typecheck` clean; `npm test` 71 files / 888 tests passed. GitNexus `detect_changes` on the staged set returned 0 changed symbols, risk none (the index covers the main checkout, not this worktree, and the files are new).
+
 ### 2026-10-05 - Audio patch model and validation (GS task 2)
 
 - Added `game-next/src/audio-synth/patch.ts`: the declarative `Patch` / `Layer` / `Source` / `Envelope` / `Filter` types and `validatePatch`, which reports every problem it finds with a path and a message rather than throwing on the first. It also rejects an invalid `sampleRate` and a `glideToHz` above Nyquist.
