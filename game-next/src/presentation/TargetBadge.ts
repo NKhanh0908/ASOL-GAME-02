@@ -197,6 +197,10 @@ export class TargetBadge {
     });
   }
 
+  public getContainer(): Phaser.GameObjects.Container {
+    return this.container;
+  }
+
   public destroy(): void {
     this.container.destroy();
   }

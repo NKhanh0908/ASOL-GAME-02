@@ -4,6 +4,12 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-05 - Choreograph the play scene (F1 task 9)
+
+- Split the board into base, grid and top layers centred on (360, 600), made the four cardinal runes visible above the grid (previously hidden under the board surface), added per-placement target reveal and a gold-frame toggle to `BoardRenderer`, and exposed animatable HUD and target-badge parts.
+- Added `game-next/src/presentation/transitions/playChoreography.ts`: board rise (from the tapped node on the map route), radial grid reveal, staggered runes and targets with a glint sweep, camera breath, tray and HUD entry; next-level stardust implosion and frame flash; leave-to-map/menu collapse. Celestial rings stop under reduced motion.
+- Verification: `tests/boardRendererReveal.test.ts` failed for the missing method, then passed; `tests/boardRendererLayers.test.ts` unchanged and passing; `npm run typecheck` and `npm test` (766 tests) passed; manual dev-server check of all play routes, tap-to-skip and reduced motion.
+
 ### 2026-10-05 - Choreograph constellation map transitions (F1 task 8)
 
 - Kept references to nodes, Bezier lines, sparks and chapter banners in `LevelSelectScene`; implemented map in/out transitions with distance-ordered node stagger radiating from the active/tapped node, header slide, and an expanding ice-ring pulse covering the board bounds when navigating to play.

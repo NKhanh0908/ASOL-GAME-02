@@ -17,6 +17,19 @@ import { parityLayers } from './polygonClip.ts';
 import type { DragInfo, PlayViewSnapshot } from '../application/playController.ts';
 import { ANIM_TOKENS, COLOR_NUMBERS, DEPTH_TOKENS, LAYOUT_TOKENS, PIECE_TOKENS } from './designTokens.ts';
 import { TEXTURE_KEYS } from './TextureFactory.ts';
+import { getMotionScale } from './transitions/motion.ts';
+import type { Poseable } from './transitions/choreography.ts';
+
+export type BoardTransitionParts = {
+  board: Poseable[];
+  runes: Poseable[];
+  rings: Poseable[];
+  tray: Poseable[];
+  trayPieces: Poseable[];
+  pieces: Poseable[];
+  targets: Poseable[];
+  grid: Phaser.GameObjects.RenderTexture | null;
+};
 
 /** Mảnh đã khớp trên bàn (neo hoặc giao điểm lưới), quy về gốc khung chung. */
 type BoardPiece = { piece: Piece; x: number; y: number; turns: number };
@@ -25,7 +38,6 @@ export class BoardRenderer {
   private readonly scene: Phaser.Scene;
   private layout: LayoutMetrics;
   private ringGraphics: Phaser.GameObjects.Graphics;
-  private bgGraphics: Phaser.GameObjects.Graphics;
   private targetGraphics: Phaser.GameObjects.Graphics;
   private piecesGraphics: Phaser.GameObjects.Graphics;
   private parityGraphics: Phaser.GameObjects.Graphics;
@@ -35,6 +47,12 @@ export class BoardRenderer {
   private gridTexture: Phaser.GameObjects.RenderTexture | null = null;
   private boardFrame: Phaser.GameObjects.Image | null = null;
   private boardSurface: Phaser.GameObjects.Image | null = null;
+  private boardBase: Phaser.GameObjects.Container | null = null;
+  private boardTop: Phaser.GameObjects.Container | null = null;
+  private runes: Phaser.GameObjects.Arc[] = [];
+  private targetReveal: readonly number[] | null = null;
+  private lastLevel: Level | null = null;
+  private lastSnapshot: PlayViewSnapshot | null = null;
   private trayWells: Phaser.GameObjects.Image[] = [];
   private trayFrame: Phaser.GameObjects.Image | null = null;
   private readonly trayCount: number;
@@ -50,7 +68,6 @@ export class BoardRenderer {
 
     // Phân lớp depth theo chuẩn DEPTH_TOKENS
     this.ringGraphics = scene.add.graphics().setDepth(DEPTH_TOKENS.celestialRings);
-    this.bgGraphics = scene.add.graphics().setDepth(DEPTH_TOKENS.steleBoard);
     this.targetGraphics = scene.add.graphics().setDepth(DEPTH_TOKENS.targetSilhouette);
     this.piecesGraphics = scene.add.graphics().setDepth(DEPTH_TOKENS.placedPieces);
     // Giao chẵn/lẻ chỉ phủ mảnh đã snap; mảnh đang di chuyển luôn nằm trên.
@@ -68,40 +85,44 @@ export class BoardRenderer {
    */
   public drawStaticBoard(): void {
     const { boardBounds, trayBounds } = this.layout;
+    const cx = boardBounds.x + boardBounds.width / 2;
+    const cy = boardBounds.y + boardBounds.height / 2;
+    const left = -boardBounds.width / 2;
+    const top = -boardBounds.height / 2;
 
-    this.bgGraphics.clear();
-
-    const radius = LAYOUT_TOKENS.board.cornerRadius;
-
-    // 1. Mặt bàn: texture gradient thật. Trước đây chồng hai lớp màu phẳng
-    // nên lộ một vạch cứng ngang giữa bàn.
-    if (!this.boardSurface) {
-      this.boardSurface = this.scene.add
-        .image(boardBounds.x, boardBounds.y, TEXTURE_KEYS.boardSurface)
-        .setOrigin(0, 0)
+    // Bia chia ba lớp quanh tâm (360, 600) để co giãn quanh tâm khi chuyển cảnh:
+    // đế (mặt bàn) < lưới (RenderTexture) < nắp (rune + khung kính).
+    if (!this.boardBase) {
+      this.boardSurface = this.scene.add.image(left, top, TEXTURE_KEYS.boardSurface).setOrigin(0, 0);
+      this.boardBase = this.scene.add
+        .container(cx, cy, [this.boardSurface])
         .setDepth(DEPTH_TOKENS.steleBoard);
     }
 
-    // 2. Khung kính: một texture dùng chung cho bàn và khay, thay cho khối
-    // bevel thủ công dựng bằng arc trước đây.
-    if (!this.boardFrame) {
-      this.boardFrame = this.scene.add
-        .image(boardBounds.x, boardBounds.y, TEXTURE_KEYS.glassFrameBoard)
-        .setOrigin(0, 0)
+    if (!this.gridTexture) {
+      this.gridTexture = GridPainter.paint(this.scene, boardBounds)
+        .setOrigin(0.5, 0.5)
+        .setPosition(cx, cy);
+    }
+
+    if (!this.boardTop) {
+      // 4 rune phương vị theo thứ tự Bắc, Đông, Nam, Tây (thứ tự sáng lên)
+      const inset = 24;
+      this.runes = [
+        [0, top + inset],
+        [-left - inset, 0],
+        [0, -top - inset],
+        [left + inset, 0],
+      ].map(([x, y]) => this.scene.add.circle(x, y, 3, COLOR_NUMBERS.gridModule, 0.45));
+      this.boardFrame = this.scene.add.image(left, top, TEXTURE_KEYS.glassFrameBoard).setOrigin(0, 0);
+      this.boardTop = this.scene.add
+        .container(cx, cy, [...this.runes, this.boardFrame])
         .setDepth(DEPTH_TOKENS.boardGrid + 1);
       this.trayFrame = this.scene.add
         .image(trayBounds.x, trayBounds.y, TEXTURE_KEYS.glassFrameTray)
         .setOrigin(0, 0)
         .setDepth(DEPTH_TOKENS.trayArea);
     }
-
-    // 4. Lưới thước đo năm lớp — GridPainter dựng một lần vào RenderTexture
-    if (!this.gridTexture) {
-      this.gridTexture = GridPainter.paint(this.scene, boardBounds);
-    }
-
-    // 5. Khắc 4 ký tự rune chiêm tinh tại 4 phương vị (0°, 90°, 180°, 270°)
-    this.drawCardinalRunes(boardBounds.x + boardBounds.width / 2, boardBounds.y + boardBounds.height / 2);
 
     // 6. Khay: mỗi mảnh một ô lõm trong suốt. Trước đây là một hộp đen đặc
     // che luôn cả nút Đặt lại phía sau.
@@ -119,39 +140,25 @@ export class BoardRenderer {
     }
   }
 
+  public setFrameGold(on: boolean): void {
+    this.boardFrame?.setTexture(on ? TEXTURE_KEYS.goldFrameBoard : TEXTURE_KEYS.glassFrameBoard);
+  }
+
   /**
    * Chế độ thắng màn: khung bàn đổi sang vàng, khay và các ô chứa ẩn đi để
    * thẻ hoàn thành chiếm chỗ của chúng.
    */
   public setVictoryMode(on: boolean): void {
-    this.boardFrame?.setTexture(on ? TEXTURE_KEYS.goldFrameBoard : TEXTURE_KEYS.glassFrameBoard);
+    this.setFrameGold(on);
     this.trayFrame?.setVisible(!on);
     for (const well of this.trayWells) well.setVisible(!on);
-  }
-
-  /**
-   * Vẽ 4 ký tự phương vị chiêm tinh
-   */
-  private drawCardinalRunes(cx: number, cy: number): void {
-    const { boardBounds } = this.layout;
-    const g = this.bgGraphics;
-    g.fillStyle(COLOR_NUMBERS.gridModule, 0.45);
-
-    // Bắc (0°)
-    g.fillCircle(cx, boardBounds.y + 24, 3);
-    // Nam (180°)
-    g.fillCircle(cx, boardBounds.y + boardBounds.height - 24, 3);
-    // Đông (90°)
-    g.fillCircle(boardBounds.x + boardBounds.width - 24, cy, 3);
-    // Tây (270°)
-    g.fillCircle(boardBounds.x + 24, cy, 3);
   }
 
   /**
    * Cập nhật chuyển động xoay của hai vòng thiên cầu đồng tâm phía sau bia
    */
   public updateCelestialRings(delta: number, isWon: boolean): void {
-    const speedMult = isWon ? 3.0 : 1.0;
+    const speedMult = (isWon ? 3.0 : 1.0) * getMotionScale();
     this.ring1Angle += delta * 0.0003 * speedMult;
     this.ring2Angle -= delta * 0.0002 * speedMult;
 
@@ -191,6 +198,8 @@ export class BoardRenderer {
     piecesState: Record<string, PieceState>,
     delta: number = 16
   ): void {
+    this.lastLevel = level;
+    this.lastSnapshot = snapshot;
     const draggingPieceId = snapshot.dragInfo?.pieceId ?? null;
 
     // Cập nhật vòng quay thiên văn
@@ -256,9 +265,11 @@ export class BoardRenderer {
     if (!snapshot.showTarget) return;
 
     const drag = snapshot.dragInfo;
-    for (const placement of level.targetPlacements ?? []) {
+    (level.targetPlacements ?? []).forEach((placement, index) => {
+      const reveal = this.targetReveal?.[index] ?? 1;
+      if (reveal <= 0) return;
       const piece = level.pieces.find((p) => p.id === placement.pieceId);
-      if (!piece) continue;
+      if (!piece) return;
       // Màn đặt tự do đánh dấu ứng viên bằng giao điểm; màn neo bằng id neo
       const candidateId =
         level.placement === 'free'
@@ -275,11 +286,11 @@ export class BoardRenderer {
         piecePolygonCanvas(piece, placement.x, placement.y, placement.turns, this.layout),
         {
           variant: 'target',
-          alpha: isHovered ? 1 : 0.7,
+          alpha: (isHovered ? 1 : 0.7) * reveal,
           sizePx: pieceRadiusPx(piece.frameSize, this.layout),
         }
       );
-    }
+    });
   }
 
   /**
@@ -401,9 +412,36 @@ export class BoardRenderer {
     );
   }
 
+  /** Hệ số hiện dần của từng bóng mục tiêu (null = hiện đủ); vẽ lại ngay. */
+  public setTargetReveal(values: readonly number[] | null): void {
+    this.targetReveal = values;
+    if (this.lastLevel && this.lastSnapshot) {
+      this.drawTargetSilhouette(this.lastLevel, this.lastSnapshot);
+    }
+  }
+
+  public getTransitionParts(): BoardTransitionParts {
+    const present = <T>(items: Array<T | null | undefined>): T[] =>
+      items.filter((item): item is T => item !== null && item !== undefined);
+    return {
+      board: present<Poseable>([this.boardBase, this.gridTexture, this.boardTop]),
+      runes: [...this.runes],
+      rings: [this.ringGraphics],
+      tray: present<Poseable>([this.trayFrame, ...this.trayWells]),
+      trayPieces: [this.piecesGraphics],
+      pieces: [this.piecesGraphics, this.parityGraphics, this.temporaryGraphics, this.draggingGraphics, this.fxGraphics],
+      targets: [this.targetGraphics],
+      grid: this.gridTexture,
+    };
+  }
+
   public destroy(): void {
     this.ringGraphics.destroy();
-    this.bgGraphics.destroy();
+    this.boardBase?.destroy();
+    this.boardTop?.destroy();
+    this.gridTexture?.destroy();
+    this.trayFrame?.destroy();
+    this.trayWells.forEach((w) => w.destroy());
     this.targetGraphics.destroy();
     this.piecesGraphics.destroy();
     this.parityGraphics.destroy();

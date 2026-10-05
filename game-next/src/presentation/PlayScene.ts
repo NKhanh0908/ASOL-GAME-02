@@ -28,6 +28,7 @@ import { t, getLevelTitle } from './i18n.ts';
 import { director } from './transitions/SceneDirector.ts';
 import type { Choreographed, TransitionContext } from './transitions/SceneDirector.ts';
 import type { TransitionTimeline } from './transitions/TransitionTimeline.ts';
+import { choreographPlayIn, choreographPlayOut, type PlayTransitionView } from './transitions/playChoreography.ts';
 
 export class PlayScene extends Phaser.Scene implements Choreographed {
   readonly directorKey = 'PlayScene' as const;
@@ -230,9 +231,49 @@ export class PlayScene extends Phaser.Scene implements Choreographed {
     director.attach(this);
   }
 
-  playIn(_tl: TransitionTimeline, _ctx: TransitionContext): void {}
+  private transitionView(): PlayTransitionView {
+    const board = this.boardRenderer.getTransitionParts();
+    const hud = this.hud.getTransitionParts();
+    const state = this.controller.getPuzzleState();
+    const pieceCenters = this.level.pieces.flatMap((piece) => {
+      const s = state.pieces[piece.id];
+      if (!s || s.kind !== 'snapped') return [];
+      const anchor = piece.anchors.find((a) => a.id === s.anchorId);
+      return anchor ? [pieceCenterCanvas(piece.frameSize, anchor.x, anchor.y, this.layout)] : [];
+    });
+    return {
+      scene: this,
+      parts: {
+        board: board.board,
+        runes: board.runes,
+        rings: board.rings,
+        tray: board.tray,
+        trayPieces: board.trayPieces,
+        pieces: board.pieces,
+        targets: board.targets,
+        title: hud.title,
+        topButtons: [...hud.topButtons, this.targetBadge.getContainer()],
+        bottomBar: hud.bottomBar,
+        winCard: hud.winCard,
+      },
+      grid: board.grid,
+      boardBounds: this.layout.boardBounds,
+      targetCount: this.level.targetPlacements?.length ?? 0,
+      setTargetReveal: (values) => this.boardRenderer.setTargetReveal(values),
+      setFrameGold: (on) => this.boardRenderer.setFrameGold(on),
+      pieceCenters,
+    };
+  }
 
-  playOut(_tl: TransitionTimeline, _ctx: TransitionContext): void {}
+  playIn(tl: TransitionTimeline, ctx: TransitionContext): void {
+    if (this.loadFailed) return;
+    choreographPlayIn(tl, ctx, this.transitionView());
+  }
+
+  playOut(tl: TransitionTimeline, ctx: TransitionContext): void {
+    if (this.loadFailed) return;
+    choreographPlayOut(tl, ctx, this.transitionView());
+  }
 
   private autosolve(mode: 'win' | 'drag', layout: LayoutMetrics): void {
     const pieces = this.level.pieces;

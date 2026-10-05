@@ -19,6 +19,7 @@ import {
   getSnapHintText,
   getVictoryLabels,
 } from './hudText.ts';
+import type { Poseable } from './transitions/choreography.ts';
 
 export type HudCallbacks = {
   onMenu: () => void;
@@ -34,6 +35,7 @@ export class Hud {
   private callbacks: HudCallbacks;
   private levelId: string;
 
+  private menuButton: Phaser.GameObjects.Container;
   private titleText: Phaser.GameObjects.Text;
   private subtitleText: Phaser.GameObjects.Text;
   private targetButton: Phaser.GameObjects.Container;
@@ -76,14 +78,16 @@ export class Hud {
     const headerTop = this.layout.headerBounds.y;
 
     // 1. Nút Menu tròn 80px (Vùng chạm 96px, Góc trên trái: x=56, y=56)
+    this.menuButton = this.scene.add.container(56, headerTop + 56);
     const menuBtn = this.scene.add
-      .image(56, headerTop + 56, TEXTURE_KEYS.btnCircle80)
+      .image(0, 0, TEXTURE_KEYS.btnCircle80)
       .setSize(96, 96)
       .setInteractive({ useHandCursor: true });
-    const menuIcon = this.scene.add.image(56, headerTop + 56, TEXTURE_KEYS.iconMenuBack).setScale(1.25);
+    const menuIcon = this.scene.add.image(0, 0, TEXTURE_KEYS.iconMenuBack).setScale(1.25);
     menuBtn.on('pointerdown', () => {
       this.animateButtonTap(menuBtn, () => this.callbacks.onMenu());
     });
+    this.menuButton.add([menuBtn, menuIcon]);
 
     // 2. Tiêu đề màn chơi 36px + Dòng phụ Chương 24px (Giữa header: x=360)
     this.titleText = this.scene.add
@@ -417,7 +421,17 @@ export class Hud {
     this.matchBar.setVisible(true);
   }
 
+  public getTransitionParts(): { title: Poseable[]; topButtons: Poseable[]; bottomBar: Poseable[]; winCard: Poseable[] } {
+    return {
+      title: [this.titleText, this.subtitleText],
+      topButtons: [this.menuButton, this.targetButton],
+      bottomBar: [this.resetContainer, this.matchBar, this.rotateContainer],
+      winCard: [this.winContainer],
+    };
+  }
+
   public destroy(): void {
+    this.menuButton.destroy();
     this.matchBar.destroy();
     this.snapHint?.destroy();
     this.titleText.destroy();
