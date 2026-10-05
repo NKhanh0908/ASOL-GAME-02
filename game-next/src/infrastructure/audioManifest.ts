@@ -28,13 +28,23 @@ export type MusicAsset = {
 export const MUSIC_ASSETS: readonly MusicAsset[] = [
   {
     id: 'music-sky',
-    files: ['music-sky.ogg'],
-    source: { title: '', author: '', url: '', license: 'CC0-1.0' },
+    files: ['music-sky.mp3'],
+    source: {
+      title: 'Starlit Night Sky',
+      author: 'Suno AI',
+      url: 'https://suno.com',
+      license: 'CC0-1.0',
+    },
   },
   {
     id: 'music-stele',
-    files: ['music-stele.ogg'],
-    source: { title: '', author: '', url: '', license: 'CC0-1.0' },
+    files: ['music-stele.mp3'],
+    source: {
+      title: 'Starlit Night Sky (Placeholder)',
+      author: 'Suno AI',
+      url: 'https://suno.com',
+      license: 'CC0-1.0',
+    },
   },
 ];
 

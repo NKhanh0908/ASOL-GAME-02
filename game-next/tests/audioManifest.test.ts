@@ -1,13 +1,25 @@
 import { describe, expect, test } from 'vitest';
-import { MUSIC_ASSETS, TRACK_IDS, musicUrls } from '../src/infrastructure/audioManifest.ts';
+import {
+  AUDIO_LICENSES,
+  MUSIC_ASSETS,
+  TRACK_IDS,
+  musicUrls,
+} from '../src/infrastructure/audioManifest.ts';
 import type { TrackId } from '../src/infrastructure/audioManifest.ts';
 
-// The test asserting each source carries an allowed licence, an https URL, a title and an
-// author arrives in Task 9b together with the real tracks; until then the source fields are blank.
 describe('music manifest', () => {
   test('one asset per track id, no extras', () => {
     expect(MUSIC_ASSETS.map((a) => a.id).sort()).toEqual([...TRACK_IDS].sort());
     expect(TRACK_IDS).toHaveLength(2);
+  });
+
+  test('every source is allowed and linked', () => {
+    for (const { id, source } of MUSIC_ASSETS) {
+      expect(AUDIO_LICENSES, id).toContain(source.license);
+      expect(source.url, id).toMatch(/^https:\/\//);
+      expect(source.title.length, id).toBeGreaterThan(0);
+      expect(source.author.length, id).toBeGreaterThan(0);
+    }
   });
 
   test('every listed file is named after its track', () => {
@@ -18,7 +30,8 @@ describe('music manifest', () => {
   });
 
   test('urls are relative to the page', () => {
-    expect(musicUrls('music-sky')[0]).toBe('audio/music-sky.ogg');
+    expect(musicUrls('music-sky')[0]).toBe('audio/music-sky.mp3');
     expect(musicUrls('nope' as TrackId)).toEqual([]);
   });
 });
+

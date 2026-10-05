@@ -4,6 +4,14 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-05 - Integrate Starlit Night Sky music track for menu and map scenes
+
+- Sourced `starlit-night-sky [usesuno.com].mp3` (3m49s duration) and placed it into `game-next/public/audio/music-sky.mp3` and temporary placeholder `music-stele.mp3`.
+- Updated `game-next/src/infrastructure/audioManifest.ts` with metadata for `music-sky` and `music-stele`.
+- Updated `game-next/tests/audioManifest.test.ts` restoring the full source validation check (`every source is allowed and linked`), matching mp3 URLs; 84 test files / 1037 tests pass.
+- Synced audio assets to Capacitor Android project (`game-next/android/app/src/main/assets/public/audio/`).
+- Verification: 84 test files / 1037 tests passed; `npm run typecheck` clean; `npm run build` clean; `npm run android:sync` clean; GitNexus `detect_changes` confirms only `audioManifest.ts` and `audioManifest.test.ts` touched.
+
 ### 2026-10-05 - Add synchronized audio and refine pacing for studio splash screen
 
 - Extended `SplashScene` intro sequence pacing: slowed down the light sweep duration from 800 ms to 1600 ms, increased overall screen presence to ~5.8 s, and added early tap-to-skip support routing to `MenuScene`.
