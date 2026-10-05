@@ -4,6 +4,12 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-05 - Audio patch model and validation (GS task 2)
+
+- Added `game-next/src/audio-synth/patch.ts`: the declarative `Patch` / `Layer` / `Source` / `Envelope` / `Filter` types and `validatePatch`, which reports every problem it finds with a path and a message rather than throwing on the first. It also rejects an invalid `sampleRate` and a `glideToHz` above Nyquist.
+- Added `game-next/tests/audioPatchValidate.test.ts`.
+- Verification: `tests/audioPatchValidate.test.ts` failed first (module absent), then passed (12 tests) covering duration, empty layers, late `startMs`, cutoffs above Nyquist, NaN, normalize bounds, negative envelope times, bad sample rate and glide above Nyquist. See task report for `npm test` and GitNexus `detect_changes` results.
+
 ### 2026-10-05 - Record DSP review and next audio task
 
 - Updated `docs/ai/STATUS.md` and `docs/ai/DOCS-INDEX.md` after independent Task 1 review; patch validation is next.
