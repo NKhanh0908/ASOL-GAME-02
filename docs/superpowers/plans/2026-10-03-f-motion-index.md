@@ -20,10 +20,12 @@ Cả ba spec được NKhanh0908 duyệt ngày 2026-10-03. Mục "Điều chỉn
 | 3 | `2026-10-03-f1-3-dan-dung.md` | F1 7–10 | `feat/motion-f1` | Dàn dựng Menu, Bản đồ, Play; kiểm tra cuối F1 |
 | 4 | `2026-10-03-f2-1-logic.md` | F2 1–4 | `feat/motion-f2` (tách từ `feat/motion-f1`) | Bỏ mask thừa khi kéo, tư thế mảnh, `feedbackEvents`, rung |
 | 5 | `2026-10-03-f2-2-renderer.md` | F2 5–7 | `feat/motion-f2` | Texture mảnh, `PieceView`, `BoardRenderer.tick()` mỗi khung |
-| 6 | `2026-10-03-f2-3-phan-hoi.md` | F2 8–10 | `feat/motion-f2` | `FeedbackDirector`, chuỗi thắng 1800 ms, nối F1; kiểm tra cuối F2 |
+| 6 | `2026-10-03-f2-3-phan-hoi.md` | F2 8–10 | `feat/motion-f2` | `FeedbackDirector`, chuỗi thắng 2800 ms, nối F1; kiểm tra cuối F2 |
 | 7 | `2026-10-03-f3-motion-acceptance.md` | F3 1–9 | `feat/motion-f3` (tách từ `feat/motion-f2`) | Công cụ đo dev, `fixture-rotate`, kịch bản autosolve, hồ sơ nghiệm thu `pending` |
 
 Sau bước 7 và điểm dừng số 5: merge `feat/motion-f3` (chứa cả F1 và F2) vào `main`.
+
+**Trạng thái 2026-10-05:** F1 và F2 đã hoàn tất và qua Điểm dừng 4. Người duyệt chủ đích kéo chuỗi thắng từ 1800 lên 2800 ms. F3 vẫn được duyệt nhưng hoãn để thực thi và nghiệm thu thiết bị sau; có thể tích hợp `feat/motion-f2` trước F3.
 
 ## Ai làm gì
 

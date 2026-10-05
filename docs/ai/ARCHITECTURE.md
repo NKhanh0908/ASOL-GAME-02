@@ -29,7 +29,7 @@ Dependency rule: `domain` ← `application` ← `presentation`; `infrastructure`
 2. `PlayScene.create` builds `PlayController`, `BoardRenderer`, `TargetBadge`, `Hud`, `PauseDialog`.
 3. Pointer down → hit-test via `pieceHitbox` → `beginDrag`. Move → `updateDrag` finds nearest anchor (d² ≤ 36 logic cells, must `fitsBoard`) and previews `evaluate(...)`. Up → `finishDrag`: tray → `return`; snapped → `drop`; else temporary or return.
 4. `applyCommand` re-checks the snap; only `snapped` pieces count. `evaluate` XORs cells; `matchesTarget` → `phase:'won'`.
-5. On win in campaign mode: `progressRepo.complete(id)` (throws if predecessor incomplete); harness never saves. UI: `playCelebration`, `setVictoryMode`, `showWinModal`.
+5. On win in campaign mode: `progressRepo.complete(id)` (throws if predecessor incomplete); harness never saves. In both modes, `feedbackEvents` emits `won` and `FeedbackDirector` runs the skippable 2800 ms victory timeline, then reveals the win card.
 
 ## Level content pipeline
 

@@ -4,6 +4,12 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-05 - Accept F2 motion and defer F3 acceptance tooling
+
+- Recorded Reviewer Stop Point 4 as passed for F1/F2 and documented the intentional 2800 ms victory sequence across the active F2/F3 specifications, motion plan index, architecture map, docs index, and status.
+- Kept F3 approved but deferred for later implementation and Android/device acceptance by the reviewer; `feat/motion-f2` may be integrated independently.
+- Verification: `npm run typecheck`, `npm test`, `npm run content:validate`, `npm run build`, `git diff --check`.
+
 ### 2026-10-05 - Lengthen victory sequence to 2800 ms
 
 - Updated `game-next/src/presentation/designTokens.ts`: lengthened `VICTORY_TOKENS.totalMs` from 1800 ms to 2800 ms. Light wave now spans 400–1200 ms with 120 ms stagger, silhouette trace runs at 900–1500 ms, celestial rings & stardust burst expand at 1300–2400 ms, and the win card slides in gracefully at 2000–2800 ms (giving players ample time to appreciate the solved board and particle effects). Tap-to-skip remains responsive.

@@ -97,7 +97,7 @@ Cách kiểm: **A** là test tự động (vitest). **D** là Claude kiểm trê
 | T2-09 | Xoay bị chặn (`level=fixture-rotate`) | Lắc ngang và nháy viền. Mảnh giữ hướng cũ. Rung cảnh báo | A + D + T |
 | T2-10 | Vùng giao ẩn và hiện lại | Giao 2 lớp mờ dần về màu mặt bia, viền ice chạy dọc mép. Giao 3 lớp hiện lại amber kèm chớp nhỏ. Kết quả cuối khớp luật chẵn/lẻ | A + D + T |
 | T2-11 | Đặt lại | Các mảnh bay về khay so le. Vùng giao mờ đi | D + T |
-| T2-12 | Chuỗi thắng | Đúng thứ tự ở F2 mục 4. Tổng khoảng 1800 ms. ≤ 30 hạt, không hạt nào nhấp nháy loạn | A + D + T |
+| T2-12 | Chuỗi thắng | Đúng thứ tự ở F2 mục 4. Tổng khoảng 2800 ms. ≤ 30 hạt, không hạt nào nhấp nháy loạn | A + D + T |
 | T2-13 | Bỏ qua chuỗi thắng | Chạm giữa chuỗi: khung vàng, thẻ thắng hiện, không còn hạt | A + T |
 | T2-14 | Nhấc mảnh đang tween | Nhấc lại mảnh đang bay về khay: mảnh đi tiếp từ chỗ hiện tại, không nhảy | T |
 | T2-15 | Giảm chuyển động | Đúng F2 mục 5: vị trí tức thời, màu tối đa 150 ms, không hạt hay flash | A + T |

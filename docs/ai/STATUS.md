@@ -1,12 +1,12 @@
-# Status — updated 2026-10-05 by Antigravity
+# Status — updated 2026-10-05 by Codex
 
 Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; keep this file ≤ 60 lines.
 
 ## Now
 
 - Branch: `feat/motion-f2` (branched from `feat/motion-f1`).
-- Product state: F2 Tasks 1–10 completed and verified. Reviewer Stop Point 4 reached (ready for user acceptance on harness).
-- Next step: User manual acceptance on harness (Stop Point 4), then merge/proceed to F3.
+- Product state: F1 and F2 are complete; Reviewer Stop Point 4 passed on 2026-10-05. The victory sequence intentionally lasts 2800 ms.
+- Next step: integrate `feat/motion-f2`. F3 remains approved but is deferred for later implementation and device acceptance by the reviewer.
 
 ## Streams
 
@@ -15,15 +15,15 @@ Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; k
 | Level system A → B → C/D → E | complete; Plan E merged to `main` | `docs/ai/DOCS-INDEX.md` rows A–E |
 | MD mobile display (Tier 0 + Tier 2) | complete; merged to `main` | `docs/superpowers/plans/2026-10-04-mobile-display-quick-wins.md` |
 | BR casual branding, splash & bilingual | complete; merged to `main` | `docs/gdd/assets/` mockups |
-| F motion (F1 → F2 → F3) | F1 & F2 complete (F1 on `feat/motion-f1`, F2 on `feat/motion-f2`), awaiting Reviewer Stop Point 4 | `docs/superpowers/plans/2026-10-03-f-motion-index.md` |
+| F motion (F1 → F2 → F3) | F1 & F2 complete and accepted; F3 approved but deferred | `docs/superpowers/plans/2026-10-03-f-motion-index.md` |
 | C chapter 2 + Hoa Pham | complete; all 16 levels approved and available in campaign order | `docs/superpowers/plans/2026-10-02-c-chapter-2-hoa-pham-levels.md` |
 | G audio (G0 → G1 → G2) | spec approved, plans written, not started | `docs/superpowers/plans/2026-10-03-g-audio-index.md` |
 | BF board-fit-by-cells | complete, merged to `main` with Plan C | `docs/superpowers/plans/2026-10-03-board-fit-by-cells.md` |
 
 ## Open decisions / blockers
 
-- F2: Tasks 1–10 complete. At Reviewer Stop Point 4 for user manual play acceptance on harness.
-- G: plans await review at G stop point 1 (9 spec departures listed in the index). G0 can start now; G1/G2 wait for F2.
+- F3: approved, not started; the reviewer will perform its Android/device checks during later execution.
+- G: plans await review at G stop point 1 (9 spec departures listed in the index). F2 no longer blocks G1/G2.
 
 ## Gotchas learned recently
 
