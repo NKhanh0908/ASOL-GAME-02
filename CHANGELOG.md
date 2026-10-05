@@ -4,6 +4,11 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-05 - WAV encoder for audio review artifacts (GS task 4)
+
+- Added `game-next/src/audio-synth/wav.ts`: `encodeWav` writes 16-bit PCM mono with a correct RIFF header and clamps out-of-range samples; `decodeWavSamples` reads it back so the round trip is testable rather than header-deep.
+- Verification: `tests/wav.test.ts` failed first (cannot resolve `wav.ts`), then passed (4 tests) checking every header field, clamping, a 512-sample sine round trip within 16-bit precision, and the empty buffer. `npm run typecheck` clean; `npm test` 72 files / 892 tests passed. GitNexus `detect_changes` on the staged set.
+
 ### 2026-10-05 - Audio patch renderer (GS task 3)
 
 - Added `game-next/src/audio-synth/normalize.ts` (`measure`, `applyNormalize`) and `game-next/src/audio-synth/render.ts` (`renderPatch`, `FADE_OUT_MS = 3`). Each layer is built, filtered, shaped by its envelope, scaled by gain and summed at its `startMs`; the mix is then faded out and normalized.
