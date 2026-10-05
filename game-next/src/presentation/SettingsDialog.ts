@@ -1,3 +1,4 @@
+import { Capacitor } from '@capacitor/core';
 import Phaser from 'phaser';
 import type { ProgressRepository } from '../application/progressPort.ts';
 import { COLOR_NUMBERS, COLOR_TOKENS, TYPO_TOKENS } from './designTokens.ts';
@@ -104,14 +105,18 @@ export class SettingsDialog {
       }
     );
 
-    // Toggle 3: Rung phản hồi (nếu thiết bị hỗ trợ)
-    const hasVibration = typeof navigator !== 'undefined' && 'vibrate' in navigator;
-    if (hasVibration) {
+    // Toggle 3: Rung phản hồi — Android WebView không đáng tin ở navigator.vibrate,
+    // nên hiện khi chạy native (plugin Haptics) hoặc trình duyệt có vibrate
+    const canVibrate =
+      Capacitor.isNativePlatform() || (typeof navigator !== 'undefined' && 'vibrate' in navigator);
+    if (canVibrate) {
       this.createToggleRow(
         -modalH / 2 + 324,
         t('setting_haptics'),
-        true,
-        (_val) => {}
+        this.progressRepo.read().progress.settings.haptics,
+        (on) => {
+          this.progressRepo.setHaptics(on);
+        }
       );
     }
 

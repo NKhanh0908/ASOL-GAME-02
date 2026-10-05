@@ -10,6 +10,7 @@ export type Progress = {
   settings: {
     showTarget: boolean;
     reducedMotion: boolean;
+    haptics: boolean;
   };
 };
 
@@ -24,5 +25,6 @@ export interface ProgressRepository {
   complete(id: string): LoadResult;
   setShowTarget(show: boolean): LoadResult;
   setReducedMotion(on: boolean): LoadResult;
+  setHaptics(on: boolean): LoadResult;
   reset(): LoadResult;
 }

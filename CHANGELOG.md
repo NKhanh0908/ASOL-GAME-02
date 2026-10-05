@@ -4,6 +4,12 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-05 - Add haptics port, cues, and persistent setting (F2 task 4)
+
+- Added `@capacitor/haptics` 8.0.2 (peer `@capacitor/core >=8.0.0`), a pure `HapticsPort` that swallows driver errors and respects the setting, a Capacitor driver (`capacitorHapticsDriver`), and the event-to-cue table from spec F2 section 3 (`HAPTIC_CUES`, `playCue`).
+- Added `settings.haptics` (default `true`, legacy saves read as `true`) with `setHaptics`; the "Rung phản hồi" toggle in `SettingsDialog` now persists and appears on native platforms or browsers with `navigator.vibrate`.
+- Verification: `tests/haptics.test.ts` and two progress tests failed before the change, then passed; `npm run typecheck` and `npm test` (65 test files, 806 tests) passed; `npm run build` succeeded.
+
 ### 2026-10-05 - Derive feedback events from transitions (F2 task 3)
 
 - Added `game-next/src/presentation/feedback/parityDiff.ts` (stable layer keys, kept/added overlap layers, perimeter segments for edge traces) and `feedbackEvents.ts`, which turns a `Transition` plus the player command into snap, settle, return, rotate, blocked-rotation, overlap-hollow, overlap-revive, reset and won events. The command parameter is needed because a rejected rotation carries no piece id.

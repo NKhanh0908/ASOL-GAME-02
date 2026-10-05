@@ -26,6 +26,7 @@ export function createProgressRepository(
       settings: {
         showTarget: true,
         reducedMotion: false,
+        haptics: true,
       },
     };
   }
@@ -94,11 +95,16 @@ export function createProgressRepository(
           ? parsed.settings.reducedMotion
           : false;
 
+      const haptics =
+        parsed.settings && typeof parsed.settings.haptics === 'boolean'
+          ? parsed.settings.haptics
+          : true;
+
       const progress: Progress = {
         version: 1,
         campaignRevision: revision,
         completed: validCompleted,
-        settings: { showTarget, reducedMotion },
+        settings: { showTarget, reducedMotion, haptics },
       };
 
       memorySnapshot = progress;
@@ -199,6 +205,14 @@ export function createProgressRepository(
       return saveToStorage({
         ...current,
         settings: { ...current.settings, reducedMotion: on },
+      });
+    },
+
+    setHaptics(on: boolean): LoadResult {
+      const current = readFromStorage().progress;
+      return saveToStorage({
+        ...current,
+        settings: { ...current.settings, haptics: on },
       });
     },
 
