@@ -4,6 +4,11 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-05 - Add feedback tokens and piece pose math (F2 task 2)
+
+- Added `FEEDBACK_TOKENS` and `VICTORY_TOKENS` (victory rings shortened to 600 ms so the sequence fits 1800 ms) and `game-next/src/presentation/pieceMotion.ts`: frame-rate-independent exponential smoothing, magnet, velocity tilt, bounce/shake/flash curves and the target pose of a piece for tray, snapped, temporary and dragging states.
+- Verification: `tests/pieceMotion.test.ts` failed for the missing module, then passed; `npm run typecheck` and `npm test` (62 test files, 785 tests) passed.
+
 ### 2026-10-05 - Stop redundant mask evaluation while dragging (F2 task 1)
 
 - `PlayController` now caches the committed mask and updates it only when the puzzle state changes; `getSnapshot()` no longer evaluates the 20,480-cell mask.
