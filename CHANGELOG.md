@@ -4,7 +4,14 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
-### 2026-10-05 - Casual 3D tactile action buttons, moving gameplay galaxy, level start banner, and dialog redesign
+### 2026-10-05 - Design: audio synthesis engine for all sound effects
+
+Brainstormed and specified a replacement for the sample-sourcing half of the G audio stream. All eight sound effects are synthesized from declarative TypeScript patches; the reviewer still sources the two music tracks.
+
+- Added `docs/superpowers/specs/2026-10-05-audio-synth-engine-design.md`: a self-contained engine in `game-next/src/audio-synth/` (five concepts — source, envelope, filter, layer, normalize), deterministic seeded rendering, code-based loudness normalization, a `synthSfxDriver` that implements G1 Task 8's existing `SfxDriver` interface verbatim, a dev-only Audio Lab at `audiolab.html` that ships zero bytes to production, an `audio:author` script writing WAV and SVG review artifacts to `docs/testing/audio/`, and a README that travels with the folder for reuse in later projects.
+- Updated `docs/ai/DOCS-INDEX.md`: new row GS; row G notes that its sourcing half is superseded while its music side stands.
+- Effect on the existing chain: G0 and G1 Tasks 4-5 are deleted, Task 3 shrinks to the music assets, Tasks 8-9 swap the driver and drop the preload, and G2 is untouched. `ffmpeg-static` is no longer needed, so the dependency count is unchanged. Index departures 1, 2 and 4 are void.
+- Verification: spec self-review ran and fixed two internal contradictions (`webaudio.ts` overlapping `synthSfxDriver.ts`, and a report field describing pitch estimation that the design removes). No code changed. Committed from a separate worktree on `feat/audio-synth` so that in-flight F2 work on `feat/motion-f1` was untouched. GitNexus `detect_changes` reports docs-only changes and no affected symbols.
 
 Mobile visual polish based on device screenshots (`docs/screenshots/mobile/m1/`):
 

@@ -26,7 +26,8 @@ Paths below are relative to `docs/superpowers/`.
 | F3 | Motion acceptance tools | specs/2026-10-03-f3-motion-acceptance-design.md | plans/2026-10-03-f3-motion-acceptance.md | approved | Not started |
 | BR | Branding, splash and bilingual i18n | — (no spec; reviewer-authored) | — (no plan) | done | Merged to `main`. Dual jewels icon, Gương Đôi logo, Baloo 2 typography, studio splash, bilingual i18n, and 3D tactile UI polish |
 | MD | Mobile display: Tier 0 quick wins + Tier 2 elastic layout | — (scope agreed in chat; too small for a spec) | plans/2026-10-04-mobile-display-quick-wins.md | done | Merged to `main`. Tier 0 and Tier 2 elastic vertical layout, safe-area insets, moving star galaxy, level start banner, and dialog redesign |
-| G | Audio: scene music + pitched SFX | specs/2026-10-03-g-audio-design.md | plans/2026-10-03-g-audio-index.md (read first), g0-audio-assets, g1-audio-foundation, g2-audio-cues | approved | Plans await review (G stop point 1, 9 spec departures in the index); G0 can start on `docs/audio-g0`; G1/G2 on `feat/audio` after F2 |
+| G | Audio: scene music + pitched SFX | specs/2026-10-03-g-audio-design.md | plans/2026-10-03-g-audio-index.md (read first), g0-audio-assets, g1-audio-foundation, g2-audio-cues | approved | Sourcing half superseded by GS — read that row first; the music side is still current. Plans await review (G stop point 1); G1/G2 on `feat/audio` after F2 |
+| GS | Audio synthesis engine: SFX generated in TypeScript, no sample files | specs/2026-10-05-audio-synth-engine-design.md | — (plan next) | draft | Replaces G0 and G1 Tasks 3-5, adjusts Tasks 8-9, leaves G2 untouched. Music stays reviewer-sourced. Needs neither F1 nor F2, so it runs in parallel on `feat/audio-synth` |
 | AI | AI onboarding context | specs/2026-10-03-ai-onboarding-context-design.md | plans/2026-10-03-ai-onboarding-context.md | done | Cold-start test passed 2026-10-03 |
 
 ## History (do not build on these)
