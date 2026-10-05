@@ -1,4 +1,4 @@
-# Status — updated 2026-10-06 by Claude Code (VR1 and VR2 visual refactor specs drafted)
+# Status — updated 2026-10-06 by Claude Code (VR1 plan ready to execute)
 
 Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; keep this file ≤ 60 lines.
 
@@ -8,7 +8,7 @@ Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; k
 - Audio Streams G and GS: officially APPROVED and COMPLETED. Dual-channel streaming music (`music-sky.mp3` & `music-stele.mp3`), procedural WebAudio synth effects, interactive pentatonic snap chimes, UI cues, and studio splash sound intro.
 - Acceptance passed in `docs/testing/audio/g-acceptance.md`.
 - Android & Web assets synced via Capacitor.
-- Next step: reviewer reviews the VR1 and VR2 specs, then their implementation plans are written. VR3 (Gameplay) waits on the reviewer's third assessment.
+- Next step: execute the VR1 plan (`plans/2026-10-06-vr1-foundation-menu.md`, 8 tasks). VR2 plan is written after the Gameplay assessment arrives, so VR3 does not force rework of the victory card. VR3 waits on that assessment.
 - Verified: typecheck clean, 84 files / 1037 tests pass, `npm run build` clean, `npm run android:sync` clean.
 
 ## Streams
@@ -23,7 +23,7 @@ Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; k
 | GS audio synthesis (Tasks 1–12) | complete; approved by reviewer; acceptance passed | `docs/superpowers/plans/2026-10-05-gs-audio-synth-index.md` |
 | G audio (music, cues) | complete; dual-channel music & SFX approved | `docs/superpowers/plans/2026-10-03-g-audio-index.md` |
 | BF board-fit-by-cells | complete, merged to `main` with Plan C | `docs/superpowers/plans/2026-10-03-board-fit-by-cells.md` |
-| VR visual refactor (VR1 → VR2 → VR3) | VR1 and VR2 specs drafted, awaiting reviewer; VR3 waits on its assessment | `docs/ai/DOCS-INDEX.md` rows VR1–VR2 |
+| VR visual refactor (VR1 → VR2 → VR3) | VR1 spec + plan approved, ready to execute; VR2 spec approved, plan deferred; VR3 waits on its assessment | `docs/ai/DOCS-INDEX.md` rows VR1–VR2 |
 
 ## Open decisions / blockers
 

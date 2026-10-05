@@ -120,7 +120,7 @@ route it through one shared draw function.
 | Level node | exists (diamond) |
 | Progress counter `◇ ◇ ◇ ◇` | exists (Gameplay) |
 | Fact caption label | new — ◆ prefix |
-| Snap feedback | new — ◆ pulses at the snap point |
+| Snap feedback | new — ◆ pulses at the snap point. **Lands in VR3**, since it is drawn by the gameplay `FeedbackDirector`; VR1 only provides the shared `strokeDiamond` helper it will call |
 | Tap ripple | changed — diamond instead of circle (§4.5) |
 
 ## 4. Main Menu

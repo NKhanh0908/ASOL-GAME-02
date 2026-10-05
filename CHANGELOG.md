@@ -4,6 +4,14 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-06 - VR1 implementation plan
+
+- Added `docs/superpowers/plans/2026-10-06-vr1-foundation-menu.md`, eight TDD tasks implementing the VR1 spec: palette truth and a repo-wide banned-colour guard, the `GLOW_TIERS` token table, pure XOR overlap geometry, the extracted `DualJewelEmblem` renderer, layout C, the logo recolour, the settings gear and diamond ripple, and the GDD palette reconciliation.
+- Plan self-review found and fixed three gaps: spec §3.4's shared ◆ draw function had no task (now Task 7 Step 0, exporting `strokeDiamond` for VR3 to reuse); spec §6's Reduced Motion requirement was only checked by eye (the advance-or-freeze decision is now the pure `nextElapsed`, covered by tests); and the ◆ snap pulse was assigned to VR1 although it is drawn by the gameplay `FeedbackDirector`, so the spec now assigns it to VR3.
+- Recorded in the plan that `tests/designTokens.test.ts` asserts the old purple gradient verbatim and will fail until Task 1 updates it, so an executor does not "fix" it by reverting the token.
+- Marked VR1 `approved` in `docs/ai/DOCS-INDEX.md`.
+- Verification: planning only, no code touched; plan self-reviewed for spec coverage, placeholders and type consistency against the real exports of `polygonClip.ts`, `jewelGeometry.ts`, `transitions/motion.ts` and `designTokens.ts`.
+
 ### 2026-10-06 - Visual refactor VR2 spec: Level Select
 
 - Added `docs/superpowers/specs/2026-10-06-visual-refactor-level-select-design.md`, the second of three visual refactor specs. Covers the constellation strip in the victory card, completed nodes carrying their own target silhouette, the content-frontier node, and the VR1 glow ladder applied to the map.
