@@ -10,6 +10,10 @@ import { MUSIC_ROOT_HZ } from '../root.ts';
  * means few sidebands to begin with. The index collapses within 110 ms, so
  * there is just enough edge to hear the strike before the tail goes pure.
  * The lowpass trims the very top, where the harshness lives.
+ *
+ * Values below are the reviewer's, set by ear in the Audio Lab. carrierHz is
+ * written as a multiple of MUSIC_ROOT_HZ rather than the literal 587.32 the
+ * Lab emits, so the bell follows the music if its key ever changes.
  */
 export const bell: Patch = {
   durationMs: 1400,
@@ -27,5 +31,5 @@ export const bell: Patch = {
       env: { attackMs: 5, decayMs: 1395, curve: 'exp' },
     },
   ],
-  normalize: { peak: 0.78 },
+  normalize: { peak: 0.32 },
 };

@@ -4,6 +4,16 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-05 - Reviewer's tuning of bell and tick (GS stop point 1 passed)
+
+The reviewer tuned the two sounds they had asked for in the Audio Lab and pasted the results back. Stop point 1 is cleared; Task 8 may proceed.
+
+- `game-next/src/content/audio/sources/bell.ts`: FM ratio 3, index 2.5, index decay 110 ms, 6.5 kHz lowpass, 5 ms attack, peak 0.32 (down from 0.78).
+- `game-next/src/content/audio/sources/tick.ts`: FM ratio 1.3, index 2.1, index decay 7 ms, 4897.5 Hz lowpass, 0 ms attack, peak 0.35.
+- Both files keep `carrierHz` as `MUSIC_ROOT_HZ * 2` and `* 4` instead of the literal 587.32 and 1174.64 that the Lab's Copy as TypeScript emits. The numbers are identical, but the expression preserves spec section 9's invariant: the pitched effects follow the music's key by construction, so changing `MUSIC_ROOT_HZ` later retunes them instead of leaving them behind in D. The Lab's serializer inlines the value because it stringifies the evaluated patch; that is noted as a known gap rather than fixed, since a human re-links it in seconds.
+- Regenerated `docs/testing/audio/` with `npm run audio:author -- --all`.
+- Verification: `npm run typecheck` clean; `npm test` 76 files / 920 tests passing; `audio:author` reports all 8 within their length limits. Sound quality is the reviewer's judgement, confirmed by ear in the Audio Lab.
+
 ### 2026-10-05 - Retune the sound effects after the first listening pass (GS stop point 1)
 
 The reviewer found the set harsh overall, wanted the clicks gentler, and wanted the lift and drop sounds clearer.

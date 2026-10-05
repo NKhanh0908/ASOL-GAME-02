@@ -6,8 +6,8 @@ Result: all 8 within the limit.
 
 | key | duration | limit | peak | rms | pitch |
 |---|---|---|---|---|---|
-| bell | 1400 ms | 1500 ms | 0.780 | 0.200 | 587.32 Hz |
-| tick | 130 ms | 150 ms | 0.320 | 0.073 | 1174.64 Hz |
+| bell | 1400 ms | 1500 ms | 0.320 | 0.082 | 587.32 Hz |
+| tick | 130 ms | 150 ms | 0.350 | 0.082 | 1174.64 Hz |
 | tap-soft | 220 ms | 300 ms | 0.500 | 0.105 | 180.00 Hz |
 | thud | 350 ms | 400 ms | 0.680 | 0.145 | 120.00 Hz |
 | hollow | 900 ms | 1000 ms | 0.537 | 0.120 | — |
