@@ -4,6 +4,13 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-05 - Audio engine README and presets (GS task 8)
+
+- Added `game-next/src/audio-synth/README.md`, the onboarding document that travels with the folder: a runnable "hello bell", the five concepts with the reasoning behind each, the real render order (fade-out before normalize, final sample exactly zero), the rms hard-limit caveat (per-sample clamp to 0.99, so spiky material delivers less rms than requested), the Audio Lab "Copy as TypeScript" gotcha (re-link `MUSIC_ROOT_HZ` expressions after pasting), a per-family tuning table, a porting guide, and what the engine does not do.
+- Added `game-next/src/audio-synth/presets.ts` with `clickPreset`, `bellPreset` and `whooshPreset`. The bell uses the approved crystal shape (ratio 3, index 2.5, 110 ms index decay), not the harsher ratio 3.5 / index 6 starting point.
+- Added `game-next/tests/audioSynthPortable.test.ts`.
+- Verification: `tests/audioSynthPortable.test.ts` failed first (cannot resolve `presets.ts`), then passed (3 tests); it fails if any file in `src/audio-synth/` imports from outside the folder. `npm run typecheck` clean, `npm test` 77 files / 923 tests passed (baseline 76 / 920), `npm run build` and `npm run content:validate` (22 levels) passed. GitNexus `detect_changes` on the staged set (index stale, reports 0 symbols).
+
 ### 2026-10-05 - Reviewer's tuning of bell and tick (GS stop point 1 passed)
 
 The reviewer tuned the two sounds they had asked for in the Audio Lab and pasted the results back. Stop point 1 is cleared; Task 8 may proceed.
