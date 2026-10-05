@@ -4,11 +4,11 @@ Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; k
 
 ## Now
 
-- Branch: `feat/audio-synth` (all audio tasks complete, ready to merge into `main`). Working directory D:\Working\ASOL\ASOL-GAME-02.
+- Branch: `main` (merged `feat/audio-synth`). Working directory D:\Working\ASOL\ASOL-GAME-02.
 - Audio Streams G and GS: officially APPROVED and COMPLETED. Dual-channel streaming music (`music-sky.mp3` & `music-stele.mp3`), procedural WebAudio synth effects, interactive pentatonic snap chimes, UI cues, and studio splash sound intro.
 - Acceptance passed in `docs/testing/audio/g-acceptance.md`.
 - Android & Web assets synced via Capacitor.
-- Next step: merge `feat/audio-synth` into `main`, or proceed to next feature stream.
+- Next step: next feature stream or release preparation.
 - Verified: typecheck clean, 84 files / 1037 tests pass, `npm run build` clean, `npm run android:sync` clean.
 
 ## Streams
