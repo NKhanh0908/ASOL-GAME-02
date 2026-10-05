@@ -231,11 +231,14 @@ body {
 #game {
   width: 100vw;
   height: 100vh;
+  max-width: calc(100vh * 720 / 1280);
   position: fixed;
   top: 0;
-  left: 0;
+  left: 50%;
+  transform: translateX(-50%);
   background-color: #080e24;
   overflow: hidden;
+  box-shadow: 0 0 50px rgba(0, 0, 0, 0.7);
 }
 
 /*

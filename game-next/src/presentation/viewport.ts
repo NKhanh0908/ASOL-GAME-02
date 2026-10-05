@@ -45,8 +45,13 @@ export type Viewport = {
  * Tách khỏi `readViewport` để test được mà không cần `window`.
  */
 export function computeViewport(cssWidth: number, cssHeight: number, rawDpr: number): Viewport {
-  const safeCssWidth = cssWidth > 0 ? cssWidth : DESIGN_WIDTH;
   const safeCssHeight = cssHeight > 0 ? cssHeight : DESIGN_HEIGHT;
+  // Giới hạn bề ngang tối đa theo tỉ lệ thiết kế 720:1280 (9:16).
+  // Trên màn ngang (desktop/web), game giữ tỉ lệ chân dung chuẩn, nằm giữa màn hình
+  // thay vì bị bè ngang và ép chiều cao thiết kế xuống thấp làm UI bị phóng đại quá mức.
+  const maxPortraitWidth = safeCssHeight * (DESIGN_WIDTH / DESIGN_HEIGHT);
+  const rawCssWidth = cssWidth > 0 ? cssWidth : DESIGN_WIDTH;
+  const safeCssWidth = Math.min(rawCssWidth, maxPortraitWidth);
   const dpr = clamp(Number.isFinite(rawDpr) && rawDpr > 0 ? rawDpr : 1, 1, MAX_DPR);
 
   // Làm tròn: bộ đệm lẻ nửa pixel khiến canvas bị nội suy lại đúng thứ ta đang tránh.

@@ -4,6 +4,13 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-05 - Constrain desktop web viewport to portrait aspect ratio
+
+- Updated `game-next/src/presentation/viewport.ts`: `computeViewport` caps `safeCssWidth` at `safeCssHeight * (DESIGN_WIDTH / DESIGN_HEIGHT)` (9:16) on screens wider than portrait. This avoids massive scaling and squashed vertical coordinates on desktop/web while preserving mobile phones in portrait identically.
+- Updated `game-next/src/style.css`: added `max-width: calc(100vh * 720 / 1280)` and centered `#game` with `left: 50%; transform: translateX(-50%)`, adding a soft box-shadow against the cosmic background. Mobile portrait devices (where width <= max-width) remain 100vw x 100vh full-screen.
+- Added tests in `game-next/tests/viewport.test.ts` verifying desktop 1920x1080 bounds clamping to 9:16 portrait (~1280 design height) and mobile 390x844 preservation.
+- Verification: `npm run typecheck`, `npm test` (68 test files, 829 tests), `npm run content:validate`, `npm run build` all passed.
+
 ### 2026-10-05 - Complete F2 in-level game feel (F2 task 10)
 
 - Pieces now drop into the tray individually during the F1 play-in (950-1350 ms, scale 0.6 → 1, ease backOut, span 180 ms) in `game-next/src/presentation/transitions/routes.ts`.

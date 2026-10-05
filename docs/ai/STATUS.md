@@ -32,3 +32,4 @@ Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; k
 - `BoardRenderer` stele is divided into base, grid, and top centered at `(360, 600)` with cardinal runes drawn on top of the grid and beneath the glass frame so they remain visible.
 - Camera zoom makes `pointer.x/y` diverge from design coordinates. Anything hit-testing against layout must read `pointer.worldX/worldY`.
 - `build:release` fails by design until all 28 levels are approved (currently 22; Chapter 4 has six planned levels).
+- Desktop web viewport is constrained to 9:16 portrait aspect ratio (max-width = 100vh * 720 / 1280) so design height remains ~1280 instead of squashing to 405 on wide screens.

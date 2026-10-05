@@ -45,6 +45,26 @@ describe('computeViewport', () => {
     expect(vp.cssWidth).toBe(DESIGN_WIDTH);
     expect(vp.cssHeight).toBe(DESIGN_HEIGHT);
   });
+
+  it('giới hạn bề ngang theo tỉ lệ 9:16 trên màn ngang desktop', () => {
+    // Màn desktop 1920x1080, dpr 1: bề ngang bị kẹp về 1080 * (720/1280) = 607.5.
+    const vp = computeViewport(1920, 1080, 1);
+    expect(vp.cssWidth).toBeCloseTo(607.5);
+    expect(vp.cssHeight).toBe(1080);
+    expect(vp.bufferWidth).toBe(608);
+    expect(vp.bufferHeight).toBe(1080);
+    // Chiều cao thiết kế được giữ vững quanh chuẩn 1280 (1279 do làm tròn pixel bộ đệm) thay vì tụt xuống 405.
+    expect(Math.abs(computeDesignHeight(vp.bufferWidth, vp.bufferHeight) - DESIGN_HEIGHT)).toBeLessThan(2);
+  });
+
+  it('không làm ảnh hưởng màn dọc điện thoại có tỉ lệ hẹp hơn hoặc bằng 9:16', () => {
+    // Màn thoại iPhone/Android 390x844 (9:19.5): bề ngang 390 < 844 * (720/1280) = 474.75, giữ nguyên 390.
+    const vp = computeViewport(390, 844, 3);
+    expect(vp.cssWidth).toBe(390);
+    expect(vp.cssHeight).toBe(844);
+    expect(vp.bufferWidth).toBe(1170);
+    expect(vp.bufferHeight).toBe(2532);
+  });
 });
 
 describe('computeDesignHeight', () => {
