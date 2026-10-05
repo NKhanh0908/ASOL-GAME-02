@@ -3,6 +3,8 @@ import { TYPO_TOKENS } from './designTokens.ts';
 import { applyDesignViewport, designViewBounds } from './designViewport.ts';
 import { TextureFactory } from './TextureFactory.ts';
 import { director } from './transitions/SceneDirector.ts';
+import { audioServices } from './audio/audioServices.ts';
+import type { AudioCue } from '../infrastructure/sfx.ts';
 
 /**
  * Dữ liệu đỉnh đa giác từ studio.svg (Origami Alpaca Solutions)
@@ -266,67 +268,116 @@ export class SplashScene extends Phaser.Scene {
   }
 
   /**
+   * Phát âm thanh SFX qua hệ thống synth của game
+   */
+  private playSfx(cue: AudioCue): void {
+    const services = audioServices(this);
+    services.sfx.play([cue]);
+  }
+
+  /**
    * Chuỗi hiệu ứng điện ảnh chuyển động sang trọng kéo dài
    */
   private playCinematicIntroSequence(view: { width: number; height: number }): void {
-    // 1. Hào quang nở rộng dịu dàng (0.0s -> 1.2s)
+    let transitioning = false;
+
+    const proceedToMenu = () => {
+      if (transitioning) return;
+      transitioning = true;
+      this.playCinematicTransitionToMenu(view);
+    };
+
+    // Chạm để vào thẳng Menu nếu người chơi muốn lướt qua sớm
+    this.input.once('pointerdown', () => {
+      proceedToMenu();
+    });
+
+    // 1. Hào quang nở rộng dịu dàng (0.0s -> 1.4s)
     this.tweens.add({
       targets: this.auraGraphics,
       scaleX: 1.0,
       scaleY: 1.0,
       alpha: 1.0,
-      duration: 1200,
+      duration: 1400,
       ease: 'Cubic.easeOut',
     });
 
-    // 2. Từng mảnh origami nở ra tuần tự nhịp nhàng (0.1s -> 1.4s)
+    // 2. Từng mảnh origami nở ra tuần tự nhịp nhàng (0.15s -> 1.5s)
+    // Kèm âm thanh nếp gấp origami tinh tế với cao độ tăng dần
     this.polygonGraphicsList.forEach((g, idx) => {
+      const delay = 150 + idx * 125;
       this.tweens.add({
         targets: g,
         scaleX: 1.0,
         scaleY: 1.0,
         alpha: 1.0,
-        duration: 750,
-        delay: idx * 110,
+        duration: 800,
+        delay,
         ease: 'Back.easeOut',
+      });
+
+      this.time.delayedCall(delay, () => {
+        if (transitioning) return;
+        // Bỏ qua bóng đổ (idx === 0)
+        if (idx > 0) {
+          const step = idx - 1;
+          const rate = 1.0 + step * 0.08;
+          this.playSfx({ key: 'tick', rate, volume: 0.18, delayMs: 0 });
+        }
       });
     });
 
-    // 3. Chữ "Alpaca Solutions", thanh gương và bóng phản chiếu bung mở (1.1s -> 1.9s)
-    this.time.delayedCall(1100, () => {
+    // 3. Chữ "Alpaca Solutions", thanh gương và bóng phản chiếu bung mở (1.4s -> 2.2s)
+    this.time.delayedCall(1400, () => {
+      if (transitioning) return;
+
+      // Tiếng vút nhẹ thanh lịch khi thanh gương trượt mở
+      this.playSfx({ key: 'swish', rate: 1.1, volume: 0.28, delayMs: 0 });
+
       this.primaryText.setY(18);
       this.tweens.add({
         targets: this.primaryText,
         y: 0,
         alpha: 1.0,
-        duration: 650,
+        duration: 750,
         ease: 'Cubic.easeOut',
       });
 
       this.tweens.add({
         targets: this.mirrorBar,
         scaleX: 1.0,
-        duration: 600,
+        duration: 700,
         ease: 'Cubic.easeOut',
       });
 
       this.tweens.add({
         targets: this.reflectionText,
         alpha: 0.38,
-        duration: 700,
+        duration: 800,
         ease: 'Cubic.easeOut',
       });
     });
 
-    // 4. Vệt sáng óng ánh quét qua & các ngôi sao lóe sáng (1.9s -> 2.7s)
-    this.time.delayedCall(1900, () => {
+    // 4. Vệt sáng óng ánh quét chậm qua & các ngôi sao lóe sáng (2.3s -> 4.2s)
+    this.time.delayedCall(2300, () => {
+      if (transitioning) return;
+
+      // Âm thanh shimmer lấp lánh khi dải sáng bắt đầu lướt qua
+      this.playSfx({ key: 'shimmer', rate: 1.0, volume: 0.42, delayMs: 0 });
+
+      // Tiếng chuông ngọc ngân vang khi vệt sáng chạm vào tâm thanh gương (~2.9s)
+      this.time.delayedCall(650, () => {
+        if (transitioning) return;
+        this.playSfx({ key: 'bell', rate: 2.0, volume: 0.38, delayMs: 0 });
+      });
+
       this.sparkleGroup.forEach((sp, idx) => {
         this.tweens.add({
           targets: sp,
           scaleX: 1.0,
           scaleY: 1.0,
-          duration: 400,
-          delay: idx * 120,
+          duration: 500,
+          delay: idx * 180,
           yoyo: true,
           repeat: 1,
           ease: 'Sine.easeInOut',
@@ -337,7 +388,7 @@ export class SplashScene extends Phaser.Scene {
     });
 
     // 5. Hiệu ứng bồng bềnh nhẹ nhàng
-    this.time.delayedCall(1600, () => {
+    this.time.delayedCall(2000, () => {
       this.tweens.add({
         targets: this.logoContainer,
         y: this.logoContainer.y - 7,
@@ -348,10 +399,9 @@ export class SplashScene extends Phaser.Scene {
       });
     });
 
-    // 6. Chiêm ngưỡng 1.5 giây sau khi toàn bộ xuất hiện xong (2.7s + 1.5s = 4.2s),
-    // sau đó chuyển cảnh điện ảnh sang MenuScene mượt mà
-    this.time.delayedCall(4200, () => {
-      this.playCinematicTransitionToMenu(view);
+    // 6. Chiêm ngưỡng trọn vẹn vẻ đẹp logo Studio trước khi chuyển cảnh sang MenuScene (~5.8s)
+    this.time.delayedCall(5800, () => {
+      proceedToMenu();
     });
   }
 
@@ -365,7 +415,7 @@ export class SplashScene extends Phaser.Scene {
     this.tweens.add({
       targets: sweep,
       progress: 1.3,
-      duration: 800,
+      duration: 1600, // Chậm lại gấp đôi theo yêu cầu (từ 800ms -> 1600ms)
       ease: 'Quad.easeInOut',
       onUpdate: () => {
         this.lightSweepGraphics.clear();

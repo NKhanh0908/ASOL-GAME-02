@@ -4,6 +4,16 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-05 - Add synchronized audio and refine pacing for studio splash screen
+
+- Extended `SplashScene` intro sequence pacing: slowed down the light sweep duration from 800 ms to 1600 ms, increased overall screen presence to ~5.8 s, and added early tap-to-skip support routing to `MenuScene`.
+- Added synchronized procedural WebAudio sound cues across the splash sequence:
+  - Rising delicate `tick` cues (`rate` 1.0..1.56) corresponding to each origami facet blossoming into place.
+  - Soft `swish` cue on mirror bar slide expansion.
+  - Celestial `shimmer` cue when the light sweep starts, followed by a resonant crystalline `bell` chime (`rate` 2.0) when light hits the mirror bar's center gem.
+- Synced build assets to Capacitor Android project.
+- Verification: 84 test files / 1036 tests passed; `npm run typecheck` clean; `npm run build` clean; `npm run android:sync` clean; GitNexus `detect_changes` confirms only `SplashScene.ts` touched.
+
 ### 2026-10-05 - Repository cleanup: merged branches, stale worktree, build leftovers
 
 - Deleted 21 merged remote branches from `origin` (all verified merged into `origin/main`): `docs/level-system-specs`, `feat/campaign-task-1..5`, `feat/chapter-1-levels`, `feat/chapter-2-hoa-pham`, `feat/gui-improve-v1`, `feat/level-kit-chapters`, `feat/mirror-prototype`, `feat/rebuild-m0` + its 5 task branches, `feat/rebuild-m1`, `feat/shapes-v2`, `feat/ui-redesign-divination-disc`, `fix/board-fit-by-cells`. Kept `origin/main` and `origin/feat/audio-synth` (still needed for GS Task 9b).

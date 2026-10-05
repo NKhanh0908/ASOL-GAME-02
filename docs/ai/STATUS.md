@@ -1,15 +1,14 @@
-# Status — updated 2026-10-05 by Claude Code (haptics wiring committed, repo cleaned, main pushed)
+# Status — updated 2026-10-05 by Antigravity (studio splash sound and pacing added, synced)
 
 Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; keep this file ≤ 60 lines.
 
 ## Now
 
-- Branch: `main` (merged `feat/audio-synth` @ `7c28b64`; feature branch kept for Task 9b). Main checkout D:\Working\ASOL\ASOL-GAME-02.
-- Carried on `main`: `feat/audio-synth`, app renamed to "Mirror", bilingual EN localization for level titles, chapter labels & HUD controls, and the Capacitor `@capacitor/haptics` Android gradle wiring.
-- Working tree clean; `main` pushed to `origin/main` @ `fb21c7e`. Only `main` and `feat/audio-synth` remain, both locally and on the remote; the `ASOL-GAME-02-boardfit` worktree is gone (single checkout again).
-- Product state: GS & G2 audio integrated; HUD, LevelSelect, and Menu fully localized in Vietnamese and English.
+- Branch: `feat/audio-synth` (fast-forwarded with `main` @ `6f48e79`). Working directory D:\Working\ASOL\ASOL-GAME-02.
+- Studio splash intro: enhanced with synchronized WebAudio synth cues (folding ticks, mirror bar swish, sweep shimmer & center gem chime), sweep slowed to 1600ms, presence ~5.8s, tap-to-skip added.
+- Android & Web assets synced via Capacitor.
 - Next step: GS Task 9b (music asset sourcing & metadata) awaiting reviewer tracks, then final audio acceptance checks.
-- Verified: typecheck clean, 84 files / 1036 tests pass, `npm run build` clean, Android debug APK assembleDebug built cleanly (`app-debug.apk`).
+- Verified: typecheck clean, 84 files / 1036 tests pass, `npm run build` clean, `npm run android:sync` clean.
 
 ## Streams
 
@@ -20,8 +19,8 @@ Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; k
 | BR casual branding, splash & bilingual | complete; merged to `main` | `docs/gdd/assets/` mockups |
 | F motion (F1 → F2 → F3) | F1 & F2 complete, accepted and on `main`; F3 approved but deferred | `docs/superpowers/plans/2026-10-03-f-motion-index.md` |
 | C chapter 2 + Hoa Pham | complete; all 16 levels approved and available in campaign order | `docs/superpowers/plans/2026-10-02-c-chapter-2-hoa-pham-levels.md` |
-| GS audio synthesis (Tasks 1–12) | GS1 & GS2 (Tasks 9a, 10, 11, 12) complete, merged to `main`; Task 9b waits on music tracks | `docs/superpowers/plans/2026-10-05-gs-audio-synth-index.md` |
-| G audio (music, cues) | G2 (Tasks 10–12 cues) complete, merged to `main`; music tracks pending in Task 9b | `docs/superpowers/plans/2026-10-03-g-audio-index.md` |
+| GS audio synthesis (Tasks 1–12) | GS1 & GS2 complete; splash intro audio added; Task 9b waits on music tracks | `docs/superpowers/plans/2026-10-05-gs-audio-synth-index.md` |
+| G audio (music, cues) | G2 complete; music tracks pending in Task 9b | `docs/superpowers/plans/2026-10-03-g-audio-index.md` |
 | BF board-fit-by-cells | complete, merged to `main` with Plan C | `docs/superpowers/plans/2026-10-03-board-fit-by-cells.md` |
 
 ## Open decisions / blockers
@@ -32,6 +31,7 @@ Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; k
 
 ## Gotchas learned recently
 
+- `SplashScene` audio: triggers via `audioServices(this).sfx.play(...)` scheduled with `this.time.delayedCall`, falling back gracefully to `SILENT_AUDIO` if called before `ready`.
 - A constant used by modules that a barrel file imports must live in its own leaf module (`src/content/audio/root.ts`).
 - `vite.config.ts` lists only `index.html` under `build.rollupOptions.input`, so an extra root `*.html` page (`studio.html`, `audiolab.html`) ships nothing in `dist/`.
 - Synth renders are deterministic end to end — re-running `npm run audio:author -- --all` leaves `git status` empty.
