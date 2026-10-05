@@ -4,6 +4,7 @@ import {
   COLOR_NUMBERS,
   COLOR_TOKENS,
   DEPTH_TOKENS,
+  FEEDBACK_TOKENS,
   LAYOUT_TOKENS,
   TYPO_TOKENS,
 } from './designTokens.ts';
@@ -20,6 +21,8 @@ import {
   getVictoryLabels,
 } from './hudText.ts';
 import type { Poseable } from './transitions/choreography.ts';
+import { stepScalar } from './pieceMotion.ts';
+import { isReducedMotion } from './transitions/motion.ts';
 
 export type HudCallbacks = {
   onMenu: () => void;
@@ -54,6 +57,9 @@ export class Hud {
   private snapHint: Phaser.GameObjects.Container | null = null;
   private winVerseText!: Phaser.GameObjects.Text;
   private rotateAllowed = false;
+  private matchIconCenters: number[] = [];
+  private hint = { alpha: 0, x: 0, y: 0 };
+  private lastCanRotate: boolean | null = null;
   private readonly layout: LayoutMetrics;
 
   constructor(
@@ -321,12 +327,17 @@ export class Hud {
   public update(snapshot: PlayViewSnapshot): void {
     this.targetIcon.setTexture(snapshot.showTarget ? TEXTURE_KEYS.iconEyeOpen : TEXTURE_KEYS.iconEyeClosed);
 
-    if (snapshot.canRotate) {
-      this.rotateContainer.setAlpha(1.0);
-      this.rotateBtnBase.setInteractive({ useHandCursor: true });
-    } else {
-      this.rotateContainer.setAlpha(0.3);
-      this.rotateBtnBase.disableInteractive();
+    if (snapshot.canRotate !== this.lastCanRotate) {
+      this.lastCanRotate = snapshot.canRotate;
+      if (snapshot.canRotate) this.rotateBtnBase.setInteractive({ useHandCursor: true });
+      else this.rotateBtnBase.disableInteractive();
+      this.scene.tweens.killTweensOf(this.rotateContainer);
+      this.scene.tweens.add({
+        targets: this.rotateContainer,
+        alpha: snapshot.canRotate ? 1.0 : 0.3,
+        duration: FEEDBACK_TOKENS.rotateButtonFadeMs,
+        ease: 'Sine.easeInOut',
+      });
     }
 
     this.drawMatchBar(snapshot.snappedCount, snapshot.totalPieces);
@@ -342,6 +353,7 @@ export class Hud {
    */
   private drawMatchBar(matched: number, total: number): void {
     this.matchBarText.setText(formatMatchCount(matched, total));
+    this.matchIconCenters = [];
 
     const iconSize = 14;
     const iconGap = 10;
@@ -362,6 +374,7 @@ export class Hud {
 
     for (let i = 0; i < total; i++) {
       const cx = -width / 2 + padding + iconSize + i * (iconSize * 2 + iconGap);
+      this.matchIconCenters[i] = cx;
       drawJewel(g, {
         cx,
         cy: 0,
@@ -371,8 +384,8 @@ export class Hud {
     }
   }
 
-  /** Nhãn nổi cạnh mảnh khi kéo trúng vùng hít. */
-  public showSnapHint(x: number, y: number): void {
+  /** Nhãn "Thả để khớp": hiện/ẩn trong ~120 ms, bám mảnh với τ 60 ms */
+  public tickSnapHint(dtMs: number, target: { x: number; y: number } | null): void {
     if (!this.snapHint) {
       const bg = this.scene.add.graphics();
       bg.fillStyle(0xfff4d2, 1);
@@ -385,15 +398,44 @@ export class Hud {
           fontStyle: 'bold',
         })
         .setOrigin(0.5);
-      this.snapHint = this.scene.add
-        .container(0, 0, [bg, label])
-        .setDepth(DEPTH_TOKENS.hudControls);
+      this.snapHint = this.scene.add.container(0, 0, [bg, label]).setDepth(DEPTH_TOKENS.hudControls).setAlpha(0);
     }
-    this.snapHint.setPosition(x, y).setVisible(true);
+    const reduced = isReducedMotion();
+    const goal = target ? 1 : 0;
+    const fadeTau = FEEDBACK_TOKENS.hintMs / 3;
+    if (target && this.hint.alpha < 0.01) {
+      this.hint.x = target.x;
+      this.hint.y = target.y;
+    } else if (target) {
+      this.hint.x = reduced ? target.x : stepScalar(this.hint.x, target.x, dtMs, FEEDBACK_TOKENS.tau.hint);
+      this.hint.y = reduced ? target.y : stepScalar(this.hint.y, target.y, dtMs, FEEDBACK_TOKENS.tau.hint);
+    }
+    this.hint.alpha = stepScalar(this.hint.alpha, goal, dtMs, fadeTau);
+    if (Math.abs(this.hint.alpha - goal) < 0.01) this.hint.alpha = goal;
+    const scale = reduced ? 1 : 0.9 + 0.1 * this.hint.alpha;
+    this.snapHint
+      .setPosition(this.hint.x, this.hint.y)
+      .setAlpha(this.hint.alpha)
+      .setScale(scale)
+      .setVisible(this.hint.alpha > 0);
   }
 
-  public hideSnapHint(): void {
-    this.snapHint?.setVisible(false);
+  /** Biểu tượng thứ `index` trên thanh đếm bật 1.3 → 1 khi một mảnh khớp */
+  public popCounterIcon(index: number): void {
+    const cx = this.matchIconCenters[index];
+    if (cx === undefined || isReducedMotion()) return;
+    const pop = this.scene.add.graphics();
+    drawJewel(pop, { cx: 0, cy: 0, radius: 14, variant: 'solid' });
+    pop.setPosition(cx, 0).setScale(FEEDBACK_TOKENS.counterPopScale);
+    this.matchBar.add(pop);
+    this.scene.tweens.add({
+      targets: pop,
+      scaleX: 1,
+      scaleY: 1,
+      duration: FEEDBACK_TOKENS.counterPopMs,
+      ease: 'Back.easeOut',
+      onComplete: () => pop.destroy(),
+    });
   }
 
   public showWinModal(victoryVerse?: string): void {

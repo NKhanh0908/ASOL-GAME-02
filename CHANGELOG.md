@@ -4,6 +4,13 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-05 - Add feedback director for operations and smooth hud (F2 task 8)
+
+- Updated `game-next/src/presentation/Hud.ts`: added `tickSnapHint`, `popCounterIcon`, `matchIconCenters`, and smooth rotate button alpha fade; removed obsolete `showSnapHint`/`hideSnapHint`.
+- Added `game-next/src/presentation/feedback/FeedbackDirector.ts`: handles visual and haptic feedback for lift, snap (bounce + ring + counter pop), return, rotate, rotate-blocked flash, overlap-hollow trace, overlap-revive star, and staggered reset animations using `TransitionTimeline`.
+- Wired `FeedbackDirector` into `game-next/src/presentation/PlayScene.ts`: updated pointer handlers to dispatch lift and commit state transitions via `feedbackEvents`, hooked HUD callbacks and `resetLevel`, and ticked feedback and HUD snap hint in `update()`.
+- Verification: `npm run typecheck` and `npm test` (67 test files, 818 tests) passed.
+
 ### 2026-10-05 - Lock parity fade and overlap preview behaviour (F2 task 7)
 
 - Added `game-next/tests/boardRendererParity.test.ts`: verified that new overlap layers fade in from 0 to 1 over 150 ms and merge into the stable layer, `fadeOutParity` fades out a snapshot replica, and drag snap candidate over placed piece draws preview strokes.

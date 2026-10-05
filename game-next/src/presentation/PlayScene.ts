@@ -1,11 +1,11 @@
 import Phaser from 'phaser';
-import type { Level } from '../domain/model.ts';
+import type { Level, PuzzleState, Transition } from '../domain/model.ts';
 import { GRID_WIDTH, GRID_HEIGHT } from '../domain/model.ts';
 import { loadLevel } from '../content/catalog.ts';
 import { campaignManifest } from '../content/manifest.ts';
 import { furthestLevelId, nextLevelId } from '../domain/campaign.ts';
 import { createProgressRepository } from '../infrastructure/progressRepository.ts';
-import { PlayController } from '../application/playController.ts';
+import { PlayController, type PlayViewSnapshot } from '../application/playController.ts';
 import { BoardRenderer } from './BoardRenderer.ts';
 import { maskCentroid } from '../domain/mask.ts';
 import { Hud } from './Hud.ts';
@@ -31,6 +31,12 @@ import type { TransitionTimeline } from './transitions/TransitionTimeline.ts';
 import { choreographPlayIn, choreographPlayOut, type PlayTransitionView } from './transitions/playChoreography.ts';
 
 import { PieceTextureCache } from './PieceTextureCache.ts';
+import { FeedbackDirector } from './feedback/FeedbackDirector.ts';
+import { feedbackEvents, type FeedbackSubject } from './feedback/feedbackEvents.ts';
+import { createHaptics } from '../infrastructure/haptics.ts';
+import { capacitorHapticsDriver } from '../infrastructure/capacitorHaptics.ts';
+import { Capacitor } from '@capacitor/core';
+import type { BackgroundScene } from './BackgroundScene.ts';
 
 export class PlayScene extends Phaser.Scene implements Choreographed {
   readonly directorKey = 'PlayScene' as const;
@@ -40,6 +46,7 @@ export class PlayScene extends Phaser.Scene implements Choreographed {
   private controller!: PlayController;
   private boardRenderer!: BoardRenderer;
   private textureCache!: PieceTextureCache;
+  private feedback!: FeedbackDirector;
   private layout!: LayoutMetrics;
   private targetBadge!: TargetBadge;
   private hud!: Hud;
@@ -120,9 +127,7 @@ export class PlayScene extends Phaser.Scene implements Choreographed {
     this.pauseDialog = new PauseDialog(this, {
       onResume: () => {},
       onRestart: () => {
-        this.controller.onReset();
-        this.cleanupCelebration();
-        this.refreshView();
+        this.resetLevel();
       },
       onLevelSelect: () => {
         this.openLevelSelect();
@@ -136,57 +141,72 @@ export class PlayScene extends Phaser.Scene implements Choreographed {
         onMenu: () => {
           this.pauseDialog.open();
         },
-      onReset: () => {
-        this.controller.onReset();
-        this.cleanupCelebration();
-        this.boardRenderer.setVictoryMode(false);
-        this.hud.hideWinModal();
-        this.refreshView();
-      },
-      onRotate: () => {
-        const transition = this.controller.onRotate();
-        this.refreshView();
-        if (transition?.becameWon) {
-          this.playCelebration(layout);
-        }
-      },
-      onToggleTarget: () => {
-        this.controller.onToggleTarget();
-        this.refreshView();
-      },
-      onLevelSelect: () => {
-        this.openLevelSelect();
-      },
-      onNextLevel: () => {
-        const nextId = nextLevelId(campaignManifest, this.level.id);
-        let playable = false;
-        if (nextId) {
-          try {
-            // Kiểm tra đúng chế độ: campaign về menu nếu màn kế chưa approved.
-            loadLevel(nextId, this.mode);
-            playable = true;
-          } catch {
-            playable = false;
+        onReset: () => {
+          this.resetLevel();
+        },
+        onRotate: () => {
+          const pieceId = this.controller.getSnapshot().selectedPieceId;
+          const prev = this.controller.getPuzzleState();
+          this.commit(prev, this.controller.onRotate(), { command: 'rotate', pieceId });
+        },
+        onToggleTarget: () => {
+          this.controller.onToggleTarget();
+          this.refreshView();
+        },
+        onLevelSelect: () => {
+          this.openLevelSelect();
+        },
+        onNextLevel: () => {
+          const nextId = nextLevelId(campaignManifest, this.level.id);
+          let playable = false;
+          if (nextId) {
+            try {
+              // Kiểm tra đúng chế độ: campaign về menu nếu màn kế chưa approved.
+              loadLevel(nextId, this.mode);
+              playable = true;
+            } catch {
+              playable = false;
+            }
           }
-        }
-        if (nextId && playable) {
-          director.go(this, 'PlayScene', {
-            levelId: nextId,
-            mode: this.mode,
-            previewCompletedThrough: this.mode === 'harness'
-              ? furthestLevelId(campaignManifest, this.previewCompletedThrough, this.level.id)
-              : undefined,
-          }, { route: 'next-level' });
-        } else {
-          director.go(this, 'MenuScene', {}, { route: 'play-to-menu' });
-        }
+          if (nextId && playable) {
+            director.go(this, 'PlayScene', {
+              levelId: nextId,
+              mode: this.mode,
+              previewCompletedThrough: this.mode === 'harness'
+                ? furthestLevelId(campaignManifest, this.previewCompletedThrough, this.level.id)
+                : undefined,
+            }, { route: 'next-level' });
+          } else {
+            director.go(this, 'MenuScene', {}, { route: 'play-to-menu' });
+          }
+        },
       },
-    }, this.level.id, layout);
+      this.level.id,
+      layout
+    );
+
+    const haptics = createHaptics(
+      Capacitor.isNativePlatform() ? capacitorHapticsDriver() : null,
+      () => savedProgress.settings.haptics
+    );
+    this.feedback = new FeedbackDirector({
+      scene: this,
+      level: this.level,
+      layout,
+      board: this.boardRenderer,
+      hud: this.hud,
+      textures: this.textureCache,
+      haptics,
+      getState: () => this.controller.getPuzzleState(),
+      background: () => this.scene.get('BackgroundScene') as BackgroundScene | null,
+    });
 
     // Pointer events
     this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
       const hit = this.controller.onPointerDown(pointer.worldX, pointer.worldY, layout);
       if (hit) {
+        const pieceId = this.controller.getSnapshot().dragInfo?.pieceId;
+        if (pieceId) this.feedback.handle([{ type: 'lift', pieceId }]);
         this.refreshView();
       } else {
         this.spawnCosmicInteraction(pointer.worldX, pointer.worldY);
@@ -195,28 +215,20 @@ export class PlayScene extends Phaser.Scene implements Choreographed {
 
     this.input.on('pointermove', (pointer: Phaser.Input.Pointer) => {
       this.controller.onPointerMove(pointer.worldX, pointer.worldY, layout);
-      this.updateSnapHint();
     });
 
-    this.input.on('pointerup', (pointer: Phaser.Input.Pointer) => {
-      const transition = this.controller.onPointerUp(pointer.worldX, pointer.worldY, layout);
-      this.refreshView();
-      if (transition?.becameWon) {
-        this.playCelebration(layout);
-      }
-    });
-
-    this.input.on('pointerupoutside', (pointer: Phaser.Input.Pointer) => {
-      const transition = this.controller.onPointerUp(pointer.worldX, pointer.worldY, layout);
-      this.refreshView();
-      if (transition?.becameWon) {
-        this.playCelebration(layout);
-      }
-    });
+    const release = (pointer: Phaser.Input.Pointer) => {
+      const pieceId = this.controller.getSnapshot().dragInfo?.pieceId ?? null;
+      const prev = this.controller.getPuzzleState();
+      this.commit(prev, this.controller.onPointerUp(pointer.worldX, pointer.worldY, layout), { command: 'move', pieceId });
+    };
+    this.input.on('pointerup', release);
+    this.input.on('pointerupoutside', release);
 
     this.input.on('gameout', () => {
-      this.controller.onPointerCancel();
-      this.refreshView();
+      const pieceId = this.controller.getSnapshot().dragInfo?.pieceId ?? null;
+      const prev = this.controller.getPuzzleState();
+      this.commit(prev, this.controller.onPointerCancel(), { command: 'move', pieceId });
     });
 
     this.refreshView();
@@ -243,7 +255,35 @@ export class PlayScene extends Phaser.Scene implements Choreographed {
   update(_time: number, delta: number): void {
     if (this.loadFailed) return;
     this.textureCache.bakeNext();
-    this.boardRenderer.tick(delta, this.controller.getSnapshot(), this.controller.getPuzzleState().pieces);
+    this.feedback.tick(delta);
+    const snapshot = this.controller.getSnapshot();
+    this.boardRenderer.tick(delta, snapshot, this.controller.getPuzzleState().pieces);
+    this.hud.tickSnapHint(delta, this.snapHintTarget(snapshot));
+  }
+
+  private snapHintTarget(snapshot: PlayViewSnapshot): { x: number; y: number } | null {
+    const drag = snapshot.dragInfo;
+    if (!drag || drag.snapCandidateId === null) return null;
+    const piece = this.level.pieces.find((p) => p.id === drag.pieceId);
+    const radius = piece ? pieceRadiusPx(piece.frameSize, this.layout) : 120;
+    return { x: drag.x + radius * 0.8, y: drag.y + radius * 0.5 };
+  }
+
+  /** Áp kết quả một lệnh: phát phản hồi rồi cập nhật HUD */
+  private commit(prev: PuzzleState, transition: Transition | null, subject: FeedbackSubject): void {
+    if (!transition) return;
+    this.feedback.handle(feedbackEvents(prev, transition, this.level, subject));
+    this.refreshView();
+    if (transition.becameWon) this.playCelebration(this.layout); // Task 9 chuyển vào FeedbackDirector
+  }
+
+  private resetLevel(): void {
+    const prev = this.controller.getPuzzleState();
+    const transition = this.controller.onReset();
+    this.cleanupCelebration();
+    this.boardRenderer.setVictoryMode(false);
+    this.hud.hideWinModal();
+    this.commit(prev, transition, { command: 'reset', pieceId: null });
   }
 
   private transitionView(): PlayTransitionView {
@@ -306,28 +346,14 @@ export class PlayScene extends Phaser.Scene implements Choreographed {
         return;
       }
 
+      const prev = this.controller.getPuzzleState();
       const transition = this.controller.onPointerUp(target.x, target.y, layout);
-      this.refreshView();
-      if (transition?.becameWon) this.playCelebration(layout);
+      this.commit(prev, transition, { command: 'move', pieceId: piece.id });
     });
   }
 
-  private updateSnapHint(): void {
-    const snapshot = this.controller.getSnapshot();
-    const drag = snapshot.dragInfo;
-    if (drag && drag.snapCandidateId !== null) {
-      const piece = this.level.pieces.find((p) => p.id === drag.pieceId);
-      const radius = piece ? pieceRadiusPx(piece.frameSize, this.layout) : 120;
-      this.hud.showSnapHint(drag.x + radius * 0.8, drag.y + radius * 0.5);
-    } else {
-      this.hud.hideSnapHint();
-    }
-  }
-
   private refreshView(): void {
-    const snapshot = this.controller.getSnapshot();
-    this.hud.update(snapshot);
-    this.updateSnapHint();
+    this.hud.update(this.controller.getSnapshot());
   }
 
   private playCelebration(layout: LayoutMetrics): void {

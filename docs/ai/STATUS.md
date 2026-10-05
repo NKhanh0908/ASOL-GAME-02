@@ -5,8 +5,8 @@ Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; k
 ## Now
 
 - Branch: `feat/motion-f2` (branched from `feat/motion-f1`).
-- Product state: F2 Tasks 1–7 completed and verified (Giai đoạn 1 & 2 hoàn thành: cache, math, diff, haptics, texture cache, PieceView, BoardRenderer.tick, parity fade test).
-- Next step: F2 Giai đoạn 3/3 (Tasks 8–10: FeedbackDirector, Hud mượt, chuỗi thắng trong `docs/superpowers/plans/2026-10-03-f2-3-phan-hoi.md`).
+- Product state: F2 Tasks 1–8 completed and verified (Giai đoạn 1 & 2 hoàn tất; Task 8 FeedbackDirector & smooth HUD xong).
+- Next step: F2 Giai đoạn 3/3 (Tasks 9–10: chuỗi thắng 1800 ms trong victorySequence.ts và handoff khay thả trong routes.ts).
 
 ## Streams
 
