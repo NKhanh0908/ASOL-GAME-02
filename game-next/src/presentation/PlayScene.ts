@@ -30,6 +30,8 @@ import type { Choreographed, TransitionContext } from './transitions/SceneDirect
 import type { TransitionTimeline } from './transitions/TransitionTimeline.ts';
 import { choreographPlayIn, choreographPlayOut, type PlayTransitionView } from './transitions/playChoreography.ts';
 
+import { PieceTextureCache } from './PieceTextureCache.ts';
+
 export class PlayScene extends Phaser.Scene implements Choreographed {
   readonly directorKey = 'PlayScene' as const;
   private loadFailed = false;
@@ -37,6 +39,7 @@ export class PlayScene extends Phaser.Scene implements Choreographed {
   private mode: 'campaign' | 'harness' = 'campaign';
   private controller!: PlayController;
   private boardRenderer!: BoardRenderer;
+  private textureCache!: PieceTextureCache;
   private layout!: LayoutMetrics;
   private targetBadge!: TargetBadge;
   private hud!: Hud;
@@ -105,7 +108,13 @@ export class PlayScene extends Phaser.Scene implements Choreographed {
       savedProgress.settings.showTarget
     );
 
-    this.boardRenderer = new BoardRenderer(this, layout, this.level.pieces.length);
+    // Texture mảnh vẽ rải mỗi khung một mảnh trong update(), không vẽ trong
+    // create() để handoff của chuyển cảnh F1 không có khung > 50 ms.
+    this.textureCache = new PieceTextureCache(this, this.level, layout.cellPixel);
+    for (const piece of this.level.pieces) this.textureCache.enqueue(piece.id, 0);
+    this.events.once('shutdown', () => this.textureCache.destroy());
+
+    this.boardRenderer = new BoardRenderer(this, layout, this.level, this.textureCache);
     this.targetBadge = new TargetBadge(this, layout, this.level);
 
     this.pauseDialog = new PauseDialog(this, {
@@ -186,7 +195,7 @@ export class PlayScene extends Phaser.Scene implements Choreographed {
 
     this.input.on('pointermove', (pointer: Phaser.Input.Pointer) => {
       this.controller.onPointerMove(pointer.worldX, pointer.worldY, layout);
-      this.refreshView();
+      this.updateSnapHint();
     });
 
     this.input.on('pointerup', (pointer: Phaser.Input.Pointer) => {
@@ -229,6 +238,12 @@ export class PlayScene extends Phaser.Scene implements Choreographed {
     }
 
     director.attach(this);
+  }
+
+  update(_time: number, delta: number): void {
+    if (this.loadFailed) return;
+    this.textureCache.bakeNext();
+    this.boardRenderer.tick(delta, this.controller.getSnapshot(), this.controller.getPuzzleState().pieces);
   }
 
   private transitionView(): PlayTransitionView {
@@ -297,14 +312,8 @@ export class PlayScene extends Phaser.Scene implements Choreographed {
     });
   }
 
-  private refreshView(): void {
+  private updateSnapHint(): void {
     const snapshot = this.controller.getSnapshot();
-    const puzzleState = this.controller.getPuzzleState();
-
-    this.boardRenderer.render(this.level, snapshot, puzzleState.pieces);
-    this.hud.update(snapshot);
-
-    // Nhãn "Thả để khớp" chỉ hiện khi mảnh đang kéo trúng vùng hít
     const drag = snapshot.dragInfo;
     if (drag && drag.snapCandidateId !== null) {
       const piece = this.level.pieces.find((p) => p.id === drag.pieceId);
@@ -313,6 +322,12 @@ export class PlayScene extends Phaser.Scene implements Choreographed {
     } else {
       this.hud.hideSnapHint();
     }
+  }
+
+  private refreshView(): void {
+    const snapshot = this.controller.getSnapshot();
+    this.hud.update(snapshot);
+    this.updateSnapHint();
   }
 
   private playCelebration(layout: LayoutMetrics): void {

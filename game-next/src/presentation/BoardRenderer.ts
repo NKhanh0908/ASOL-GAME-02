@@ -1,10 +1,10 @@
 import Phaser from 'phaser';
 import type { Level, Piece, PieceState } from '../domain/model.ts';
-import type { LayoutMetrics } from './layout.ts';
+import type { CanvasPoint, LayoutMetrics } from './layout.ts';
 import {
   pieceBoardOrigin,
-  pieceHitbox,
   pieceCenterCanvas,
+  pieceHitbox,
   piecePolygonAround,
   piecePolygonCanvas,
   pieceRadiusPx,
@@ -13,12 +13,17 @@ import {
 } from './layout.ts';
 import { GridPainter } from './GridPainter.ts';
 import { drawJewelPolygon } from './JewelShape.ts';
-import { parityLayers } from './polygonClip.ts';
-import type { DragInfo, PlayViewSnapshot } from '../application/playController.ts';
-import { ANIM_TOKENS, COLOR_NUMBERS, DEPTH_TOKENS, LAYOUT_TOKENS, PIECE_TOKENS } from './designTokens.ts';
+import type { ParityLayer } from './polygonClip.ts';
+import type { PlayViewSnapshot } from '../application/playController.ts';
+import { COLOR_NUMBERS, DEPTH_TOKENS, FEEDBACK_TOKENS } from './designTokens.ts';
 import { TEXTURE_KEYS } from './TextureFactory.ts';
-import { getMotionScale } from './transitions/motion.ts';
+import { getMotionScale, isReducedMotion } from './transitions/motion.ts';
 import type { Poseable } from './transitions/choreography.ts';
+import { PieceView } from './PieceView.ts';
+import type { PieceTextureSource } from './PieceTextureCache.ts';
+import { POSE_TAU, anchorCenter, pieceTargetPose, stepScalar } from './pieceMotion.ts';
+import type { Pose } from './pieceMotion.ts';
+import { diffLayers, overlapLayers } from './feedback/parityDiff.ts';
 
 export type BoardTransitionParts = {
   board: Poseable[];
@@ -31,58 +36,81 @@ export type BoardTransitionParts = {
   grid: Phaser.GameObjects.RenderTexture | null;
 };
 
-/** Mảnh đã khớp trên bàn (neo hoặc giao điểm lưới), quy về gốc khung chung. */
-type BoardPiece = { piece: Piece; x: number; y: number; turns: number };
+type Snapped = { piece: Piece; state: Extract<PieceState, { kind: 'snapped' | 'placed' }> };
+
+const DEPTH_FOR: Record<'tray' | 'snapped' | 'temporary' | 'dragging', number> = {
+  tray: DEPTH_TOKENS.placedPieces,
+  snapped: DEPTH_TOKENS.placedPieces,
+  temporary: DEPTH_TOKENS.temporaryPieces,
+  dragging: DEPTH_TOKENS.draggingPiece,
+};
 
 export class BoardRenderer {
   private readonly scene: Phaser.Scene;
-  private layout: LayoutMetrics;
-  private ringGraphics: Phaser.GameObjects.Graphics;
-  private targetGraphics: Phaser.GameObjects.Graphics;
-  private piecesGraphics: Phaser.GameObjects.Graphics;
-  private parityGraphics: Phaser.GameObjects.Graphics;
-  private temporaryGraphics: Phaser.GameObjects.Graphics;
-  private draggingGraphics: Phaser.GameObjects.Graphics;
-  private fxGraphics: Phaser.GameObjects.Graphics;
+  private readonly layout: LayoutMetrics;
+  private readonly level: Level;
+  private readonly textures: PieceTextureSource;
+  private readonly trayCount: number;
+
+  private readonly ringGraphics: Phaser.GameObjects.Graphics;
+  private readonly targetGraphics: Phaser.GameObjects.Graphics;
+  private readonly placeholderGraphics: Phaser.GameObjects.Graphics;
+  private readonly parityGraphics: Phaser.GameObjects.Graphics;
+  private readonly parityIncomingGraphics: Phaser.GameObjects.Graphics;
+  private readonly parityFadeGraphics: Phaser.GameObjects.Graphics;
+  private readonly previewGraphics: Phaser.GameObjects.Graphics;
+  private readonly temporaryGraphics: Phaser.GameObjects.Graphics;
+  private readonly fxGraphics: Phaser.GameObjects.Graphics;
+
   private gridTexture: Phaser.GameObjects.RenderTexture | null = null;
-  private boardFrame: Phaser.GameObjects.Image | null = null;
   private boardSurface: Phaser.GameObjects.Image | null = null;
+  private boardFrame: Phaser.GameObjects.Image | null = null;
+  private goldFrame: Phaser.GameObjects.Image | null = null;
   private boardBase: Phaser.GameObjects.Container | null = null;
   private boardTop: Phaser.GameObjects.Container | null = null;
   private runes: Phaser.GameObjects.Arc[] = [];
-  private targetReveal: readonly number[] | null = null;
-  private lastLevel: Level | null = null;
-  private lastSnapshot: PlayViewSnapshot | null = null;
   private trayWells: Phaser.GameObjects.Image[] = [];
   private trayFrame: Phaser.GameObjects.Image | null = null;
-  private readonly trayCount: number;
 
+  private readonly views = new Map<string, PieceView>();
   private ring1Angle = 0;
   private ring2Angle = 0;
   private victoryPulse = 0;
 
-  constructor(scene: Phaser.Scene, layout: LayoutMetrics, trayCount: number = 2) {
+  private targetReveal: readonly number[] | null = null;
+  private hoverAlpha: number[];
+  private targetKey = '';
+  private staticKey = '';
+  private previewKey = '';
+  private parityKey = '';
+  private currentParity: ParityLayer[] = [];
+  private incoming: { alpha: number } | null = null;
+  private parityFade: { alpha: number; ms: number } | null = null;
+  private lastSnapshot: PlayViewSnapshot | null = null;
+
+  constructor(scene: Phaser.Scene, layout: LayoutMetrics, level: Level, textures: PieceTextureSource) {
     this.scene = scene;
     this.layout = layout;
-    this.trayCount = trayCount;
+    this.level = level;
+    this.textures = textures;
+    this.trayCount = level.pieces.length;
+    this.hoverAlpha = (level.targetPlacements ?? []).map(() => FEEDBACK_TOKENS.targetIdleAlpha);
 
-    // Phân lớp depth theo chuẩn DEPTH_TOKENS
     this.ringGraphics = scene.add.graphics().setDepth(DEPTH_TOKENS.celestialRings);
     this.targetGraphics = scene.add.graphics().setDepth(DEPTH_TOKENS.targetSilhouette);
-    this.piecesGraphics = scene.add.graphics().setDepth(DEPTH_TOKENS.placedPieces);
+    this.placeholderGraphics = scene.add.graphics().setDepth(DEPTH_TOKENS.placedPieces);
     // Giao chẵn/lẻ chỉ phủ mảnh đã snap; mảnh đang di chuyển luôn nằm trên.
     this.parityGraphics = scene.add.graphics().setDepth(DEPTH_TOKENS.placedPieces + 1);
+    this.parityIncomingGraphics = scene.add.graphics().setDepth(DEPTH_TOKENS.placedPieces + 1);
+    this.parityFadeGraphics = scene.add.graphics().setDepth(DEPTH_TOKENS.placedPieces + 1);
+    this.previewGraphics = scene.add.graphics().setDepth(DEPTH_TOKENS.placedPieces + 2);
     this.temporaryGraphics = scene.add.graphics().setDepth(DEPTH_TOKENS.temporaryPieces);
-    this.draggingGraphics = scene.add.graphics().setDepth(DEPTH_TOKENS.draggingPiece);
     this.fxGraphics = scene.add.graphics().setDepth(DEPTH_TOKENS.draggingPiece + 1);
 
     this.drawStaticBoard();
+    for (const piece of level.pieces) this.views.set(piece.id, new PieceView(scene));
   }
 
-  /**
-   * Vẽ Tấm Bia Tiên Tri với viền bevel kính 10px, bo góc 36px,
-   * lưới vàng 8 ô (32px), chấm giao điểm và khay mảnh
-   */
   public drawStaticBoard(): void {
     const { boardBounds, trayBounds } = this.layout;
     const cx = boardBounds.x + boardBounds.width / 2;
@@ -115,8 +143,9 @@ export class BoardRenderer {
         [left + inset, 0],
       ].map(([x, y]) => this.scene.add.circle(x, y, 3, COLOR_NUMBERS.gridModule, 0.45));
       this.boardFrame = this.scene.add.image(left, top, TEXTURE_KEYS.glassFrameBoard).setOrigin(0, 0);
+      this.goldFrame = this.scene.add.image(left, top, TEXTURE_KEYS.goldFrameBoard).setOrigin(0, 0).setAlpha(0);
       this.boardTop = this.scene.add
-        .container(cx, cy, [...this.runes, this.boardFrame])
+        .container(cx, cy, [...this.runes, this.boardFrame, this.goldFrame])
         .setDepth(DEPTH_TOKENS.boardGrid + 1);
       this.trayFrame = this.scene.add
         .image(trayBounds.x, trayBounds.y, TEXTURE_KEYS.glassFrameTray)
@@ -124,8 +153,6 @@ export class BoardRenderer {
         .setDepth(DEPTH_TOKENS.trayArea);
     }
 
-    // 6. Khay: mỗi mảnh một ô lõm trong suốt. Trước đây là một hộp đen đặc
-    // che luôn cả nút Đặt lại phía sau.
     if (this.trayWells.length === 0) {
       for (const rect of trayWellRects(this.layout, this.trayCount)) {
         this.trayWells.push(
@@ -133,30 +160,110 @@ export class BoardRenderer {
             .image(rect.x, rect.y, TEXTURE_KEYS.trayWell)
             .setOrigin(0, 0)
             .setDisplaySize(rect.width, rect.height)
-            // Dưới lớp mảnh (placedPieces), nếu không ô lõm phủ lên mảnh
             .setDepth(DEPTH_TOKENS.steleBoard)
         );
       }
     }
   }
 
-  public setFrameGold(on: boolean): void {
-    this.boardFrame?.setTexture(on ? TEXTURE_KEYS.goldFrameBoard : TEXTURE_KEYS.glassFrameBoard);
+  /** Gọi mỗi khung hình từ PlayScene.update */
+  public tick(dtMs: number, snapshot: PlayViewSnapshot, pieces: Readonly<Record<string, PieceState>>): void {
+    this.lastSnapshot = snapshot;
+    const reduced = isReducedMotion();
+    const dragId = snapshot.dragInfo?.pieceId ?? null;
+    this.updateCelestialRings(dtMs, snapshot.phase === 'won');
+    this.syncTargets(dtMs, snapshot, reduced);
+    this.syncPieceViews(dtMs, snapshot, pieces, reduced);
+    this.syncStaticOverlays(dragId, pieces);
+    this.syncParity(dtMs, dragId, pieces);
+    this.syncPreview(snapshot, pieces);
+    this.fxGraphics.clear();
+    if (snapshot.phase === 'won') {
+      this.victoryPulse += dtMs * 0.004 * getMotionScale();
+      this.drawVictoryPulse();
+    }
   }
 
-  /**
-   * Chế độ thắng màn: khung bàn đổi sang vàng, khay và các ô chứa ẩn đi để
-   * thẻ hoàn thành chiếm chỗ của chúng.
-   */
+  /** Giữ chữ ký cũ cho test: vẽ ngay một khung không trôi thời gian */
+  public render(_level: Level, snapshot: PlayViewSnapshot, pieces: Readonly<Record<string, PieceState>>): void {
+    this.tick(0, snapshot, pieces);
+  }
+
+  public getPieceView(id: string): PieceView | undefined {
+    return this.views.get(id);
+  }
+
+  public targetPoseFor(piece: Piece, state: PieceState, trayIndex: number): Pose {
+    return pieceTargetPose(piece, state, {
+      layout: this.layout,
+      trayIndex,
+      trayCount: this.trayCount,
+      selected: false,
+      drag: null,
+    });
+  }
+
+  public canvasPolygonAt(piece: Piece, turns: number, pose: Pose): CanvasPoint[] {
+    return piecePolygonAround(piece, turns, pose.x, pose.y, piece.frameSize * this.layout.cellPixel * pose.scale);
+  }
+
+  public getGoldFrame(): Phaser.GameObjects.Image | null {
+    return this.goldFrame;
+  }
+
+  public getTrayParts(): Poseable[] {
+    return [this.trayFrame, ...this.trayWells].filter((x): x is Phaser.GameObjects.Image => x !== null);
+  }
+
+  public setTrayVisible(visible: boolean, alpha: number): void {
+    for (const part of this.getTrayParts() as Phaser.GameObjects.Image[]) part.setVisible(visible).setAlpha(alpha);
+  }
+
+  public setFrameGold(on: boolean): void {
+    this.goldFrame?.setAlpha(on ? 1 : 0);
+  }
+
   public setVictoryMode(on: boolean): void {
     this.setFrameGold(on);
-    this.trayFrame?.setVisible(!on);
-    for (const well of this.trayWells) well.setVisible(!on);
+    this.setTrayVisible(!on, 1);
   }
 
-  /**
-   * Cập nhật chuyển động xoay của hai vòng thiên cầu đồng tâm phía sau bia
-   */
+  /** Đặt lại: bản sao vùng giao hiện tại mờ dần trong `ms` */
+  public fadeOutParity(ms: number): void {
+    this.parityFadeGraphics.clear();
+    this.drawLayers(this.parityFadeGraphics, this.currentParity);
+    this.parityFadeGraphics.setAlpha(1);
+    this.parityFade = { alpha: 1, ms: Math.max(1, ms) };
+  }
+
+  public setTargetReveal(values: readonly number[] | null): void {
+    this.targetReveal = values;
+    if (this.lastSnapshot) this.drawTargetSilhouette(this.lastSnapshot);
+  }
+
+  public getTransitionParts(): BoardTransitionParts {
+    const present = <T>(items: Array<T | null | undefined>): T[] =>
+      items.filter((item): item is T => item !== null && item !== undefined);
+    const offsets = this.level.pieces.map((p) => this.views.get(p.id)!.offset);
+    return {
+      board: present<Poseable>([this.boardBase, this.gridTexture, this.boardTop]),
+      runes: [...this.runes],
+      rings: [this.ringGraphics],
+      tray: this.getTrayParts(),
+      trayPieces: offsets,
+      pieces: [
+        ...offsets,
+        this.parityGraphics,
+        this.parityIncomingGraphics,
+        this.previewGraphics,
+        this.temporaryGraphics,
+        this.fxGraphics,
+      ],
+      targets: [this.targetGraphics, this.placeholderGraphics],
+      grid: this.gridTexture,
+    };
+  }
+
   public updateCelestialRings(delta: number, isWon: boolean): void {
     const speedMult = (isWon ? 3.0 : 1.0) * getMotionScale();
     this.ring1Angle += delta * 0.0003 * speedMult;
@@ -189,218 +296,233 @@ export class BoardRenderer {
     this.ringGraphics.fillCircle(p2X, p2Y, 3.5);
   }
 
-  /**
-   * Render toàn bộ khung hình gameplay với 5 trạng thái
-   */
-  public render(
-    level: Level,
+  private syncPieceViews(
+    dtMs: number,
     snapshot: PlayViewSnapshot,
-    piecesState: Record<string, PieceState>,
-    delta: number = 16
+    pieces: Readonly<Record<string, PieceState>>,
+    reduced: boolean
   ): void {
-    this.lastLevel = level;
-    this.lastSnapshot = snapshot;
-    const draggingPieceId = snapshot.dragInfo?.pieceId ?? null;
-
-    // Cập nhật vòng quay thiên văn
-    this.updateCelestialRings(delta, snapshot.phase === 'won');
-
-    // 1. Bóng mục tiêu mờ (Target Silhouette)
-    this.drawTargetSilhouette(level, snapshot);
-
-    // 2. Vẽ các mảnh ghép
-    this.piecesGraphics.clear();
-    this.parityGraphics.clear();
-    this.temporaryGraphics.clear();
-    this.draggingGraphics.clear();
-    this.fxGraphics.clear();
-
-    const boardPieces: BoardPiece[] = [];
-
-    for (let i = 0; i < level.pieces.length; i++) {
-      const piece = level.pieces[i];
-      const pState = piecesState[piece.id] ?? { kind: 'tray', turns: 0 };
-      const isSelected = snapshot.selectedPieceId === piece.id;
-      const isDraggingThis = piece.id === draggingPieceId;
-
-      if (isDraggingThis && snapshot.dragInfo) {
-        // Trạng thái 1: Đang kéo (Dragging)
-        if (pState.kind === 'tray') {
-          this.drawTrayPlaceholder(piece, pState, i);
-        }
-        this.drawDraggingPiece(piece, pState.turns, snapshot.dragInfo);
-      } else if (pState.kind === 'tray') {
-        this.drawTrayPiece(piece, pState, i, isSelected);
-      } else if (pState.kind === 'temporary') {
-        // Trạng thái 4: Mảnh tạm chưa snap
-        this.drawTemporaryPiece(piece, pState, isSelected);
-      } else {
-        // Trạng thái 2: Đã khớp — neo (màn neo) hoặc giao điểm lưới (màn đặt tự do)
-        const origin = pieceBoardOrigin(piece, pState);
-        if (!origin) continue;
-        boardPieces.push({ piece, x: origin.x, y: origin.y, turns: pState.turns });
-        this.drawSnappedPiece(piece, origin.x, origin.y, pState.turns);
+    const drag = snapshot.dragInfo;
+    this.level.pieces.forEach((piece, index) => {
+      const view = this.views.get(piece.id)!;
+      const state = pieces[piece.id] ?? { kind: 'tray', turns: 0 };
+      if (view.turns() !== state.turns) {
+        const keys = this.textures.keys(piece.id, state.turns);
+        if (!keys) return; // chưa vẽ xong: ẩn tới khung sau
+        view.setTextures(keys, state.turns);
       }
-    }
+      const dragging = drag !== null && drag.pieceId === piece.id;
+      const target = pieceTargetPose(piece, state, {
+        layout: this.layout,
+        trayIndex: index,
+        trayCount: this.trayCount,
+        selected: snapshot.selectedPieceId === piece.id,
+        drag: dragging
+          ? {
+              x: drag.x,
+              y: drag.y,
+              candidate: drag.snapCandidateId ? anchorCenter(piece, drag.snapCandidateId, this.layout) : null,
+            }
+          : null,
+      });
+      view.setDepth(DEPTH_FOR[dragging ? 'dragging' : state.kind === 'temporary' ? 'temporary' : 'snapped']);
+      const tau = POSE_TAU[dragging ? 'dragging' : state.kind === 'temporary' ? 'settling' : 'idle'];
+      view.update(dtMs, target, tau, { dragging, reduced });
+    });
+  }
 
-    // Trạng thái 3: Vùng chồng lớp theo luật chẵn/lẻ
-    if (boardPieces.length >= 2) {
-      this.drawOverlapInversion(boardPieces);
-    }
+  /** Ô chờ trong khay khi kéo từ khay, và chấm chú thích trên mảnh tạm */
+  private syncStaticOverlays(dragId: string | null, pieces: Readonly<Record<string, PieceState>>): void {
+    const key = `${dragId}|${JSON.stringify(pieces)}`;
+    if (key === this.staticKey) return;
+    this.staticKey = key;
+    this.placeholderGraphics.clear();
+    this.temporaryGraphics.clear();
+    this.level.pieces.forEach((piece, index) => {
+      const state = pieces[piece.id] ?? { kind: 'tray', turns: 0 };
+      if (piece.id === dragId && state.kind === 'tray') {
+        const hit = pieceHitbox(piece, state, this.layout, index, this.trayCount);
+        const radius = trayPieceRadiusPx(this.layout, this.trayCount);
+        drawJewelPolygon(
+          this.placeholderGraphics,
+          piecePolygonAround(piece, state.turns, hit.x + hit.width / 2, hit.y + hit.height / 2, radius * 2),
+          { variant: 'placeholder', sizePx: radius }
+        );
+      }
+      if (state.kind === 'temporary' && piece.id !== dragId) {
+        const radiusPx = pieceRadiusPx(piece.frameSize, this.layout);
+        const center = pieceCenterCanvas(piece.frameSize, state.x, state.y, this.layout);
+        this.temporaryGraphics.lineStyle(1, COLOR_NUMBERS.textSecondary, 0.4);
+        this.temporaryGraphics.strokeCircle(center.x, center.y - radiusPx - 14, 4);
+      }
+    });
+  }
 
-    // Trạng thái 5: Hoàn thành (Victory Celebration)
-    if (snapshot.phase === 'won') {
-      this.victoryPulse += delta * 0.004;
-      this.drawVictoryCelebration();
-    }
+  private snappedEntries(dragId: string | null, pieces: Readonly<Record<string, PieceState>>): Snapped[] {
+    return this.level.pieces.flatMap((piece) => {
+      const state = pieces[piece.id];
+      return state && (state.kind === 'snapped' || state.kind === 'placed') && piece.id !== dragId
+        ? [{ piece, state }]
+        : [];
+    });
+  }
+
+  private canvasPolygons(entries: readonly Snapped[]): CanvasPoint[][] {
+    return entries.flatMap(({ piece, state }) => {
+      const origin = pieceBoardOrigin(piece, state);
+      return origin ? [piecePolygonCanvas(piece, origin.x, origin.y, state.turns, this.layout)] : [];
+    });
   }
 
   /**
-   * Bóng mục tiêu: từng đa giác của nghiệm mẫu. Ở Chương 1 các mảnh của nghiệm
-   * không bao giờ giao nhau (validator chặn), nên vẽ riêng rẽ là đúng. Bóng mờ
-   * có lỗ rỗng (Chương 2) cần kỹ thuật khác và để cho spec sau.
+   * Vùng giao: lớp cũ vẽ ngay, lớp mới mờ dần trong overlapFadeMs (giữ cả khi
+   * Giảm chuyển động vì ≤ 150 ms là đổi màu, không phải chuyển động).
    */
-  private drawTargetSilhouette(level: Level, snapshot: PlayViewSnapshot): void {
-    this.targetGraphics.clear();
-    if (!snapshot.showTarget) return;
+  private syncParity(dtMs: number, dragId: string | null, pieces: Readonly<Record<string, PieceState>>): void {
+    const entries = this.snappedEntries(dragId, pieces);
+    const key = entries.map(({ piece, state }) => {
+      const anchorOrPos = state.kind === 'snapped' ? state.anchorId : `${state.x},${state.y}`;
+      return `${piece.id}:${anchorOrPos}:${state.turns}`;
+    }).join('|');
+    if (key !== this.parityKey) {
+      this.parityKey = key;
+      const next = overlapLayers(this.canvasPolygons(entries));
+      const { kept, added } = diffLayers(this.currentParity, next);
+      this.currentParity = next;
+      this.parityGraphics.clear();
+      this.drawLayers(this.parityGraphics, kept);
+      this.parityIncomingGraphics.clear();
+      if (added.length > 0) {
+        this.drawLayers(this.parityIncomingGraphics, added);
+        this.incoming = { alpha: 0 };
+        this.parityIncomingGraphics.setAlpha(0);
+      } else {
+        this.incoming = null;
+      }
+    }
+    if (this.incoming) {
+      this.incoming.alpha = Math.min(1, this.incoming.alpha + dtMs / FEEDBACK_TOKENS.overlapFadeMs);
+      this.parityIncomingGraphics.setAlpha(this.incoming.alpha);
+      if (this.incoming.alpha >= 1) {
+        this.parityGraphics.clear();
+        this.drawLayers(this.parityGraphics, this.currentParity);
+        this.parityIncomingGraphics.clear();
+        this.incoming = null;
+      }
+    }
+    if (this.parityFade) {
+      this.parityFade.alpha = Math.max(0, this.parityFade.alpha - dtMs / this.parityFade.ms);
+      this.parityFadeGraphics.setAlpha(this.parityFade.alpha);
+      if (this.parityFade.alpha <= 0) {
+        this.parityFadeGraphics.clear();
+        this.parityFade = null;
+      }
+    }
+  }
 
+  /** Nét xem trước vùng sẽ ẩn khi mảnh đang kéo có neo ứng viên */
+  private syncPreview(snapshot: PlayViewSnapshot, pieces: Readonly<Record<string, PieceState>>): void {
     const drag = snapshot.dragInfo;
-    (level.targetPlacements ?? []).forEach((placement, index) => {
-      const reveal = this.targetReveal?.[index] ?? 1;
-      if (reveal <= 0) return;
-      const piece = level.pieces.find((p) => p.id === placement.pieceId);
-      if (!piece) return;
-      // Màn đặt tự do đánh dấu ứng viên bằng giao điểm; màn neo bằng id neo
+    const key = drag ? `${drag.pieceId}|${drag.snapCandidateId}` : '';
+    if (key === this.previewKey) return;
+    this.previewKey = key;
+    this.previewGraphics.clear();
+    if (!drag || !drag.snapCandidateId) return;
+    const piece = this.level.pieces.find((p) => p.id === drag.pieceId);
+    if (!piece) return;
+    const turns = (pieces[piece.id] ?? { turns: 0 }).turns;
+
+    let candidatePoly: CanvasPoint[] | null = null;
+    if (this.level.placement === 'free') {
+      const match = drag.snapCandidateId.match(/^grid:(-?\d+),(-?\d+)$/);
+      if (match) {
+        const gx = Number.parseInt(match[1], 10);
+        const gy = Number.parseInt(match[2], 10);
+        candidatePoly = piecePolygonCanvas(piece, gx, gy, turns, this.layout);
+      }
+    } else {
+      const anchor = piece.anchors.find((a) => a.id === drag.snapCandidateId);
+      if (anchor) {
+        candidatePoly = piecePolygonCanvas(piece, anchor.x, anchor.y, turns, this.layout);
+      }
+    }
+
+    if (!candidatePoly) return;
+
+    const polygons = [
+      ...this.canvasPolygons(this.snappedEntries(drag.pieceId, pieces)),
+      candidatePoly,
+    ];
+    this.previewGraphics.lineStyle(1.5, COLOR_NUMBERS.icePrimary, FEEDBACK_TOKENS.previewAlpha);
+    for (const layer of overlapLayers(polygons)) {
+      this.previewGraphics.strokePoints(layer.points.map((p) => new Phaser.Geom.Point(p.x, p.y)), true, true);
+    }
+  }
+
+  private drawLayers(g: Phaser.GameObjects.Graphics, layers: readonly ParityLayer[]): void {
+    for (const layer of layers) {
+      const pts = layer.points.map((p) => new Phaser.Geom.Point(p.x, p.y));
+      if (layer.filled) {
+        g.fillStyle(COLOR_NUMBERS.amberSolid, 1.0);
+        g.fillPoints(pts, true);
+      } else {
+        // Triệt tiêu quang học về màu mặt bia, rìa trong sáng nhẹ màu vàng nhạt
+        g.fillStyle(COLOR_NUMBERS.boardSurfaceTop, 1.0);
+        g.fillPoints(pts, true);
+        g.lineStyle(1.5, COLOR_NUMBERS.amberGlow, 0.7);
+        g.strokePoints(pts, true, true);
+      }
+    }
+  }
+
+  /** Bóng mục tiêu: sáng 0.7 → 1 trong ~120 ms khi neo của nó là ứng viên */
+  private syncTargets(dtMs: number, snapshot: PlayViewSnapshot, reduced: boolean): void {
+    const drag = snapshot.dragInfo;
+    let moving = false;
+    (this.level.targetPlacements ?? []).forEach((placement, i) => {
+      const piece = this.level.pieces.find((p) => p.id === placement.pieceId);
       const candidateId =
-        level.placement === 'free'
+        this.level.placement === 'free'
           ? `grid:${placement.x},${placement.y}`
-          : piece.anchors.find((a) => a.x === placement.x && a.y === placement.y)?.id;
-      const isHovered =
+          : piece?.anchors.find((a) => a.x === placement.x && a.y === placement.y)?.id;
+      const hovered =
         drag !== null &&
-        drag.pieceId === piece.id &&
+        drag.pieceId === placement.pieceId &&
         candidateId !== undefined &&
         drag.snapCandidateId === candidateId;
+      const goal = hovered ? 1 : FEEDBACK_TOKENS.targetIdleAlpha;
+      const next = reduced ? goal : stepScalar(this.hoverAlpha[i], goal, dtMs, FEEDBACK_TOKENS.tau.targetHover);
+      if (Math.abs(next - this.hoverAlpha[i]) > 1e-4) moving = true;
+      this.hoverAlpha[i] = Math.abs(next - goal) < 1e-3 ? goal : next;
+    });
+    const key = `${snapshot.showTarget}|${this.hoverAlpha.join(',')}`;
+    if (key !== this.targetKey || moving) {
+      this.targetKey = key;
+      this.drawTargetSilhouette(snapshot);
+    }
+  }
 
+  private drawTargetSilhouette(snapshot: PlayViewSnapshot): void {
+    this.targetGraphics.clear();
+    if (!snapshot.showTarget) return;
+    (this.level.targetPlacements ?? []).forEach((placement, index) => {
+      const reveal = this.targetReveal?.[index] ?? 1;
+      if (reveal <= 0) return;
+      const piece = this.level.pieces.find((p) => p.id === placement.pieceId);
+      if (!piece) return;
       drawJewelPolygon(
         this.targetGraphics,
         piecePolygonCanvas(piece, placement.x, placement.y, placement.turns, this.layout),
         {
           variant: 'target',
-          alpha: (isHovered ? 1 : 0.7) * reveal,
+          alpha: this.hoverAlpha[index] * reveal,
           sizePx: pieceRadiusPx(piece.frameSize, this.layout),
         }
       );
     });
   }
 
-  /**
-   * Trạng thái 1: Đang kéo (Dragging) - Phóng to và đổ bóng mềm
-   */
-  private drawDraggingPiece(piece: Piece, turns: number, dragInfo: DragInfo): void {
-    const isHoveringSnap = dragInfo.snapCandidateId !== null;
-    const framePx = piece.frameSize * this.layout.cellPixel * ANIM_TOKENS.scale.dragging;
-    const points = piecePolygonAround(piece, turns, dragInfo.x, dragInfo.y, framePx);
-
-    // Đổ bóng mềm xuống mặt bàn
-    this.draggingGraphics.fillStyle(0x000000, 0.45);
-    this.draggingGraphics.fillPoints(
-      points.map((p) => new Phaser.Geom.Point(p.x + 8, p.y + 12)),
-      true
-    );
-
-    // Thân mảnh vàng hổ phách sáng
-    drawJewelPolygon(this.draggingGraphics, points, {
-      variant: 'ghost',
-      alpha: isHoveringSnap ? 1 : PIECE_TOKENS.ghostAlpha,
-      sizePx: framePx / 2,
-    });
-  }
-
-  private trayPoints(piece: Piece, pState: PieceState, trayIndex: number): { points: Array<{ x: number; y: number }>; radius: number } {
-    const hitbox = pieceHitbox(piece, pState, this.layout, trayIndex, this.trayCount);
-    const cx = hitbox.x + hitbox.width / 2;
-    const cy = hitbox.y + hitbox.height / 2;
-    const radius = trayPieceRadiusPx(this.layout, this.trayCount);
-    return { points: piecePolygonAround(piece, pState.turns, cx, cy, radius * 2), radius };
-  }
-
-  private drawTrayPlaceholder(piece: Piece, pState: PieceState, trayIndex: number): void {
-    const { points, radius } = this.trayPoints(piece, pState, trayIndex);
-    drawJewelPolygon(this.piecesGraphics, points, { variant: 'placeholder', sizePx: radius });
-  }
-
-  private drawTrayPiece(piece: Piece, pState: PieceState, trayIndex: number, isSelected: boolean): void {
-    const { points, radius } = this.trayPoints(piece, pState, trayIndex);
-    drawJewelPolygon(this.piecesGraphics, points, {
-      variant: 'solid',
-      alpha: isSelected ? 1 : 0.9,
-      sizePx: radius,
-    });
-  }
-
-  /**
-   * Trạng thái 4: Mảnh tạm (Temporary Placement)
-   * Hiển thị độ mờ 60% và chấm chú thích phía trên
-   */
-  private drawTemporaryPiece(
-    piece: Piece,
-    pState: Extract<PieceState, { kind: 'temporary' }>,
-    isSelected: boolean
-  ): void {
-    const radiusPx = pieceRadiusPx(piece.frameSize, this.layout);
-    drawJewelPolygon(
-      this.temporaryGraphics,
-      piecePolygonCanvas(piece, pState.x, pState.y, pState.turns, this.layout),
-      { variant: 'ghost', alpha: isSelected ? 0.85 : 0.6, sizePx: radiusPx }
-    );
-
-    const center = pieceCenterCanvas(piece.frameSize, pState.x, pState.y, this.layout);
-    this.temporaryGraphics.lineStyle(1, COLOR_NUMBERS.textSecondary, 0.4);
-    this.temporaryGraphics.strokeCircle(center.x, center.y - radiusPx - 14, 4);
-  }
-
-  /**
-   * Trạng thái 2: Đã snap (Snapped)
-   */
-  private drawSnappedPiece(piece: Piece, x: number, y: number, turns: number): void {
-    drawJewelPolygon(
-      this.piecesGraphics,
-      piecePolygonCanvas(piece, x, y, turns, this.layout),
-      { variant: 'solid', sizePx: pieceRadiusPx(piece.frameSize, this.layout) }
-    );
-  }
-
-  /**
-   * Trạng thái 3: Vùng chồng lớp theo luật chẵn/lẻ.
-   * Lớp đơn đã được vẽ ở drawSnappedPiece; ở đây chỉ phủ các giao từ hai lớp
-   * trở lên: lớp chẵn về màu mặt bàn (vùng biến mất), lớp lẻ về màu mảnh.
-   */
-  private drawOverlapInversion(boardPieces: BoardPiece[]): void {
-    const polygons = boardPieces.map(({ piece, x, y, turns }) =>
-      piecePolygonCanvas(piece, x, y, turns, this.layout)
-    );
-
-    for (const layer of parityLayers(polygons)) {
-      if (layer.depth < 2) continue;
-      const pts = layer.points.map((p) => new Phaser.Geom.Point(p.x, p.y));
-      if (layer.filled) {
-        this.parityGraphics.fillStyle(COLOR_NUMBERS.amberSolid, 1.0);
-        this.parityGraphics.fillPoints(pts, true);
-      } else {
-        // Triệt tiêu quang học về màu mặt bia, rìa trong sáng nhẹ màu vàng nhạt
-        this.parityGraphics.fillStyle(COLOR_NUMBERS.boardSurfaceTop, 1.0);
-        this.parityGraphics.fillPoints(pts, true);
-        this.parityGraphics.lineStyle(1.5, COLOR_NUMBERS.amberGlow, 0.7);
-        this.parityGraphics.strokePoints(pts, true, true);
-      }
-    }
-  }
-
-  /**
-   * Trạng thái 5: Hoàn thành (Victory Celebration)
-   */
-  private drawVictoryCelebration(): void {
-    // Vệt sáng chạy quanh viền tấm bia
+  private drawVictoryPulse(): void {
     const { boardBounds } = this.layout;
     this.fxGraphics.lineStyle(2.5, COLOR_NUMBERS.amberGlow, 0.6 + Math.sin(this.victoryPulse) * 0.3);
     this.fxGraphics.strokeRoundedRect(
@@ -412,41 +534,25 @@ export class BoardRenderer {
     );
   }
 
-  /** Hệ số hiện dần của từng bóng mục tiêu (null = hiện đủ); vẽ lại ngay. */
-  public setTargetReveal(values: readonly number[] | null): void {
-    this.targetReveal = values;
-    if (this.lastLevel && this.lastSnapshot) {
-      this.drawTargetSilhouette(this.lastLevel, this.lastSnapshot);
-    }
-  }
-
-  public getTransitionParts(): BoardTransitionParts {
-    const present = <T>(items: Array<T | null | undefined>): T[] =>
-      items.filter((item): item is T => item !== null && item !== undefined);
-    return {
-      board: present<Poseable>([this.boardBase, this.gridTexture, this.boardTop]),
-      runes: [...this.runes],
-      rings: [this.ringGraphics],
-      tray: present<Poseable>([this.trayFrame, ...this.trayWells]),
-      trayPieces: [this.piecesGraphics],
-      pieces: [this.piecesGraphics, this.parityGraphics, this.temporaryGraphics, this.draggingGraphics, this.fxGraphics],
-      targets: [this.targetGraphics],
-      grid: this.gridTexture,
-    };
-  }
-
   public destroy(): void {
-    this.ringGraphics.destroy();
+    for (const g of [
+      this.ringGraphics,
+      this.targetGraphics,
+      this.placeholderGraphics,
+      this.parityGraphics,
+      this.parityIncomingGraphics,
+      this.parityFadeGraphics,
+      this.previewGraphics,
+      this.temporaryGraphics,
+      this.fxGraphics,
+    ]) {
+      g.destroy();
+    }
+    for (const view of this.views.values()) view.destroy();
     this.boardBase?.destroy();
     this.boardTop?.destroy();
     this.gridTexture?.destroy();
     this.trayFrame?.destroy();
     this.trayWells.forEach((w) => w.destroy());
-    this.targetGraphics.destroy();
-    this.piecesGraphics.destroy();
-    this.parityGraphics.destroy();
-    this.temporaryGraphics.destroy();
-    this.draggingGraphics.destroy();
-    this.fxGraphics.destroy();
   }
 }

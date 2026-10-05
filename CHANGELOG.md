@@ -4,6 +4,13 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-05 - Frame-based rendering with PieceView and BoardRenderer.tick (F2 task 6)
+
+- Added `game-next/src/presentation/PieceView.ts`: one container per piece holding texture-based shadow, body, and add-blended light images; applies frame-rate-independent smoothing, velocity tilt, bounce, shake, spin and flash.
+- Rewrote `game-next/src/presentation/BoardRenderer.ts` around `tick(dtMs, snapshot, pieces)`: uses `PieceView` for piece rendering, animates incoming parity layers via `overlapFadeMs`, smoothly steps target hover alphas, and draws preview strokes.
+- Updated `PlayScene.ts` to bake one piece per frame in `update()`, tick the board renderer, and throttle snap hint updates.
+- Verification: `tests/boardRendererLayers.test.ts` and `tests/boardRendererReveal.test.ts` updated and passing; full test suite (66 test files, 815 tests) and web build passed.
+
 ### 2026-10-05 - Add piece texture cache with a memory budget (F2 task 5)
 
 - Added `game-next/src/presentation/PieceTextureCache.ts`: each piece orientation is baked once into a 360 px jewel body plus half-resolution black and white silhouettes (no `setTintFill`, so WebGL and Canvas share one path), one piece per frame, with synchronous `ensure` for rotations.
