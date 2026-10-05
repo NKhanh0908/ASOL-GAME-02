@@ -4,6 +4,11 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-05 - Choreograph constellation map transitions (F1 task 8)
+
+- Kept references to nodes, Bezier lines, sparks and chapter banners in `LevelSelectScene`; implemented map in/out transitions with distance-ordered node stagger radiating from the active/tapped node, header slide, and an expanding ice-ring pulse covering the board bounds when navigating to play.
+- Verification: `npm run typecheck` and `npm test` passed (58 test files, 765 tests).
+
 ### 2026-10-05 - Choreograph the main menu (F1 task 7)
 
 - Grouped the menu title, buttons, settings, language pill, and footer into animatable containers and drew the Song Tinh emblem around its own origin; added menu in/out choreography (button collapse, staggered chrome, emblem descending into the board or flying to the map header, 4x ring spin) and stopped the emblem rings under reduced motion.
