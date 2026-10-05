@@ -4,6 +4,12 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-05 - Merge audio synthesis and sound cues into main
+
+- Merged `feat/audio-synth` into `main` at `7c28b64`.
+- Incorporates the code-synthesized WebAudio SFX engine (GS Tasks 1–8, 10–12), streaming music port, settings toggles (GS Task 9a), astronomy menu taglines, and full gameplay & UI sound cues (G2 Tasks 10–12).
+- Verification: 84 files / 1026 tests green; `npm run build` clean; `content:validate` passes 22 authored levels; branch `feat/audio-synth` preserved for music tracks (Task 9b).
+
 ### 2026-10-05 - Play feedback, victory and UI sound cues (G2 tasks 10–12)
 
 - Added `game-next/src/presentation/feedback/audioCues.ts` mapping gameplay feedback events to synthesized sound cues: pentatonic rising chime on snap based on board snap count (`PENTATONIC_STEPS`: C5, D5, E5, G5, A5, C6), soft tap on piece settle, swish on return/reset, and soft ticks on lift and rotate. `playVictoryAudio` sequences the 4-step C major arpeggio victory stinger (C5, E5, G5, C6) with 90 ms intervals.

@@ -1,12 +1,12 @@
-# Status — updated 2026-10-05 by Antigravity (G2 audio cues complete)
+# Status — updated 2026-10-05 by Antigravity (audio-synth merged to main)
 
 Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; keep this file ≤ 60 lines.
 
 ## Now
 
-- Branch: `feat/audio-synth` (from `main`, merged up to `f964e13`). Main checkout D:\Working\ASOL\ASOL-GAME-02.
-- Carried on this branch: `feat/menu-astronomy-taglines` merged in.
-- Product state: GS (Tasks 1–8, 9a, 10–12) and G2 (Tasks 10–12) complete and verified. Full sound effects active across gameplay feedback (pentatonic rising chimes, settle, lift, rotate, swish, victory stinger) and UI surfaces (buttons, modals, constellation nodes).
+- Branch: `main` (merged `feat/audio-synth` @ `7c28b64`; feature branch kept for Task 9b). Main checkout D:\Working\ASOL\ASOL-GAME-02.
+- Carried on `main`: `feat/menu-astronomy-taglines`, GS audio synth engine, and G2 audio cues.
+- Product state: GS (Tasks 1–8, 9a, 10–12) and G2 (Tasks 10–12) complete and verified on `main`. Full sound effects active across gameplay feedback (pentatonic rising chimes, settle, lift, rotate, swish, victory stinger) and UI surfaces (buttons, modals, constellation nodes).
 - Next step: GS Task 9b (music asset sourcing & metadata) awaiting reviewer tracks, then final audio acceptance checks.
 - Verified: typecheck clean, 84 files / 1026 tests pass, `npm run build` clean with no Audio Lab in `dist/`, `content:validate` 22 levels pass, Android debug APK assembleDebug successful.
 
@@ -19,8 +19,8 @@ Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; k
 | BR casual branding, splash & bilingual | complete; merged to `main` | `docs/gdd/assets/` mockups |
 | F motion (F1 → F2 → F3) | F1 & F2 complete, accepted and on `main`; F3 approved but deferred | `docs/superpowers/plans/2026-10-03-f-motion-index.md` |
 | C chapter 2 + Hoa Pham | complete; all 16 levels approved and available in campaign order | `docs/superpowers/plans/2026-10-02-c-chapter-2-hoa-pham-levels.md` |
-| GS audio synthesis (Tasks 1–12) | GS1 & GS2 (Tasks 9a, 10, 11, 12) complete; Task 9b waits on music tracks | `docs/superpowers/plans/2026-10-05-gs-audio-synth-index.md` |
-| G audio (music, cues) | G2 (Tasks 10–12 cues) complete; music tracks pending in Task 9b | `docs/superpowers/plans/2026-10-03-g-audio-index.md` |
+| GS audio synthesis (Tasks 1–12) | GS1 & GS2 (Tasks 9a, 10, 11, 12) complete, merged to `main`; Task 9b waits on music tracks | `docs/superpowers/plans/2026-10-05-gs-audio-synth-index.md` |
+| G audio (music, cues) | G2 (Tasks 10–12 cues) complete, merged to `main`; music tracks pending in Task 9b | `docs/superpowers/plans/2026-10-03-g-audio-index.md` |
 | BF board-fit-by-cells | complete, merged to `main` with Plan C | `docs/superpowers/plans/2026-10-03-board-fit-by-cells.md` |
 
 ## Open decisions / blockers
