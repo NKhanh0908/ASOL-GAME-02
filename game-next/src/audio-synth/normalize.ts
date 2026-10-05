@@ -17,7 +17,7 @@ export function measure(samples: Float32Array): Measurement {
 }
 
 /**
- * Returns a scaled copy; silence is returned untouched rather than divided by zero.
+ * Always returns a new array; silence comes back as an all-zero copy rather than divided by zero.
  * A peak target lands the loudest sample on the target. An rms target applies the
  * exact rms scale, then hard-limits each sample to +/-CEILING, so the requested
  * loudness is never silently reduced to make room for a spike.
@@ -26,12 +26,12 @@ export function applyNormalize(samples: Float32Array, target: NormalizeTarget): 
   const { peak, rms } = measure(samples);
   const out = new Float32Array(samples.length);
   if ('peak' in target) {
-    if (peak === 0) return samples;
+    if (peak === 0) return out;
     const scale = target.peak / peak;
     for (let i = 0; i < samples.length; i++) out[i] = samples[i] * scale;
     return out;
   }
-  if (rms === 0) return samples;
+  if (rms === 0) return out;
   const scale = target.rms / rms;
   for (let i = 0; i < samples.length; i++) {
     out[i] = Math.max(-CEILING, Math.min(CEILING, samples[i] * scale));

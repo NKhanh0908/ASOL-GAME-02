@@ -4,6 +4,15 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-05 - Apply the GS1 final-review fixes
+
+- `game-next/tests/audioSynthPortable.test.ts`: the portability guard now walks `src/audio-synth/` recursively and catches `from`, bare `import`, dynamic `import()`, `require()` and `export ... from` in any quote style, and rejects any path containing a `..` segment. A self-test covers each form.
+- `game-next/src/audio-synth/patch.ts`: `validatePatch` rejects an `fm` source whose modulator (`carrierHz * ratio`) is above Nyquist, reported at `layers[i].source.ratio`. Test in `tests/audioPatchValidate.test.ts`.
+- `game-next/src/audio-synth/normalize.ts`: `applyNormalize` returns a zero-filled copy for silence instead of the caller's array. Test in `tests/audioRender.test.ts`.
+- `game-next/tests/audioPatches.test.ts`: the finiteness check scans for the first non-finite index and asserts once, instead of one `expect` per sample (about 12 s down to 0.5 s).
+- Docs: `docs/ai/STATUS.md` and `docs/ai/DOCS-INDEX.md` now show GS1 complete and GS2 next; the design spec's patch table (section 10) matches the shipped `bell` and `tick`; `docs/ai/ARCHITECTURE.md` gains an "Audio synthesis" section.
+- Verification: `npm run typecheck` clean. The portability test failed on a deliberately added `import { readFileSync } from 'node:fs';` in `src/audio-synth/report.ts` (`report.ts -> node:fs`) and passed once it was removed. `npx vitest run`: 77 files / 926 tests green, duration 42.8 s before and 20.7 s after (patch finiteness test 12.1 s to 0.5 s). `npm run build` clean; `npm run content:validate` all 22 levels pass.
+
 ### 2026-10-05 - Audio engine README and presets (GS task 8)
 
 - Added `game-next/src/audio-synth/README.md`, the onboarding document that travels with the folder: a runnable "hello bell", the five concepts with the reasoning behind each, the real render order (fade-out before normalize, final sample exactly zero), the rms hard-limit caveat (per-sample clamp to 0.99, so spiky material delivers less rms than requested), the Audio Lab "Copy as TypeScript" gotcha (re-link `MUSIC_ROOT_HZ` expressions after pasting), a per-family tuning table, a porting guide, and what the engine does not do.

@@ -52,6 +52,12 @@ Screenshots: `scripts/shoot-level.sh <id> <outdir>` (headless Chrome, needs the 
 - Validation: chapters 1–3 must not enable rotation and chapter 4 must enable it; chapter 1 solutions have no turns and no overlap.
 - Unlock: `order === 1` always open; otherwise predecessor completed.
 
+## Audio synthesis
+
+- `src/audio-synth/` is a portable engine: it imports nothing outside its own folder, so it can be copied into another project as is. `tests/audioSynthPortable.test.ts` enforces this (recursively, every import form); keep it passing.
+- `MUSIC_ROOT_HZ` lives in its own leaf module `src/content/audio/root.ts`. The patches read it while their module evaluates and `src/content/audio/index.ts` imports the patches, so exporting it from that barrel makes an import cycle that throws `ReferenceError` at load time.
+- Concepts, patch model and porting steps: `src/audio-synth/README.md`. Design: `docs/superpowers/specs/2026-10-05-audio-synth-engine-design.md`.
+
 ## Persistence
 
 - `mirror.rebuild.progress.v1` and `mirror.rebuild.progress.recovery` (`src/infrastructure/progressRepository.ts:10-11`); campaign revision `'oracle-v1'`. Changing the schema or revision resets players' progress (old data copied to the recovery key).

@@ -78,6 +78,17 @@ describe('measure and applyNormalize', () => {
   });
 });
 
+describe('applyNormalize copies', () => {
+  test('silence returns a new array, not the input itself', () => {
+    for (const target of [{ peak: 0.8 }, { rms: 0.3 }]) {
+      const input = new Float32Array(16);
+      const out = applyNormalize(input, target);
+      expect(out).not.toBe(input);
+      expect(out.length).toBe(input.length);
+    }
+  });
+});
+
 describe('renderPatch', () => {
   test('produces exactly the requested number of samples', () => {
     expect(renderPatch(simple(), SR).length).toBe(Math.round((200 * SR) / 1000));

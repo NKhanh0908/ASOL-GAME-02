@@ -76,6 +76,14 @@ describe('validatePatch', () => {
     }
   });
 
+  test('an FM modulator above Nyquist is rejected even when the carrier is fine', () => {
+    const patch = good();
+    patch.layers[0].source = { kind: 'fm', carrierHz: 4000, ratio: 8, index: 1 };
+    expect(validatePatch(patch, SR).map((i) => i.path)).toContain('layers[0].source.ratio');
+    patch.layers[0].source = { kind: 'fm', carrierHz: 4000, ratio: 3, index: 1 };
+    expect(validatePatch(patch, SR)).toEqual([]);
+  });
+
   test('a glide target above Nyquist is rejected', () => {
     const patch = good();
     patch.layers[0].source = { kind: 'sine', hz: 440, glideToHz: 30000 };

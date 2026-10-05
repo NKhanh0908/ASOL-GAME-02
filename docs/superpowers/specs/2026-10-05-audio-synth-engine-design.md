@@ -154,14 +154,16 @@ The bell no longer needs measuring. The reviewer states the key of the music the
 
 | Key | Construction | Limit |
 |---|---|---|
-| `bell` | one `fm` layer, ratio 3.5 (inharmonic), `indexEnv` decaying fast, exponential amplitude decay | 1.5 s |
-| `tick` | white `noise`, highpass, 20 ms decay | 150 ms |
+| `bell` | one `fm` layer, carrier `MUSIC_ROOT_HZ * 2`, harmonic ratio 3, index 2.5 with `indexEnv` decaying in 110 ms, lowpass 6.5 kHz, exponential amplitude decay | 1.5 s |
+| `tick` | one `fm` ping, carrier `MUSIC_ROOT_HZ * 4`, ratio 1.3, index 2.1 with `indexEnv` decaying in 7 ms, lowpass 4.9 kHz, 99 ms exponential decay | 150 ms |
 | `tap-soft` | `sine` 180 Hz, lowpass, 60 ms decay | 300 ms |
 | `thud` | `sine` glide 120 -> 60 Hz plus a `noise` layer, lowpass | 400 ms |
 | `hollow` | pink `noise`, bandpass, 300 ms attack | 1 s |
 | `shimmer` | three detuned high layers, long decay | 1 s |
 | `swish` | white `noise`, bandpass `sweepToHz` 4000 -> 800 | 600 ms |
 | `stinger-win` | four `fm` layers offset by `startMs`, pentatonic, resolving to the root | 3-5 s |
+
+The `bell` and `tick` rows describe the shipped patches, not the first draft. The draft (inharmonic ratio 3.5 bell, highpassed white-noise tick) read as harsh at the reviewer's listening gate, and the values above were set by ear in the Audio Lab. The other rows are still the draft; `src/content/audio/sources/<key>.ts` is the truth.
 
 ## 11. Audio Lab
 

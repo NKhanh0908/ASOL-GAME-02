@@ -48,7 +48,14 @@ describe('Mirror sfx patches', () => {
       expect(peak, `${key} peak`).toBeGreaterThan(0.1);
       expect(peak, `${key} peak`).toBeLessThanOrEqual(1);
       expect(rms, `${key} rms`).toBeGreaterThan(0.001);
-      for (const v of out) expect(Number.isFinite(v)).toBe(true);
+      let firstBad = -1;
+      for (let i = 0; i < out.length; i++) {
+        if (!Number.isFinite(out[i])) {
+          firstBad = i;
+          break;
+        }
+      }
+      expect(firstBad, `${key} first non-finite sample index`).toBe(-1);
     }
   });
 

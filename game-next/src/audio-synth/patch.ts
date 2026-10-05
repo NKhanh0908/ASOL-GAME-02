@@ -112,6 +112,12 @@ export function validatePatch(patch: Patch, sampleRate: number): PatchIssue[] {
       if (finite(src.carrierHz) && src.carrierHz > nyquist) {
         issues.push({ path: `${at}.source.carrierHz`, message: 'carrierHz is above Nyquist' });
       }
+      if (finite(src.carrierHz) && finite(src.ratio) && src.carrierHz * src.ratio > nyquist) {
+        issues.push({
+          path: `${at}.source.ratio`,
+          message: 'the modulator (carrierHz * ratio) is above Nyquist',
+        });
+      }
       if (src.indexEnv) checkEnvelope(src.indexEnv, `${at}.source.indexEnv`, issues);
     } else {
       if (!finite(src.hz) || src.hz <= 0) {

@@ -7,15 +7,61 @@ import { bellPreset, clickPreset, whooshPreset } from '../src/audio-synth/preset
 
 const dir = fileURLToPath(new URL('../src/audio-synth/', import.meta.url));
 
+/** Every .ts file under the engine folder, as paths relative to it, subfolders included. */
+function listSources(root: string, rel = ''): string[] {
+  const found: string[] = [];
+  for (const entry of readdirSync(root + rel, { withFileTypes: true })) {
+    if (entry.isDirectory()) found.push(...listSources(root, `${rel}${entry.name}/`));
+    else if (entry.name.endsWith('.ts')) found.push(rel + entry.name);
+  }
+  return found;
+}
+
+/**
+ * Every module specifier a file pulls in: static `from '...'`, bare `import '...'`,
+ * dynamic `import('...')`, `require('...')` and `export ... from '...'`, in single,
+ * double or backtick quotes.
+ */
+function importTargets(text: string): string[] {
+  const patterns = [
+    /\bfrom\s*(['"`])([^'"`]+)\1/g,
+    /\bimport\s*(['"`])([^'"`]+)\1/g,
+    /\bimport\s*\(\s*(['"`])([^'"`]+)\1/g,
+    /\brequire\s*\(\s*(['"`])([^'"`]+)\1/g,
+  ];
+  return patterns.flatMap((re) => [...text.matchAll(re)].map((m) => m[2]));
+}
+
+/** Only `./...` paths that stay inside the folder (no `..` segment anywhere) are allowed. */
+function isLocal(target: string): boolean {
+  return target.startsWith('./') && !target.split('/').includes('..');
+}
+
 describe('the engine folder stays portable', () => {
+  test('the checker recognises every import form and rejects escapes', () => {
+    const bad = [
+      `import { a } from 'x';`,
+      `import { a } from "x";`,
+      `import 'x';`,
+      `const m = await import('x');`,
+      `const m = require("x");`,
+      `export * from '../content/x';`,
+      `import { a } from './../content/x';`,
+      `import { a } from './sub/../../x';`,
+    ];
+    for (const line of bad) {
+      expect(importTargets(line).filter((t) => !isLocal(t)), line).toHaveLength(1);
+    }
+    expect(importTargets(`import { a } from './patch.ts';`).filter((t) => !isLocal(t))).toEqual([]);
+  });
+
   test('no file imports anything outside src/audio-synth/', () => {
+    const files = listSources(dir);
+    expect(files.length).toBeGreaterThan(0);
     const offenders: string[] = [];
-    for (const file of readdirSync(dir).filter((f) => f.endsWith('.ts'))) {
-      const text = readFileSync(dir + file, 'utf8');
-      for (const match of text.matchAll(/from\s+'([^']+)'/g)) {
-        const target = match[1];
-        const local = target.startsWith('./') && !target.startsWith('../');
-        if (!local) offenders.push(`${file} -> ${target}`);
+    for (const file of files) {
+      for (const target of importTargets(readFileSync(dir + file, 'utf8'))) {
+        if (!isLocal(target)) offenders.push(`${file} -> ${target}`);
       }
     }
     expect(offenders).toEqual([]);
