@@ -4,6 +4,13 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-05 - Repository cleanup: merged branches, stale worktree, build leftovers
+
+- Deleted 21 merged remote branches from `origin` (all verified merged into `origin/main`): `docs/level-system-specs`, `feat/campaign-task-1..5`, `feat/chapter-1-levels`, `feat/chapter-2-hoa-pham`, `feat/gui-improve-v1`, `feat/level-kit-chapters`, `feat/mirror-prototype`, `feat/rebuild-m0` + its 5 task branches, `feat/rebuild-m1`, `feat/shapes-v2`, `feat/ui-redesign-divination-disc`, `fix/board-fit-by-cells`. Kept `origin/main` and `origin/feat/audio-synth` (still needed for GS Task 9b). Local branches were intentionally left in place.
+- Removed the stale git worktree at `D:/Working/ASOL/ASOL-GAME-02-boardfit` (branch `fix/board-fit-by-cells`, already merged); its working tree was clean. This also removes the `detect_changes`-from-a-worktree trap recorded in STATUS gotchas.
+- Deleted untracked build and scratch leftovers (~67 MB): `.shots/`, `game/dist`, `game/node_modules`, `game-next/dist`, `game-next/android/app/build`, and `.github/modernize/java-upgrade/` (a leftover GitHub Java-upgrade tool with no relevance to this TypeScript project; it self-ignored via `**/*`, so it had never been tracked).
+- Verification: `git branch -r --no-merged origin/main` empty before deletion, confirming no unmerged work was lost; `git status` clean and no tracked file changed by the deletions; `git worktree list` shows only the main checkout; GitNexus re-indexed from the main checkout.
+
 ### 2026-10-05 - Commit missing Capacitor haptics Android wiring
 
 - Committed the generated Capacitor sync output that was left uncommitted when `@capacitor/haptics` was added: `game-next/android/capacitor.settings.gradle` now includes the `:capacitor-haptics` project and `game-next/android/app/capacitor.build.gradle` declares it as a dependency. Without these, a fresh clone could not assemble the Android app with haptics support.
