@@ -4,9 +4,9 @@ Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; k
 
 ## Now
 
-- Branch: `feat/motion-f1` (branched from `main`).
-- Product state: F1 (Tasks 1–10: Foundation, SceneDirector, and Choreography for Menu, Map, Play) completely finished on `feat/motion-f1`.
-- Next step: **Reviewer Stop Point 2** (NKhanh0908 review on dev server). Once approved, create `feat/motion-f2` from `feat/motion-f1` for F2 (In-level game feel).
+- Branch: `feat/motion-f2` (branched from `feat/motion-f1`).
+- Product state: F1 completed and verified. Starting F2 Giai đoạn 1/3 (Tasks 1–4: Feedback logic and haptics).
+- Next step: F2 Task 1 (Avoid redundant mask computation on drag). Stop Point 3 at Task 4 for `@capacitor/haptics`.
 
 ## Streams
 

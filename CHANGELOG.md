@@ -4,6 +4,12 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-05 - Stop redundant mask evaluation while dragging (F2 task 1)
+
+- `PlayController` now caches the committed mask and updates it only when the puzzle state changes; `getSnapshot()` no longer evaluates the 20,480-cell mask.
+- `updateDrag` accepts `computePreviewMask` and `previous`; the controller disables the unused preview mask, so a drag never calls `evaluate`.
+- Verification: `tests/playControllerCache.test.ts` (evaluate spy) and two new drag tests failed before the change, then passed; `npm run typecheck` and `npm test` (61 test files, 772 tests) passed.
+
 ### 2026-10-05 - Fix responsive camera zoom in play choreography
 
 - Fixed `zoomCamera` in `playChoreography.ts` to scale relative to the camera's base `designScale` instead of resetting zoom to hardcoded 1.0; prevents mobile gameplay layouts from shrinking upon entering from menu or map.

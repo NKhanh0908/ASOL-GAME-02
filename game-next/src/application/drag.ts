@@ -34,6 +34,21 @@ export type DragUpdate = {
   snapCandidateId: string | null;
 };
 
+export type UpdateDragOptions = {
+  /** false: không tính mask xem trước (renderer không dùng); mặc định true để giữ test cũ */
+  computePreviewMask?: boolean;
+  /** Kết quả lần trước: dùng lại mask nếu placement không đổi */
+  previous?: DragUpdate | null;
+};
+
+/** Mask rỗng dùng chung khi không tính xem trước */
+export const EMPTY_PREVIEW_MASK = new Uint8Array(0);
+
+function samePlacement(a: Placement | null, b: Placement | null): boolean {
+  if (a === null || b === null) return a === b;
+  return a.pieceId === b.pieceId && a.x === b.x && a.y === b.y && a.turns === b.turns;
+}
+
 type SnapTarget = { x: number; y: number; candidateId: string };
 
 /**
@@ -118,7 +133,8 @@ export function updateDrag(
   level: Level,
   pointerX: number,
   pointerY: number,
-  layout: LayoutMetrics
+  layout: LayoutMetrics,
+  options: UpdateDragOptions = {}
 ): DragUpdate {
   const piece = level.pieces.find((p) => p.id === drag.pieceId);
   if (!piece) {
@@ -157,11 +173,19 @@ export function updateDrag(
     }
   }
 
+  const snapCandidateId = target ? target.candidateId : null;
+  if (options.computePreviewMask === false) {
+    return { previewPlacement, previewMask: EMPTY_PREVIEW_MASK, snapCandidateId };
+  }
+  const previous = options.previous ?? null;
+  if (previous && previous.previewMask.length > 0 && samePlacement(previous.previewPlacement, previewPlacement)) {
+    return { previewPlacement, previewMask: previous.previewMask, snapCandidateId };
+  }
+
   // Tập hợp placement ngoại trừ piece đang drag
   const otherPlacements = placementsOf(level, drag.committedState).filter(
     (p) => p.pieceId !== piece.id
   );
-
   const previewPlacements = previewPlacement
     ? [...otherPlacements, previewPlacement]
     : otherPlacements;
@@ -173,11 +197,7 @@ export function updateDrag(
     previewMask = evaluate(level, otherPlacements);
   }
 
-  return {
-    previewPlacement,
-    previewMask,
-    snapCandidateId: target ? target.candidateId : null,
-  };
+  return { previewPlacement, previewMask, snapCandidateId };
 }
 
 export function finishDrag(

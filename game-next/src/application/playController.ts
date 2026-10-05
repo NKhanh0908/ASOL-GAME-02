@@ -1,4 +1,4 @@
-import type { Level, Placement, PuzzleState, Transition } from '../domain/model.ts';
+import type { Level, PuzzleState, Transition } from '../domain/model.ts';
 import { applyCommand, createPuzzle, placementsOf } from '../domain/session.ts';
 import { evaluate } from '../domain/mask.ts';
 import type { ProgressRepository } from './progressPort.ts';
@@ -33,6 +33,7 @@ export class PlayController {
   private progressRepo: ProgressRepository;
   private isCampaign: boolean;
   private puzzleState: PuzzleState;
+  private committedMask: Uint8Array;
   private selectedPieceId: string | null = null;
   private dragSession: DragSession | null = null;
   private dragUpdate: DragUpdate | null = null;
@@ -49,16 +50,20 @@ export class PlayController {
     this.progressRepo = progressRepo;
     this.isCampaign = isCampaign;
     this.puzzleState = createPuzzle(level);
+    this.committedMask = evaluate(level, placementsOf(level, this.puzzleState));
     this.showTarget = initialShowTarget;
+  }
+
+  /** Mọi thay đổi trạng thái đi qua đây để mask cache luôn khớp */
+  private commitState(next: PuzzleState, mask: Uint8Array): void {
+    this.puzzleState = next;
+    this.committedMask = mask;
   }
 
   getSnapshot(): PlayViewSnapshot {
     const snappedCount = Object.values(this.puzzleState.pieces).filter(
       (p) => p.kind === 'snapped' || p.kind === 'placed'
     ).length;
-
-    const committedPlacements: Placement[] = placementsOf(this.level, this.puzzleState);
-    const committedMask = evaluate(this.level, committedPlacements);
 
     return {
       levelId: this.level.id,
@@ -71,7 +76,7 @@ export class PlayController {
       dragPreviewMask: this.dragUpdate ? this.dragUpdate.previewMask : null,
       snapCandidateId: this.dragUpdate ? this.dragUpdate.snapCandidateId : null,
       dragInfo: this.dragInfo,
-      committedMask,
+      committedMask: this.committedMask,
     };
   }
 
@@ -109,7 +114,9 @@ export class PlayController {
           originalIndex,
           this.level.pieces.length
         );
-        this.dragUpdate = updateDrag(this.dragSession, this.level, pointerX, pointerY, layout);
+        this.dragUpdate = updateDrag(this.dragSession, this.level, pointerX, pointerY, layout, {
+          computePreviewMask: false,
+        });
         this.dragInfo = {
           pieceId: piece.id,
           x: pointerX - this.dragSession.pointerOffset.x,
@@ -125,7 +132,10 @@ export class PlayController {
 
   onPointerMove(pointerX: number, pointerY: number, layout: LayoutMetrics): void {
     if (!this.dragSession) return;
-    this.dragUpdate = updateDrag(this.dragSession, this.level, pointerX, pointerY, layout);
+    this.dragUpdate = updateDrag(this.dragSession, this.level, pointerX, pointerY, layout, {
+      computePreviewMask: false,
+      previous: this.dragUpdate,
+    });
     this.dragInfo = {
       pieceId: this.dragSession.pieceId,
       x: pointerX - this.dragSession.pointerOffset.x,
@@ -143,7 +153,7 @@ export class PlayController {
     this.dragInfo = null;
 
     if (transition.accepted) {
-      this.puzzleState = transition.state;
+      this.commitState(transition.state, transition.mask);
       if (transition.becameWon && this.isCampaign) {
         this.progressRepo.complete(this.level.id);
       }
@@ -174,7 +184,7 @@ export class PlayController {
     });
 
     if (transition.accepted) {
-      this.puzzleState = transition.state;
+      this.commitState(transition.state, transition.mask);
       if (transition.becameWon && this.isCampaign) {
         this.progressRepo.complete(this.level.id);
       }
@@ -185,7 +195,7 @@ export class PlayController {
 
   onReset(): Transition {
     const transition = applyCommand(this.level, this.puzzleState, { type: 'reset' });
-    this.puzzleState = transition.state;
+    this.commitState(transition.state, transition.mask);
     this.selectedPieceId = null;
     this.dragSession = null;
     this.dragUpdate = null;
