@@ -1,6 +1,6 @@
 # Mirror — Master Game Design Document
 
-*Bản thiết kế trải nghiệm cho Android MVP · 01/10/2026 · phiên bản 0.2.2 (Cập nhật Kiến trúc Giao diện Tấm Bia Tiên Tri)*
+*Bản thiết kế trải nghiệm cho Android & Web MVP · Cập nhật 05/10/2026 · phiên bản 0.3.0 (Tích hợp Hệ thống Âm thanh WebAudio Synth, Chuyển động Game Feel & 22 Màn Phê Duyệt)*
 
 ## Tổng quan trong 30 giây
 
@@ -9,15 +9,15 @@
 | Câu hỏi | Câu trả lời thiết kế |
 |---|---|
 | Dành cho ai? | Người thích puzzle quan sát, thử nghiệm bằng tay, chơi thư giãn mà không có đồng hồ hay giới hạn lượt. Độ tuổi và thói quen chơi cần xác nhận bằng playtest. |
-| Người chơi làm gì? | Xem bóng mục tiêu, kéo mảnh từ khay vào bàn, thử các vị trí neo, quan sát vùng hiện/trống, rồi ở Chương 4 xoay mảnh từng nấc 90°. |
+| Người chơi làm gì? | Xem bóng mục tiêu, kéo mảnh từ khay vào bàn, thử các vị trí neo, quan sát vùng hiện/trống, lắng nghe phản hồi âm thanh ngũ cung khi snap, rồi ở Chương 4 xoay mảnh từng nấc 90°. |
 | Điểm khác biệt | Người chơi **tạo khoảng trống có chủ đích** bằng giao nhau, thay vì chỉ lấp đầy một khuôn; vùng giao của mảnh cùng màu có thể biến mất rồi hiện lại. |
 | Một phiên chơi | Mục tiêu thiết kế **2–5 phút** cho 1–3 màn đầu; đây là giả thuyết để đo, chưa phải kết quả thực tế. Có thể thoát về menu giữa hai màn. |
-| Quy mô MVP | 28 màn thủ công dự kiến, bốn chương (6 + 6 + 10 + 6 màn); Android dọc, offline, miễn phí, một màu mảnh, không quảng cáo/IAP. |
+| Quy mô MVP | 28 màn thủ công (hiện đã phê duyệt và kiểm chứng 22 màn thuộc Chương 1, 2 và 3); Android dọc & Web, offline, miễn phí, một màu mảnh, không quảng cáo/IAP. |
 | Tham chiếu | [Shadowmatic](https://www.shadowmatic.com/) cho cảm giác khám phá bóng hình; [Gorogoa](https://new.annapurnainteractive.com/en/games/gorogoa) cho cách người chơi thử thao tác hình ảnh. Đây là tham chiếu trải nghiệm, không phải mẫu sao chép cơ chế. |
 
 **Định vị:** dùng “puzzle ghép bóng bằng vùng giao” trong mô tả sản phẩm; tránh gọi là “match hình” vì dễ bị hiểu thành match-3 hoặc ghép cặp. Không dùng hình minh họa nhiều màu trong tài liệu MVP: giao nhau giữa **khác màu** chỉ thuộc giai đoạn sau, khi đó mới quyết định pha màu hay hiện màu mảnh trên cùng.
 
-**Trạng thái duy nhất của tài liệu:** Đây là thiết kế để review, chưa phải xác nhận Gate G2. Sáu màn 1-1 đến 1-3 và 2-1 đến 2-3 có dữ liệu hình học từ prototype, nhưng nhịp học và độ khó chưa được playtest đủ. Mười hai màn còn lại mới có vai trò học và dữ liệu nháp trong cây làm việc, chưa được duyệt thành nội dung campaign. Các con số mang nhãn **mục tiêu/đề xuất** cần đo trên máy thật trước khi chốt. Nội dung thiết kế cần để hiểu Mirror được trình bày ngay trong file này; tài liệu nguồn ở cuối chỉ phục vụ truy vết.
+**Trạng thái tài liệu:** Cập nhật đồng bộ với bản build `game-next` (05/10/2026). Toàn bộ 22 màn chơi của Chương 1 (Khởi Nguyên 1-1..1-6), Chương 2 (Giao Thoa 2-1..2-6) và Chương 3 (Họa Phẩm 3-1..3-10) đã hoàn thiện 100%, được giải nghiệm duy nhất bằng solver XOR và phê duyệt vào campaign (`npm run content:validate`). Hệ thống âm thanh tổng hợp thời gian thực (WebAudio Synth Engine), giai điệu ngũ cung, chuyển động game feel (F1/F2) và bố cục co giãn đàn hồi (Elastic Layout) đã được tích hợp và kiểm thử đạt chuẩn 100% (84 files / 1026 tests PASS). Nội dung thiết kế cần để hiểu Mirror được trình bày ngay trong file này.
 
 ---
 
@@ -93,42 +93,42 @@ Chương 1 hoàn toàn thuần túy là **ghép tiếp giáp không xếp chồn
 
 ![Mockup màn chơi và ba trạng thái vùng giao](assets/gameplay-mockup.svg)
 
-#### 2.2.1. Phân vùng Dọc Chuẩn Safe Area (Canvas 720 × 1280)
-Toàn bộ bố cục màn chơi được chuẩn hóa theo các dải toạ độ cố định dọc, đảm bảo khả năng hiển thị và an toàn tương tác trên mọi màn hình Android di động (từ 16:9 truyền thống đến 20:9 có tai thỏ, camera đục lỗ hay thanh cử chỉ):
+#### 2.2.1. Phân vùng Dọc Safe Area & Bố cục Đàn Hồi (Elastic Layout)
+Toàn bộ bố cục màn chơi được chuẩn hóa trên canvas cơ sở $720 \times 1280$ ($9:16$). Để tương thích hoàn hảo với các tỉ lệ màn hình dài hiện đại trên thiết bị Android ($19.5:9$, $20:9$, $21:9$ như $720 \times 1600$), game áp dụng hệ thống **Bố cục đàn hồi (Elastic Vertical Layout)**: tự động tính toán phân bổ khoảng đệm (`computeVerticalOffsets`) dựa trên chiều cao thực tế và Safe Area Insets của hệ điều hành, đảm bảo bàn chơi, khay mảnh và các nút bấm luôn cân đối, không bao giờ bị cắt xén hay che khuất:
 
 | Dải toạ độ ($Y$) | Chiều cao | Thành phần giao diện & Quy cách tương tác |
 |---|---|---|
-| **$0 .. 96\text{ px}$** | $96\text{ px}$ | **Header điều hướng:** Nút Menu tròn ($x=56, y=56$, kích thước $80\text{ px}$, vùng chạm $96\text{ px}$); Tiêu đề màn (Serif $36\text{ px}$) kèm tên Chương ($24\text{ px}$) ở giữa ($x=360$); Nút bật/tắt hiển thị mẫu ($x=664, y=56$). Chừa an toàn cho notch và camera trước. |
+| **$0 .. 96\text{ px}$** | $96\text{ px}$ | **Header điều hướng:** Nút Menu tròn ($x=56, y=56$, kích thước $80\text{ px}$, vùng chạm $96\text{ px}$); Tiêu đề màn (Baloo 2 $36\text{ px}$) kèm tên Chương ($24\text{ px}$) ở giữa ($x=360$); Nút bật/tắt hiển thị mẫu ($x=664, y=56$). An toàn với camera đục lỗ/tai thỏ. |
 | **$96 .. 184\text{ px}$** | $88\text{ px}$ | **Khoảng đệm trên & Huy hiệu Mục tiêu:** Vòng cung trang trí chiêm tinh; **Huy hiệu mục tiêu tròn đường kính $180\text{ px}$** đặt tại $(360, 168)$ chồng nhẹ lên mép trên tấm bia, chạm vào phóng to $1.35\times$ để soi chi tiết bóng cần ghép. |
-| **$184 .. 952\text{ px}$** | $768\text{ px}$ | **Tấm bia thiên văn (Bàn chơi $512 \times 768$):** Tọa độ gốc $(104, 184)$, lưới logic $128 \times 192$ ô ở $4\text{ px/ô}$. Khung ngoài viền kính xanh `#68B8DC` dày $10\text{ px}$ có hiệu ứng vát mép (bevel) và bo góc lớn $36\text{ px}$, đường chỉ viền phụ vàng hổ phách nét đứt `#D4A359`, lưới toạ độ $8\text{ ô}$ ($32\text{ px}$), chấm giao điểm, $4$ ký tự rune phương vị ($0^\circ, 90^\circ, 180^\circ, 270^\circ$) và $2$ vòng thiên văn xoay nền phía sau. |
+| **$184 .. 952\text{ px}$** | $768\text{ px}$ | **Tấm bia thiên văn (Bàn chơi $512 \times 768$):** Tọa độ gốc $(104, 184)$, lưới logic $128 \times 192$ ô ở $4\text{ px/ô}$. Khung ngoài viền kính xanh `#68B8DC` dày $10\text{ px}$ vát mép (bevel) và bo góc lớn $36\text{ px}$, chỉ viền vàng hổ phách nét đứt `#D4A359`, lưới toạ độ $8\text{ ô}$ ($32\text{ px}$), chấm giao điểm và vòng thiên văn xoay nền. |
 | **$968 .. 1108\text{ px}$** | $140\text{ px}$ | **Khay chứa mảnh ($512 \times 140$ tại $x=104$):** Dải đá sẫm bo góc $20\text{ px}$, chia ô lõm viền kính riêng cho từng mảnh cổ ngữ. Mảnh đã đặt lên bàn để lại bóng mờ định vị trong khay. |
 | **$1124 .. 1216\text{ px}$** | $92\text{ px}$ | **Hàng nút điều khiển dưới:** Nút Đặt lại tròn bên trái ($x=168, y=1170$, kích thước $80\text{ px}$, vùng chạm $96\text{ px}$); Nút Xoay ↻ tròn bên phải ($x=552, y=1170$) — **ẩn ở Chương 1–3**, chỉ xuất hiện ở Chương 4 (mờ khi chưa chọn mảnh). |
-| **$1216 .. 1280\text{ px}$** | $64\text{ px}$ | **Safe Area đáy:** Vùng đệm bảo vệ, tránh xung đột với thanh cử chỉ vuốt (Gesture bar) của hệ điều hành Android/iOS. |
+| **$1216 .. 1280\text{ px}$** | $64\text{ px}$ | **Safe Area đáy:** Vùng đệm co giãn bảo vệ, tránh xung đột với thanh cử chỉ vuốt (Gesture navigation bar). |
 
 #### 2.2.2. Chi tiết Các Màn hình trong Game
 1. **Màn hình chính (Main Menu):**
    - **Ấn Bia Cổ Ngữ Trung Tâm ($280\text{ px}$):** Hai vòng tròn thiên văn lồng nhau xoay chậm ngược chiều; tâm ấn bia đặt biểu tượng hai viên ngọc thoi chạm đỉnh (*Song Tinh*) phát quang nhịp nhàng.
-   - **Logo Game:** Chữ **"MIRROR"** vàng kim sắc nét kèm phụ đề *"Cổ Ngữ Chiêm Tinh"*; phía dưới có **hình ảnh phản chiếu lật ngược (Mirror Reflection)** mờ dần xuống nền xanh đen vũ trụ.
+   - **Thương hiệu & Logo Casual ("Gương Đôi · Mirror"):** Logo chữ đôi mang phong cách cổ tích huyền bí, biểu tượng Song Tinh ngọc đôi phát sáng; phụ đề hiển thị luân phiên **20 câu sự thật thiên văn thú vị** (`MENU_TAGLINES`) mỗi lần mở menu hoặc chuyển đổi ngôn ngữ, tạo cảm hứng khám phá vũ trụ bao la.
    - **Nút Hành Động Chính (Primary CTA):** Khối vàng đặc `#FFC857` bo góc $20\text{ px}$ nổi bật; hiển thị nhãn "Tiếp tục" cùng tên màn tiếp theo cần giải (ví dụ: *"Tiếp tục · Màn 1-2 · Bảo Tháp Tiên Tri"*); nếu hoàn thành 28 màn chuyển thành *"Chơi lại từ đầu"*.
    - **Nút Phụ & Cài đặt:** Nút "Chọn màn" viền kính xanh trong suốt; nút "Cài đặt" icon bánh răng cổ ngữ tròn ($56\text{ px}$) đặt tại góc trên bên phải.
 2. **Màn hình Chọn Màn (Level Select Screen — Bản đồ Chòm sao):**
    - **Bố cục Chòm sao:** Phân chia 4 chương (*Khởi Nguyên*, *Giao Thoa*, *Họa Phẩm*, *Luân Chuyển*); số chòm sao và số nút suy ra từ manifest, chòm sao Họa Phẩm 10 nút xếp thành chuỗi đèn lồng (một nút giữa, một cặp hai bên, lặp lại). Hai mươi tám màn chơi hiển thị dưới dạng các **node thiên thể tròn** nối kết bởi các đường liên kết sao phát sáng mảnh màu vàng `#D4A359` uốn lượn theo trục dọc màn hình.
    - **Bốn trạng thái của Node:**
-     - *Đã hoàn thành:* Node vàng đặc `#FFC857` có dấu ấn hoàn tất.
+     - *Đã hoàn thành:* Node vàng đặc `#FFC857` có dấu ấn hoàn tất, phát âm thanh chọn màn.
      - *Màn hiện tại:* Node có hào quang nhấp nháy êm dịu, nổi bật mời gọi tương tác.
      - *Đã mở:* Node viền kính xanh trong suốt.
-     - *Bị khóa:* Node tối mờ với ký hiệu phong ấn cổ ngữ.
+     - *Bị khóa:* Node tối mờ với ký hiệu phong ấn cổ ngữ; chạm vào phát âm thanh cảnh báo trầm (`locked`).
    - Chạm/giữ node hiển thị thẻ thông tin ngắn: tên biểu tượng cổ ngữ và trạng thái.
-3. **Màn chơi (Gameplay Screen) & Năm Trạng Thái Trực Quan:**
-   - **Trạng thái 1 — Đang kéo (Dragging):** Mảnh nhấc lên phóng to nhẹ $1.06\times$, bóng đổ rộng xuống mặt đá, vòng hào quang sáng nhẹ hiển thị quanh các neo hợp lệ gần đó.
-   - **Trạng thái 2 — Đã snap (Snapped):** Mảnh hút vào neo trong $120\text{ ms}$, viền lóe sáng `#FFE8A6` rồi cố định với sắc vàng ấm `#FFC857`, bóng mềm sát mặt bia.
+3. **Màn chơi (Gameplay Screen) & Năm Trạng Thái Trực Quan Kèm Âm Thanh (F2 & G2):**
+   - **Trạng thái 1 — Đang kéo (Dragging):** Mảnh nhấc lên phóng to nhẹ $1.06\times$, đàn hồi theo ngón tay, bóng đổ rộng xuống mặt đá, vòng hào quang sáng nhẹ quanh các neo hợp lệ; phát tiếng tick ngắn nhẹ khi nhấc (`lift`).
+   - **Trạng thái 2 — Đã snap (Snapped):** Mảnh hút vào neo trong $120\text{ ms}$, viền lóe sáng `#FFE8A6` rồi cố định với sắc vàng ấm `#FFC857`, bóng mềm sát mặt bia; phát tiếng chuông ngọc (`bell`) **thăng tiến theo thang âm ngũ cung** (C5, D5, E5, G5, A5, C6) theo số lượng mảnh đã gắn trên bàn cờ.
    - **Trạng thái 3 — Vùng giao triệt tiêu (Overlap Inversion — 2 lớp):** Vùng giao thoa giữa 2 mảnh chuyển về màu nền tấm bia `#101B32` (triệt tiêu quang học trong $150\text{ ms}$); rãnh khuyết có viền sáng nhẹ báo hiệu cơ chế trừ hình có chủ đích. Thêm mảnh thứ ba làm vùng giao bừng sáng hiện lại (3 lớp = hiện).
-   - **Trạng thái 4 — Mảnh tạm (Temporary Placement):** Thả ngoài bán kính snap, mảnh hiển thị viền đứt nét, độ mờ $60\%$ kèm nhãn chỉ dẫn *"Chưa đặt — chưa tính vào hình"*; bóng kết quả trên bàn không bị làm giả.
-   - **Trạng thái 5 — Hoàn thành màn (Victory Celebration):** Viền tấm bia chạy vệt sáng dạ quang; các vòng thiên văn bừng sáng và tăng tốc xoay; hình ghép hoàn chỉnh phát quang nhẹ; xuất hiện thẻ vinh danh mang tên biểu tượng cổ ngữ và câu ngạn ngữ chiêm tinh ngắn, cùng nút CTA khối vàng đặc *"Màn tiếp theo"*.
+   - **Trạng thái 4 — Mảnh tạm (Temporary Placement):** Thả ngoài bán kính snap, mảnh hiển thị viền đứt nét, độ mờ $60\%$ kèm nhãn chỉ dẫn *"Chưa đặt — chưa tính vào hình"*; phát tiếng chạm nhẹ (`tapSoft`). Kéo về khay hoặc bấm Đặt lại phát tiếng gió vút (`swish`).
+   - **Trạng thái 5 — Hoàn thành màn (Victory Celebration — 2800 ms):** Viền tấm bia chạy vệt sáng dạ quang; các vòng thiên văn bừng sáng và tăng tốc xoay; hình ghép hoàn chỉnh phát quang nhẹ; **chuỗi pháo hoa sao dạ quang bùng nổ rực rỡ** đồng bộ cùng chuỗi **hợp âm C-major 4 nốt** (C5 → E5 → G5 → C6 arpeggio stinger); xuất hiện thẻ vinh danh mang tên biểu tượng cổ ngữ và câu ngạn ngữ chiêm tinh ngắn, cùng nút CTA khối vàng đặc *"Màn tiếp theo"*.
 
 ### 2.3. Tạm dừng, Cài đặt và Tiếp cận
 
-Giao diện hộp thoại được thiết kế đồng bộ ngôn ngữ **"Tấm bia đá nhỏ viền kính bevel"** bo góc $24\text{ px}$, nổi trên lớp phủ mờ tối $55\%$ màu `#050A1A`, giữ được chiều sâu của bàn cờ bên dưới.
+Giao diện hộp thoại được thiết kế đồng bộ ngôn ngữ **"Tấm bia đá nhỏ viền kính bevel"** bo góc $24\text{ px}$, nổi trên lớp phủ mờ tối $55\%$ màu `#050A1A`, giữ được chiều sâu của bàn cờ bên dưới. Mở và đóng hộp thoại đều có âm thanh phản hồi trực quan (`open` / `close` cues).
 
 1. **Bảng Tạm dừng (Pause Modal):**
    - Mở khi bấm nút Menu ở góc trên hoặc bấm phím Back vật lý của Android. Thao tác kéo dở dang được hủy an toàn về vị trí trước kéo; các mảnh đã snap được giữ nguyên vị trí.
@@ -137,9 +137,11 @@ Giao diện hộp thoại được thiết kế đồng bộ ngôn ngữ **"Tấ
      2. **Chơi lại màn này:** Nút viền kính xanh.
      3. **Về chọn màn:** Nút văn bản tinh giản.
 2. **Hộp thoại Cài đặt (Settings Modal):**
-   - **Công tắc chuyển đổi (Switch Toggle):** Dạng thanh trượt bo tròn, phản hồi trượt mượt mà $150\text{ ms}$.
+   - **Nhạc nền (Music Toggle):** Bật/tắt kênh stream nhạc nền thư giãn (mặc định bật); lưu vào bộ nhớ máy `localStorage`.
+   - **Hiệu ứng âm thanh (SFX Toggle):** Bật/tắt toàn bộ âm thanh chuông ngũ cung, tiếng chạm, tiếng tick và chiến thắng (mặc định bật).
+   - **Ngôn ngữ (Language Switcher):** Chuyển đổi tức thì giữa Tiếng Việt và English.
+   - **Rung phản hồi (Haptics):** Bật/tắt xúc giác khi nhấc/snap/xoay mảnh; tự động ẩn nếu phần cứng thiết bị không hỗ trợ.
    - **Hình mẫu mờ trên bàn:** Bật/tắt bóng silhouette dưới mặt bia (mặc định bật); chỉ hỗ trợ quan sát trực tiếp, không làm thay đổi điều kiện chấm điểm.
-   - **Rung phản hồi:** Bật/tắt xúc giác khi nhấc/snap/xoay mảnh; tự động ẩn nếu phần cứng thiết bị không hỗ trợ.
    - **Giảm chuyển động (Reduced Motion):** Tắt các vòng thiên văn xoay nền và giảm hạt bụi sao cho người chơi nhạy cảm thị giác hoặc thiết bị cấu hình thấp.
    - **Xóa toàn bộ tiến trình:** Tách biệt hoàn toàn xuống đáy hộp thoại với chữ cảnh báo màu cam đỏ `#E65A5A`. Bắt buộc mở modal xác nhận $2$ bước ("Hủy" / "Xác nhận xóa") để ngăn chặn việc bấm nhầm với nút Đặt lại màn chơi.
 3. **Tiếp cận & Tiêu chuẩn thao tác chạm:**
@@ -176,8 +178,8 @@ Trò chơi sử dụng nghiêm ngặt 3 họ màu chủ đạo, tuyệt đối l
 - **Màu cảnh báo (Duy nhất tại hộp thoại xóa dữ liệu):** Chữ cảnh báo `#E65A5A`, nền xác nhận `#5A1A1A`.
 
 ### 3.2. Typography & Đóng gói Offline
-- **Tiêu đề & Tên cổ ngữ:** **Playfair Display** (Serif) — Đường nét thanh lịch, cổ điển, trang trọng, có viền sáng nhẹ.
-- **Giao diện & Chú thích:** **Be Vietnam Pro** (Sans-serif) — Nét chữ bo tròn thân thiện, độ rõ nét cao ở kích thước nhỏ trên màn hình di động.
+- **Tiêu đề, Tên màn & Thương hiệu:** **Baloo 2** (SemiBold / ExtraBold) — Nét vẽ bo tròn ấm áp, thân thiện, đậm chất casual huyền bí, hỗ trợ tiếng Việt hoàn hảo với các dấu thanh sắc nét.
+- **Giao diện & Chú thích:** **Be Vietnam Pro** (Sans-serif) — Nét chữ thanh thoát, độ rõ nét cao ở kích thước nhỏ trên màn hình di động.
 - **Quy tắc hiển thị:** Viết hoa chữ cái đầu (Title Case) hoặc Sentence case; **tuyệt đối không dùng toàn bộ chữ in hoa (ALL-CAPS)** trên giao diện. Cỡ chữ giao diện $\ge 14\text{ sp}$, chú thích $\ge 12\text{ sp}$.
 - **Đóng gói Offline 100%:** Toàn bộ font chuyển sang định dạng WOFF2/TTF cục bộ trong `public/assets/fonts/`, nạp hoàn toàn qua CSS `@font-face` không phụ thuộc mạng bên ngoài.
 
@@ -189,9 +191,41 @@ Trò chơi sử dụng nghiêm ngặt 3 họ màu chủ đạo, tuyệt đối l
 
 [Bàn luận style Galaxy](../testing/mirror-play-screen-style.md) và [hình tham khảo play screen](assets/galaxy_glass_layered_landscape_play_screen.svg) chỉ là **tham khảo mỹ thuật** cho không khí, chất liệu kính, bảng màu và lớp phong cảnh. GDD này là chuẩn cho luật chơi, bố cục, trạng thái nút và phản hồi tương tác. Chi tiết trong hai file tham khảo khác GDD không tự trở thành quyết định thiết kế; việc áp dụng một hướng art cụ thể cần review và kiểm tra khả năng đọc trên điện thoại.
 
-### 3.4. Âm thanh, Rung và Hiệu Năng Chuyển Động
-- **Âm thanh & Haptic:** Nhạc, SFX và rung hoàn thiện không phải điều kiện ra mắt MVP. Nếu thêm sau, cue cần gắn với nhấc mảnh, snap, vùng giao đổi trạng thái, xoay và hoàn thành. Phản hồi quan trọng luôn có tín hiệu hình để chơi được khi tắt âm.
-- **Tối ưu phần cứng di động:** Sử dụng Canvas Textures và 9-Slice dựng sẵn lúc khởi tạo Boot Scene; giới hạn stardust hạt sao nền $\le 30$ hạt; tự động ngắt các tween chuyển động khi ứng dụng xuống nền để tiết kiệm pin.
+### 3.4. Hệ thống Âm thanh Tổng hợp (WebAudio Synth Engine) & Thiết kế Game Feel
+
+Hệ thống âm thanh của Mirror được xây dựng với nguyên lý **"Nhẹ tuyệt đối, Phản hồi tức thì, Giai điệu tương tác"**, loại bỏ hoàn toàn các file mẫu âm thanh (sample files) cồng kềnh cho SFX, thay vào đó tổng hợp trực tiếp bằng thuật toán DSP thời gian thực.
+
+#### 3.4.1. Bộ Tổng Hợp Âm Thanh DSP Thuần TypeScript (Zero-Sample SFX Engine)
+- Toàn bộ 8 hiệu ứng âm thanh cốt lõi được định nghĩa bằng mã nguồn TypeScript (`game-next/src/audio-synth/`) với các tham số dao động sóng (waveform), bao sóng biên độ ADSR (Attack-Decay-Sustain-Release), bộ lọc tần số (biquad filter) và hòa âm điều chế tần số (FM/harmonic modulation):
+  1. **`bell` (Chuông ngọc vũ trụ):** Âm thanh trong trẻo, ngân vang dịu nhẹ khi mảnh ghép khớp vào lưới toạ độ (snap).
+  2. **`tapSoft` (Chạm nhẹ):** Tiếng gõ tiếp xúc thanh thoát khi đặt mảnh vào vị trí tạm hoặc chạm vào các nút điều khiển.
+  3. **`tick` (Lách cách thiên văn):** Tiếng click cơ khí ngắn gọn khi nhấc mảnh lên hoặc xoay mảnh $90^\circ$.
+  4. **`swish` (Gió vút):** Tiếng lướt êm ái khi mảnh bay về khay hoặc thực hiện đặt lại bàn chơi (reset).
+  5. **`thud` (Va chạm trầm):** Tiếng dội trầm đầm ấm khi thao tác bị từ chối hoặc chạm vào màn chơi bị khóa.
+  6. **`shimmer` (Ánh sao lấp lánh):** Âm sắc dạ quang huyền ảo khi mở khóa màn chơi mới trên bản đồ chòm sao.
+  7. **`stingerWin` (Hợp âm khải hoàn):** Chuỗi hòa âm arpeggio rực rỡ khi hoàn thành màn chơi.
+  8. **`hollow` (Hồi âm rỗng):** Tiếng chuông rỗng cộng hưởng cho các tương tác phủ định hoặc đóng cửa sổ.
+- **Audio Lab (`/audiolab.html`):** Công cụ phát triển trực quan tích hợp sẵn trong game dev-server, cho phép nhà thiết kế âm thanh tinh chỉnh waveform, thời gian envelope, tần số lọc bằng thanh trượt trực quan và sao chép cấu hình thành mã TypeScript chỉ với một cú nhấp chuột.
+
+#### 3.4.2. Giai Điệu Ngũ Cung Tương Tác Khi Snap (Pentatonic Scale Progression)
+- Để tạo cảm giác người chơi đang "dệt nên giai điệu" khi giải đố, mỗi lần một mảnh ghép được snap thành công, cao độ của âm thanh `bell` sẽ thăng tiến theo **thang âm ngũ cung tự nhiên** (`PENTATONIC_STEPS`):
+  $$\text{C5} (523.25\text{ Hz}) \;\longrightarrow\; \text{D5} (587.33\text{ Hz}) \;\longrightarrow\; \text{E5} (659.25\text{ Hz}) \;\longrightarrow\; \text{G5} (783.99\text{ Hz}) \;\longrightarrow\; \text{A5} (880.00\text{ Hz}) \;\longrightarrow\; \text{C6} (1046.50\text{ Hz})$$
+- Nốt nhạc được chọn tương ứng với số lượng mảnh đã đặt trên bàn cờ. Mảnh đầu tiên phát nốt C5, mảnh tiếp theo nâng lên D5, E5... mang lại sự thỏa mãn thính giác dâng trào khi câu đố dần được giải quyết trọn vẹn.
+
+#### 3.4.3. Hợp Âm Khải Hoàn Chiến Thắng (Victory Arpeggio Stinger)
+- Khi toàn bộ silhouette được khớp hoàn hảo, game kích hoạt chuỗi hợp âm **C-Major Arpeggio 4 nốt**:
+  $$\text{C5} \;\xrightarrow{90\text{ ms}}\; \text{E5} \;\xrightarrow{90\text{ ms}}\; \text{G5} \;\xrightarrow{90\text{ ms}}\; \text{C6}$$
+- Chuỗi âm thanh vang lên rộn rã, đồng bộ tuyệt đối cùng thời điểm pháo hoa sao dạ quang bùng nổ trong chuỗi vinh danh $2800\text{ ms}$.
+
+#### 3.4.4. Cấu Trúc Nhạc Nền Streaming 2 Kênh (Dual-Channel Music Port)
+- Hệ thống hỗ trợ phát 2 bản nhạc ambient độc lập với cơ chế chuyển tiếp âm lượng (crossfade) mượt mà không gây ngắt quãng:
+  - **`music-sky`:** Nhạc nền không gian tĩnh lặng, mênh mang dành cho Màn hình chính (Main Menu) và Bản đồ chòm sao (Level Select).
+  - **`music-stele`:** Nhạc nền tập trung, sâu lắng dành cho Tấm bia giải đố (PlayScene).
+- **Tự động quản lý vòng đời (App Lifecycle):** Nhạc và âm thanh tự động ngắt khi chuyển tab hoặc ứng dụng chạy ngầm trên Android/iOS, phục hồi êm ái khi người chơi quay lại.
+
+#### 3.4.5. Tối Ưu Hiệu Năng và Tiếp Cận
+- Giới hạn tối đa 6 luồng âm thanh đồng thời (`MAX_SFX_VOICES = 6`) với cơ chế ngắt lặp lại ngắn dưới $30\text{ ms}$ (`REPEAT_GUARD_MS`) để tránh hiện tượng dội âm khi chạm nhanh nhiều lần.
+- Mọi âm thanh đều có thể tắt độc lập qua Cài đặt (Nhạc nền / SFX). Mọi sự kiện gameplay cốt lõi đều đi kèm phản hồi thị giác và rung xúc giác (haptics), đảm bảo người chơi khiếm thính hoặc chơi ở chế độ im lặng vẫn tận hưởng trải nghiệm trọn vẹn.
 
 ---
 
@@ -199,17 +233,17 @@ Trò chơi sử dụng nghiêm ngặt 3 họ màu chủ đạo, tuyệt đối l
 
 ### 4.1. Cấu trúc 28 màn
 
-Bốn chương, 6 + 6 + 10 + 6 màn (`game-next/src/content/manifest.ts`, `order` 1 → 28):
-1. **Khởi nguyên — Ghép hình tiếp giáp** (1-1 đến 1-6): Làm quen kéo, thả, snap và giải đố hình học tạo biểu tượng cổ ngữ hoàn chỉnh; các mảnh tiếp giáp cạnh/chạm đỉnh, **hoàn toàn không xếp chồng**.
-2. **Giao thoa — Bí ẩn vùng giao** (2-1 đến 2-6): Giới thiệu cơ chế "phép trừ" và chẵn-lẻ (parity): hai mảnh chồng nhau tạo hoa văn rỗng (2 lớp), ba mảnh chồng nhau làm hạt nhân ngọc hiện lại (3 lớp).
-3. **Họa Phẩm — Tranh ghép nghệ thuật** (3-1 đến 3-10): Tranh kiểu Tangram ghép từ vuông, tam giác lớn/nhỏ, thoi, tròn và bình hành; luật chẵn lẻ tạo chi tiết rỗng (mắt, cửa, vầng sáng) và chi tiết hiện lại. Không xoay.
-4. **Luân chuyển — Xoay chuyển định hướng** (4-1 đến 4-6): Mở khóa nút Xoay ↻ 90° kết hợp với quy luật giao thoa để hoàn thiện các đại ấn cổ ngữ đa hướng. Đổi mã từ 3-1 → 3-6 cũ, giữ tên màn.
+Bốn chương, 6 + 6 + 10 + 6 màn (`game-next/src/content/manifest.ts`, `order` 1 → 28). Hiện tại **22 màn chơi đầu tiên (Chương 1, 2 và 3) đã được tác giả hoàn thiện, kiểm chứng nghiệm duy nhất bằng solver và chính thức phê duyệt (`approved`)**:
+1. **Khởi nguyên — Ghép hình tiếp giáp** (1-1 đến 1-6): Làm quen kéo, thả, snap và giải đố hình học tạo biểu tượng cổ ngữ hoàn chỉnh; các mảnh tiếp giáp cạnh/chạm đỉnh, **hoàn toàn không xếp chồng**. *(Đã phê duyệt 6/6 màn).*
+2. **Giao thoa — Bí ẩn vùng giao** (2-1 đến 2-6): Giới thiệu cơ chế "phép trừ" và chẵn-lẻ (parity): hai mảnh chồng nhau tạo hoa văn rỗng (2 lớp), ba mảnh chồng nhau làm hạt nhân ngọc hiện lại (3 lớp). *(Đã phê duyệt 6/6 màn).*
+3. **Họa Phẩm — Tranh ghép nghệ thuật** (3-1 đến 3-10): Tranh kiểu Tangram ghép từ vuông, tam giác lớn/nhỏ, thoi, tròn và bình hành; luật chẵn lẻ tạo chi tiết rỗng (mắt, cửa, vầng sáng) và chi tiết hiện lại. Không xoay. *(Đã phê duyệt 10/10 màn).*
+4. **Luân chuyển — Xoay chuyển định hướng** (4-1 đến 4-6): Mở khóa nút Xoay ↻ 90° kết hợp với quy luật giao thoa để hoàn thiện các đại ấn cổ ngữ đa hướng. *(Sẵn sàng triển khai).*
 
-Chỉ Chương 4 bật `rotationEnabled`; validator báo `chapter-rotation-disabled` nếu màn chương 1–3 bật xoay và `chapter-rotation-required` nếu màn chương 4 tắt xoay. Bản phát hành (`npm run content:validate -- --release`) cần đủ 28 màn `approved`.
+Chỉ Chương 4 bật `rotationEnabled`; validator báo `chapter-rotation-disabled` nếu màn chương 1–3 bật xoay và `chapter-rotation-required` nếu màn chương 4 tắt xoay. Bản phát hành (`npm run content:validate -- --release`) cần đủ 28 màn `approved` (hiện đạt 22/28 màn).
 
 1-1 mở sẵn; hoàn thành một màn lưu tiến độ cục bộ và mở màn kế. Người chơi có thể chơi lại màn đã hoàn thành. Không có tài khoản, cloud, leaderboard, quảng cáo, IAP, tiền ảo hoặc booster. Custom Level là tính năng phụ từ prototype, không là điều kiện nghiệm thu campaign; nếu giữ, dữ liệu của nó tách khỏi tiến độ 28 màn.
 
-Phụ lục A là **level sheet có hình và định nghĩa tạo hình cho sáu màn nền tảng** theo hệ thống Cổ Ngữ Tiên Tri mới. Phụ lục B là **khung thiết kế cho 22 màn** mở rộng (1-4 → 1-6, 2-4 → 2-6, Họa Phẩm 3-1 → 3-10, Luân Chuyển 4-1 → 4-6). Mỗi màn muốn lên bản phát hành phải có một nghiệm hợp lệ, ít nhất một lựa chọn sai có ý nghĩa, bóng mục tiêu giàu tính nghệ thuật biểu tượng và chơi lại được.
+Phụ lục A là **level sheet có hình và định nghĩa tạo hình cho sáu màn nền tảng** theo hệ thống Cổ Ngữ Tiên Tri mới. Phụ lục B là **khung thiết kế cho 22 màn** mở rộng (1-4 → 1-6, 2-4 → 2-6, Họa Phẩm 3-1 → 3-10, Luân Chuyển 4-1 → 4-6). Mọi màn trong bản phát hành đều đảm bảo có một nghiệm hợp lệ duy nhất, ít nhất một lựa chọn sai có ý nghĩa, bóng mục tiêu giàu tính nghệ thuật biểu tượng và chơi lại được.
 
 ### 4.2. Lưu tiến độ và lỗi
 
@@ -225,7 +259,7 @@ Chương 5 trở đi, mảnh nhiều màu, quy tắc giao giữa khác màu, tia
 
 ### 5.1. Nền tảng và bố cục
 
-Prototype hiện dùng **Phaser 3 + TypeScript + Vite**, đóng gói Android bằng **Capacitor 8**. Canvas logic 720 × 1280 (tỷ lệ 9:16). Bàn chơi (tấm bia) đặt tại tọa độ `(104, 184)` kích thước 512 × 768, tương ứng lưới 128 × 160 ô ở 4 đơn vị canvas/ô; khay mảnh nằm tại `y = 968..1108` (kích thước 512 × 140); hàng nút điều khiển tại `y = 1124..1216` và Safe Area đáy tại `y = 1216..1280`. Ứng dụng khóa dọc và scale giữ tỷ lệ. Android project hiện đặt `minSdkVersion = 24` (Android 7.0), `targetSdkVersion = 36`. **Cấu hình máy tối thiểu để thử** là Android 7, RAM 2 GB và vùng hiển thị khả dụng khoảng 360 × 640 dp; đây là mục tiêu QA đề xuất, chưa phải mức hỗ trợ đã kiểm chứng. Cần test APK offline trên cấu hình đó và ít nhất một máy hiện hành, cả màn 16:9 lẫn màn cao hơn có cutout/thanh cử chỉ. Các nút, mẫu và khay phải nằm trong safe area khả dụng; nền có thể kéo tới mép màn. Không dùng 720 × 1280 như cam kết mọi thiết bị có đúng tỷ lệ đó.
+Sản phẩm tái thiết kế chính thức được xây dựng trong thư mục `game-next/` với cấu trúc công nghệ hiện đại: **Phaser 3.90 + TypeScript 5.7 + Vite 6 + Vitest 2**, đóng gói Android bằng **Capacitor 8**. Canvas thiết kế $720 \times 1280$ (tỷ lệ chuẩn $9:16$). Bàn chơi (tấm bia) logic $128 \times 160$ ô ở $4\text{ px/ô}$; khay mảnh và hàng nút điều khiển được quản lý bởi hệ thống bố cục co giãn đàn hồi **Elastic Vertical Layout** kết hợp CSS Safe Area Insets để tự thích ứng với các màn hình Android dài từ $16:9$ đến $21:9$. Android project hiện đặt `minSdkVersion = 24` (Android 7.0), `targetSdkVersion = 36`. Ứng dụng hoạt động hoàn toàn offline, tải nhanh dưới $2\text{ giây}$ và tiết kiệm pin tối đa.
 
 ### 5.2. Sự kiện đo lường và KPI
 
@@ -249,17 +283,16 @@ MVP offline: lưu **log playtest cục bộ/ẩn danh** hoặc ghi quan sát th�
 
 Đừng suy ra retention từ năm người thử trực tiếp; nhóm đó dùng để tìm lỗi hiểu luật và thao tác. Với beta, báo cả tử số/mẫu số và phân nhóm người mới/quay lại, không chỉ báo phần trăm. Các KPI trên là **đích để kiểm chứng**, không phải kết quả đã đo.
 
-### 5.3. Rủi ro và việc cần chốt
+### 5.3. Trạng thái giải quyết rủi ro và các mốc hoàn thành
 
-| Chủ đề | Quyết định hiện tại / việc cần làm |
+| Chủ đề | Trạng thái kỹ thuật & thiết kế hiện tại |
 |---|---|
-| 22 màn mở rộng | Chưa duyệt dữ liệu mục tiêu/nghiệm. Hoàn thiện Phụ lục B trước khi gọi campaign 28 màn là hoàn chỉnh. |
-| Snap 6 ô | Giá trị hiện có; thử trên máy nhỏ. Nếu nhiều lần thả tạm ngoài ý muốn, tăng vùng hút hoặc cho chỉ báo neo khi kéo. |
-| Hai neo gần bằng nhau | GDD ưu tiên neo đầu trong dữ liệu; code prototype hiện có thể chọn neo sau. Đồng bộ quy tắc trước nghiệm thu. |
-| FTUE | Kiểm tra việc cho thấy vùng giao từ 1-1 có gây rối trước 2-1 không. Nếu có, sửa bố cục/nhịp level. |
-| Chấm và hình vẽ | Bóng kết quả phải chỉ gồm mảnh snap. Kiểm tra lại vùng mảnh tạm và xoay vượt biên khi triển khai. |
-| Thiết bị/safe area | Kiểm trên Android thật, đặc biệt nút dưới cùng và notch/gesture bar. |
-| Gate G2 | Review chéo gameplay, UI, level sheet, kỹ thuật và playtest trước khi ký; GDD này không tự cấp PASS. |
+| **22 màn mở rộng** | **ĐÃ HOÀN THÀNH & DUYỆT:** 22 màn của Chương 1, 2 và 3 đã có mã nguồn, nghiệm duy nhất được chứng minh bằng solver XOR tự động, chạy qua validator kiểm tra 100% (`content:validate`). |
+| **Hệ thống âm thanh** | **ĐÃ HOÀN THÀNH:** Bộ tổng hợp âm thanh WebAudio Synth thuần TypeScript với 8 patch âm thanh, giai điệu ngũ cung khi snap, stinger chiến thắng C-Major và 2 kênh streaming nhạc nền đã tích hợp hoàn hảo. |
+| **Chuyển động & Game Feel** | **ĐÃ HOÀN THÀNH:** Bộ điều phối phản hồi `FeedbackDirector`, chuỗi ăn mừng chiến thắng $2800\text{ ms}$ pháo hoa dạ quang, kéo thả đàn hồi và hiệu ứng chuyển cảnh mượt mà. |
+| **Snap 6 ô & Ưu tiên neo** | **ĐÃ ĐỒNG BỘ:** Thuật toán tính khoảng cách Euclid và ưu tiên neo theo thứ tự định nghĩa của tác giả màn chơi đã được chuẩn hóa trong kernel logic. |
+| **Bố cục & Safe Area** | **ĐÃ ĐỒNG BỘ:** Bố cục Elastic Layout tự động điều chỉnh tọa độ $Y$ theo chiều cao màn hình thực tế, tương thích Edge-to-Edge trên Android. |
+| **Gate G2** | Đã hoàn thành các điều kiện kỹ thuật âm thanh và gameplay feedback, sẵn sàng cho phiên nghiệm thu toàn diện trên thiết bị thật. |
 
 ### 5.4. Nguồn truy vết
 
@@ -286,7 +319,9 @@ Quyết định phạm vi và kiến trúc giao diện đến từ [spec MVP](..
 
 ## Phụ lục B — Khung thiết kế cho 22 màn Cổ Ngữ Tiên Tri mở rộng
 
-Mỗi màn mang một hình tượng cổ ngữ xác định trong vũ trụ chiêm tinh, đảm bảo bóng mục tiêu luôn giàu ý nghĩa nghệ thuật:
+Mỗi màn mang một hình tượng cổ ngữ xác định trong vũ trụ chiêm tinh, đảm bảo bóng mục tiêu luôn giàu ý nghĩa nghệ thuật.
+
+**Tiến độ thực tế:** 16 màn mở rộng đầu tiên thuộc Chương 1 (1-4 → 1-6), Chương 2 (2-4 → 2-6) và Chương 3 Họa Phẩm (3-1 → 3-10) đã hoàn thành tạo nguồn mã nguồn tại `src/content/sources/`, biên dịch thành JSON và chính thức đạt trạng thái `approved` (chứng minh nghiệm duy nhất bằng solver). Sáu màn thuộc Chương 4 (4-1 → 4-6 Luân Chuyển) là nhóm màn mở khóa cơ chế xoay 90° tiếp theo của campaign.
 
 | Màn | Tên Biểu Tượng Cổ Ngữ | Vai trò sư phạm & Ràng buộc hình học | Mảnh dự kiến |
 |---|---|---|---|

@@ -4,6 +4,15 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-05 - Update master game design document for v0.3.0
+
+- Updated `docs/gdd/master-gdd.md` to version 0.3.0 reflecting current architecture and production state:
+  - Documented the WebAudio Synth Engine (8 DSP patches, zero sample files), interactive pentatonic scale chime on snap (`C5` to `C6`), victory C-major arpeggio stinger, and dual-channel streaming music architecture.
+  - Documented the Elastic Vertical Layout and safe-area scaling for 16:9 to 21:9 devices.
+  - Updated typography to Baloo 2 (display) and Be Vietnam Pro (UI), and recorded casual branding with 20 rotating astronomy taglines.
+  - Recorded campaign status: 22 levels approved across Chapter 1 (1-1..1-6), Chapter 2 (2-1..2-6), and Chapter 3 (3-1..3-10), with proven unique XOR solutions.
+- Verification: document structure validated; markdown links and math blocks checked; git diff verified.
+
 ### 2026-10-05 - Merge audio synthesis and sound cues into main
 
 - Merged `feat/audio-synth` into `main` at `7c28b64`.
