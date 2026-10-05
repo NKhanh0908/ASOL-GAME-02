@@ -64,6 +64,12 @@ Screenshots: `scripts/shoot-level.sh <id> <outdir>` (headless Chrome, needs the 
 - `mirror.rebuild.progress.v1` and `mirror.rebuild.progress.recovery` (`src/infrastructure/progressRepository.ts:10-11`); campaign revision `'oracle-v1'`. Changing the schema or revision resets players' progress (old data copied to the recovery key).
 - `mirror.rebuild.playtest.v1` (`src/infrastructure/playtestRecorder.ts`), not instantiated anywhere.
 
+## GitNexus index
+
+- `gitnexus clean --force` deletes the whole `.gitnexus/` folder, including the `run.cjs` launcher. Re-index with the global `gitnexus analyze`, not `node .gitnexus/run.cjs analyze` — that path only exists again after the re-index recreates it.
+- The LadybugDB FTS index can desynchronise and fail an incremental analyze with `FTS index 'file_fts' is inconsistent ... Drop and recreate the FTS index`. The fix is `gitnexus clean --force` followed by a full `gitnexus analyze`; an incremental run cannot repair it.
+- `analyze` rewrites the stats line between the `<!-- gitnexus:start -->` markers in `AGENTS.md` and `CLAUDE.md`. Commit that diff with the task's commit; it needs no CHANGELOG entry.
+
 ## Hotspots
 
 Measured with GitNexus `impact` (upstream). Report HIGH/CRITICAL to the reviewer before editing.
