@@ -21,13 +21,11 @@ you will silently overwrite the other's edits, which already happened once today
 | Spec author (VR3b, VR2 plan, VR3a) | `docs/superpowers/specs/`, `docs/superpowers/plans/` — new files only |
 | **Nobody until both finish** | `docs/ai/STATUS.md`, `docs/ai/DOCS-INDEX.md` |
 
-`STATUS.md` and `DOCS-INDEX.md` are updated in one pass at the end by the
-controller session, per the `AGENTS.md` end-of-task rule. If you need to record
-something before then, put it in your `CHANGELOG.md` entry instead.
+The controller updates those two in one pass at the end, per the `AGENTS.md`
+end-of-task rule; record anything earlier in your `CHANGELOG.md` entry instead.
 
-**Execution order is fixed:** VR0 must land before VR1 starts. The VR1 plan
-reads `MOTION_FAMILIES`, which VR0 creates; the VR1 plan's executor notes say to
-stop and run VR0 first if that export is missing.
+**Order is fixed: VR0 before VR1.** The VR1 plan reads `MOTION_FAMILIES`, which
+VR0 creates, and says to stop if that export is missing.
 - The gameplay assessment was decomposed into VR0 / VR3a / VR3b; VR3a and VR3b specs are written after VR0 and VR1 land.
 - Verified: typecheck clean, 84 files / 1037 tests pass, `npm run build` clean, `npm run android:sync` clean.
 
