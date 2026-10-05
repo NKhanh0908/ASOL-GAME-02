@@ -40,7 +40,7 @@ export class MenuScene extends Phaser.Scene {
     const { progress } = this.progressRepo.read();
 
     // 1. Nền trời dùng chung có trường sao trôi nhẹ nhàng (drift: true)
-    this.sky = new SkyBackdrop(this, { seed: 1, drift: true });
+    this.sky = new SkyBackdrop(this, { seed: 1, driftSpeed: 0 });
 
     const view = designViewBounds(this);
     this.safe = designSafeArea(this);

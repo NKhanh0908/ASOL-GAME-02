@@ -77,7 +77,7 @@ export class LevelSelectScene extends Phaser.Scene {
     );
 
     // 1. Nền trời dùng chung; màn chọn màn cho sao trôi xuống
-    this.sky = new SkyBackdrop(this, { seed: 3, drift: true });
+    this.sky = new SkyBackdrop(this, { seed: 3, driftSpeed: 1 });
 
     // 2. Container bản đồ chòm sao có thể cuộn dọc
     this.mapContainer = this.add.container(0, 0).setDepth(10);

@@ -1,9 +1,11 @@
 import Phaser from 'phaser';
-import { COLOR_TOKENS, DEPTH_TOKENS, LAYOUT_TOKENS } from './designTokens.ts';
+import { COLOR_NUMBERS, COLOR_TOKENS, DEPTH_TOKENS, LAYOUT_TOKENS } from './designTokens.ts';
 import { generateStarField, twinkleAlpha, driftOffset } from './starField.ts';
 import { designViewBounds } from './designViewport.ts';
 import type { DesignView } from './viewport.ts';
 import type { Star } from './starField.ts';
+import { advanceDrift } from './skyMood.ts';
+import type { MoodState } from './skyMood.ts';
 
 /**
  * Quầng sáng tròn mờ dần ra mép, dùng gradient thật của canvas 2D.
@@ -29,8 +31,8 @@ export function radialGlow(
 
 export type SkyBackdropOptions = {
   seed: number;
-  /** true cho màn chọn màn: cả lớp sao trôi xuống rồi quấn vòng */
-  drift: boolean;
+  /** 0 đứng yên, 1 trôi đủ tốc độ; BackgroundScene tween giá trị này */
+  driftSpeed: number;
 };
 
 /**
@@ -48,7 +50,8 @@ export type SkyBackdropOptions = {
  */
 export class SkyBackdrop {
   private readonly scene: Phaser.Scene;
-  private readonly options: SkyBackdropOptions;
+  public readonly moodState: MoodState;
+  private readonly dimLayer: Phaser.GameObjects.Rectangle;
   private readonly skyLayer: Phaser.GameObjects.RenderTexture;
   private readonly starLayer: Phaser.GameObjects.TileSprite;
   private readonly twinkleLayer: Phaser.GameObjects.Graphics;
@@ -56,10 +59,10 @@ export class SkyBackdrop {
   private readonly staticStars: Star[];
   private readonly starTextureKey: string;
   private elapsedMs = 0;
+  private driftMs = 0;
 
   constructor(scene: Phaser.Scene, options: SkyBackdropOptions) {
     this.scene = scene;
-    this.options = options;
 
     const { width, height } = LAYOUT_TOKENS.canvas;
     const field = generateStarField(options.seed, { width, height });
@@ -85,6 +88,14 @@ export class SkyBackdrop {
       .setDepth(DEPTH_TOKENS.backgroundSky + 1);
 
     this.twinkleLayer = scene.add.graphics().setDepth(DEPTH_TOKENS.backgroundSky + 2);
+
+    this.moodState = { driftSpeed: options.driftSpeed, dim: 0 };
+    // Lớp tối phủ cả trời và sao: mood `play` làm nền lùi lại sau tấm bia
+    this.dimLayer = scene.add
+      .rectangle(0, 0, width, height, COLOR_NUMBERS.navyBackdrop, 1)
+      .setOrigin(0, 0)
+      .setAlpha(0)
+      .setDepth(DEPTH_TOKENS.backgroundSky + 3);
   }
 
   /**
@@ -154,18 +165,16 @@ export class SkyBackdrop {
 
   public update(deltaMs: number): void {
     this.elapsedMs += deltaMs;
+    this.driftMs = advanceDrift(this.driftMs, deltaMs, this.moodState.driftSpeed);
     const { height } = LAYOUT_TOKENS.canvas;
+    const offset = driftOffset(this.driftMs, height);
 
-    if (this.options.drift) {
-      // tilePositionY âm dần thì texture đi xuống, tức sao rơi xuống.
-      this.starLayer.tilePositionY = -driftOffset(this.elapsedMs, height);
-    }
+    // tilePositionY âm dần thì texture đi xuống, tức sao rơi xuống.
+    this.starLayer.tilePositionY = -offset;
 
     this.twinkleLayer.clear();
     for (const star of this.twinklingStars) {
-      const y = this.options.drift
-        ? (star.y + driftOffset(this.elapsedMs, height)) % height
-        : star.y;
+      const y = (star.y + offset) % height;
       const alpha = twinkleAlpha(star, this.elapsedMs);
       this.twinkleLayer.fillStyle(
         Phaser.Display.Color.HexStringToColor(star.color).color,
@@ -173,9 +182,12 @@ export class SkyBackdrop {
       );
       this.twinkleLayer.fillCircle(star.x, y, star.r);
     }
+
+    this.dimLayer.setAlpha(this.moodState.dim);
   }
 
   public destroy(): void {
+    this.dimLayer.destroy();
     this.skyLayer.destroy();
     this.starLayer.destroy();
     this.twinkleLayer.destroy();

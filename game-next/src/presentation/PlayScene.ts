@@ -77,7 +77,7 @@ export class PlayScene extends Phaser.Scene {
     this.layout = layout;
 
     // 1. Nền trời dùng chung (bật drift để mây tinh vân và dải ngân hà trôi nhẹ nhàng)
-    this.sky = new SkyBackdrop(this, { seed: 2, drift: true });
+    this.sky = new SkyBackdrop(this, { seed: 2, driftSpeed: 0 });
 
     const progressRepo = createProgressRepository(
       localStorage,

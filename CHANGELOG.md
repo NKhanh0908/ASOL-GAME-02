@@ -4,6 +4,12 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-05 - Add sky moods and a persistent background scene (F1 task 5)
+
+- Added `game-next/src/presentation/skyMood.ts` (menu/map/play moods, speed-weighted drift accumulation) and `BackgroundScene.ts`, which owns one `SkyBackdrop` and tweens its drift speed and dim layer.
+- Replaced the `drift` flag of `SkyBackdrop` with a tweenable `driftSpeed` and added a navy dim layer; existing scenes keep their own sky until the director task.
+- Verification: `tests/skyMood.test.ts` failed for the missing module, then passed; `npm run typecheck` and `npm test` passed.
+
 ### 2026-10-05 - Persist the reduced-motion setting (F1 task 4)
 
 - Added `settings.reducedMotion` (default `false`, legacy saves read as `false` without recovery) and `setReducedMotion` to the progress repository; wired the previously empty "Giảm chuyển động" toggle in `SettingsDialog` to persist the value and update the global motion scale.
