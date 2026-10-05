@@ -1,4 +1,4 @@
-# Status — updated 2026-10-05 by Claude
+# Status — updated 2026-10-05 by Codex
 
 Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; keep this file ≤ 60 lines.
 
@@ -6,7 +6,7 @@ Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; k
 
 - Branch: `feat/audio-synth` (from `main`, merged up to `f964e13`). Worktree: `D:\Working\ASOL\ASOL-GAME-02-audio`, `npm ci` done, baseline 68 files / 829 tests green.
 - Product state: F1 and F2 are complete and merged to `main`; Reviewer Stop Point 4 passed. The victory sequence intentionally lasts 2800 ms. F3 is approved but deferred.
-- Next step: GS Task 1 (`docs/superpowers/plans/2026-10-05-gs1-synth-engine.md`) — the DSP primitives. Read `docs/superpowers/plans/2026-10-05-gs-audio-synth-index.md` first.
+- Current work: GS Task 1 DSP primitives, test-first implementation and review. Continue Tasks 2–7 after verification; stop after Task 7 for reviewer listening approval before Task 8.
 
 ## Streams
 
@@ -17,7 +17,7 @@ Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; k
 | BR casual branding, splash & bilingual | complete; merged to `main` | `docs/gdd/assets/` mockups |
 | F motion (F1 → F2 → F3) | F1 & F2 complete, accepted and on `main`; F3 approved but deferred | `docs/superpowers/plans/2026-10-03-f-motion-index.md` |
 | C chapter 2 + Hoa Pham | complete; all 16 levels approved and available in campaign order | `docs/superpowers/plans/2026-10-02-c-chapter-2-hoa-pham-levels.md` |
-| GS audio synthesis (Tasks 1–12) | spec and plans written, not started; ready to begin on `feat/audio-synth` | `docs/superpowers/plans/2026-10-05-gs-audio-synth-index.md` |
+| GS audio synthesis (Tasks 1–12) | in progress; Task 1 under implementation on `feat/audio-synth` | `docs/superpowers/plans/2026-10-05-gs-audio-synth-index.md` |
 | G audio (music, cues) | sourcing half superseded by GS; G2 cue plan still used unedited after GS Task 12 | `docs/superpowers/plans/2026-10-03-g-audio-index.md` |
 | BF board-fit-by-cells | complete, merged to `main` with Plan C | `docs/superpowers/plans/2026-10-03-board-fit-by-cells.md` |
 
@@ -25,7 +25,7 @@ Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; k
 
 - F3: approved, not started; the reviewer performs its Android/device checks during later execution.
 - GS: the reviewer tunes the eight effects in the Audio Lab at stop point 1 (after Task 7), and must supply the two music tracks plus their key before Task 9 can commit green — the manifest's `source` rows are deliberately blank until then. Tasks 9 and 11 do not depend on each other, so Task 11 can run first if the music is late.
-- GS Tasks 1–8 need neither F nor the music, so they can start immediately.
+- GitNexus MCP is unavailable in this session; record that limitation in task verification entries.
 
 ## Gotchas learned recently
 

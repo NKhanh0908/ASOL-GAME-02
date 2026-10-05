@@ -4,6 +4,12 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-05 - Audio synth DSP primitives (GS task 1)
+
+- Added `game-next/src/audio-synth/dsp.ts`: seeded `mulberry32`, white/pink `noise`, AD/ADSR `envelope`, gliding sine/triangle/saw/square `osc`, two-operator `fmOsc`, and RBJ `biquadCoeffs` / `applyBiquad` with cutoff sweeping. The portable module imports nothing.
+- Added `game-next/tests/dsp.test.ts`: deterministic rendering, filter attenuation, oscillator behavior, empty buffers, FM index envelopes, and endpoint-inclusive short decay/release checks. Decay and release reach their target on their final sample; one-sample segments contain their target.
+- Verification: `npx vitest run tests/dsp.test.ts` failed first because the module was absent, then passed (22 tests); `npm run typecheck` passed; `npm test` passed (69 files, 851 tests); `git diff --check` passed. GitNexus MCP was unavailable, so `detect_changes` could not run; the new module has no existing callers and no existing symbols were edited.
+
 ### 2026-10-05 - Plan: audio synthesis engine, Tasks 1-12
 
 Implementation plans for the audio synthesis spec, and the workspace set up to execute them.
