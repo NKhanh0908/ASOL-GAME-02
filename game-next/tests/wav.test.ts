@@ -15,6 +15,8 @@ describe('encodeWav', () => {
     expect(view.getUint16(20, true)).toBe(1); // PCM
     expect(view.getUint16(22, true)).toBe(1); // mono
     expect(view.getUint32(24, true)).toBe(44100);
+    expect(view.getUint32(28, true)).toBe(44100 * 2); // byte rate
+    expect(view.getUint16(32, true)).toBe(2); // block align
     expect(view.getUint16(34, true)).toBe(16); // bits per sample
     expect(ascii(bytes, 36, 4)).toBe('data');
     expect(view.getUint32(40, true)).toBe(3 * 2);

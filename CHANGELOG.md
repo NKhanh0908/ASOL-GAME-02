@@ -4,6 +4,13 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-05 - audio:author renders listening copies (GS task 6)
+
+- Added `game-next/src/audio-synth/report.ts` (`renderWaveformSvg`, `renderAudioReport`) and `game-next/scripts/audio-author.ts`, plus the `audio:author` script in `game-next/package.json`. Running it writes `docs/testing/audio/<key>.wav`, `<key>.svg` and `report.md`, and exits non-zero if a patch is invalid or longer than the brief allows.
+- The report shows the configured pitch read from each patch; nothing estimates pitch, because the patches set it.
+- `game-next/tests/wav.test.ts` header test now also asserts byte rate (offset 28, 44100 * 2) and block align (offset 32, 2), the fields a real media player reads.
+- Verification: `tests/audioReport.test.ts` failed first (cannot resolve `report.ts`), then passed (6 tests); `tests/wav.test.ts` 4 tests pass with the two new assertions. `npm run audio:author -- --all` wrote 17 files with no key over its limit (exit 0); `npm run audio:author -- nope` exited 1. `bell.wav` is 123524 bytes = 44 + 61740 samples * 2 (1400 ms at 44100 Hz). GitNexus `detect_changes` on the staged set returned 0 symbols (index is at another checkout).
+
 ### 2026-10-05 - Mirror's eight sound effects as patches (GS task 5)
 
 - Added `game-next/src/content/audio/index.ts` (`SfxKey`, `SFX_KEYS`, `SFX_PATCHES`, `MUSIC_ROOT_HZ` = 293.66 Hz / D4, re-exported from `game-next/src/content/audio/root.ts`) and the eight patches under `game-next/src/content/audio/sources/`: `bell` (FM ratio 3.5 on the root's octave), `tick`, `tapSoft`, `thud`, `hollow`, `shimmer`, `swish` and `stingerWin` (four bell voices resolving on the octave).
