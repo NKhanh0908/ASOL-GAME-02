@@ -4,6 +4,12 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-05 - Lengthen victory sequence to 2800 ms
+
+- Updated `game-next/src/presentation/designTokens.ts`: lengthened `VICTORY_TOKENS.totalMs` from 1800 ms to 2800 ms. Light wave now spans 400–1200 ms with 120 ms stagger, silhouette trace runs at 900–1500 ms, celestial rings & stardust burst expand at 1300–2400 ms, and the win card slides in gracefully at 2000–2800 ms (giving players ample time to appreciate the solved board and particle effects). Tap-to-skip remains responsive.
+- Updated `game-next/tests/victorySequence.test.ts` to match the 2800 ms timeline.
+- Verification: `tests/victorySequence.test.ts` (8/8 tests passed).
+
 ### 2026-10-05 - Constrain desktop web viewport to portrait aspect ratio
 
 - Updated `game-next/src/presentation/viewport.ts`: `computeViewport` caps `safeCssWidth` at `safeCssHeight * (DESIGN_WIDTH / DESIGN_HEIGHT)` (9:16) on screens wider than portrait. This avoids massive scaling and squashed vertical coordinates on desktop/web while preserving mobile phones in portrait identically.
