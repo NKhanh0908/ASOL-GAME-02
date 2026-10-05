@@ -3,7 +3,7 @@
 Date: 2026-10-06
 State: draft
 Scope: `game-next/src/presentation/`
-Depends on: VR1 (`2026-10-05-visual-refactor-foundation-menu-design.md`) for the sky gradient and the glow ladder
+Depends on: VR0 (`2026-10-06-vr0-motion-language-design.md`) for easing and duration; VR1 (`2026-10-05-visual-refactor-foundation-menu-design.md`) for the sky gradient and the glow ladder
 
 ## 1. Why
 
@@ -129,7 +129,28 @@ Completed nodes are static. Walked links dim relative to the current one. This
 keeps the battery cost near zero on a scrolling screen and gives the eye one
 place to land.
 
-### 3.5 Links crossing chapter labels
+### 3.5 Label ornament
+
+Added from the gameplay assessment §9, which covers Level Select although the
+rest of that document is about gameplay. The current node label reads:
+
+```
+✦ 3-4 · Ngọn Nến ✦
+```
+
+The sparkles duplicate work the visuals already do, so text and decoration
+compete. Drop them and let the badge carry the decoration:
+
+```
+Ngọn Nến
+3-4 · Họa Phẩm
+```
+
+The level name leads, the locator follows in the secondary text colour. The
+principle, recorded for later screens: UI copy stays plain, decoration lives in
+the visuals.
+
+### 3.6 Links crossing chapter labels
 
 Issue #3: the gold path currently runs through "Giao Thoa" and "Họa Phẩm". Fixed
 by giving the chapter label a soft backing plate in the sky colour at tier 0,
@@ -169,6 +190,8 @@ Manual check: the 10-node chapter at 96px nodes, confirming no overlap.
 - **Completing a chapter into a named constellation** (assessment §4.5) —
   deferred with the chapter shapes.
 - Issue #7 (purple) — handled in VR1.
+- Everything else in the gameplay assessment. Only its §9 label note lands here,
+  because it describes a Level Select element; §1–8 are VR0, VR3a and VR3b.
 
 Issue #1 ("no sense of journey") is therefore only partly addressed: the strip
 and the silhouette collection give progress meaning, but the map's shape stays

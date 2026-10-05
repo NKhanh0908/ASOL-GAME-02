@@ -10,6 +10,10 @@
 
 **Spec:** `docs/superpowers/specs/2026-10-05-visual-refactor-foundation-menu-design.md`
 
+**Depends on:** VR0 (`specs/2026-10-06-vr0-motion-language-design.md`) must land
+first. Every easing and duration in this plan is read from `MOTION_FAMILIES`
+rather than chosen locally — that is the whole reason VR0 was sequenced ahead.
+
 ## Global Constraints
 
 - Node `>=24.13.1 <25`. All commands run from `game-next/`.
@@ -20,6 +24,7 @@
 - `sky.stops` is shared by all three scenes — every change is checked against Menu, Level Select and Gameplay.
 - Test titles in this repo are written in Vietnamese; match the surrounding files. Code comments, commit messages and docs are English per `AGENTS.md`.
 - Reduced Motion is read through `isReducedMotion()` / `getMotionScale()` in `src/presentation/transitions/motion.ts`.
+- Easing and duration come from `MOTION_FAMILIES` (VR0). Menu buttons and the ripple are the `ui` family; the emblem orbit and its star are `magic`. Never write a raw easing name or duration literal in a scene.
 - Every commit that changes code or docs adds its `CHANGELOG.md` entry.
 - Run `impact({target})` before editing a symbol, and `detect_changes()` before committing, per `AGENTS.md`.
 
@@ -849,4 +854,5 @@ git commit -m "docs(gdd): reconcile the palette table with the shipped tokens"
 - **Task 1 breaks two existing assertions on purpose.** `tests/designTokens.test.ts` asserts the old purple gradient. Step 5 updates it. Do not "fix" it by reverting the token.
 - **Tasks 5–7 all edit `MenuScene.ts`.** Run them in order, not in parallel, or they will conflict.
 - **Task 3 has no Phaser import and must keep it that way.** Vitest runs without a browser in this repo; that is why the geometry is separate from the renderer.
+- **VR0 lands before Task 1.** If `MOTION_FAMILIES` is not yet exported from `designTokens.ts`, stop and execute the VR0 plan first rather than inlining easing values here.
 - The deferred items — two-layer parallax, the water-ripple logo reflection, and anything in Level Select or Gameplay beyond not regressing them — are out of scope. See spec §7.

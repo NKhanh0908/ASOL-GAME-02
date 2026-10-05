@@ -4,6 +4,15 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-06 - VR0 motion language spec; VR3 assessment decomposed
+
+- Added `docs/superpowers/specs/2026-10-06-vr0-motion-language-design.md`. The gameplay animation assessment's §8 is foundational and cross-cutting, so it is split out as VR0 and sequenced **before VR1**: four motion families (`ui`, `glass`, `magic`, `piece`) layered over the existing `EASES` registry, plus the one missing ease `quartOut`. No call site changes in VR0 itself.
+- Decomposed `docs/gui/vr3/mirror-gameplay-animation-improvement.md`, which spans four subsystems rather than one screen, into VR0 (motion language), VR3a (piece feel + XOR overlap animation, §1–5) and VR3b (target medallion + victory ritual, §6–7); its §9 label note moves to VR2 because it describes a Level Select element.
+- Recorded what the assessment assumes must be built but already exists: drag spring smoothing (`POSE_TAU`/`stepPose`), anchor attraction (`magnetPose`, reached through `pieceTargetPose`) and snap overshoot (`bounceScale`). The XOR overlap animation is the genuinely missing piece — `ANIM_TOKENS.duration.overlapInversionMs` is defined but no file reads it.
+- Recorded three conflicts between the assessment and the code, with their resolutions, in VR0 §2.1: `backOut` has no family but eight call sites and is kept as `ui.overshoot`; UI duration splits into `tapMs` 90 and `standardMs` 200 because acknowledging a press and running a transition are different jobs; and the `piece` family keeps `POSE_TAU` exponential smoothing rather than adopting the requested damped spring, which would need velocity in the piece state and a `PieceView` rewrite for no observable gain.
+- Amended `docs/superpowers/plans/2026-10-06-vr1-foundation-menu.md` to depend on VR0 and read easing from `MOTION_FAMILIES`, and added §3.5 (label ornament) to the VR2 spec.
+- Verification: design-only change, no code touched. The claim that `magnetPose` was unused was wrong and was corrected by GitNexus before it reached the spec — `pieceTargetPose` calls it from inside the same file, which the first grep excluded.
+
 ### 2026-10-06 - VR1 implementation plan
 
 - Added `docs/superpowers/plans/2026-10-06-vr1-foundation-menu.md`, eight TDD tasks implementing the VR1 spec: palette truth and a repo-wide banned-colour guard, the `GLOW_TIERS` token table, pure XOR overlap geometry, the extracted `DualJewelEmblem` renderer, layout C, the logo recolour, the settings gear and diamond ripple, and the GDD palette reconciliation.
