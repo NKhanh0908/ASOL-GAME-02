@@ -1,4 +1,5 @@
 import type { MusicEnv } from './music.ts';
+import type { SfxEnv } from './sfx.ts';
 
 /** Real browser wiring for MusicPort. Not unit-tested: it is only DOM calls. */
 export function browserMusicEnv(): MusicEnv {
@@ -20,6 +21,16 @@ export function browserMusicEnv(): MusicEnv {
     onVisibilityChange: (cb) => {
       document.addEventListener('visibilitychange', () => cb(document.hidden));
     },
+    warn: (msg) => console.warn(msg),
+  };
+}
+
+/** Real browser wiring for SfxPort. Not unit-tested: it is only DOM calls. */
+export function browserSfxEnv(): SfxEnv {
+  return {
+    now: () => performance.now(),
+    setTimeout: (cb, ms) => window.setTimeout(cb, ms),
+    clearTimeout: (id) => window.clearTimeout(id),
     warn: (msg) => console.warn(msg),
   };
 }

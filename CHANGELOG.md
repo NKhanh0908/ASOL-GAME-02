@@ -4,6 +4,12 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-05 - SfxPort over the synth engine (GS task 11)
+
+- Added `game-next/src/infrastructure/sfx.ts` (pure `SfxPort` with the 6-voice limit and repeat guard, from the G1 plan; `SfxKey` now imported from `content/audio/index.ts`) and `browserSfxEnv` in `game-next/src/infrastructure/browserAudioEnv.ts`. The old plan's `phaserSfxDriver` was not built.
+- Added `game-next/src/audio-synth/webaudio.ts` (`toAudioBuffer`, generic `renderAll`) and `game-next/src/infrastructure/synthSfxDriver.ts`, which implements the same `SfxDriver` interface a file-backed driver would, so the port is untouched.
+- Verification: `tests/sfx.test.ts` (8) and `tests/synthSfxDriver.test.ts` (6) failed first (module not found), then passed; `tests/audioSynthPortable.test.ts` still green (4), so the engine folder has no outside imports. `npm run typecheck` clean; `npm test` 81 files / 999 tests passed (baseline 79 / 985); `npm run build` clean. GitNexus `detect_changes` on the staged set recorded in the task report.
+
 ### 2026-10-05 - Add streaming music port (G task 7)
 
 - Added `MusicPort` (`game-next/src/infrastructure/music.ts`): two alternating `HTMLAudioElement`s with ramped crossfades, duck/hold/restore, settings toggle that pauses but keeps the track, lifecycle pause/resume, visibility handling, autoplay-block recovery on first gesture, warn-once errors. It is pure: every DOM touch goes through the injected `MusicEnv`. Browser wiring (`browserMusicEnv`) is in `game-next/src/infrastructure/browserAudioEnv.ts`.
