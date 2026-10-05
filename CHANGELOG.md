@@ -4,6 +4,12 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-05 - Mirror's eight sound effects as patches (GS task 5)
+
+- Added `game-next/src/content/audio/index.ts` (`SfxKey`, `SFX_KEYS`, `SFX_PATCHES`, `MUSIC_ROOT_HZ` = 293.66 Hz / D4, re-exported from `game-next/src/content/audio/root.ts`) and the eight patches under `game-next/src/content/audio/sources/`: `bell` (FM ratio 3.5 on the root's octave), `tick`, `tapSoft`, `thud`, `hollow`, `shimmer`, `swish` and `stingerWin` (four bell voices resolving on the octave).
+- The bell is built from `MUSIC_ROOT_HZ`, so it is in the music's key by construction; nothing measures pitch. The constant lives in its own leaf file so the patches never import `index.ts` (no import cycle).
+- Verification: `tests/audioPatches.test.ts` failed first (cannot resolve `src/content/audio/index.ts`), then passed (7 tests). The sound brief's length table from spec G section 3.2 is now an assertion, alongside validity, audibility, finiteness and byte-identical repeat renders. `npm run typecheck` clean; full `npm test` 73 files / 899 tests green. GitNexus `detect_changes` on the staged set returned 0 symbols (index is at another checkout).
+
 ### 2026-10-05 - WAV encoder for audio review artifacts (GS task 4)
 
 - Added `game-next/src/audio-synth/wav.ts`: `encodeWav` writes 16-bit PCM mono with a correct RIFF header and clamps out-of-range samples; `decodeWavSamples` reads it back so the round trip is testable rather than header-deep.
