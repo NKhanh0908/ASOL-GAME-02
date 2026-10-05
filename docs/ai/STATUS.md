@@ -4,9 +4,9 @@ Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; k
 
 ## Now
 
-- Branch: `main` (clean, merged from `feat/mobile-display-tier0`).
-- Product state: Plan E (Level Studio) and Mobile Display Tier 0/2 + Casual visual branding merged to `main`. Full casual juicy aesthetic: Icon 1 (Ngọc Đôi) for app/web, Logo Option 2 (Gương Đôi) for Menu, Baloo 2 typography, 3D tactile buttons, moving star galaxy, level start banner, bilingual VI/EN i18n, and redesigned dialogs.
-- Next step: review plans for F motion stream or G audio stream.
+- Branch: `feat/motion-f1` (branched from `main`).
+- Product state: Plan E (Level Studio) and Mobile Display Tier 0/2 + Casual visual branding on `main`. F1 Phase 1 (Tasks 1–3: easing, `TransitionTimeline`, `choreography`, `routes`, `stardust`) completed on `feat/motion-f1`.
+- Next step: F1 Phase 2 (Tasks 4–6: reducedMotion persistence, `BackgroundScene`, and `SceneDirector`) in `docs/superpowers/plans/2026-10-03-f1-2-director.md`.
 
 ## Streams
 
@@ -15,7 +15,7 @@ Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; k
 | Level system A → B → C/D → E | complete; Plan E merged to `main` | `docs/ai/DOCS-INDEX.md` rows A–E |
 | MD mobile display (Tier 0 + Tier 2) | complete; merged to `main` | `docs/superpowers/plans/2026-10-04-mobile-display-quick-wins.md` |
 | BR casual branding, splash & bilingual | complete; merged to `main` | `docs/gdd/assets/` mockups |
-| F motion (F1 → F2 → F3) | specs approved, plans ready, not started | `docs/superpowers/plans/2026-10-03-f-motion-index.md` |
+| F motion (F1 → F2 → F3) | in progress; F1 Tasks 1–3 done on `feat/motion-f1` | `docs/superpowers/plans/2026-10-03-f-motion-index.md` |
 | C chapter 2 + Hoa Pham | complete; all 16 levels approved and available in campaign order | `docs/superpowers/plans/2026-10-02-c-chapter-2-hoa-pham-levels.md` |
 | G audio (G0 → G1 → G2) | spec approved, plans written, not started | `docs/superpowers/plans/2026-10-03-g-audio-index.md` |
 | BF board-fit-by-cells | complete, merged to `main` with Plan C | `docs/superpowers/plans/2026-10-03-board-fit-by-cells.md` |
