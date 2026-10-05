@@ -4,6 +4,13 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-05 - Audio acceptance passed: complete G and GS audio streams
+
+- Reviewer approved the audio experience across web and Android: dual-channel streaming background music (`music-sky` Starlit Night Sky & `music-stele` Meditative Silence), interactive pentatonic snap chimes, victory stinger, UI sound cues, and procedural studio splash intro.
+- Signed off all 14 criteria in `docs/testing/audio/g-acceptance.md` as passed.
+- Marked Audio streams G and GS as `done` in `docs/ai/DOCS-INDEX.md` and `docs/ai/STATUS.md`.
+- Verification: 84 test files / 1037 tests passed; `npm run typecheck` clean; `npm run build` clean; `npm run android:sync` clean.
+
 ### 2026-10-05 - Integrate Meditative Silence music track for gameplay scene
 
 - Sourced `meditative-silence [usesuno.com].mp3` (3m58s duration) and placed it into `game-next/public/audio/music-stele.mp3`.
