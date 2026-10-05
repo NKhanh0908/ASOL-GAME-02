@@ -1,12 +1,12 @@
-# Status — updated 2026-10-05 by Codex
+# Status — updated 2026-10-05 by Claude
 
 Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; keep this file ≤ 60 lines.
 
 ## Now
 
-- Branch: `feat/motion-f2` (branched from `feat/motion-f1`).
-- Product state: F1 and F2 are complete; Reviewer Stop Point 4 passed on 2026-10-05. The victory sequence intentionally lasts 2800 ms.
-- Next step: integrate `feat/motion-f2`. F3 remains approved but is deferred for later implementation and device acceptance by the reviewer.
+- Branch: `feat/audio-synth` (from `main`, merged up to `f964e13`). Worktree: `D:\Working\ASOL\ASOL-GAME-02-audio`, `npm ci` done, baseline 68 files / 829 tests green.
+- Product state: F1 and F2 are complete and merged to `main`; Reviewer Stop Point 4 passed. The victory sequence intentionally lasts 2800 ms. F3 is approved but deferred.
+- Next step: GS Task 1 (`docs/superpowers/plans/2026-10-05-gs1-synth-engine.md`) — the DSP primitives. Read `docs/superpowers/plans/2026-10-05-gs-audio-synth-index.md` first.
 
 ## Streams
 
@@ -15,18 +15,22 @@ Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; k
 | Level system A → B → C/D → E | complete; Plan E merged to `main` | `docs/ai/DOCS-INDEX.md` rows A–E |
 | MD mobile display (Tier 0 + Tier 2) | complete; merged to `main` | `docs/superpowers/plans/2026-10-04-mobile-display-quick-wins.md` |
 | BR casual branding, splash & bilingual | complete; merged to `main` | `docs/gdd/assets/` mockups |
-| F motion (F1 → F2 → F3) | F1 & F2 complete and accepted; F3 approved but deferred | `docs/superpowers/plans/2026-10-03-f-motion-index.md` |
+| F motion (F1 → F2 → F3) | F1 & F2 complete, accepted and on `main`; F3 approved but deferred | `docs/superpowers/plans/2026-10-03-f-motion-index.md` |
 | C chapter 2 + Hoa Pham | complete; all 16 levels approved and available in campaign order | `docs/superpowers/plans/2026-10-02-c-chapter-2-hoa-pham-levels.md` |
-| G audio (G0 → G1 → G2) | spec approved, plans written, not started | `docs/superpowers/plans/2026-10-03-g-audio-index.md` |
+| GS audio synthesis (Tasks 1–12) | spec and plans written, not started; ready to begin on `feat/audio-synth` | `docs/superpowers/plans/2026-10-05-gs-audio-synth-index.md` |
+| G audio (music, cues) | sourcing half superseded by GS; G2 cue plan still used unedited after GS Task 12 | `docs/superpowers/plans/2026-10-03-g-audio-index.md` |
 | BF board-fit-by-cells | complete, merged to `main` with Plan C | `docs/superpowers/plans/2026-10-03-board-fit-by-cells.md` |
 
 ## Open decisions / blockers
 
-- F3: approved, not started; the reviewer will perform its Android/device checks during later execution.
-- G: plans await review at G stop point 1 (9 spec departures listed in the index). F2 no longer blocks G1/G2.
+- F3: approved, not started; the reviewer performs its Android/device checks during later execution.
+- GS: the reviewer tunes the eight effects in the Audio Lab at stop point 1 (after Task 7), and must supply the two music tracks plus their key before Task 9 can commit green — the manifest's `source` rows are deliberately blank until then. Tasks 9 and 11 do not depend on each other, so Task 11 can run first if the music is late.
+- GS Tasks 1–8 need neither F nor the music, so they can start immediately.
 
 ## Gotchas learned recently
 
+- A constant used by modules that a barrel file imports must live in its own leaf module. `MUSIC_ROOT_HZ` is in `src/content/audio/root.ts`, not `index.ts`: patches read it while evaluating, so a cycle through the barrel would throw `ReferenceError` from the temporal dead zone.
+- `vite.config.ts` lists only `index.html` under `build.rollupOptions.input`, so an extra root `*.html` page (`studio.html`, and the planned `audiolab.html`) is served by `npm run dev` and ships nothing.
 - `BackgroundScene` uses `{ active: true }` and `applyDesignViewport(this)` so the persistent star backdrop stays at the bottom and scales to screen buffer correctly.
 - All scene transitions must route through `SceneDirector` (`director.go`, `director.boot`); direct `scene.start(` is blocked by `tests/sceneStartGate.test.ts`.
 - `BoardRenderer` stele is divided into base, grid, and top centered at `(360, 600)` with cardinal runes drawn on top of the grid and beneath the glass frame so they remain visible.

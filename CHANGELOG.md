@@ -4,6 +4,16 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-05 - Plan: audio synthesis engine, Tasks 1-12
+
+Implementation plans for the audio synthesis spec, and the workspace set up to execute them.
+
+- Added `docs/superpowers/plans/2026-10-05-gs-audio-synth-index.md` (order, branch, stop points, the contract table between tasks, the task-by-task mapping onto the superseded G plan, and four deviations from the spec), `2026-10-05-gs1-synth-engine.md` (Tasks 1-8: DSP primitives, patch model, renderer, WAV, the eight Mirror patches, `audio:author`, the Audio Lab, the engine README) and `2026-10-05-gs2-wiring.md` (Tasks 9-12: music manifest, the two settings, `MusicPort`, `SfxPort` over `synthSfxDriver`, wiring).
+- GS2 names the exact tasks and steps to execute from `2026-10-03-g1-audio-foundation.md` plus every substitution, rather than copying 1,200 lines that would then need keeping in step. G2 runs afterwards unedited, because every name it imports is produced under the same spelling.
+- Updated `docs/ai/DOCS-INDEX.md` (row GS now lists its plans and reads `approved`) and `docs/ai/STATUS.md` (branch, next step, the two GS blockers, and two new gotchas).
+- Prepared the worktree `D:\Working\ASOL\ASOL-GAME-02-audio` on `feat/audio-synth`: merged `origin/main` up to `f964e13` so F1 and F2 are present, resolved the one `CHANGELOG.md` conflict by keeping both entries, and ran `npm ci`.
+- Verification: baseline in the worktree is green — `npm run typecheck` clean and `npm test` 68 files / 829 tests passing. Plan self-review found and fixed a real defect before any code was written: `MUSIC_ROOT_HZ` was to be exported from the same barrel that imports the patches reading it, which is a cycle that throws `ReferenceError` from the temporal dead zone at import time; it now lives in `src/content/audio/root.ts`. The self-review also replaced an over-clever Proxy-based fake `AudioContext` in the Task 11 test with a plain one. GitNexus `detect_changes` reports docs-only changes and no affected symbols.
+
 ### 2026-10-05 - Design: audio synthesis engine for all sound effects
 
 Brainstormed and specified a replacement for the sample-sourcing half of the G audio stream. All eight sound effects are synthesized from declarative TypeScript patches; the reviewer still sources the two music tracks.
