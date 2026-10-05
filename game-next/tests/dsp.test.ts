@@ -194,4 +194,3 @@ describe('DSP boundaries', () => {
     expect(Array.from(osc('saw', 250, 250, 4, 1000))).toEqual([-1, -0.5, 0, 0.5]);
   });
 });
-

@@ -4,6 +4,12 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-05 - Record DSP review and next audio task
+
+- Updated `docs/ai/STATUS.md` and `docs/ai/DOCS-INDEX.md` after independent Task 1 review; patch validation is next.
+- Removed trailing test-file whitespace found by the staged diff check; the original worktree check did not cover untracked files.
+- Verification: independent review approved DSP behavior and test coverage; functional evidence remains 22 DSP tests and 851 full-suite tests passing with clean typecheck. GitNexus MCP is unavailable in this session.
+
 ### 2026-10-05 - Audio synth DSP primitives (GS task 1)
 
 - Added `game-next/src/audio-synth/dsp.ts`: seeded `mulberry32`, white/pink `noise`, AD/ADSR `envelope`, gliding sine/triangle/saw/square `osc`, two-operator `fmOsc`, and RBJ `biquadCoeffs` / `applyBiquad` with cutoff sweeping. The portable module imports nothing.
