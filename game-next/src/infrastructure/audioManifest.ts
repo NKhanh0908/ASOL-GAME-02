@@ -40,7 +40,7 @@ export const MUSIC_ASSETS: readonly MusicAsset[] = [
     id: 'music-stele',
     files: ['music-stele.mp3'],
     source: {
-      title: 'Starlit Night Sky (Placeholder)',
+      title: 'Meditative Silence',
       author: 'Suno AI',
       url: 'https://suno.com',
       license: 'CC0-1.0',

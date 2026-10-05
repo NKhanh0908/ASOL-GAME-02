@@ -4,6 +4,14 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-05 - Integrate Meditative Silence music track for gameplay scene
+
+- Sourced `meditative-silence [usesuno.com].mp3` (3m58s duration) and placed it into `game-next/public/audio/music-stele.mp3`.
+- Updated `game-next/src/infrastructure/audioManifest.ts` with metadata for `music-stele` ("Meditative Silence").
+- Verified continuous playback on `next-level` route: existing `MusicPort` architecture returns early when `id === wanted`, keeping gameplay music running seamlessly across levels without rewind, resetting only when exiting to menu or map.
+- Synced audio assets to Capacitor Android project.
+- Verification: 84 test files / 1037 tests passed; `npm run typecheck` clean; `npm run build` clean; `npm run android:sync` clean; GitNexus `detect_changes` confirms only `audioManifest.ts` touched.
+
 ### 2026-10-05 - Integrate Starlit Night Sky music track for menu and map scenes
 
 - Sourced `starlit-night-sky [usesuno.com].mp3` (3m49s duration) and placed it into `game-next/public/audio/music-sky.mp3` and temporary placeholder `music-stele.mp3`.
