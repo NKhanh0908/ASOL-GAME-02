@@ -4,6 +4,11 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-05 - Audio Lab fix round 1 (GS task 7)
+
+- `game-next/src/devtools/audiolab/guard.ts`: added `ViewMemory` (last good render kept per cue) and `sliderLabel`. `main.ts` now paints a cue's own last good render, or a blank canvas/stats/textarea, when its patch is invalid, so a stale render from another cue can never sit under the selected cue (Copy could have handed out the wrong patch body). Slider captions show the full path (`layers[2].source.carrierHz = 880`); `audiolab.html` stacks caption above slider to fit.
+- Verification: new `ViewMemory` and `sliderLabel` tests failed first (5 failures, `ViewMemory is not a constructor`), then passed; `tests/audiolabGuard.test.ts` 9 tests, serialize 6. `npm run typecheck` clean; `npm test` 76 files / 920 tests green. Headless Chrome A-invalid, B, back-to-A walk shows A's own render and patch body each time. GitNexus `detect_changes` returns 0 symbols (index at another checkout).
+
 ### 2026-10-05 - Audio Lab for tuning sound effects (GS task 7)
 
 - Added `game-next/audiolab.html` and `game-next/src/devtools/audiolab/` (`serialize.ts`, `guard.ts`, `main.ts`): a dev-only page that plays every patch through the same renderer the game uses, generates a slider per numeric field, draws the waveform with peak/rms/render-time, plays the G2 pentatonic ladder on the bell (8 steps, -5 to +12 semitones, so 17 semitones wide; only the last step is an octave over the root), and copies the tuned patch out as TypeScript.

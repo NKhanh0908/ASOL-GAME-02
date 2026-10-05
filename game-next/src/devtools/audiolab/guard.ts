@@ -20,3 +20,28 @@ export function tryRender(patch: Patch, sampleRate: number): RenderAttempt {
 export function formatIssues(issues: readonly PatchIssue[]): string {
   return issues.map((issue) => `${issue.path}: ${issue.message}`).join('\n');
 }
+
+/** What the Lab shows for one successful render. */
+export type RenderView = { samples: Float32Array; stats: string; typescript: string };
+
+/**
+ * Remembers the last good view of each cue separately. When a cue's patch is
+ * invalid the page shows that cue's own last view (or nothing), never another
+ * cue's, so Copy can never hand out the wrong patch body.
+ */
+export class ViewMemory {
+  private readonly views = new Map<string, RenderView>();
+
+  remember(cue: string, view: RenderView): void {
+    this.views.set(cue, view);
+  }
+
+  forCue(cue: string): RenderView | null {
+    return this.views.get(cue) ?? null;
+  }
+}
+
+/** Slider caption: the full path, so layer 0 and layer 3 are never confused. */
+export function sliderLabel(path: string, value: number | string): string {
+  return `${path} = ${value}`;
+}

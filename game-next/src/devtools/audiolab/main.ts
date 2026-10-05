@@ -8,7 +8,8 @@ import { measure } from '../../audio-synth/normalize.ts';
 import type { Patch } from '../../audio-synth/patch.ts';
 import { SFX_KEYS, SFX_PATCHES } from '../../content/audio/index.ts';
 import type { SfxKey } from '../../content/audio/index.ts';
-import { formatIssues, tryRender } from './guard.ts';
+import { ViewMemory, formatIssues, sliderLabel, tryRender } from './guard.ts';
+import type { RenderView } from './guard.ts';
 import { ladderRates, patchToTypeScript } from './serialize.ts';
 
 const SR = 44100;
@@ -80,54 +81,68 @@ function showProblem(text: string): void {
   el.hidden = text === '';
 }
 
-function draw(patch: Patch): void {
+const memory = new ViewMemory();
+
+/** Paints a view, or blanks the canvas, stats and textarea when there is none. */
+function paint(view: RenderView | null): void {
   const canvas = document.getElementById('wave') as HTMLCanvasElement;
   const g = canvas.getContext('2d');
-  if (!g) return;
+  const { width, height } = canvas;
+  const mid = height / 2;
+  if (g) {
+    g.fillStyle = '#0b1020';
+    g.fillRect(0, 0, width, height);
+    g.strokeStyle = '#1e293b';
+    g.beginPath();
+    g.moveTo(0, mid);
+    g.lineTo(width, mid);
+    g.stroke();
+    if (view) {
+      const samples = view.samples;
+      g.strokeStyle = '#7fd8ff';
+      g.beginPath();
+      const perColumn = Math.max(1, Math.floor(samples.length / width));
+      for (let x = 0; x < width; x++) {
+        const from = x * perColumn;
+        if (from >= samples.length) break;
+        let lo = samples[from];
+        let hi = samples[from];
+        for (let i = from; i < Math.min(samples.length, from + perColumn); i++) {
+          if (samples[i] < lo) lo = samples[i];
+          if (samples[i] > hi) hi = samples[i];
+        }
+        g.moveTo(x, mid - hi * mid);
+        g.lineTo(x, mid - lo * mid);
+      }
+      g.stroke();
+    }
+  }
+  const stats = document.getElementById('stats');
+  if (stats) stats.textContent = view ? view.stats : '';
+  const out = document.getElementById('out') as HTMLTextAreaElement | null;
+  if (out) out.value = view ? view.typescript : '';
+}
+
+function draw(patch: Patch): void {
   const started = performance.now();
   const attempt = tryRender(patch, SR);
   const renderMs = performance.now() - started;
   if (!attempt.ok) {
-    // Keep the last good waveform, stats and TypeScript on screen.
-    showProblem(`Patch không hợp lệ, giữ nguyên bản render trước:
+    // Show this cue's own last good render, or nothing; never another cue's.
+    paint(memory.forCue(current));
+    showProblem(`Patch không hợp lệ:
 ${formatIssues(attempt.issues)}`);
     return;
   }
   showProblem('');
-  const samples = attempt.samples;
-  const { width, height } = canvas;
-  const mid = height / 2;
-  g.fillStyle = '#0b1020';
-  g.fillRect(0, 0, width, height);
-  g.strokeStyle = '#1e293b';
-  g.beginPath();
-  g.moveTo(0, mid);
-  g.lineTo(width, mid);
-  g.stroke();
-  g.strokeStyle = '#7fd8ff';
-  g.beginPath();
-  const perColumn = Math.max(1, Math.floor(samples.length / width));
-  for (let x = 0; x < width; x++) {
-    const from = x * perColumn;
-    if (from >= samples.length) break;
-    let lo = samples[from];
-    let hi = samples[from];
-    for (let i = from; i < Math.min(samples.length, from + perColumn); i++) {
-      if (samples[i] < lo) lo = samples[i];
-      if (samples[i] > hi) hi = samples[i];
-    }
-    g.moveTo(x, mid - hi * mid);
-    g.lineTo(x, mid - lo * mid);
-  }
-  g.stroke();
-
-  const { peak, rms } = measure(samples);
-  const stats = document.getElementById('stats');
-  if (stats) {
-    stats.textContent = `${patch.durationMs} ms · peak ${peak.toFixed(3)} · rms ${rms.toFixed(3)} · render ${renderMs.toFixed(1)} ms`;
-  }
-  const out = document.getElementById('out') as HTMLTextAreaElement | null;
-  if (out) out.value = patchToTypeScript(current.replace(/-([a-z])/g, (_, c: string) => c.toUpperCase()), patch);
+  const { peak, rms } = measure(attempt.samples);
+  const view: RenderView = {
+    samples: attempt.samples,
+    stats: `${patch.durationMs} ms · peak ${peak.toFixed(3)} · rms ${rms.toFixed(3)} · render ${renderMs.toFixed(1)} ms`,
+    typescript: patchToTypeScript(current.replace(/-([a-z])/g, (_, c: string) => c.toUpperCase()), patch),
+  };
+  memory.remember(current, view);
+  paint(view);
 }
 
 function buildParams(): void {
@@ -146,14 +161,14 @@ function buildParams(): void {
     input.step = String(knob.step);
     input.value = String(knob.get());
     const readout = document.createElement('span');
-    readout.textContent = `${knob.path.split('.').slice(-1)[0]} ${knob.get()}`;
+    readout.textContent = sliderLabel(knob.path, knob.get());
     input.addEventListener('input', () => {
       knob.set(Number(input.value));
-      readout.textContent = `${knob.path.split('.').slice(-1)[0]} ${input.value}`;
+      readout.textContent = sliderLabel(knob.path, input.value);
       draw(working[current]);
     });
     input.addEventListener('change', () => play(working[current]));
-    row.append(input, readout);
+    row.append(readout, input);
     host.append(row);
   }
 }
