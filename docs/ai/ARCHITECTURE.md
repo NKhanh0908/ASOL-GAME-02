@@ -48,6 +48,7 @@ Screenshots: `scripts/shoot-level.sh <id> <outdir>` (headless Chrome, needs the 
 - Mask: `Uint8Array`, index `y*GRID_WIDTH + x`, `mask[idx] ^= 1` per snapped piece cell.
 - Snap radius d² ≤ 36 logic cells, checked in both `src/domain/session.ts` and `src/application/drag.ts` — change both together.
 - Board 640×800 px (5 px per logic cell); `LAYOUT_TOKENS` in `src/presentation/designTokens.ts`.
+- Camera zoom: `applyDesignViewport` scales the camera by `scene.scale.width / 720` (responsive mobile scale). Scene transitions and camera animations must preserve this ratio by multiplying with `camera.zoom` rather than resetting to hardcoded `1.0`.
 - Validation: chapters 1–3 must not enable rotation and chapter 4 must enable it; chapter 1 solutions have no turns and no overlap.
 - Unlock: `order === 1` always open; otherwise predecessor completed.
 

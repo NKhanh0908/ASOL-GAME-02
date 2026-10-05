@@ -4,6 +4,11 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-05 - Fix responsive camera zoom in play choreography
+
+- Fixed `zoomCamera` in `playChoreography.ts` to scale relative to the camera's base `designScale` instead of resetting zoom to hardcoded 1.0; prevents mobile gameplay layouts from shrinking upon entering from menu or map.
+- Verification: `tests/playChoreography.test.ts` passed; `npm run typecheck` and `npm test` (60 test files, 767 tests) passed.
+
 ### 2026-10-05 - Complete F1 scene transitions
 
 - Documented the transition entry point in `game-next/README.md`.

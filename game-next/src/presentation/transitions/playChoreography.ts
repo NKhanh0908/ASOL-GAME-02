@@ -71,9 +71,10 @@ function revealGrid(tl: TransitionTimeline, view: PlayTransitionView, center: Po
 
 function zoomCamera(tl: TransitionTimeline, scene: Phaser.Scene): void {
   const cam = scene.cameras.main;
+  const baseZoom = cam.zoom;
   const half = PLAY_SPECIAL.zoomMs / 2;
-  tl.at(PLAY_SPECIAL.zoomAtMs, cam, { zoom: PLAY_SPECIAL.zoomPeak }, half, 'sineInOut');
-  tl.at(PLAY_SPECIAL.zoomAtMs + half, cam, { zoom: 1 }, half, 'sineInOut');
+  tl.at(PLAY_SPECIAL.zoomAtMs, cam, { zoom: baseZoom * PLAY_SPECIAL.zoomPeak }, half, 'sineInOut');
+  tl.at(PLAY_SPECIAL.zoomAtMs + half, cam, { zoom: baseZoom }, half, 'sineInOut');
 }
 
 function revealTargets(tl: TransitionTimeline, view: PlayTransitionView): void {
