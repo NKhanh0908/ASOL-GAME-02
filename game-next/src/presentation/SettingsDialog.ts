@@ -6,6 +6,7 @@ import { designViewBounds } from './designViewport.ts';
 import { TEXTURE_KEYS } from './TextureFactory.ts';
 import { t, getLocale, setLocale } from './i18n.ts';
 import { setMotionScale } from './transitions/motion.ts';
+import { audioServices } from './audio/audioServices.ts';
 
 export class SettingsDialog {
   private scene: Phaser.Scene;
@@ -31,9 +32,9 @@ export class SettingsDialog {
       .setInteractive();
     backdrop.on('pointerdown', () => this.close());
 
-    // 2. Tấm bia cài đặt (460 x 520) phong cách thẻ bài chiêm tinh
+    // 2. Tấm bia cài đặt (460 x 560) phong cách thẻ bài chiêm tinh
     const modalW = 460;
-    const modalH = 520;
+    const modalH = 560;
     const panel = this.scene.add.graphics();
 
     // Lớp bóng đổ mềm
@@ -78,14 +79,14 @@ export class SettingsDialog {
     this.container.add([backdrop, panel, title, closeBtnBg, closeBtn]);
 
     // 4. Hàng chọn Ngôn ngữ (Language Switcher Row)
-    this.createLanguageRow(-modalH / 2 + 108);
+    this.createLanguageRow(-modalH / 2 + 100);
 
     // 5. Các tùy chọn Toggle
     let showTarget = this.progressRepo.read().progress.settings.showTarget;
 
     // Toggle 1: Bóng mục tiêu
     this.createToggleRow(
-      -modalH / 2 + 180,
+      -modalH / 2 + 156,
       t('setting_show_target'),
       showTarget,
       (val) => {
@@ -96,7 +97,7 @@ export class SettingsDialog {
 
     // Toggle 2: Giảm chuyển động
     this.createToggleRow(
-      -modalH / 2 + 252,
+      -modalH / 2 + 212,
       t('setting_reduce_motion'),
       this.progressRepo.read().progress.settings.reducedMotion,
       (on) => {
@@ -105,13 +106,28 @@ export class SettingsDialog {
       }
     );
 
+    const audio = audioServices(this.scene);
+    const audioSettings = this.progressRepo.read().progress.settings;
+
+    // Background music: fades out and pauses when off (spec G §5.1)
+    this.createToggleRow(-modalH / 2 + 268, 'Nhạc nền', audioSettings.music, (on) => {
+      this.progressRepo.setMusic(on);
+      audio.music.setEnabled(on);
+    });
+
+    // Sound effects
+    this.createToggleRow(-modalH / 2 + 324, 'Hiệu ứng âm thanh', audioSettings.sfx, (on) => {
+      this.progressRepo.setSfx(on);
+      audio.sfx.setEnabled(on);
+    });
+
     // Toggle 3: Rung phản hồi — Android WebView không đáng tin ở navigator.vibrate,
     // nên hiện khi chạy native (plugin Haptics) hoặc trình duyệt có vibrate
     const canVibrate =
       Capacitor.isNativePlatform() || (typeof navigator !== 'undefined' && 'vibrate' in navigator);
     if (canVibrate) {
       this.createToggleRow(
-        -modalH / 2 + 324,
+        -modalH / 2 + 380,
         t('setting_haptics'),
         this.progressRepo.read().progress.settings.haptics,
         (on) => {
@@ -321,7 +337,7 @@ export class SettingsDialog {
     const confirmContainer = this.scene.add.container(0, 0);
 
     const overlay = this.scene.add
-      .rectangle(0, 0, 460, 520, COLOR_NUMBERS.navyBackdrop, 0.94)
+      .rectangle(0, 0, 460, 560, COLOR_NUMBERS.navyBackdrop, 0.94)
       .setInteractive();
 
     const confirmText = this.scene.add

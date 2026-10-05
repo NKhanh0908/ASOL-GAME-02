@@ -1,15 +1,14 @@
-# Status — updated 2026-10-05 by Claude (menu taglines merged in)
+# Status — updated 2026-10-05 by Antigravity (GS Task 12 complete)
 
 Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; keep this file ≤ 60 lines.
 
 ## Now
 
-- Branch: `feat/audio-synth` (from `main`, merged up to `f964e13`). It no longer has its own worktree; check it out in the main checkout (or any fresh worktree) to continue.
-- Also carried on this branch, by reviewer request: `feat/menu-astronomy-taglines` (from `main` at `f964e13`) is merged in. The menu subtitle now draws one of 20 astronomy facts per locale and the version footer reads "Nơi các vì sao hội tụ" / "Where The Stars Gather". It touches only `i18n.ts`, `MenuScene.ts` and `tests/displayFontCoverage.test.ts`, so it can be reviewed independently of GS.
-- Product state: F1 and F2 complete and merged to `main`. GS1 (Tasks 1-8) is complete and reviewed: the synth engine, Mirror's eight sound-effect patches, `npm run audio:author`, the Audio Lab, and the engine README and presets.
-- GS stop point 1 is cleared: the reviewer listened, the eight sounds were retuned by ear and approved, and the final whole-branch review passed. The branch is merge-ready.
-- Next step: GS2, wiring the engine into the game (`docs/superpowers/plans/2026-10-05-gs2-wiring.md`, Tasks 9-12), then G2 unedited. Task 9 is split because the reviewer has not supplied the two music tracks yet; Task 11 can run first.
-- Verified after the final-review fixes: typecheck clean, 77 files / 926 tests, `npm run build` clean with no Audio Lab in `dist/`, `content:validate` 22 levels pass.
+- Branch: `feat/audio-synth` (from `main`, merged up to `f964e13`). Main checkout D:\Working\ASOL\ASOL-GAME-02.
+- Carried on this branch: `feat/menu-astronomy-taglines` merged in.
+- Product state: GS1 (Tasks 1–8) and GS2 (Tasks 9a, 10, 11, 12) complete and verified. Synthesized sound effects wired into the game through `AudioServices`, `SceneDirector`, `SettingsDialog`, and `main.ts`.
+- Next step: GS Task 9b (music asset sourcing & metadata) awaiting reviewer tracks, then G2 (cue table + pentatonic melodies + stinger) unedited.
+- Verified: typecheck clean, 82 files / 1004 tests pass, `npm run build` clean with no Audio Lab in `dist/`, `content:validate` 22 levels pass, Android debug APK assembleDebug successful.
 
 ## Streams
 
@@ -20,25 +19,21 @@ Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; k
 | BR casual branding, splash & bilingual | complete; merged to `main` | `docs/gdd/assets/` mockups |
 | F motion (F1 → F2 → F3) | F1 & F2 complete, accepted and on `main`; F3 approved but deferred | `docs/superpowers/plans/2026-10-03-f-motion-index.md` |
 | C chapter 2 + Hoa Pham | complete; all 16 levels approved and available in campaign order | `docs/superpowers/plans/2026-10-02-c-chapter-2-hoa-pham-levels.md` |
-| GS audio synthesis (Tasks 1–12) | GS1 (Tasks 1–8) complete and reviewed; GS2 (Tasks 9–12) next, Task 9 waits on music | `docs/superpowers/plans/2026-10-05-gs-audio-synth-index.md` |
-| G audio (music, cues) | sourcing half superseded by GS; G2 cue plan still used unedited after GS Task 12 | `docs/superpowers/plans/2026-10-03-g-audio-index.md` |
+| GS audio synthesis (Tasks 1–12) | GS1 & GS2 (Tasks 9a, 10, 11, 12) complete; Task 9b waits on music tracks | `docs/superpowers/plans/2026-10-05-gs-audio-synth-index.md` |
+| G audio (music, cues) | sourcing half superseded by GS; G2 cue plan still used unedited after GS | `docs/superpowers/plans/2026-10-03-g-audio-index.md` |
 | BF board-fit-by-cells | complete, merged to `main` with Plan C | `docs/superpowers/plans/2026-10-03-board-fit-by-cells.md` |
 
 ## Open decisions / blockers
 
+- GS Task 9b cannot commit green until the reviewer supplies the two music tracks and states their key — `MUSIC_ASSETS`'s `source` rows are deliberately blank and the manifest test asserts they are filled.
 - Retuning a sound later: tune in the Audio Lab (`npm run dev`, `/audiolab.html`), press Copy as TypeScript, paste the patch body into `src/content/audio/sources/<key>.ts`, then re-run `npm run audio:author -- --all`.
-- GS Task 9 cannot commit green until the reviewer supplies the two music tracks and states their key — `MUSIC_ASSETS`'s `source` rows are deliberately blank and the manifest test asserts they are filled. Tasks 9 and 11 are independent, so Task 11 can run first if the music is late.
 - F3: approved, not started; the reviewer performs its Android/device checks during later execution.
-- The final whole-branch review has triaged the deferred GS1 findings; the survivors were fixed in the final-fix commit. Notes: `.superpowers/sdd/2026-10-05-gs1-synth-engine/`.
 
 ## Gotchas learned recently
 
 - GitNexus `detect_changes` is useless from a git worktree: the index lives at the main checkout, so it reports 0 changed symbols for every commit regardless of content. Re-index from the main checkout after merging a worktree branch.
-- A constant used by modules that a barrel file imports must live in its own leaf module. `MUSIC_ROOT_HZ` is in `src/content/audio/root.ts`, not `index.ts`: patches read it while evaluating, so a cycle through the barrel would throw `ReferenceError` from the temporal dead zone.
-- `vite.config.ts` lists only `index.html` under `build.rollupOptions.input`, so an extra root `*.html` page (`studio.html`, `audiolab.html`) is served by `npm run dev` and ships nothing. Verified: `grep -rl audiolab dist/` finds nothing after a build.
-- Synth renders are deterministic end to end — re-running `npm run audio:author -- --all` leaves `git status` empty, so committed listening copies are byte-identical to a fresh run.
-- `BackgroundScene` uses `{ active: true }` and `applyDesignViewport(this)` so the persistent star backdrop stays at the bottom and scales to screen buffer correctly.
-- All scene transitions must route through `SceneDirector` (`director.go`, `director.boot`); direct `scene.start(` is blocked by `tests/sceneStartGate.test.ts`.
-- Camera zoom makes `pointer.x/y` diverge from design coordinates. Anything hit-testing against layout must read `pointer.worldX/worldY`.
-- `build:release` fails by design until all 28 levels are approved (currently 22; Chapter 4 has six planned levels).
-- Desktop web viewport is constrained to 9:16 portrait (max-width = 100vh * 720 / 1280) so design height stays ~1280 instead of squashing on wide screens.
+- A constant used by modules that a barrel file imports must live in its own leaf module (`src/content/audio/root.ts`).
+- `vite.config.ts` lists only `index.html` under `build.rollupOptions.input`, so an extra root `*.html` page (`studio.html`, `audiolab.html`) ships nothing in `dist/`.
+- Synth renders are deterministic end to end — re-running `npm run audio:author -- --all` leaves `git status` empty.
+- Android debug build in sandbox may fail if Gradle cache lock is held outside sandbox; bypass sandbox mode or clean locks.
+- `AUDIO_REGISTRY_KEY = 'audio'` in `game.registry`: calls before `ready` fall back to `SILENT_AUDIO` without throwing.

@@ -4,6 +4,13 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-05 - Wire synthesized audio into the game (GS task 12)
+
+- Added `game-next/src/presentation/audio/audioServices.ts` (`AUDIO_REGISTRY_KEY`, `SILENT_AUDIO`, `audioServices`) and `tracks.ts` (`trackFor`).
+- `game-next/src/main.ts` renders the eight effect patches into `AudioBuffer`s inside the Phaser `ready` handler, builds `SfxPort` over `synthSfxDriver`, applies the saved settings and registers both ports; a failed render falls back to silent services so audio can never stop the game booting.
+- `game-next/src/presentation/transitions/SceneDirector.ts` requests `trackFor(scene)` on every route and on boot; `game-next/src/presentation/SettingsDialog.ts` gains the "Nhạc nền" and "Hiệu ứng âm thanh" toggles. `BackgroundScene` is untouched — there is nothing to preload.
+- Verification: `tests/audioServices.test.ts` and two new `tests/sceneDirector.test.ts` cases failed first, then passed; `npm run typecheck`, `npm test` (82 files / 1004 tests), `npm run content:validate` and `npm run build` passed; `dist/audio/` holds only the music files and `dist/` has no Audio Lab. Android debug APK built cleanly (`assembleDebug`). GitNexus `impact` on `SceneDirector` (MEDIUM, 6 callers) and `SettingsDialog` (LOW, 2 direct callers) reported before editing; `detect_changes` on the staged set.
+
 ### 2026-10-05 - SfxPort over the synth engine (GS task 11)
 
 - Added `game-next/src/infrastructure/sfx.ts` (pure `SfxPort` with the 6-voice limit and repeat guard, from the G1 plan; `SfxKey` now imported from `content/audio/index.ts`) and `browserSfxEnv` in `game-next/src/infrastructure/browserAudioEnv.ts`. The old plan's `phaserSfxDriver` was not built.

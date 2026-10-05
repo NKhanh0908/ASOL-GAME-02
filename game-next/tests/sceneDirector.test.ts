@@ -189,3 +189,27 @@ describe('SceneDirector', () => {
     expect(host.input.MenuScene).toBeUndefined();
   });
 });
+
+describe('music follows the scene', () => {
+  test('boot uses the boot fade; go uses the route length', () => {
+    const { director, host, menu } = setup();
+    const calls: Array<[string | null, number]> = [];
+    director.setMusic({ setTrack: (id, ms) => calls.push([id, ms]) });
+    director.boot('MenuScene', {});
+    host.run(2000);
+    director.go(menu, 'PlayScene', {}, { route: 'menu-to-play' });
+    expect(calls).toEqual([
+      ['music-sky', 1000],
+      ['music-stele', 1500],
+    ]);
+  });
+
+  test('a refused go leaves the music alone', () => {
+    const { director, menu } = setup();
+    const calls: unknown[] = [];
+    director.setMusic({ setTrack: (...args) => calls.push(args) });
+    director.go(menu, 'PlayScene', {}, { route: 'menu-to-play' });
+    director.go(menu, 'PlayScene', {}, { route: 'menu-to-play' });
+    expect(calls).toHaveLength(1);
+  });
+});

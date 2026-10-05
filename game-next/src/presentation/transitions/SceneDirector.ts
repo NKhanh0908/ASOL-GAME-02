@@ -1,9 +1,11 @@
 import type Phaser from 'phaser';
-import { TRANSITION_TOKENS } from '../designTokens.ts';
+import { AUDIO_TOKENS, TRANSITION_TOKENS } from '../designTokens.ts';
 import type { MoodTarget, SkyMood } from '../skyMood.ts';
 import type { RouteId } from './motion.ts';
 import { isReducedMotion } from './motion.ts';
 import { TransitionTimeline } from './TransitionTimeline.ts';
+import type { MusicPort } from '../../infrastructure/music.ts';
+import { trackFor } from '../audio/tracks.ts';
 
 export type SceneKey = 'MenuScene' | 'LevelSelectScene' | 'PlayScene';
 
@@ -52,6 +54,7 @@ const BOOT_ROUTE: Record<SceneKey, RouteId> = {
 
 export class SceneDirector {
   private host: SceneHost | null = null;
+  private music: Pick<MusicPort, 'setTrack'> | null = null;
   private busy = false;
   private skipping = false;
   private fromKey: SceneKey | null = null;
@@ -68,6 +71,10 @@ export class SceneDirector {
     host.onStep((dt) => this.step(dt));
   }
 
+  setMusic(music: Pick<MusicPort, 'setTrack'>): void {
+    this.music = music;
+  }
+
   isTransitioning(): boolean {
     return this.busy;
   }
@@ -80,6 +87,9 @@ export class SceneDirector {
   ): boolean {
     const host = this.host;
     if (!host || this.busy) return false;
+
+    // Music fades over the whole route, independent of reduced motion (spec G §3.6, §3.7)
+    this.music?.setTrack(trackFor(to), TRANSITION_TOKENS.routes[ctx.route].totalMs);
 
     const fromKey = fromScene.directorKey;
     const fullCtx: TransitionContext = { ...ctx, from: fromKey };
@@ -122,6 +132,7 @@ export class SceneDirector {
   boot(to: SceneKey, data: object): void {
     const host = this.host;
     if (!host || this.busy) return;
+    this.music?.setTrack(trackFor(to), AUDIO_TOKENS.bootFadeMs);
     const route = BOOT_ROUTE[to];
     this.begin(null, to);
     this.outDone = true;
@@ -129,6 +140,7 @@ export class SceneDirector {
     this.incoming = { key: to, ctx: { from: 'boot', route } };
     host.start(to, data);
   }
+
 
   /** Mỗi scene gọi ở cuối create(). Ngoài chuyển cảnh thì không làm gì. */
   attach(scene: Choreographed): void {

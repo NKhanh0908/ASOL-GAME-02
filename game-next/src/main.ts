@@ -13,6 +13,16 @@ import { director, PhaserSceneHost } from './presentation/transitions/SceneDirec
 import { setMotionScale } from './presentation/transitions/motion.ts';
 import { resolveLaunch } from './launchParams.ts';
 import { readViewport } from './presentation/viewport.ts';
+import { musicUrls } from './infrastructure/audioManifest.ts';
+import { browserMusicEnv, browserSfxEnv } from './infrastructure/browserAudioEnv.ts';
+import { createMusic } from './infrastructure/music.ts';
+import { createSfx } from './infrastructure/sfx.ts';
+import { synthSfxDriver } from './infrastructure/synthSfxDriver.ts';
+import { renderAll } from './audio-synth/webaudio.ts';
+import { SFX_PATCHES } from './content/audio/index.ts';
+import { AUDIO_REGISTRY_KEY } from './presentation/audio/audioServices.ts';
+import type { AudioServices } from './presentation/audio/audioServices.ts';
+import { AUDIO_TOKENS } from './presentation/designTokens.ts';
 import './style.css';
 
 window.addEventListener('error', (event) => {
@@ -27,9 +37,21 @@ const launch = resolveLaunch(window.location.search, import.meta.env.DEV);
 
 const viewport = readViewport();
 
-const savedSettings = createProgressRepository(localStorage, campaignManifest, 'oracle-v1')
-  .read().progress.settings;
+const progressRepo = createProgressRepository(localStorage, campaignManifest, 'oracle-v1');
+const savedSettings = progressRepo.read().progress.settings;
 setMotionScale(savedSettings.reducedMotion ? 0 : 1);
+
+// Music lives outside every scene so it plays on through transitions (spec G §2.3)
+const music = createMusic(browserMusicEnv(), {
+  volume: AUDIO_TOKENS.musicVolume,
+  toggleOutMs: AUDIO_TOKENS.toggleOutMs,
+  toggleInMs: AUDIO_TOKENS.toggleInMs,
+  duckDownMs: AUDIO_TOKENS.duck.downMs,
+  duckUpMs: AUDIO_TOKENS.duck.upMs,
+  files: musicUrls,
+});
+music.setEnabled(savedSettings.music);
+
 
 /**
  * Các mặt chữ phải có mặt trước khi scene đầu tiên dựng chữ.
@@ -99,17 +121,54 @@ async function bootstrap(): Promise<void> {
   });
 
   director.setHost(new PhaserSceneHost(game));
+  director.setMusic(music);
 
-  if (launch.scene !== 'MenuScene') {
-    game.events.once('ready', () => {
+  game.events.once('ready', () => {
+    const webAudio = (game.sound as Phaser.Sound.WebAudioSoundManager).context as
+      | AudioContext
+      | undefined;
+
+    let sfx = createSfx(null, browserSfxEnv(), {
+      volume: AUDIO_TOKENS.sfxVolume,
+      maxVoices: AUDIO_TOKENS.maxVoices,
+      repeatGapMs: AUDIO_TOKENS.repeatGapMs,
+    });
+
+    if (webAudio) {
+      try {
+        const started = performance.now();
+        const buffers = renderAll(SFX_PATCHES, webAudio);
+        const elapsed = performance.now() - started;
+        if (import.meta.env.DEV) {
+          console.info(
+            `[audio] rendered ${Object.keys(buffers).length} effects in ${elapsed.toFixed(1)} ms`
+          );
+        }
+        sfx = createSfx(synthSfxDriver(webAudio, buffers), browserSfxEnv(), {
+          volume: AUDIO_TOKENS.sfxVolume,
+          maxVoices: AUDIO_TOKENS.maxVoices,
+          repeatGapMs: AUDIO_TOKENS.repeatGapMs,
+        });
+      } catch (err) {
+        console.warn('[audio] effect rendering failed, continuing without effects', err);
+      }
+    }
+
+    const settings = progressRepo.read().progress.settings;
+    music.setEnabled(settings.music);
+    sfx.setEnabled(settings.sfx);
+    const audio: AudioServices = { music, sfx };
+    game.registry.set(AUDIO_REGISTRY_KEY, audio);
+
+    if (launch.scene !== 'MenuScene') {
       game.scene.stop('SplashScene');
       if (launch.scene === 'PlayScene') {
         director.boot('PlayScene', { levelId: launch.levelId, mode: launch.mode });
       } else if (launch.scene === 'LevelSelectScene') {
         director.boot('LevelSelectScene', launch.focusLevelId ? { focusLevelId: launch.focusLevelId } : {});
       }
-    });
-  }
+    }
+  });
 
   setupAndroidLifecycle({
     onHardwareBack: () => {
@@ -133,10 +192,14 @@ async function bootstrap(): Promise<void> {
     },
     onBackground: () => {
       director.skip();
+      music.pause();
+      game.sound?.pauseAll();
       game.loop.sleep();
     },
     onResume: () => {
       game.loop.wake();
+      game.sound?.resumeAll();
+      music.resume();
     },
   });
 }
