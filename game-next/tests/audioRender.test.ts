@@ -100,18 +100,15 @@ describe('renderPatch', () => {
     expect(Array.from(renderPatch(a, SR))).not.toEqual(Array.from(renderPatch(b, SR)));
   });
 
-  test('adding a layer leaves an earlier noise layer byte-identical', () => {
-    const noiseLayer = {
-      source: { kind: 'noise' as const, color: 'white' as const },
-      env: SUSTAIN,
-    };
-    // Same layer 0 either way; the extra layer is silent (gain 0) so the sum is unchanged.
-    const one = simple({ normalize: { peak: 1 }, layers: [noiseLayer] });
-    const two = simple({
-      normalize: { peak: 1 },
-      layers: [noiseLayer, { source: { kind: 'noise', color: 'pink' }, env: SUSTAIN, gain: 0 }],
-    });
-    expect(Array.from(renderPatch(two, SR))).toEqual(Array.from(renderPatch(one, SR)));
+  test('two identical-config noise layers draw from separate PRNG streams', () => {
+    const layer = { source: { kind: 'noise' as const, color: 'white' as const }, env: SUSTAIN };
+    const one = renderPatch(simple({ normalize: { peak: 1 }, layers: [layer] }), SR);
+    const two = renderPatch(simple({ normalize: { peak: 1 }, layers: [layer, layer] }), SR);
+    // With one shared stream both layers would be the same signal, so the normalized mix
+    // would equal the single-layer render. Separate streams make the mix a different signal.
+    let maxDiff = 0;
+    for (let i = 0; i < one.length; i++) maxDiff = Math.max(maxDiff, Math.abs(one[i] - two[i]));
+    expect(maxDiff).toBeGreaterThan(0.1);
   });
 
   test('every sample is finite and within range', () => {
