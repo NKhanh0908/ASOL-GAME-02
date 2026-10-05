@@ -4,6 +4,11 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-05 - Derive feedback events from transitions (F2 task 3)
+
+- Added `game-next/src/presentation/feedback/parityDiff.ts` (stable layer keys, kept/added overlap layers, perimeter segments for edge traces) and `feedbackEvents.ts`, which turns a `Transition` plus the player command into snap, settle, return, rotate, blocked-rotation, overlap-hollow, overlap-revive, reset and won events. The command parameter is needed because a rejected rotation carries no piece id.
+- Verification: `tests/parityDiff.test.ts` and `tests/feedbackEvents.test.ts` failed for the missing modules, then passed; `npm run typecheck` and `npm test` (64 test files, 798 tests) passed.
+
 ### 2026-10-05 - Add feedback tokens and piece pose math (F2 task 2)
 
 - Added `FEEDBACK_TOKENS` and `VICTORY_TOKENS` (victory rings shortened to 600 ms so the sequence fits 1800 ms) and `game-next/src/presentation/pieceMotion.ts`: frame-rate-independent exponential smoothing, magnet, velocity tilt, bounce/shake/flash curves and the target pose of a piece for tray, snapped, temporary and dragging states.
