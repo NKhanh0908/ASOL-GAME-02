@@ -4,6 +4,13 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-05 - Audio Lab for tuning sound effects (GS task 7)
+
+- Added `game-next/audiolab.html` and `game-next/src/devtools/audiolab/` (`serialize.ts`, `guard.ts`, `main.ts`): a dev-only page that plays every patch through the same renderer the game uses, generates a slider per numeric field, draws the waveform with peak/rms/render-time, plays the G2 pentatonic ladder on the bell (8 steps, -5 to +12 semitones, so 17 semitones wide; only the last step is an octave over the root), and copies the tuned patch out as TypeScript.
+- `guard.ts` (`tryRender`, `formatIssues`) validates before rendering, so a slider dragged out of range (zero duration, cutoff above Nyquist) shows the issues under the waveform and keeps the last good render instead of throwing; the message clears when the value is valid again.
+- The page is not listed in `vite.config.ts` build input, following `studio.html`, so production ships none of it.
+- Verification: `tests/audiolabSerialize.test.ts` and `tests/audiolabGuard.test.ts` failed first (cannot resolve the modules), then passed (10 tests), including a JSON round trip proving a copied patch is still valid. Headless Chrome check of the page: all eight cues start playback, slider input redraws and release replays, the ladder starts eight sources, reset restores the shipped patch, an invalid slider value shows the message. `npm run typecheck` clean; `npm test` 76 files / 915 tests green; `npm run build` then `grep -rl audiolab dist/` found nothing. GitNexus `detect_changes` on the staged set returned 0 symbols (index is at another checkout).
+
 ### 2026-10-05 - audio:author renders listening copies (GS task 6)
 
 - Added `game-next/src/audio-synth/report.ts` (`renderWaveformSvg`, `renderAudioReport`) and `game-next/scripts/audio-author.ts`, plus the `audio:author` script in `game-next/package.json`. Running it writes `docs/testing/audio/<key>.wav`, `<key>.svg` and `report.md`, and exits non-zero if a patch is invalid or longer than the brief allows.
