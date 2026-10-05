@@ -66,6 +66,10 @@ Screenshots: `scripts/shoot-level.sh <id> <outdir>` (headless Chrome, needs the 
 
 ## GitNexus index
 
+- `detect_changes` is useless when run from a git worktree: the index lives at
+  the main checkout, so it reports 0 changed symbols for every commit regardless
+  of content. Re-index from the main checkout after merging a worktree branch.
+
 - `gitnexus clean --force` deletes the whole `.gitnexus/` folder, including the `run.cjs` launcher. Re-index with the global `gitnexus analyze`, not `node .gitnexus/run.cjs analyze` — that path only exists again after the re-index recreates it.
 - The LadybugDB FTS index can desynchronise and fail an incremental analyze with `FTS index 'file_fts' is inconsistent ... Drop and recreate the FTS index`. The fix is `gitnexus clean --force` followed by a full `gitnexus analyze`; an incremental run cannot repair it.
 - `analyze` rewrites the stats line between the `<!-- gitnexus:start -->` markers in `AGENTS.md` and `CLAUDE.md`. Commit that diff with the task's commit; it needs no CHANGELOG entry.

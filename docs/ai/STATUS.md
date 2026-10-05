@@ -8,7 +8,26 @@ Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; k
 - Audio Streams G and GS: officially APPROVED and COMPLETED. Dual-channel streaming music (`music-sky.mp3` & `music-stele.mp3`), procedural WebAudio synth effects, interactive pentatonic snap chimes, UI cues, and studio splash sound intro.
 - Acceptance passed in `docs/testing/audio/g-acceptance.md`.
 - Android & Web assets synced via Capacitor.
-- Next step: execute `plans/2026-10-06-vr0-motion-language.md` (2 tasks), then `plans/2026-10-06-vr1-foundation-menu.md` (8 tasks). Reviewer asked for sequential inline execution, not subagent dispatch.
+- Next step: execute `plans/2026-10-06-vr0-motion-language.md` (2 tasks), then `plans/2026-10-06-vr1-foundation-menu.md` (8 tasks). Sequential inline execution, not subagent dispatch.
+
+## Concurrent work in progress — read before editing
+
+Two agents are working in this checkout at the same time. Respect the split or
+you will silently overwrite the other's edits, which already happened once today.
+
+| Owner | Files |
+|-------|-------|
+| Executor (VR0 then VR1) | `game-next/src/`, `game-next/tests/`, `CHANGELOG.md` |
+| Spec author (VR3b, VR2 plan, VR3a) | `docs/superpowers/specs/`, `docs/superpowers/plans/` — new files only |
+| **Nobody until both finish** | `docs/ai/STATUS.md`, `docs/ai/DOCS-INDEX.md` |
+
+`STATUS.md` and `DOCS-INDEX.md` are updated in one pass at the end by the
+controller session, per the `AGENTS.md` end-of-task rule. If you need to record
+something before then, put it in your `CHANGELOG.md` entry instead.
+
+**Execution order is fixed:** VR0 must land before VR1 starts. The VR1 plan
+reads `MOTION_FAMILIES`, which VR0 creates; the VR1 plan's executor notes say to
+stop and run VR0 first if that export is missing.
 - The gameplay assessment was decomposed into VR0 / VR3a / VR3b; VR3a and VR3b specs are written after VR0 and VR1 land.
 - Verified: typecheck clean, 84 files / 1037 tests pass, `npm run build` clean, `npm run android:sync` clean.
 

@@ -4,6 +4,13 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-06 - Hand VR0 and VR1 to a second agent; restore the worktree gotcha
+
+- Recorded the concurrent-work split in `docs/ai/STATUS.md`: the executor owns `game-next/src/`, `game-next/tests/` and `CHANGELOG.md`; the spec author owns new files under `docs/superpowers/`; nobody touches `docs/ai/STATUS.md` or `docs/ai/DOCS-INDEX.md` until both finish, when the controller updates them in one pass. Two agents share this checkout and one silent overwrite of `STATUS.md` already happened today.
+- Restated in STATUS that VR0 must land before VR1, since the VR1 plan reads `MOTION_FAMILIES`.
+- Restored to `docs/ai/ARCHITECTURE.md` the gotcha that `detect_changes` reports 0 changed symbols when run from a git worktree. It was dropped from STATUS when the `ASOL-GAME-02-boardfit` worktree was removed earlier today and was then recorded nowhere, which would have made it a fresh surprise the next time anyone uses a worktree.
+- Verification: docs only, no code touched.
+
 ### 2026-10-06 - VR0 implementation plan
 
 - Added `docs/superpowers/plans/2026-10-06-vr0-motion-language.md`: two TDD tasks adding `quartOut` to the `EASES` registry and declaring the four `MOTION_FAMILIES`, with no call-site changes. Written for sequential inline execution at the reviewer's request.
