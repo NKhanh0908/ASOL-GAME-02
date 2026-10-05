@@ -4,6 +4,11 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-05 - Lock parity fade and overlap preview behaviour (F2 task 7)
+
+- Added `game-next/tests/boardRendererParity.test.ts`: verified that new overlap layers fade in from 0 to 1 over 150 ms and merge into the stable layer, `fadeOutParity` fades out a snapshot replica, and drag snap candidate over placed piece draws preview strokes.
+- Verification: `tests/boardRendererParity.test.ts`, `npm run typecheck` and `npm test` (67 test files, 818 tests) passed.
+
 ### 2026-10-05 - Frame-based rendering with PieceView and BoardRenderer.tick (F2 task 6)
 
 - Added `game-next/src/presentation/PieceView.ts`: one container per piece holding texture-based shadow, body, and add-blended light images; applies frame-rate-independent smoothing, velocity tilt, bounce, shake, spin and flash.
