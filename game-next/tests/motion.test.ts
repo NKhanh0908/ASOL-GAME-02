@@ -20,6 +20,26 @@ describe('easing', () => {
   test('backOut vượt quá 1 ở giữa rồi về đúng 1', () => {
     expect(Math.max(...[0.6, 0.7, 0.8].map(EASES.backOut))).toBeGreaterThan(1);
   });
+
+  test('quartOut giảm tốc: nửa đầu đi được nhiều hơn nửa sau', () => {
+    const f = EASES.quartOut;
+    expect(f(0)).toBeCloseTo(0, 9);
+    expect(f(1)).toBeCloseTo(1, 9);
+    // A decelerating ease covers most of the distance early.
+    expect(f(0.5)).toBeGreaterThan(0.9);
+  });
+
+  test('quartOut đơn điệu tăng', () => {
+    const f = EASES.quartOut;
+    for (let i = 0; i < 20; i++) {
+      expect(f((i + 1) / 20)).toBeGreaterThan(f(i / 20));
+    }
+  });
+
+  test('quartOut giảm tốc mạnh hơn cubicOut', () => {
+    // This is why it belongs to the heavier `glass` family.
+    expect(EASES.quartOut(0.5)).toBeGreaterThan(EASES.cubicOut(0.5));
+  });
 });
 
 describe('stagger', () => {

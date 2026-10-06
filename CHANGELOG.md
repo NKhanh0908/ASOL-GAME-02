@@ -4,6 +4,12 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-06 - Add quartOut easing for the glass family (VR0 Task 1)
+
+- Added `quartOut` to `EaseName` union and `EASES` registry in `src/presentation/transitions/motion.ts`.
+- Added tests in `tests/motion.test.ts` asserting monotonic increase and stronger deceleration than `cubicOut`.
+- Verification: `npm test -- motion` passes (17 tests in motion.test.ts, 33 total in motion suite); `npm run typecheck` passes.
+
 ### 2026-10-06 - Hand VR0 and VR1 to a second agent; restore the worktree gotcha
 
 - Recorded the concurrent-work split in `docs/ai/STATUS.md`: the executor owns `game-next/src/`, `game-next/tests/` and `CHANGELOG.md`; the spec author owns new files under `docs/superpowers/`; nobody touches `docs/ai/STATUS.md` or `docs/ai/DOCS-INDEX.md` until both finish, when the controller updates them in one pass. Two agents share this checkout and one silent overwrite of `STATUS.md` already happened today.

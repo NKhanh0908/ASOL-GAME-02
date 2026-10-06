@@ -2,13 +2,14 @@ import { TRANSITION_TOKENS } from '../designTokens.ts';
 
 export type RouteId = keyof typeof TRANSITION_TOKENS.routes;
 
-export type EaseName = 'linear' | 'cubicOut' | 'cubicInOut' | 'backOut' | 'sineInOut';
+export type EaseName = 'linear' | 'cubicOut' | 'cubicInOut' | 'quartOut' | 'backOut' | 'sineInOut';
 
 /** Hàm easing thuần, t trong [0, 1]. Tự viết để test được mà không cần Phaser. */
 export const EASES: Record<EaseName, (t: number) => number> = {
   linear: (t) => t,
   cubicOut: (t) => 1 - (1 - t) ** 3,
   cubicInOut: (t) => (t < 0.5 ? 4 * t ** 3 : 1 - (-2 * t + 2) ** 3 / 2),
+  quartOut: (t) => 1 - (1 - t) ** 4,
   backOut: (t) => {
     const c1 = 1.70158;
     const c3 = c1 + 1;
