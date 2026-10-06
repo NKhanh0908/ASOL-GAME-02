@@ -5,6 +5,7 @@ import {
   bounceScale,
   lightAlpha,
   magnetPose,
+  magnetRing,
   pieceTargetPose,
   shakeOffset,
   stepPose,
@@ -112,5 +113,38 @@ describe('tư thế đích của mảnh', () => {
     const anchor = d1.anchors[0];
     expect(anchorCenter(d1, anchor.id, layout)).toEqual(pieceCenterCanvas(d1.frameSize, anchor.x, anchor.y, layout));
     expect(anchorCenter(d1, 'không-có', layout)).toBeNull();
+  });
+});
+
+describe('magnetRing', () => {
+  const R = 40;
+
+  test('sits tight and bright when the piece is on the anchor', () => {
+    const ring = magnetRing(0, R);
+    expect(ring.radius).toBeCloseTo(R * FEEDBACK_TOKENS.magnetRingNearRatio, 6);
+    expect(ring.alpha).toBeCloseTo(FEEDBACK_TOKENS.magnetRingAlphaNear, 6);
+  });
+
+  test('tightens and brightens as the piece closes', () => {
+    const far = magnetRing(R * FEEDBACK_TOKENS.magnetRingSpanRatio, R);
+    const mid = magnetRing(R * FEEDBACK_TOKENS.magnetRingSpanRatio * 0.5, R);
+    const near = magnetRing(0, R);
+    expect(far.radius).toBeGreaterThan(mid.radius);
+    expect(mid.radius).toBeGreaterThan(near.radius);
+    expect(far.alpha).toBeLessThan(mid.alpha);
+    expect(mid.alpha).toBeLessThan(near.alpha);
+  });
+
+  test('clamps beyond the span instead of overshooting', () => {
+    const edge = magnetRing(R * FEEDBACK_TOKENS.magnetRingSpanRatio, R);
+    const beyond = magnetRing(R * 100, R);
+    expect(beyond.radius).toBeCloseTo(edge.radius, 6);
+    expect(beyond.alpha).toBeCloseTo(edge.alpha, 6);
+  });
+
+  test('never draws inside the piece', () => {
+    for (let d = 0; d <= R * 2; d += R / 20) {
+      expect(magnetRing(d, R).radius).toBeGreaterThan(R);
+    }
   });
 });

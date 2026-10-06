@@ -4,6 +4,15 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-06 - Add the magnet ring geometry (VR3a Task 2)
+
+Added pure magnet ring geometry function:
+- Added `magnetRingFarRatio: 1.45`, `magnetRingNearRatio: 1.05`, `magnetRingSpanRatio: 0.9`, `magnetRingAlphaFar: 0.18`, `magnetRingAlphaNear: 0.5` to `FEEDBACK_TOKENS` in `game-next/src/presentation/designTokens.ts`.
+- Implemented `magnetRing(distPx, pieceRadiusPx)` in `game-next/src/presentation/pieceMotion.ts` calculating tightening radius and alpha based on distance.
+- Added 4 unit tests covering near/far clamps, convergence, and clearance in `game-next/tests/pieceMotion.test.ts`.
+
+Verification: `npm test -- pieceMotion` passed 17 tests. `npm run typecheck` clean.
+
 ### 2026-10-06 - Anticipate before the lift on pick up (VR3a Task 1)
 
 Added pick-up anticipation dip to piece interaction:

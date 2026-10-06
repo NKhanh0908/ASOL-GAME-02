@@ -121,3 +121,22 @@ export function pieceTargetPose(piece: Piece, state: PieceState, input: PoseInpu
     alpha: input.selected ? 1 : 0.9,
   };
 }
+
+/**
+ * Ring drawn at the candidate anchor while a piece approaches it. A candidate
+ * only exists inside the snap radius, so the ring appearing is the "in range"
+ * signal and its tightening is the "how close" signal. Both ratios stay above
+ * 1, so the ring never draws inside the piece itself.
+ */
+export function magnetRing(
+  distPx: number,
+  pieceRadiusPx: number
+): { radius: number; alpha: number } {
+  const F = FEEDBACK_TOKENS;
+  const span = pieceRadiusPx * F.magnetRingSpanRatio;
+  const k = span <= 0 ? 0 : Math.min(1, Math.max(0, distPx / span));
+  return {
+    radius: pieceRadiusPx * (F.magnetRingNearRatio + (F.magnetRingFarRatio - F.magnetRingNearRatio) * k),
+    alpha: F.magnetRingAlphaNear + (F.magnetRingAlphaFar - F.magnetRingAlphaNear) * k,
+  };
+}
