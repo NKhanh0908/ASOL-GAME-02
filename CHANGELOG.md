@@ -4,6 +4,13 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-06 - Reconcile the palette table with shipped tokens and record visual invariants (VR1 Task 8)
+
+- Updated `docs/gdd/master-gdd.md` §3.1 palette table to align with shipped tokens: navy (`#1A2470`, `#1D3482`, `#050A1A`), ice glass (`#A9E3FF`, `#CFEFFF`, `#3A5E78`), amber (`#FFC857`, `#FFD27A`, `#FFE8A6`), and documented the glow ladder governance rule.
+- Added visual glow ladder invariant to `docs/ai/ARCHITECTURE.md` (`GLOW_TIERS`, single `SCREEN_FOCUS` tier-3 element, banned colors guard test).
+- Verification: `npm test` (88 test files, 1063 tests pass); `npm run typecheck` clean; `npm run build` cleanly generates production bundle in `dist/`.
+
+
 ### 2026-10-06 - Close the settings gear outline and make the tap ripple a diamond (VR1 Task 7)
 
 - Created `src/presentation/menu/diamondMotif.ts` exporting shared `strokeDiamond(g, x, y, radius)`.

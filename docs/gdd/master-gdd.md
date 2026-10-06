@@ -164,17 +164,18 @@ Trò chơi sử dụng nghiêm ngặt 3 họ màu chủ đạo, tuyệt đối l
 
 | Họ màu | Mã Hex | Ứng dụng cụ thể trong giao diện |
 |---|---|---|
-| **Họ Navy** | `#080E24` | Nền vũ trụ sâu thẳm (gradient chuyển sắc dọc) |
-| | `#101B32` | Mặt đá tấm bia chơi, nền khay chứa mảnh |
-| | `#050A1A` | Nền tối sâu không gian vũ trụ, lớp phủ nền modal |
-| **Họ Kính Xanh Trắng** | `#68B8DC` | Viền kính chính (dày 8–10px, bo góc 36px, hiệu ứng mài vát bevel) |
+| **Họ Navy** | `#1A2470` | Nền vũ trụ sâu thẳm đỉnh (gradient chuyển sắc dọc `sky.stops[0]`) |
+| | `#1D3482` | Mặt đá tấm bia chơi (`surfaceTop`), chuyển sắc nền vũ trụ (`sky.stops[1]`) |
+| | `#050A1A` | Lớp phủ nền modal, phông nền không gian sâu (`navyBackdrop`) |
+| **Họ Kính Xanh Trắng** | `#A9E3FF` | Viền kính chính (`primaryBorder`, tier 1-2 glow), biểu tượng hoa văn |
 | | `#CFEFFF` | Điểm phản quang sáng (Bevel highlight) ở cạnh trên khung kính |
 | | `#3A5E78` | Rãnh bóng tối ở cạnh dưới khung kính (Bevel shadow) |
-| **Họ Vàng Hổ Phách** | `#FFC857` | Mảnh kính đã snap, khối nút chính (CTA "Tiếp tục", "Màn tiếp theo") |
-| | `#D4A359` | Lưới tọa độ bàn cờ, viền phụ đứt nét bên trong tấm bia, đường nối chòm sao |
-| | `#FFE8A6` | Viền highlight phát quang của mảnh ghép, ánh sáng thức tỉnh cổ ngữ |
+| **Họ Vàng Hổ Phách** | `#FFC857` | Khối nút chính (CTA "Tiếp tục", tier 3 focus), mặt chữ logo MIRROR, ngọc đã snap |
+| | `#FFD27A` | Lưới tọa độ bàn cờ (`gridCoordinate`), chỉ viền phụ đứt nét |
+| | `#FFE8A6` | Viền highlight phát quang của mảnh ghép (`glowHighlight`) |
 
-- **Độ tương phản chuẩn WCAG AA:** Chữ chính dùng `#EEF4FA`, chữ phụ `#9DAFC7`, đảm bảo tỉ lệ tương phản $\ge 4.5:1$ trên toàn bộ nền tối.
+- **Thang hào quang (Glow Ladder):** Độ sáng rực rỡ được quản lý tập trung qua `GLOW_TIERS` (Tier 0 đến Tier 3) trong `designTokens.ts`, không trang trí hào quang tùy tiện. Mỗi màn hình chỉ cho phép duy nhất một phần tử đạt Tier 3 (`SCREEN_FOCUS`).
+- **Độ tương phản chuẩn WCAG AA:** Chữ chính dùng `#EEF4FA` / `#FFFFFF`, chữ phụ `#CFE3FF`, đảm bảo tỉ lệ tương phản $\ge 4.5:1$ trên toàn bộ nền tối.
 - **Màu cảnh báo (Duy nhất tại hộp thoại xóa dữ liệu):** Chữ cảnh báo `#E65A5A`, nền xác nhận `#5A1A1A`.
 
 ### 3.2. Typography & Đóng gói Offline

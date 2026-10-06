@@ -51,6 +51,7 @@ Screenshots: `scripts/shoot-level.sh <id> <outdir>` (headless Chrome, needs the 
 - Camera zoom: `applyDesignViewport` scales the camera by `scene.scale.width / 720` (responsive mobile scale). Scene transitions and camera animations must preserve this ratio by multiplying with `camera.zoom` rather than resetting to hardcoded `1.0`.
 - Validation: chapters 1–3 must not enable rotation and chapter 4 must enable it; chapter 1 solutions have no turns and no overlap.
 - Unlock: `order === 1` always open; otherwise predecessor completed.
+- Glow is a state, not decoration: `GLOW_TIERS` in `designTokens.ts` is the only source of glow values, and `SCREEN_FOCUS` names the single tier-3 element each screen is allowed. `tests/bannedColors.test.ts` scans all of `src/` for colours outside the three families — `#4ECDC4` reached production twice before it existed.
 
 ## Audio synthesis
 
