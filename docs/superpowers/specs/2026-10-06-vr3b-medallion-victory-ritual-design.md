@@ -1,7 +1,7 @@
 # Visual Refactor VR3b — Target Medallion and Victory Ritual
 
 Date: 2026-10-06
-State: draft
+State: approved (reviewer, 2026-10-06)
 Scope: `game-next/src/presentation/`
 Source: `docs/gui/vr3/mirror-gameplay-animation-improvement.md` §6–7
 Depends on: VR0 (`2026-10-06-vr0-motion-language-design.md`) for the motion families; VR1 (`2026-10-05-visual-refactor-foundation-menu-design.md`) for the glow ladder

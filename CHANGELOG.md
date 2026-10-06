@@ -4,6 +4,18 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-06 - VR2 Level Select implementation plan
+
+Wrote `docs/superpowers/plans/2026-10-06-vr2-level-select.md`: 8 tasks, 51 steps, covering spec §3.2–§3.6.
+
+- **§3.1 (constellation strip in the victory card) is excluded.** It needs the 48 px card slot VR3b defines, and the reviewer deferred VR3b on 2026-10-06. Recorded in the plan's scope note together with the consequence: the strip was the part of VR2 every player would have seen, so issue #1 ("no sense of journey") is addressed less than the spec assumed.
+- **Correction to spec §3.2 found while planning.** The spec put the usable area inside a 96 px node at "~68 px", reading it as the canvas's inscribed square. The node is a diamond, so a point fits only when `|x| + |y| <= r`; at `r = 43` with 4 px padding the budget is 39, and the largest badge-aspect box is **46 × 32**. The plan fits node silhouettes to that and ends Task 3 with the reviewer readability check the spec's §7 risk calls for.
+- **Found while reading the scene:** every walked link runs its own infinitely repeating spark tween (`LevelSelectScene.ts:296-311`) — more than twenty on a finished map. That contradicts §3.4's "only the current node moves" and is the battery cost the spec wanted to avoid. Task 7 removes them and dims walked links instead, keeping the link into the current node brighter.
+- The one extraction (`targetSilhouette.ts`) keeps Phaser as a **type-only** import so Vitest can reach it, matching `polygonClip.ts` and `constellationMotion.ts`; `fillPoints` takes plain `{x, y}` objects, so no `Phaser.Geom.Point` is needed.
+- Updated the VR2 row in `docs/ai/DOCS-INDEX.md` and `docs/ai/STATUS.md`. Recorded VR1's reviewer acceptance and VR3b's approval in the same pass.
+
+Verification: documentation only, no `src/` changes. `npm test` (88 files, 1066 tests) and `npm run build` were run against `c1e57d5` before planning and both passed — that is the baseline the plan's per-task expectations assume, not evidence for the plan itself. Every file and line reference in the plan was read from the working tree; the test-import constraint and the `fillPoints` signature were checked against existing code rather than assumed. GitNexus `impact` not applicable (no symbol edited); `detect_changes()` run before the commit.
+
 ### 2026-10-06 - VR3b spec: target medallion and victory ritual
 
 Wrote `docs/superpowers/specs/2026-10-06-vr3b-medallion-victory-ritual-design.md`, the spec STATUS named as the next step because it unblocks the VR2 plan. Source was `docs/gui/vr3/mirror-gameplay-animation-improvement.md` §6–7, a screenshot-based review; reading it against the code changed the shape of the work.
