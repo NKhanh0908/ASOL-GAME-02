@@ -1,9 +1,11 @@
 import type { Chapter, PlacementMode, Turns } from '../domain/model.ts';
+import { isValidFrame } from '../domain/shapes.ts';
 import type { AuthorResult } from '../content/authorLevel.ts';
 import type { StudioAction, StudioState } from './state.ts';
 import { cloneLevelSource, isDirty } from './state.ts';
 import { isCampaignId } from '../content/manifest.ts';
 import { saveStudioLevelApi } from './api.ts';
+import { orientationFamilies, previewPoints } from './orientationOptions.ts';
 
 export type InspectorOptions = {
   getState: () => StudioState;
@@ -285,6 +287,87 @@ export function createInspector(options: InspectorOptions): Inspector {
       options.dispatch({ type: 'set-field', field: 'difficultyEstimate', value: Number(diffSelect.value) });
     };
     addRow('Độ khó ước lượng (tác giả)', diffSelect);
+
+    // Hướng của mảnh đang chọn. Nút bị mờ nghĩa là khung hiện tại không hợp
+    // cho hướng đó (họ Mái cần khung bội 16); đổi cỡ khung trước rồi chọn lại.
+    const selectedPiece = state.selectedPieceId
+      ? source.pieces.find((p) => p.id === state.selectedPieceId)
+      : null;
+    if (selectedPiece) {
+      const pieceBox = document.createElement('div');
+      pieceBox.style.padding = '10px 12px';
+      pieceBox.style.backgroundColor = '#13192f';
+      pieceBox.style.borderRadius = '6px';
+      pieceBox.style.border = '1px solid #1e294b';
+      pieceBox.style.display = 'flex';
+      pieceBox.style.flexDirection = 'column';
+      pieceBox.style.gap = '8px';
+
+      const pieceTitle = document.createElement('div');
+      pieceTitle.textContent = `MẢNH: ${selectedPiece.id} (${selectedPiece.shapeKind}, CỠ ${selectedPiece.frameSize})`;
+      pieceTitle.style.fontWeight = 'bold';
+      pieceTitle.style.fontSize = '12px';
+      pieceTitle.style.color = '#38bdf8';
+      pieceBox.appendChild(pieceTitle);
+
+      const families = orientationFamilies(selectedPiece.shapeKind);
+      if (families.length > 0) {
+        const row = document.createElement('div');
+        row.style.display = 'flex';
+        row.style.alignItems = 'center';
+        row.style.flexWrap = 'wrap';
+        row.style.gap = '8px';
+
+        families.forEach((family) => {
+          const famWrap = document.createElement('div');
+          famWrap.style.display = 'flex';
+          famWrap.style.alignItems = 'center';
+          famWrap.style.gap = '3px';
+
+          const label = document.createElement('span');
+          label.textContent = family.label;
+          label.style.fontSize = '11px';
+          label.style.color = '#94a3b8';
+          famWrap.appendChild(label);
+
+          family.orientations.forEach((o) => {
+            const allowed = isValidFrame(selectedPiece.shapeKind, o, selectedPiece.frameSize);
+            const btn = document.createElement('button');
+            btn.title = allowed ? `${family.label} ${o}` : `Khung ${selectedPiece.frameSize} không hợp cho hướng ${o}`;
+            btn.disabled = !allowed;
+            btn.style.width = '28px';
+            btn.style.height = '28px';
+            btn.style.padding = '2px';
+            btn.style.borderRadius = '4px';
+            btn.style.lineHeight = '0';
+            btn.style.cursor = allowed ? 'pointer' : 'not-allowed';
+            btn.style.opacity = allowed ? '1' : '0.35';
+            btn.style.border = o === (selectedPiece.orientation ?? 0) ? '1px solid #38bdf8' : '1px solid #334155';
+            btn.style.backgroundColor = o === (selectedPiece.orientation ?? 0) ? '#0b2a3f' : '#1e294b';
+
+            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.setAttribute('width', '20');
+            svg.setAttribute('height', '20');
+            svg.setAttribute('viewBox', '0 0 20 20');
+            const poly = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+            poly.setAttribute('points', previewPoints(selectedPiece.shapeKind, o, 20));
+            poly.setAttribute('fill', o === (selectedPiece.orientation ?? 0) ? '#38bdf8' : '#94a3b8');
+            svg.appendChild(poly);
+            btn.appendChild(svg);
+
+            if (allowed) {
+              btn.onclick = () => options.dispatch({ type: 'set-orientation', id: selectedPiece.id, orientation: o });
+            }
+            famWrap.appendChild(btn);
+          });
+          row.appendChild(famWrap);
+        });
+
+        pieceBox.appendChild(row);
+      }
+
+      form.appendChild(pieceBox);
+    }
 
     container.appendChild(form);
 

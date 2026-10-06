@@ -4,6 +4,12 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-06 - Inspector orientation control for selected piece (E4 Task 4)
+
+- `game-next/src/studio/inspector.ts`: added grouped SVG preview buttons to inspect and change the selected piece's orientation via `set-orientation`, disabling buttons for orientations incompatible with the current frame size.
+
+Verification: `npm test` passes (90 files, 1117 tests), `npm run typecheck` clean.
+
 ### 2026-10-06 - set-orientation action with frame validation (E4 Task 3)
 
 - `game-next/src/studio/state.ts`: added `{ type: 'set-orientation'; id: string; orientation: Orientation }` to `StudioAction` and `studioReducer` with `isValidFrame` check to safely reject incompatible orientations (e.g., roof triangles on non-multiple-of-16 frames).
