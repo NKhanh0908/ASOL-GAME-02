@@ -9,29 +9,46 @@ import { GRID_HEIGHT, GRID_WIDTH } from '../domain/model.ts';
 import type { Level } from '../domain/model.ts';
 import { parityLayers } from './polygonClip.ts';
 
-export type SilhouetteBox = { width: number; height: number };
+/**
+ * How much room the figure has, in the shape of the frame holding it.
+ *
+ * `box` suits a frame whose limit is a width and a height — the play badge's
+ * gold ring, measured across its chord. `diamond` suits a frame whose limit is
+ * `|x| + |y| <= budget`, which is what a map node actually is. Fitting a
+ * diamond with a box wastes most of it: a fixed box cannot adapt to the
+ * figure's own proportions, so a tall level ended up 17px wide inside a 96px
+ * node. The diamond fit scales each level until its furthest point lands on
+ * the budget, which is the largest it can legally be.
+ */
+export type SilhouetteFit =
+  | { kind: 'box'; width: number; height: number }
+  | { kind: 'diamond'; budget: number };
+
 export type SilhouetteLayer = {
   filled: boolean;
   points: ReadonlyArray<{ x: number; y: number }>;
 };
 
+// Declared `as const` rather than as `SilhouetteFit`, so a caller reading
+// `BADGE_SILHOUETTE_FIT.width` gets a `number` instead of having to narrow the
+// union first — the same reason VR0 gave each motion family its own type.
+
 /** Chord of the play badge's gold ring that the figure must stay inside. */
-export const BADGE_SILHOUETTE_BOX: SilhouetteBox = { width: 92, height: 64 };
+export const BADGE_SILHOUETTE_FIT = { kind: 'box', width: 92, height: 64 } as const;
 
 /**
- * A map node is a diamond of radius 43, so a point fits only when
- * |x| + |y| <= 43. With 4px of padding the budget is 39, and 46 x 32 is the
- * largest box with the badge's aspect ratio satisfying (w + h) / 2 <= 39.
+ * A map node is a diamond of radius 43. The budget is the furthest a point may
+ * sit from the centre along `|x| + |y|`, so 36 leaves 7px of padding on the
+ * axes and 4.9px on the diagonals. It was chosen against every approved level:
+ * 39 let figures run within 2.8px of the diagonal edge, where they read as
+ * biting into the node, and 33 would have shrunk the six levels that already
+ * sat near the old limit. At 36 no level gets smaller than it was.
  */
-export const NODE_SILHOUETTE_BOX: SilhouetteBox = { width: 46, height: 32 };
+export const NODE_SILHOUETTE_FIT = { kind: 'diamond', budget: 36 } as const;
 
-/**
- * Target figure as parity polygons, centred on the origin and scaled to fit
- * `box`. Pure: no Phaser objects, so the fit can be tested without a renderer.
- * Callers pass the box their shape allows — a circle's chord for the badge, a
- * diamond's inscribed budget for a map node.
- */
-export function silhouetteLayers(level: Level, box: SilhouetteBox): SilhouetteLayer[] {
+type MaskBounds = { w: number; h: number; centerX: number; centerY: number };
+
+function maskBounds(level: Level): MaskBounds | null {
   let minX = GRID_WIDTH;
   let maxX = -1;
   let minY = GRID_HEIGHT;
@@ -46,30 +63,59 @@ export function silhouetteLayers(level: Level, box: SilhouetteBox): SilhouetteLa
       }
     }
   }
-  if (minX > maxX || minY > maxY) return [];
+  if (minX > maxX || minY > maxY) return null;
+  return {
+    w: maxX - minX + 1,
+    h: maxY - minY + 1,
+    centerX: (minX + maxX + 1) / 2,
+    centerY: (minY + maxY + 1) / 2,
+  };
+}
 
-  const w = maxX - minX + 1;
-  const h = maxY - minY + 1;
-  const centerX = (minX + maxX + 1) / 2;
-  const centerY = (minY + maxY + 1) / 2;
-  const scale = Math.min(box.width / w, box.height / h);
-
-  // One path for every level: draw the sample solution's placements as vectors
-  // rather than filling mask cells, which used to produce jagged edges.
-  const polygons = (level.targetPlacements ?? []).flatMap((placement) => {
+/**
+ * One path for every level: the sample solution's placements as vectors rather
+ * than filled mask cells, which used to produce jagged edges.
+ */
+function targetPolygons(level: Level, b: MaskBounds, scale: number) {
+  return (level.targetPlacements ?? []).flatMap((placement) => {
     const piece = level.pieces.find((p) => p.id === placement.pieceId);
     if (!piece) return [];
     const kind = piece.shapeKind ?? 'diamond';
     const orientation = effectiveOrientation(kind, piece.orientation ?? 0, placement.turns);
     return [
       shapePolygon(kind, orientation, piece.frameSize).map((v) => ({
-        x: (placement.x + v.x - centerX) * scale,
-        y: (placement.y + v.y - centerY) * scale,
+        x: (placement.x + v.x - b.centerX) * scale,
+        y: (placement.y + v.y - b.centerY) * scale,
       })),
     ];
   });
+}
 
-  return parityLayers(polygons).map((layer) => ({
+/**
+ * Target figure as parity polygons, centred on the origin and scaled to `fit`.
+ * Pure: no Phaser objects, so the fit can be tested without a renderer.
+ */
+export function silhouetteLayers(level: Level, fit: SilhouetteFit): SilhouetteLayer[] {
+  const b = maskBounds(level);
+  if (!b) return [];
+
+  let scale: number;
+  if (fit.kind === 'box') {
+    scale = Math.min(fit.width / b.w, fit.height / b.h);
+  } else {
+    // Measured on the drawn vectors, not on the rasterised mask, because a
+    // polygon tip can reach a cell past the mask bounds. |x| + |y| is convex,
+    // so its maximum over a polygon is reached at a vertex — checking vertices
+    // is exact, not an approximation.
+    let reach = 0;
+    for (const polygon of targetPolygons(level, b, 1)) {
+      for (const p of polygon) reach = Math.max(reach, Math.abs(p.x) + Math.abs(p.y));
+    }
+    if (reach <= 0) return [];
+    scale = fit.budget / reach;
+  }
+
+  return parityLayers(targetPolygons(level, b, scale)).map((layer) => ({
     filled: layer.filled,
     points: layer.points,
   }));
@@ -79,10 +125,10 @@ export function silhouetteLayers(level: Level, box: SilhouetteBox): SilhouetteLa
 export function drawTargetSilhouette(
   g: Phaser.GameObjects.Graphics,
   level: Level,
-  box: SilhouetteBox,
+  fit: SilhouetteFit,
   colors: { filled: number; hollow: number }
 ): void {
-  for (const layer of silhouetteLayers(level, box)) {
+  for (const layer of silhouetteLayers(level, fit)) {
     g.fillStyle(layer.filled ? colors.filled : colors.hollow, 1);
     g.fillPoints(layer.points as Array<{ x: number; y: number }>, true);
   }

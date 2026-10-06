@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import type { Level } from '../domain/model.ts';
 import type { LayoutMetrics } from './layout.ts';
 import { COLOR_NUMBERS, DEPTH_TOKENS } from './designTokens.ts';
-import { BADGE_SILHOUETTE_BOX, drawTargetSilhouette } from './targetSilhouette.ts';
+import { BADGE_SILHOUETTE_FIT, drawTargetSilhouette } from './targetSilhouette.ts';
 
 export class TargetBadge {
   private container: Phaser.GameObjects.Container;
@@ -23,7 +23,7 @@ export class TargetBadge {
     this.container.add([this.badgeGraphics, this.targetGraphics]);
 
     this.drawBadgeBase();
-    drawTargetSilhouette(this.targetGraphics, level, BADGE_SILHOUETTE_BOX, {
+    drawTargetSilhouette(this.targetGraphics, level, BADGE_SILHOUETTE_FIT, {
       filled: COLOR_NUMBERS.amberSolid,
       hollow: COLOR_NUMBERS.boardSurfaceTop,
     });

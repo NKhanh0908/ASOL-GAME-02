@@ -6,7 +6,7 @@ Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; k
 
 - Branch: `main`, clean at `472b425`. Working directory D:\Working\ASOL\ASOL-GAME-02.
 - **VR1 accepted by the reviewer** on 2026-10-06, after the two emblem defects were fixed (`1fe3818`, `015047d`).
-- **VR2 executed** by Antigravity: Tasks 1–7 (`66ff115`..`a0f0625`). §3.1 excluded as planned, pending VR3b's victory card slot. Verified afterwards on `472b425`: `npm test` 89 files / 1078 tests pass, `npm run build` clean.
+- **VR2 executed** by Antigravity: Tasks 1–7 (`66ff115`..`a0f0625`). §3.1 excluded as planned, pending VR3b's victory card slot. The reviewer then rejected the completed-node silhouettes as unreadable; the fit was corrected from a fixed 46x32 box to a per-level diamond fit. `npm test` 89 files / 1078 tests pass, `npm run build` clean.
 - **Both VR3 plans written**: `2026-10-06-vr3a-piece-feel.md` (**5** tasks) and `2026-10-06-vr3b-medallion-victory-ritual.md` (6 tasks). VR3b is unblocked now VR2 has landed, but its Tasks 1 and 4 edit files VR2 just rewrote (`TextureFactory.ts`, `TargetBadge.ts`) — read those as they stand first.
 - Next step: reviewer plays the VR2 map and reads the VR3a spec, which is still `draft`. Then VR3a executes.
 
@@ -30,12 +30,14 @@ Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; k
 - The victory card is untouched until VR3b runs, so VR2's constellation strip (§3.1) stays unbuilt — the item ranked first in the original assessment.
 - Three reviewer stop points are written into the plans, none of them judgeable from a desktop browser: the pick-up dip (VR3a Task 1), the grown victory card overlapping the board (VR3b Task 1), the Eye crossfade alphas 0.55 / 0.35 in daylight (VR3b Task 5).
 - VR3a does **not** change the board grid. Reading "the faint lines inside the stele" as the board's ruler grid was wrong; `docs/screenshots/web/m1/Man1-5-ytuong.png` keeps the grid and merges only the target outline.
-- VR2 silhouette box in a 96px diamond is 46×32; verified against all 22 approved levels.
+- VR2's node silhouette is fitted to the diamond per level (budget 36 of 43), not to a fixed box. Before/after for all 22 levels: `docs/screenshots/web/m1/node-silhouette-before-after.png`.
 - VR3b's star-lighting audio cue is deferred with VR2 §3.1 — a patch with no caller is dead weight.
 - Chapter 4's six levels are the remaining content work and need a plan of their own.
 - F3: approved, not started; Android/device checks during later execution.
 
 ## Gotchas learned recently
+
+- A map node is a **diamond**, so what fits it is `|x| + |y| <= r`, not an inscribed square or a box. Fitting a figure to a box inside a diamond wastes most of it and cannot adapt to the figure's proportions — that is how completed nodes shipped at 13–17px wide. Fit by scaling until the furthest vertex reaches the budget.
 
 - `variant: 'target'` in `JewelShape.ts` both fills **and** dash-strokes, and `BoardRenderer` calls it once per target placement, so every edge two target pieces share is stroked twice and reads as a seam through the figure. Target pieces can share only *part* of an edge (1-5's sail and hull), so merging the boundary needs edges split at vertices before duplicates cancel — cancelling exact duplicates alone fixes 1-2 and breaks 1-5.
 - The victory card is **bottom-constrained**: top-anchored at `trayBounds.y - 4` with height 262, its bottom sits at 1274 of 1280. Growing it needs bottom-anchoring, and `victory_card_frame` / `victory_card_surface` have their sizes hardcoded in `TextureFactory.ts`.

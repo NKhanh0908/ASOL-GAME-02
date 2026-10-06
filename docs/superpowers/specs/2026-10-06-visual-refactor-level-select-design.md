@@ -99,6 +99,18 @@ canvas gives an inscribed square of only ~51px and about 40px of usable area
 after padding — too small for shapes like the butterfly or the candle. At 96px
 the inscribed area is ~68px.
 
+**Corrected 2026-10-06, after the screenshot review.** Both numbers above are
+the inscribed *square* of the canvas, and the implementation that followed them
+used a fixed 46x32 box with the badge's 92:64 aspect ratio. Neither is what a
+diamond allows. A node is `|x| + |y| <= 43`, so the real limit depends on the
+figure's own proportions, and a fixed box cannot adapt to them: 3-4 rendered
+17px wide and 1-4 13px wide inside a 96px node, which read as ink blots rather
+than silhouettes. The renderer now scales each level until its furthest point
+reaches a budget of 36, which is the largest it can legally be. Every level is
+at least as large as before, the worst-hit grow by up to 1.9x, and all of them
+now carry the same optical weight. Evidence:
+`docs/screenshots/web/m1/node-silhouette-before-after.png`.
+
 `drawTargetSilhouette` moves out of `TargetBadge` into a shared module so both
 the badge and the node can call it. This is the one extraction in this spec, and
 it is justified because the function is being given a second caller.

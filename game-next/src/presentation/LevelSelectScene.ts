@@ -13,7 +13,7 @@ import { formatNodeLabel, formatProgress } from './hudText.ts';
 import { layoutCampaignMap } from './constellationLayout.ts';
 import { walkedLinkAlpha } from './constellationMotion.ts';
 import { isReducedMotion } from './transitions/motion.ts';
-import { NODE_SILHOUETTE_BOX, drawTargetSilhouette } from './targetSilhouette.ts';
+import { NODE_SILHOUETTE_FIT, drawTargetSilhouette } from './targetSilhouette.ts';
 import { t, getChapterLabel } from './i18n.ts';
 import { director } from './transitions/SceneDirector.ts';
 import type { Choreographed, TransitionContext } from './transitions/SceneDirector.ts';
@@ -377,7 +377,7 @@ export class LevelSelectScene extends Phaser.Scene implements Choreographed {
           drawTargetSilhouette(
             silhouette,
             loadLevel(node.id, this.mode),
-            NODE_SILHOUETTE_BOX,
+            NODE_SILHOUETTE_FIT,
             { filled: COLOR_NUMBERS.navyBackdrop, hollow: COLOR_NUMBERS.amberSolid }
           );
           nodeContainer.add(silhouette);
