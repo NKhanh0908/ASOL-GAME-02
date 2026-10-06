@@ -9,10 +9,10 @@ import type { ProgressRepository } from '../application/progressPort.ts';
 import { ANIM_TOKENS, COLOR_NUMBERS, COLOR_TOKENS, LAYOUT_TOKENS, TYPO_TOKENS } from './designTokens.ts';
 import { TEXTURE_KEYS, TextureFactory } from './TextureFactory.ts';
 import { applyDesignViewport, designSafeArea, designViewBounds } from './designViewport.ts';
-import { formatProgress } from './hudText.ts';
+import { formatNodeLabel, formatProgress } from './hudText.ts';
 import { layoutCampaignMap } from './constellationLayout.ts';
 import { NODE_SILHOUETTE_BOX, drawTargetSilhouette } from './targetSilhouette.ts';
-import { t, getLevelTitle, getChapterLabel } from './i18n.ts';
+import { t, getChapterLabel } from './i18n.ts';
 import { director } from './transitions/SceneDirector.ts';
 import type { Choreographed, TransitionContext } from './transitions/SceneDirector.ts';
 import type { TransitionTimeline } from './transitions/TransitionTimeline.ts';
@@ -24,7 +24,7 @@ import { playUiCue } from './audio/uiCues.ts';
 type NodeInfo = {
   id: string;
   title: string;
-  chapter: number;
+  chapter: Chapter;
   x: number;
   y: number;
   state: 'completed' | 'current' | 'unlocked' | 'locked';
@@ -415,25 +415,32 @@ export class LevelSelectScene extends Phaser.Scene implements Choreographed {
           .setOrigin(0.5);
         nodeContainer.add(numText);
 
-        // Huy hiệu tên màn đang chơi nổi bật phía dưới node (y = 56)
-        const titleBadge = this.add.container(0, 56);
+        // Huy hiệu tên màn đang chơi nổi bật phía dưới node (y = 68 để tránh chạm node 96px)
+        const titleBadge = this.add.container(0, 68);
         const badgeBg = this.add.graphics();
         badgeBg.fillStyle(COLOR_NUMBERS.navyBackdrop, 0.95);
-        badgeBg.fillRoundedRect(-130, -18, 260, 36, 18);
+        badgeBg.fillRoundedRect(-130, -26, 260, 52, 26);
         badgeBg.lineStyle(1.5, COLOR_NUMBERS.amberSolid, 0.9);
-        badgeBg.strokeRoundedRect(-130, -18, 260, 36, 18);
+        badgeBg.strokeRoundedRect(-130, -26, 260, 52, 26);
 
-        const localizedTitle = getLevelTitle(node.id, node.title);
-        const badgeText = this.add
-          .text(0, 0, `✦ ${node.id} · ${localizedTitle} ✦`, {
+        const label = formatNodeLabel(node.id, node.title, node.chapter);
+        const badgeName = this.add
+          .text(0, -8, label.name, {
             fontFamily: TYPO_TOKENS.fontFamily.sans,
             fontSize: '18px',
             color: COLOR_TOKENS.amberGold.solidPrimary,
             fontStyle: 'bold',
           })
           .setOrigin(0.5);
+        const badgeLocator = this.add
+          .text(0, 12, label.locator, {
+            fontFamily: TYPO_TOKENS.fontFamily.sans,
+            fontSize: '14px',
+            color: COLOR_TOKENS.text.secondary,
+          })
+          .setOrigin(0.5);
 
-        titleBadge.add([badgeBg, badgeText]);
+        titleBadge.add([badgeBg, badgeName, badgeLocator]);
         nodeContainer.add(titleBadge);
 
         // Tween nhịp thở nhẹ nhàng cho nhãn màn hiện tại

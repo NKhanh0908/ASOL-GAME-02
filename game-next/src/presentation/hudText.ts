@@ -4,7 +4,8 @@
  * Tách khỏi Hud.ts vì file đó import Phaser, mà Phaser cần `window` nên
  * không nạp được trong vitest. Phần thuần nằm riêng thì test được trực tiếp.
  */
-import { t } from './i18n.ts';
+import { getChapterName, getLevelTitle, t } from './i18n.ts';
+import type { Chapter } from '../domain/model.ts';
 
 /**
  * Nhãn nổi cạnh mảnh khi kéo trúng vùng hít.
@@ -57,3 +58,19 @@ export function getVictoryLabels() {
 export function formatProgress(completed: number, total: number): string {
   return `${completed}/${total}`;
 }
+
+/**
+ * Current-node label, split into its two lines. UI copy stays plain and the
+ * decoration lives in the visuals, so neither line carries an ornament.
+ */
+export function formatNodeLabel(
+  id: string,
+  title: string,
+  chapter: Chapter
+): { name: string; locator: string } {
+  return {
+    name: getLevelTitle(id, title),
+    locator: `${id} · ${getChapterName(chapter)}`,
+  };
+}
+

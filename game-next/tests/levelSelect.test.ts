@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { formatProgress } from '../src/presentation/hudText.ts';
+import { formatNodeLabel, formatProgress } from '../src/presentation/hudText.ts';
 import { campaignManifest } from '../src/content/manifest.ts';
 import { TEN_NODE_PATTERN, layoutCampaignMap } from '../src/presentation/constellationLayout.ts';
 import {
@@ -165,6 +165,14 @@ describe('Màn chọn màn theo mockup improve-v1', () => {
   test('tổng số màn lấy từ manifest, không viết cứng', () => {
     expect(campaignManifest.length).toBeGreaterThan(0);
     expect(formatProgress(0, campaignManifest.length)).toBe(`0/${campaignManifest.length}`);
+  });
+
+  test('nhãn node hiện tại: tên dẫn trước, định vị theo sau, không ký tự trang trí', () => {
+    const label = formatNodeLabel('3-4', 'Ngọn Nến', 3);
+    expect(label.name).toBe('Ngọn Nến');
+    expect(label.locator).toBe('3-4 · Họa Phẩm');
+    expect(label.name).not.toContain('✦');
+    expect(label.locator).not.toContain('✦');
   });
 });
 
