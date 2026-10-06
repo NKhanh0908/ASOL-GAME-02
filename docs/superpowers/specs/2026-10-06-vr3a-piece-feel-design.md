@@ -1,7 +1,7 @@
 # Visual Refactor VR3a — Piece Feel and the XOR Animation
 
 Date: 2026-10-06
-State: draft
+State: approved
 Scope: `game-next/src/presentation/`
 Source: `docs/gui/vr3/mirror-gameplay-animation-improvement.md` §1–5
 Depends on: VR0 (`2026-10-06-vr0-motion-language-design.md`) for the `EASES` registry and the `piece` family

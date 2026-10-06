@@ -4,6 +4,17 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-06 - Record the piece feel pass (VR3a Close-out)
+
+Close-out of Visual Refactor VR3a (Piece Feel):
+- Reviewer evaluated device build at Task 1 stop point and accepted pick-up anticipation dip (`anticipateOut`).
+- Completed all 5 tasks from `docs/superpowers/plans/2026-10-06-vr3a-piece-feel.md`.
+- Updated `docs/superpowers/specs/2026-10-06-vr3a-piece-feel-design.md` status to approved.
+- Updated `docs/ai/DOCS-INDEX.md` VR3a row to done.
+- Updated `docs/ai/STATUS.md` moving VR3a to done and readying VR3b.
+
+Verification: `npm test` passed 89 files / 1094 tests. `npm run build` typecheck and bundle clean.
+
 ### 2026-10-06 - Outline the target once, not once per piece (VR3a Task 4)
 
 Merged target silhouette dashed stroke to avoid internal seams:
