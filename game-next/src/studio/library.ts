@@ -4,7 +4,7 @@ import { levelTemplate } from '../content/sources/_template.ts';
 import { sourceFromDocument } from '../content/sourceFromDocument.ts';
 import type { StudioAction, StudioState } from './state.ts';
 import { cloneLevelSource, isDirty } from './state.ts';
-import { deleteStudioLevelApi, fetchStudioLevelDoc, fetchStudioList } from './api.ts';
+import { deleteStudioLevelApi, fetchStudioLevelDoc, fetchStudioList, promoteStudioLevelApi } from './api.ts';
 
 export type LibraryOptions = {
   getState: () => StudioState;
@@ -127,8 +127,63 @@ export function createLibrary(options: LibraryOptions): Library {
       window.location.hash = `#${id}`;
     };
     actionRow.appendChild(cloneBtn);
-
     container.appendChild(actionRow);
+
+    if (isCampaignId(currentId)) {
+      const campWriteRow = document.createElement('div');
+      campWriteRow.style.marginBottom = '16px';
+
+      const campWriteBtn = document.createElement('button');
+      campWriteBtn.textContent = 'Ghi về campaign';
+      campWriteBtn.style.width = '100%';
+      campWriteBtn.style.padding = '8px';
+      campWriteBtn.style.borderRadius = '4px';
+      campWriteBtn.style.border = '1px solid #0284c7';
+      campWriteBtn.style.backgroundColor = '#0369a1';
+      campWriteBtn.style.color = '#ffffff';
+      campWriteBtn.style.fontSize = '12px';
+      campWriteBtn.style.fontWeight = 'bold';
+      campWriteBtn.style.cursor = 'pointer';
+      campWriteBtn.title = `Ghi đè nội dung đang soạn về màn campaign ${currentId}`;
+
+      campWriteBtn.onclick = async () => {
+        const ok = window.confirm(
+          [
+            `Ghi đè màn ${currentId} trong campaign?`,
+            '',
+            `• File nguồn src/content/sources/${currentId}.ts sẽ bị ghi đè`,
+            '• contentRevision tăng một bậc',
+            '• Trạng thái hạ từ approved về validated',
+            '• Màn phải được chơi và duyệt lại trước khi phát hành',
+          ].join('\n')
+        );
+        if (!ok) return;
+
+        campWriteBtn.disabled = true;
+        campWriteBtn.textContent = 'Đang ghi...';
+        try {
+          const res = await promoteStudioLevelApi(state.source.id, currentId, true);
+          if (res.ok) {
+            const commentMsg = res.preservedComment ? '\n• Giữ nguyên khối chú thích đầu file nguồn' : '';
+            alert(
+              `Đã ghi về campaign thành công!\n• ID: ${res.targetId}\n• Số file cập nhật: ${res.writtenFiles.length}\n• Trạng thái: validated${commentMsg}`
+            );
+            await refresh();
+          } else {
+            const issuesMsg = res.issues && res.issues.length > 0 ? `\nChi tiết:\n${res.issues.map((i) => `${i.field}: ${i.code}`).join('\n')}` : '';
+            alert(`Lỗi khi ghi về campaign: ${res.error}${issuesMsg}`);
+          }
+        } catch (err) {
+          alert(`Lỗi kết nối khi ghi về campaign: ${(err as Error).message}`);
+        } finally {
+          campWriteBtn.disabled = false;
+          campWriteBtn.textContent = 'Ghi về campaign';
+        }
+      };
+
+      campWriteRow.appendChild(campWriteBtn);
+      container.appendChild(campWriteRow);
+    }
 
     // Studio Levels Section
     const studioSection = document.createElement('div');

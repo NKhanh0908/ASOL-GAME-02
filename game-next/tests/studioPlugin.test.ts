@@ -212,4 +212,38 @@ describe('studioPlugin - HTTP endpoints và chống CSRF', () => {
     expect(json.ok).toBe(true);
     expect(json.deletedFiles).toHaveLength(4);
   });
+
+  test('POST /__studio/promote từ chối body thiếu targetId', async () => {
+    const req = createMockReq({
+      method: 'POST',
+      url: '/__studio/promote',
+      headers: {
+        'content-type': 'application/json',
+        host: 'localhost:5173',
+      },
+      body: JSON.stringify({ studioId: 'nhap' }),
+    });
+    const res = createMockRes();
+    const handled = await handleStudioRequest(req, res, { root: tempRoot });
+    expect(handled).toBe(true);
+    expect(res.statusCode).toBe(400);
+  });
+
+  test('POST /__studio/promote chuyển tiếp lỗi của promoteStudioLevel nguyên văn', async () => {
+    const req = createMockReq({
+      method: 'POST',
+      url: '/__studio/promote',
+      headers: {
+        'content-type': 'application/json',
+        host: 'localhost:5173',
+      },
+      body: JSON.stringify({ studioId: 'khong-co', targetId: '1-4', overwrite: true }),
+    });
+    const res = createMockRes();
+    const handled = await handleStudioRequest(req, res, { root: tempRoot });
+    expect(handled).toBe(true);
+    const body = res.getJson();
+    expect(body.ok).toBe(false);
+    expect(body.error).toContain('studio-not-found');
+  });
 });

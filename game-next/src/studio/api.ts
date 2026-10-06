@@ -1,6 +1,7 @@
 import type { LevelSource } from '../content/authoring.ts';
 import type { LevelDocument } from '../content/document.ts';
 import type { DeleteResult, SaveResult, StudioLevelSummary } from '../content/studioStore.ts';
+import type { PromoteResult } from '../content/promote.ts';
 
 export async function fetchStudioList(): Promise<StudioLevelSummary[]> {
   const res = await fetch('/__studio/list');
@@ -37,5 +38,18 @@ export async function fetchStudioLevelDoc(id: string): Promise<LevelDocument> {
   if (!res.ok) {
     throw new Error(`fetchStudioLevelDoc failed with status ${res.status}`);
   }
+  return res.json();
+}
+
+export async function promoteStudioLevelApi(
+  studioId: string,
+  targetId: string,
+  overwrite: boolean
+): Promise<PromoteResult> {
+  const res = await fetch('/__studio/promote', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ studioId, targetId, overwrite }),
+  });
   return res.json();
 }

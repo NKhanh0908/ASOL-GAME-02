@@ -4,6 +4,16 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-06 - Write an edited campaign level back from the studio (E4 Task 7)
+
+- `game-next/scripts/studio/studioPlugin.ts`: added `POST /__studio/promote` endpoint to run `promoteStudioLevel` with `overwrite` flag.
+- `game-next/scripts/promote-level.ts`: added `--overwrite` CLI flag support and reported revision bump, status downgrade, and comment preservation.
+- `game-next/src/studio/api.ts`: added `promoteStudioLevelApi` helper for studio frontend.
+- `game-next/src/studio/library.ts`: added 'Ghi về campaign' button with confirmation modal when viewing a campaign level, reporting writeback status.
+- `game-next/tests/studioPlugin.test.ts`: added tests for `POST /__studio/promote` endpoint validation and error forwarding.
+
+Verification: `npm test` passes (90 files, 1128 tests), `npm run typecheck` and `npm run build` clean.
+
 ### 2026-10-06 - Keep hand-written comment block on source overwrite (E4 Task 6)
 
 - `game-next/src/content/promote.ts`: added `preserveHeaderComment` to retain the JSDoc/block comment between `import type { LevelSource }` and `export const` when overwriting a campaign source; returned `preservedComment: boolean` on `PromoteResult`.

@@ -9,6 +9,7 @@ import {
   listStudioLevels,
   saveStudioLevel,
 } from '../../src/content/studioStore.ts';
+import { promoteStudioLevel } from '../../src/content/promote.ts';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const DEFAULT_ROOT = resolve(HERE, '../..');
@@ -134,6 +135,24 @@ export async function handleStudioRequest(
 
       const result = deleteStudioLevel({ id, root });
       sendJson(res, result.ok ? 200 : result.status, result);
+      return true;
+    }
+
+    // 4. POST /__studio/promote
+    if (url === '/__studio/promote') {
+      const studioId = typeof parsed?.studioId === 'string' ? parsed.studioId : '';
+      const targetId = typeof parsed?.targetId === 'string' ? parsed.targetId : '';
+      if (!studioId || !targetId) {
+        sendJson(res, 400, { ok: false, error: 'thiếu studioId hoặc targetId' });
+        return true;
+      }
+      const result = promoteStudioLevel({
+        studioId,
+        targetId,
+        root,
+        overwrite: parsed?.overwrite === true,
+      });
+      sendJson(res, 200, result);
       return true;
     }
   }
