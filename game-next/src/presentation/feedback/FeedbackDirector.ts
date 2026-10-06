@@ -99,7 +99,7 @@ export class FeedbackDirector {
       case 'lift': {
         const view = board.getPieceView(event.pieceId);
         view?.cancelGlide();
-        view?.setLifted(true, scaleTiming(F.liftMs), 'backOut');
+        view?.setLifted(true, scaleTiming(F.pickupMs), 'anticipateOut');
         if (level.rotationEnabled) {
           const turns = this.deps.getState().pieces[event.pieceId]?.turns ?? 0;
           textures.enqueue(event.pieceId, turns + 1);

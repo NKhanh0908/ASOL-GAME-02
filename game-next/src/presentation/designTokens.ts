@@ -193,6 +193,10 @@ export const TRANSITION_TOKENS = {
 export const FEEDBACK_TOKENS = {
   liftScale: 1.08,
   liftMs: 80,
+  /** Pick up: dip then lift. -0.375 x (liftScale - 1) lands the dip on 0.97. */
+  pickupMs: 100,
+  pickupDipLift: -0.375,
+  pickupDipAt: 0.4,
   dropLiftMs: 120,
   tau: { follow: 35, scale: 45, tilt: 120, settle: 60, idle: 90, hint: 60, targetHover: 40 },
   tiltPerPxPerSec: 0.02,

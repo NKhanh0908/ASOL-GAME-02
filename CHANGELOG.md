@@ -4,6 +4,16 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-06 - Anticipate before the lift on pick up (VR3a Task 1)
+
+Added pick-up anticipation dip to piece interaction:
+- Added `anticipateOut` easing in `game-next/src/presentation/transitions/motion.ts` which dips to -0.375 at 40% duration before rising to 1.
+- Added tokens `pickupMs: 100`, `pickupDipLift: -0.375`, `pickupDipAt: 0.4` to `FEEDBACK_TOKENS` in `game-next/src/presentation/designTokens.ts`.
+- Switched `FeedbackDirector.ts:visual` on `lift` event from `backOut` with `F.liftMs` to `anticipateOut` with `F.pickupMs`.
+- Added unit tests in `game-next/tests/motion.test.ts`.
+
+Verification: `npm test` passed 89 files / 1083 tests. `npm run typecheck` clean. Stop point reached for reviewer feel evaluation on device.
+
 ### 2026-10-06 - Hand VR3a and VR3b over, and refresh the index
 
 Controller pass closing this session's work. VR2 is provisionally accepted by the reviewer ("tạm nghiệm thu") after the silhouette fit was corrected; VR3a and VR3b go to Antigravity.

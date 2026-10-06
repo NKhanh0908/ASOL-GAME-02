@@ -7,7 +7,7 @@ import {
   setMotionScale,
   stagger,
 } from '../src/presentation/transitions/motion.ts';
-import { TRANSITION_TOKENS } from '../src/presentation/designTokens.ts';
+import { FEEDBACK_TOKENS, TRANSITION_TOKENS } from '../src/presentation/designTokens.ts';
 
 afterEach(() => setMotionScale(1));
 
@@ -90,5 +90,31 @@ describe('TRANSITION_TOKENS', () => {
     });
     expect(TRANSITION_TOKENS.crossfadeMs).toBe(150);
     expect(TRANSITION_TOKENS.moodMs).toBe(1000);
+  });
+});
+
+describe('anticipateOut', () => {
+  const f = EASES.anticipateOut;
+
+  test('starts at 0 and ends at 1', () => {
+    expect(f(0)).toBe(0);
+    expect(f(1)).toBe(1);
+  });
+
+  test('dips to exactly -0.375 at 40% of the duration', () => {
+    expect(f(0.4)).toBeCloseTo(-0.375, 6);
+    for (let t = 0; t <= 1.0001; t += 0.01) {
+      expect(f(t)).toBeGreaterThanOrEqual(-0.375 - 1e-9);
+    }
+  });
+
+  test('is continuous across the join', () => {
+    expect(f(0.4 - 1e-6)).toBeCloseTo(f(0.4 + 1e-6), 4);
+  });
+
+  test('produces exactly the 0.97 dip and the 1.08 peak as a lift', () => {
+    const scale = (t: number) => 1 + (FEEDBACK_TOKENS.liftScale - 1) * f(t);
+    expect(scale(0.4)).toBeCloseTo(0.97, 6);
+    expect(scale(1)).toBeCloseTo(1.08, 6);
   });
 });

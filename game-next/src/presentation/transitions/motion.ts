@@ -1,8 +1,15 @@
-import { ANIM_TOKENS, TRANSITION_TOKENS } from '../designTokens.ts';
+import { ANIM_TOKENS, FEEDBACK_TOKENS, TRANSITION_TOKENS } from '../designTokens.ts';
 
 export type RouteId = keyof typeof TRANSITION_TOKENS.routes;
 
-export type EaseName = 'linear' | 'cubicOut' | 'cubicInOut' | 'quartOut' | 'backOut' | 'sineInOut';
+export type EaseName =
+  | 'linear'
+  | 'cubicOut'
+  | 'cubicInOut'
+  | 'quartOut'
+  | 'backOut'
+  | 'sineInOut'
+  | 'anticipateOut';
 
 /** Hàm easing thuần, t trong [0, 1]. Tự viết để test được mà không cần Phaser. */
 export const EASES: Record<EaseName, (t: number) => number> = {
@@ -16,6 +23,13 @@ export const EASES: Record<EaseName, (t: number) => number> = {
     return 1 + c3 * (t - 1) ** 3 + c1 * (t - 1) ** 2;
   },
   sineInOut: (t) => -(Math.cos(Math.PI * t) - 1) / 2,
+  anticipateOut: (t) => {
+    const { pickupDipLift: dip, pickupDipAt: at } = FEEDBACK_TOKENS;
+    if (t <= 0) return 0;
+    if (t >= 1) return 1;
+    if (t <= at) return dip * EASES.cubicOut(t / at);
+    return dip + (1 - dip) * EASES.cubicOut((t - at) / (1 - at));
+  },
 };
 
 /** Độ trễ so le của phần tử thứ `index` trong `count` phần tử, trải đều trên `spanMs`. */
