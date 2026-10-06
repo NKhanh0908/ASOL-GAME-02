@@ -12,8 +12,8 @@ import {
   trayWellRects,
 } from './layout.ts';
 import { GridPainter } from './GridPainter.ts';
-import { drawJewelPolygon } from './JewelShape.ts';
-import type { ParityLayer } from './polygonClip.ts';
+import { drawJewelPolygon, strokeTargetOutline } from './JewelShape.ts';
+import { unionOutline, type ParityLayer } from './polygonClip.ts';
 import type { PlayViewSnapshot } from '../application/playController.ts';
 import { COLOR_NUMBERS, DEPTH_TOKENS, FEEDBACK_TOKENS } from './designTokens.ts';
 import { TEXTURE_KEYS } from './TextureFactory.ts';
@@ -554,21 +554,29 @@ export class BoardRenderer {
   private drawTargetSilhouette(snapshot: PlayViewSnapshot): void {
     this.targetGraphics.clear();
     if (!snapshot.showTarget) return;
+    const visible: CanvasPoint[][] = [];
+    let outlineAlpha = 0;
     (this.level.targetPlacements ?? []).forEach((placement, index) => {
       const reveal = this.targetReveal?.[index] ?? 1;
       if (reveal <= 0) return;
       const piece = this.level.pieces.find((p) => p.id === placement.pieceId);
       if (!piece) return;
-      drawJewelPolygon(
-        this.targetGraphics,
-        piecePolygonCanvas(piece, placement.x, placement.y, placement.turns, this.layout),
-        {
-          variant: 'target',
-          alpha: this.hoverAlpha[index] * reveal,
-          sizePx: pieceRadiusPx(piece.frameSize, this.layout),
-        }
-      );
+      const polygon = piecePolygonCanvas(piece, placement.x, placement.y, placement.turns, this.layout);
+      const alpha = this.hoverAlpha[index] * reveal;
+      drawJewelPolygon(this.targetGraphics, polygon, {
+        variant: 'target',
+        alpha,
+        sizePx: pieceRadiusPx(piece.frameSize, this.layout),
+      });
+      visible.push(polygon);
+      outlineAlpha = Math.max(outlineAlpha, alpha);
     });
+
+    // One dashed boundary for the whole figure: an outline per placement would
+    // stroke every shared edge twice and draw a seam through the silhouette.
+    for (const loop of unionOutline(visible)) {
+      strokeTargetOutline(this.targetGraphics, loop, outlineAlpha);
+    }
   }
 
   private drawVictoryPulse(): void {

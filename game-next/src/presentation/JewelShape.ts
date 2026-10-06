@@ -32,13 +32,13 @@ function hex(value: string): number {
   return Phaser.Display.Color.HexStringToColor(value).color;
 }
 
-function toGeomPoints(points: Point[]): Phaser.Geom.Point[] {
+function toGeomPoints(points: readonly Point[]): Phaser.Geom.Point[] {
   return points.map((p) => new Phaser.Geom.Point(p.x, p.y));
 }
 
 function strokeDashedPolygon(
   g: Phaser.GameObjects.Graphics,
-  points: Point[],
+  points: readonly Point[],
   dash: readonly number[]
 ): void {
   const [on, off] = dash;
@@ -88,12 +88,6 @@ export function drawJewelPolygon(
   if (variant === 'target') {
     g.fillStyle(hex(PIECE_TOKENS.targetFill.color), PIECE_TOKENS.targetFill.alpha * alpha);
     g.fillPoints(toGeomPoints(outline), true);
-    g.lineStyle(
-      PIECE_TOKENS.targetStroke.width,
-      hex(PIECE_TOKENS.targetStroke.color),
-      PIECE_TOKENS.targetStroke.alpha * alpha
-    );
-    strokeDashedPolygon(g, outline, PIECE_TOKENS.targetStroke.dash);
     return;
   }
 
@@ -171,4 +165,22 @@ function drawSparkle(
     ]),
     true
   );
+}
+
+/**
+ * Dashed outline for a target silhouette. Separate from the fill because the
+ * figure is filled per placement — each keeps its own hover and reveal alpha —
+ * but outlined once for the whole union, so shared edges are not drawn twice.
+ */
+export function strokeTargetOutline(
+  g: Phaser.GameObjects.Graphics,
+  loop: readonly { x: number; y: number }[],
+  alpha: number
+): void {
+  g.lineStyle(
+    PIECE_TOKENS.targetStroke.width,
+    hex(PIECE_TOKENS.targetStroke.color),
+    PIECE_TOKENS.targetStroke.alpha * alpha
+  );
+  strokeDashedPolygon(g, loop, PIECE_TOKENS.targetStroke.dash);
 }

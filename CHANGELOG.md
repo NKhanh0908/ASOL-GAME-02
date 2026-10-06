@@ -4,6 +4,16 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-06 - Outline the target once, not once per piece (VR3a Task 4)
+
+Merged target silhouette dashed stroke to avoid internal seams:
+- Implemented `unionOutline(polygons)` in `game-next/src/presentation/polygonClip.ts` which normalises winding, splits edges at collinear vertices, cancels internal opposite twin edges, and connects surviving boundary edges into closed loops with collinear vertex reduction.
+- Decoupled stroke from `variant: 'target'` in `game-next/src/presentation/JewelShape.ts`, keeping fill per placement and exporting `strokeTargetOutline(g, loop, alpha)`.
+- Updated `BoardRenderer.drawTargetSilhouette` to fill each placement with its individual hover/reveal alpha, then stroke the merged `unionOutline` loops once.
+- Added comprehensive unit tests in `game-next/tests/polygonClip.test.ts` including single squares, full edge sharing, partial edge sharing (boat 1-5 case), house silhouette (1-2 case), disjoint polygons, winding independence, and validation across all approved campaign levels.
+
+Verification: `npm test` passed 89 files / 1094 tests. `npm run build` typecheck and bundle clean.
+
 ### 2026-10-06 - Telegraph the magnet with a ring at the anchor (VR3a Task 3)
 
 Rendered magnet ring at candidate snap anchor:
