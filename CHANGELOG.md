@@ -4,6 +4,18 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-06 - VR3a spec: piece feel and the XOR animation
+
+Wrote `docs/superpowers/specs/2026-10-06-vr3a-piece-feel-design.md` from `docs/gui/vr3/mirror-gameplay-animation-improvement.md` §1–5, read against the code rather than the screenshots it was written from.
+
+- **Four of the source's five sections already ship.** §2 (drag smoothing) was settled in VR0 §2.1; §4 (snap overshoot, ring, chime, haptic) is complete; §5.1 runs a 150 ms parity crossfade **and** a 320 ms boundary trace (`traceEdge`); §5.2 runs `reviveFlash` at 200 ms, inside the band the source proposes. All are already guarded by the `reduced` checks in `FeedbackDirector.handle`. The spec records this so the work is not rebuilt.
+- **Corrected a wrong row in `docs/ai/DOCS-INDEX.md`.** It claimed VR3a's XOR animation did not exist, citing the unread `overlapInversionMs` token. That token (`designTokens.ts:166`) is a dead duplicate inside `ANIM_TOKENS`; the shipped animation runs on the `FEEDBACK_TOKENS.overlap*` and `reviveFlashMs` values.
+- **Two additions remain.** §3.1 adds an `anticipateOut` easing to the VR0 `EASES` registry: because `PieceView.ts:160` applies the lift as `1 + 0.08 × lift`, a curve dipping to `−0.375` produces exactly the 0.97 dip the source asks for, with no second animation layer to compound against the lift. The shadow follows for free — its offset extrapolates inward and its alpha clamps to 0 through the dip. §3.2 adds a magnet ring at the candidate anchor, sized by a pure `magnetRing(distPx, pieceRadiusPx)` function.
+- The ring is **deliberately exempt from Reduced Motion**, the first element in the project to be so, because it is an affordance driven by the player's own finger rather than autonomous motion. The reason is recorded in the spec.
+- Spec §7 flags the one change that could make the game feel worse: the dip costs ~40 ms of perceived touch response on the game's most repeated action, and must be judged on a device before the spec is accepted.
+
+Verification: documentation only, no `src/` changes. Every claim was checked against the working tree — `FeedbackDirector.ts:102` for the pick-up call, `PieceView.ts:160` and `:172-175` for the lift and shadow maths, `pieceMotion.ts:53` for the magnet, `transitions/motion.ts:8` for the easing registry, and `tests/designTokens.test.ts:102` for the assertion that keeps the dead token alive. `npm test` and `npm run build` were not re-run: `src/` is untouched by this commit and the working tree currently holds another agent's in-progress VR2 work, so a suite run here would not describe this change. GitNexus `impact` not applicable (no symbol edited); `detect_changes()` run before the commit.
+
 ### 2026-10-06 - VR2 Level Select implementation plan
 
 Wrote `docs/superpowers/plans/2026-10-06-vr2-level-select.md`: 8 tasks, 51 steps, covering spec §3.2–§3.6.
