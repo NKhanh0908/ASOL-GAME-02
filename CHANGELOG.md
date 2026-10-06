@@ -4,6 +4,13 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-06 - Pure orientation-family and frame-size module (E4 Task 1)
+
+- `game-next/src/studio/orientationOptions.ts`: pure module providing `orientationFamilies`, `validFrameSizes`, `snapFrameSize`, `previewPoints`, and `CANDIDATE_SIZES` for studio UI without DOM dependencies.
+- `game-next/tests/studioOrientation.test.ts`: unit tests for triangle/parallelogram families, valid frame sizes for corner vs roof triangles, frame snapping on orientation switch, and SVG preview points.
+
+Verification: `npm test` passes (90 files, 1114 tests), `npm run typecheck` clean.
+
 ### 2026-10-06 - Implementation plans for E4 and CH1H
 
 - `docs/superpowers/plans/2026-10-06-e4-studio-orientation-and-roundtrip.md`: 8 tasks. Task 1 extracts a pure `orientationOptions.ts` (families, valid frame sizes, snap, SVG preview points) so the logic is testable - **this repo has no jsdom and the plan does not add one**, so anything touching `document` is verified by hand and everything else lives in that module. Tasks 2-4 rebuild the palette's orientation `<select>` as grouped preview buttons and add a `set-orientation` action plus an inspector control. Tasks 5-7 add `overwrite` to `promoteStudioLevel` (skip the two registration calls, `bumpRevision`, downgrade `approved` -> `validated`), `preserveHeaderComment`, the `/__studio/promote` endpoint, the `--overwrite` CLI flag and the studio button.
