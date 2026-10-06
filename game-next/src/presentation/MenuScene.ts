@@ -17,6 +17,7 @@ import type { Parts } from './transitions/choreography.ts';
 import { MENU_OUT_TO_MAP, MENU_OUT_TO_PLAY, MENU_SPECIAL, menuIn } from './transitions/routes.ts';
 import { playUiCue } from './audio/uiCues.ts';
 import { DualJewelEmblem } from './menu/DualJewelEmblem.ts';
+import { strokeDiamond } from './menu/diamondMotif.ts';
 
 export class MenuScene extends Phaser.Scene implements Choreographed {
   readonly directorKey = 'MenuScene' as const;
@@ -711,9 +712,10 @@ export class MenuScene extends Phaser.Scene implements Choreographed {
    * Tạo chùm bụi sao và sóng lượng tử tỏa ra từ điểm chạm
    */
   private spawnCosmicInteraction(x: number, y: number): void {
-    // 1. Sóng lượng tử (Cosmic Ripple) lan tỏa
+    // 1. Sóng lượng tử (Cosmic Ripple) lan tỏa hình thoi (Diamond motif, glowTier 1)
+    const tier1 = glowTier(1);
     const ripple = this.add.graphics().setDepth(DEPTH_TOKENS.backgroundSky + 4);
-    const rippleData = { radius: 8, alpha: 0.85 };
+    const rippleData = { radius: 8, alpha: tier1.alpha };
     this.tweens.add({
       targets: rippleData,
       radius: 65,
@@ -722,10 +724,10 @@ export class MenuScene extends Phaser.Scene implements Choreographed {
       ease: 'Cubic.easeOut',
       onUpdate: () => {
         ripple.clear();
-        ripple.lineStyle(2.5, 0x7fd8ff, rippleData.alpha);
-        ripple.strokeCircle(x, y, rippleData.radius);
+        ripple.lineStyle(2, COLOR_NUMBERS.icePrimary, rippleData.alpha);
+        strokeDiamond(ripple, x, y, rippleData.radius);
         ripple.lineStyle(1.2, 0xffffff, rippleData.alpha * 0.7);
-        ripple.strokeCircle(x, y, rippleData.radius * 0.7);
+        strokeDiamond(ripple, x, y, rippleData.radius * 0.7);
       },
       onComplete: () => ripple.destroy(),
     });

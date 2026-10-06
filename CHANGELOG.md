@@ -4,6 +4,14 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-06 - Close the settings gear outline and make the tap ripple a diamond (VR1 Task 7)
+
+- Created `src/presentation/menu/diamondMotif.ts` exporting shared `strokeDiamond(g, x, y, radius)`.
+- Updated settings gear icon in `src/presentation/TextureFactory.ts` to draw a closed 6-toothed outline with a center hole instead of radiating sun-like spokes.
+- Replaced circular background tap ripple in `src/presentation/MenuScene.ts` with `strokeDiamond` motif at `glowTier(1)` (`#A9E3FF`, alpha 0.25).
+- Verification: `npm test -- bannedColors` passed; `npm test` (88 files, 1063 tests pass); `npm run typecheck` clean.
+
+
 ### 2026-10-06 - Recolour the logo to ivory highlight and navy extrusion (VR1 Task 6)
 
 - Recoloured "MIRROR" title face in `src/presentation/MenuScene.ts` with warm gold `#FFC857`, 1px up-left ivory highlight `#FFF4D6`, deep navy extrusion `#11204F` / `#0B163A`, and tier 0 subtle glow (`glowTier(0)`).

@@ -337,25 +337,53 @@ export class TextureFactory {
       }
     }
 
-    // 5. Icon Bánh răng cổ ngữ (Gear) 28x28
+    // 5. Icon Bánh răng cổ ngữ (Gear) 28x28 (Closed outline)
     if (!tm.exists(TEXTURE_KEYS.iconGear)) {
       const canvas = tm.createCanvas(TEXTURE_KEYS.iconGear, 28, 28);
       if (canvas) {
         const ctx = canvas.context;
         ctx.strokeStyle = COLOR_TOKENS.iceGlass.bevelHighlight;
-        ctx.lineWidth = 2;
+        ctx.lineWidth = 1.6;
+        ctx.lineJoin = 'round';
+        ctx.lineCap = 'round';
+
+        // Lỗ tròn trung tâm
         ctx.beginPath();
-        ctx.arc(14, 14, 8, 0, Math.PI * 2);
+        ctx.arc(14, 14, 4.2, 0, Math.PI * 2);
         ctx.stroke();
 
-        // 6 nan hoa
-        for (let i = 0; i < 6; i++) {
-          const angle = (i * Math.PI) / 3;
-          ctx.beginPath();
-          ctx.moveTo(14 + Math.cos(angle) * 8, 14 + Math.sin(angle) * 8);
-          ctx.lineTo(14 + Math.cos(angle) * 12, 14 + Math.sin(angle) * 12);
-          ctx.stroke();
+        // Đường viền khép kín hình bánh răng 6 răng
+        const teeth = 6;
+        const rInner = 8.2;
+        const rOuter = 11.8;
+        ctx.beginPath();
+        for (let i = 0; i < teeth; i++) {
+          const a0 = (i * 2 * Math.PI) / teeth - 0.22;
+          const a1 = (i * 2 * Math.PI) / teeth + 0.22;
+          const aMid = ((i + 0.5) * 2 * Math.PI) / teeth;
+          const a2 = aMid - 0.22;
+          const a3 = aMid + 0.22;
+
+          const p0x = 14 + Math.cos(a0) * rOuter;
+          const p0y = 14 + Math.sin(a0) * rOuter;
+          const p1x = 14 + Math.cos(a1) * rOuter;
+          const p1y = 14 + Math.sin(a1) * rOuter;
+          const p2x = 14 + Math.cos(a2) * rInner;
+          const p2y = 14 + Math.sin(a2) * rInner;
+          const p3x = 14 + Math.cos(a3) * rInner;
+          const p3y = 14 + Math.sin(a3) * rInner;
+
+          if (i === 0) {
+            ctx.moveTo(p0x, p0y);
+          } else {
+            ctx.lineTo(p0x, p0y);
+          }
+          ctx.lineTo(p1x, p1y);
+          ctx.lineTo(p2x, p2y);
+          ctx.lineTo(p3x, p3y);
         }
+        ctx.closePath();
+        ctx.stroke();
 
         canvas.refresh();
       }
