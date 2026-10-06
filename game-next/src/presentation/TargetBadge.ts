@@ -1,16 +1,26 @@
 import Phaser from 'phaser';
 import type { Level } from '../domain/model.ts';
 import type { LayoutMetrics } from './layout.ts';
-import { COLOR_NUMBERS, DEPTH_TOKENS } from './designTokens.ts';
+import { COLOR_NUMBERS, DEPTH_TOKENS, FEEDBACK_TOKENS, LAYOUT_TOKENS } from './designTokens.ts';
 import { BADGE_SILHOUETTE_FIT, drawTargetSilhouette } from './targetSilhouette.ts';
+import { motionFamily, scaleTiming } from './transitions/motion.ts';
 
 export class TargetBadge {
+  private scrim: Phaser.GameObjects.Rectangle;
   private container: Phaser.GameObjects.Container;
   private badgeGraphics: Phaser.GameObjects.Graphics;
   private targetGraphics: Phaser.GameObjects.Graphics;
   private isEnlarged = false;
 
   constructor(scene: Phaser.Scene, layout: LayoutMetrics, level: Level) {
+    // Quiets the field behind the enlarged medallion so the silhouette is read
+    // against calm, not against the board.
+    this.scrim = scene.add
+      .rectangle(0, 0, LAYOUT_TOKENS.canvas.width, layout.designHeight, COLOR_NUMBERS.navyBackdrop, 1)
+      .setOrigin(0, 0)
+      .setDepth(DEPTH_TOKENS.hudControls + 4)
+      .setAlpha(0);
+
     // Tâm huy hiệu: chồng một phần lên mép trên bàn như mockup, nhưng đỉnh huy
     // hiệu phải nằm dưới phụ đề chương — trước đây đè lên nó. Bám theo bàn chứ
     // không viết cứng, vì bàn trôi theo chiều cao màn thật.
@@ -121,21 +131,35 @@ export class TargetBadge {
   private animateZoom(scene: Phaser.Scene): void {
     if (this.isEnlarged) return;
     this.isEnlarged = true;
+    const glass = motionFamily('glass');
+    const ms = scaleTiming(glass.durationMs);
 
+    scene.tweens.add({
+      targets: this.scrim,
+      alpha: FEEDBACK_TOKENS.medallionScrimAlpha,
+      duration: ms,
+      ease: 'Quart.easeOut',
+    });
     scene.tweens.add({
       targets: this.container,
       scaleX: 1.35,
       scaleY: 1.35,
-      duration: 180,
-      ease: 'Back.easeOut',
+      duration: ms,
+      ease: 'Quart.easeOut',
       onComplete: () => {
         scene.time.delayedCall(900, () => {
+          scene.tweens.add({
+            targets: this.scrim,
+            alpha: 0,
+            duration: ms,
+            ease: 'Quart.easeOut',
+          });
           scene.tweens.add({
             targets: this.container,
             scaleX: 1.0,
             scaleY: 1.0,
-            duration: 200,
-            ease: 'Cubic.easeOut',
+            duration: ms,
+            ease: 'Quart.easeOut',
             onComplete: () => {
               this.isEnlarged = false;
             },
@@ -150,6 +174,7 @@ export class TargetBadge {
   }
 
   public destroy(): void {
+    this.scrim.destroy();
     this.container.destroy();
   }
 }

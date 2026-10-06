@@ -4,6 +4,14 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-06 - Scrim behind target medallion and glass motion family
+
+- `src/presentation/designTokens.ts`: add `FEEDBACK_TOKENS.medallionScrimAlpha = 0.35` for calming the background behind the enlarged medallion.
+- `src/presentation/TargetBadge.ts`: add full-canvas `this.scrim` rectangle behind badge (`depth: hudControls + 4`), destroyed in `destroy()`. Adapt `animateZoom` to use `motionFamily('glass')`, `scaleTiming()`, and fade `scrim` to 0.35 on zoom out and back to 0 on return.
+
+Verification: `npm test` passes (89 files, 1101 tests).
+
+
 ### 2026-10-06 - Stop victory trace competing with burst
 
 - `src/presentation/designTokens.ts`: shorten `VICTORY_TOKENS.traceMs` from 600 to 400 so the trace closes at 1300 ms exactly where `burstAtMs` (1300 ms) opens, obeying the glow ladder's rule of at most one tier-3 element at a time.

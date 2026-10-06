@@ -264,6 +264,8 @@ export const FEEDBACK_TOKENS = {
   shadowAlpha: 0.45,
   previewAlpha: 0.5,
   reducedFadeMaxMs: 150,
+  /** How far the field behind the enlarged target medallion quiets down. */
+  medallionScrimAlpha: 0.35,
 } as const;
 
 /** Chuỗi thắng (kéo dài 2800 ms để người chơi kịp chiêm ngưỡng bàn thắng và hiệu ứng hạt tinh tú) */
