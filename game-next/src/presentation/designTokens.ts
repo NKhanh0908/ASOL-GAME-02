@@ -307,3 +307,28 @@ export const AUDIO_TOKENS = {
     uiLocked: 0.5,
   },
 } as const;
+
+export type GlowTier = Readonly<{ blur: number; alpha: number; color: string }>;
+
+/**
+ * Glow is a state, not default decoration. Tier 0 means no glow at all, not a
+ * faint one — that distinction is what keeps the single tier-3 focus readable.
+ */
+export const GLOW_TIERS: Readonly<Record<0 | 1 | 2 | 3, GlowTier>> = {
+  0: { blur: 0, alpha: 0, color: 'transparent' },
+  1: { blur: 8, alpha: 0.25, color: '#A9E3FF' },
+  2: { blur: 16, alpha: 0.4, color: '#A9E3FF' },
+  3: { blur: 34, alpha: 0.85, color: '#FFC857' },
+} as const;
+
+/** The one tier-3 element each screen is allowed. */
+export const SCREEN_FOCUS = {
+  menu: 'continueButton',
+  map: 'currentNode',
+  play: 'draggingPiece',
+} as const;
+
+export function glowTier(tier: 0 | 1 | 2 | 3): GlowTier {
+  return GLOW_TIERS[tier];
+}
+

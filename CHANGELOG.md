@@ -4,6 +4,12 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-06 - Declare four-tier glow ladder as tokens (VR1 Task 2)
+
+- Declared `GLOW_TIERS` token table, `SCREEN_FOCUS` map, and `glowTier` helper in `src/presentation/designTokens.ts`.
+- Added `tests/glowTiers.test.ts` covering tier 0 non-glowing invariant, monotonic tier blur progression, and single tier-3 element constraint per screen.
+- Verification: `npm test -- glowTiers` passes; `npm run typecheck` clean.
+
 ### 2026-10-06 - Cut purple sky tail and remove banned colours (VR1 Task 1)
 
 - Replaced purple bottom sky gradient with deep navy `['#1A2470', '#1E2A80', '#24307F', '#1B2563']` and updated `COLOR_NUMBERS.skyBottom` to `0x1b2563`.
