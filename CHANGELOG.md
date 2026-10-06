@@ -4,6 +4,15 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-06 - Implementation plans for E4 and CH1H
+
+- `docs/superpowers/plans/2026-10-06-e4-studio-orientation-and-roundtrip.md`: 8 tasks. Task 1 extracts a pure `orientationOptions.ts` (families, valid frame sizes, snap, SVG preview points) so the logic is testable - **this repo has no jsdom and the plan does not add one**, so anything touching `document` is verified by hand and everything else lives in that module. Tasks 2-4 rebuild the palette's orientation `<select>` as grouped preview buttons and add a `set-orientation` action plus an inspector control. Tasks 5-7 add `overwrite` to `promoteStudioLevel` (skip the two registration calls, `bumpRevision`, downgrade `approved` -> `validated`), `preserveHeaderComment`, the `/__studio/promote` endpoint, the `--overwrite` CLI flag and the studio button.
+- `docs/superpowers/plans/2026-10-06-ch1h-chapter-1-hard-tail.md`: 5 tasks. Task 1 widens the campaign to 31 and renumbers `order` before any content exists. Tasks 2-4 author one level each as a loop of `content:author` then read the report, with a fixed stopping condition (`solutionCount: 1`, `fewerPieceSolutions: 0`, `proven: true`, difficulty >= 4, no mismatch warning) rather than asserted final coordinates, since uniqueness is only establishable by the solver. Task 2 records the one geometric unknown found while planning - whether the validator accepts a negative anchor for a roof triangle, whose drawn half is offset inside its frame - and gives the fallback composition.
+- Task 5 of CH1H ends at a reviewer stop point: the levels ship as `validated`, and only the reviewer sets `approved`.
+- `docs/ai/DOCS-INDEX.md`: CH1H and E4 rows now point at their plans, state `approved`.
+
+Verification: no code changed. Plan contents read from `palette.ts`, `state.ts`, `inspector.ts`, `promote.ts`, `newLevel.ts`, `studioPlugin.ts`, `shapes.ts`, `difficulty.ts` and `constellationLayout.ts`; the absence of a DOM test environment confirmed from `package.json` and `vite.config.ts`.
+
 ### 2026-10-06 - Correction to the E4 spec: the palette orientation control exists
 
 - `docs/superpowers/specs/2026-10-06-e4-studio-orientation-and-roundtrip-design.md`: section 1.1 and 3.1 corrected. The first version claimed `studio/palette.ts` "exposes no orientation control at all" and that the apex triangles were unreachable. That is wrong: palette.ts lines 107-130 render a `<select>` of every valid orientation (0-7 for triangle, 0-3 for parallelogram) whose `onchange` already re-runs `updateValidSizes()` and `render()`. The apex triangles can be authored today. The claim came from a case-sensitive grep for `orientation`, which does not match `selectedOrientation`; the file was not read.

@@ -56,7 +56,7 @@ Already correct and kept: `updateValidSizes()` filters `CANDIDATE_SIZES` through
 
 ### A3. Inspector orientation control (`studio/inspector.ts`)
 
-The inspector gains an orientation control for the selected piece, using the same miniature buttons. Changing it dispatches a new `set-orientation` action handled in `studio/state.ts`, which also re-validates `frameSize` against the new orientation and reports a clear Vietnamese error if the current frame is invalid for it, rather than silently producing an invalid piece.
+The inspector gains an orientation control for the selected piece, using the same miniature buttons. Changing it dispatches a new `set-orientation` action handled in `studio/state.ts`. `PieceSource` stores `orientation` and `frameSize` only - cells are derived later by the authoring step - so the reducer sets `orientation` and re-validates `frameSize` against it through `isValidFrame`, refusing the change rather than silently producing a piece whose frame is invalid for its new family.
 
 ### A4. Unchanged
 
@@ -90,7 +90,7 @@ What is still lost, and is accepted: calls to the `kit.ts` helpers (`piece()`, `
 
 ### B3. Safety gate
 
-The overwrite is refused, leaving every file untouched, when the regenerated document fails validation, or when the solver no longer proves a unique solution (`solutionCount !== 1`, `fewerPieceSolutions !== 0`, or `proven === false`) and the source carries no `allowUnproven`. An edit made in the studio must not be able to break an approved level. All writes happen only after both checks pass.
+`promoteStudioLevel` already runs these checks before its first write: it refuses when `authorLevel` reports validation issues, when `solutionCount !== 1`, and when `fewerPieceSolutions > 0`, and every `writeFileSync` happens after them. Overwrite mode reuses that gate unchanged and adds nothing to it - no `allowUnproven` exemption, which promote does not honour today and this spec does not introduce. The requirement here is that overwrite must not be allowed to weaken the gate: an edit made in the studio must not be able to break an approved level, so a refusal leaves every file byte-identical.
 
 ### B4. `/__studio/promote` endpoint (`scripts/studio/studioPlugin.ts`)
 
