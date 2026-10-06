@@ -455,6 +455,17 @@ export class LevelSelectScene extends Phaser.Scene implements Choreographed {
           })
           .setOrigin(0.5);
         nodeContainer.add(numText);
+
+        // Say it before the tap, in the same words the toast uses after it.
+        const frontierText = this.add
+          .text(0, 58, t('toast_level_polishing', { id: node.id }), {
+            fontFamily: TYPO_TOKENS.fontFamily.sans,
+            fontSize: '16px',
+            color: COLOR_TOKENS.text.secondary,
+          })
+          .setOrigin(0.5)
+          .setAlpha(0.75);
+        nodeContainer.add(frontierText);
       } else {
         // Node khóa: Số màn mờ bên dưới
         const numText = this.add

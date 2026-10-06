@@ -497,28 +497,18 @@ export class TextureFactory {
       }
     }
 
-    // 3. Node Đã mở chưa chơi 96px (Viền kính xanh trong suốt + bevel)
+    // 3. Content frontier node 96px: outline only, interior left empty — the
+    // level exists in the manifest but has not been built yet.
     if (!tm.exists(TEXTURE_KEYS.nodeUnlocked)) {
       const canvas = tm.createCanvas(TEXTURE_KEYS.nodeUnlocked, 96, 96);
       if (canvas) {
         const ctx = canvas.context;
-        ctx.fillStyle = COLOR_TOKENS.board.surfaceTop;
         TextureFactory.diamondPath(ctx, 48, 48, 43);
-        ctx.fill();
-
-        ctx.strokeStyle = COLOR_TOKENS.iceGlass.primaryBorder;
-        ctx.lineWidth = 4;
-        ctx.stroke();
-
         ctx.strokeStyle = COLOR_TOKENS.iceGlass.bevelHighlight;
         ctx.lineWidth = 2.5;
-        ctx.beginPath();
-        ctx.arc(48, 48, 41, Math.PI * 1.1, Math.PI * 1.9);
+        ctx.setLineDash([6, 6]);
         ctx.stroke();
-
-        ctx.fillStyle = COLOR_TOKENS.iceGlass.primaryBorder;
-        TextureFactory.diamondPath(ctx, 48, 48, 9);
-        ctx.fill();
+        ctx.setLineDash([]);
         canvas.refresh();
       }
     }

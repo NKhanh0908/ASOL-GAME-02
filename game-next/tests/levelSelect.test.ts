@@ -7,6 +7,14 @@ import {
   levelAccess,
   resolveMapCompletedLevels,
 } from '../src/domain/campaign.ts';
+import { t, setLocale } from '../src/presentation/i18n.ts';
+
+const tEn = (key: Parameters<typeof t>[0], vars?: Parameters<typeof t>[1]) => {
+  setLocale('en');
+  const value = t(key, vars);
+  setLocale('vi');
+  return value;
+};
 
 describe('Constellation Map Layout Generator', () => {
   test('bố cục suy ra từ manifest: 4 chòm sao 6/6/10/6, đúng thứ tự', () => {
@@ -157,5 +165,23 @@ describe('Màn chọn màn theo mockup improve-v1', () => {
   test('tổng số màn lấy từ manifest, không viết cứng', () => {
     expect(campaignManifest.length).toBeGreaterThan(0);
     expect(formatProgress(0, campaignManifest.length)).toBe(`0/${campaignManifest.length}`);
+  });
+});
+
+describe('Content frontier node', () => {
+  test('the frontier state is the level just past the released content', () => {
+    const completedThroughCh3 = campaignManifest
+      .filter((e) => e.chapter <= 3)
+      .map((e) => e.id);
+    const frontier = campaignManifest.find((e) => e.status !== 'approved');
+    expect(frontier, 'manifest has no planned level left — delete this state').toBeDefined();
+    const access = levelAccess(campaignManifest, completedThroughCh3, frontier!.id, 'campaign');
+    expect(access.unlocked).toBe(true);
+    expect(access.available).toBe(false);
+  });
+
+  test('the frontier label and the toast come from the same i18n key', () => {
+    expect(t('toast_level_polishing', { id: '4-1' })).toContain('4-1');
+    expect(tEn('toast_level_polishing', { id: '4-1' })).toContain('4-1');
   });
 });
