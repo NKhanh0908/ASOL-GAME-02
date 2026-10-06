@@ -4,6 +4,15 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-06 - FX implementation plan
+
+- `docs/superpowers/plans/2026-10-06-fx-play-and-map-fixes.md`: 7 tasks, ordered by how much each item annoys the player. Task 1 pins the FX-2 invariant with a test and no production change. Task 2 (FX-1) adds `pieceContainsPoint` testing the piece's rasterised cells, keeping `pieceHitbox` and its signature as the cheap rejection pass because the drag offset depends on it. Task 3 (FX-6) splits `node_completed` into a plain and a checkmark texture and moves the choice into the existing try/catch. Task 4 (FX-4) adds `matchBarMetrics` with a degradation ladder. Task 5 (FX-3) deletes the magnet ring. Task 6 (FX-5) redraws the icons. Task 7 closes out the docs.
+- Task 4 Step 1 makes measurement the first action rather than implementing against the spec's own arithmetic, which disagrees with the reported symptom. Task 2 Step 2 hands the implementer the code-versus-comment conflict at `playController.ts:93` to resolve by reading `BoardRenderer`, rather than guessing here.
+- The plan's Global Constraints forbid `git add -A` on this branch, after a sweep pulled another session's in-progress files into a docs commit earlier today.
+- `docs/ai/DOCS-INDEX.md`: FX row now points at the plan, state `approved`.
+
+Verification: no code changed.
+
 ### 2026-10-06 - Record studio orientation picker and round-trip (E4 Task 8)
 
 - `docs/content/level-kit.md`: documented the two triangle orientation families (Corner vs Roof), frame size constraints (multiples of 8 vs 16), and studio preview buttons.
