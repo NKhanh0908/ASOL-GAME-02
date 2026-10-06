@@ -4,6 +4,17 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-06 - Correct the VR3a scope: the target outline, not the board grid
+
+The reviewer's request to remove "the faint lines inside the stele" was first read as the board's ruler grid, and a question asked with that wrong framing got an answer that matched the question rather than the intent. Three screenshots settled it: `docs/screenshots/web/m1/Man1-2.png`, `man1-5.png` and `Man1-5-ytuong.png`. The ideal drawing keeps the board grid untouched and traces a single outer boundary around the boat, so the lines meant were the target silhouette's internal seams.
+
+- Dropped the grid task from `docs/superpowers/plans/2026-10-06-vr3a-piece-feel.md` (now 5 tasks, not 6) and §3.4 from the spec. `gridLayers.ts`, `GridPainter.ts` and `GRID_TOKENS` are no longer touched by VR3a; `lineGrid`, `diagonals` and `axes` stay.
+- The surviving work is unchanged and is now §3.4 / Task 4: `unionOutline` in `polygonClip.ts`, a fill-only `variant: 'target'`, and one merged dashed boundary per figure.
+- 1-5 confirms the algorithm has to split edges at vertices before cancelling them: its sail and hull share only **part** of an edge, so a cancel-exact-duplicates approach would fix 1-2 and break 1-5. The plan's test list already covers that case.
+- Recorded the decision in the spec's decision table so the wrong reading cannot be repeated.
+
+Verification: documentation only, no `src/` change. The three screenshots were read directly; the leftover-reference check (`grep` for `gridLayers`, `GridPainter`, `GRID_TOKENS`, stale section numbers and stale task numbers) returns nothing in either file apart from the decision row that records the choice.
+
 ### 2026-10-06 - VR3a and VR3b implementation plans
 
 Wrote both VR3 plans, and amended the VR3a spec with two findings the reviewer raised while they were being written.

@@ -2,9 +2,9 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Give picking a piece up a sense of weight, telegraph the magnet before the player releases, and clear the faint ruler lines out of the board's interior.
+**Goal:** Give picking a piece up a sense of weight, telegraph the magnet before the player releases, and draw each target as one silhouette instead of one outline per piece.
 
-**Architecture:** Three small additions on the play screen, each driven by a pure function that is tested without a renderer: a new easing in the VR0 registry, a ring geometry function in `pieceMotion.ts`, and a shorter layer list in `gridLayers.ts`. No new module, no extraction.
+**Architecture:** Three additions on the play screen, each driven by a pure function tested without a renderer: a new easing in the VR0 registry, a ring geometry function in `pieceMotion.ts`, and a union-boundary function in `polygonClip.ts`. No new module, no extraction.
 
 **Tech Stack:** TypeScript 5.7, Phaser 3.90, Vitest 2. No new dependencies.
 
@@ -409,114 +409,12 @@ git commit -m "feat(piece): telegraph the magnet with a ring at the anchor"
 
 ---
 
-### Task 4: Clear the board's interior ruler lines
-
-Reviewer decision, 2026-10-06: the faint lines inside the stele are not needed — only the border and the edge marks. `buildGridLayers` returns five layers; four of them draw inside the board (`fine` at alpha 0.13, `diagonal` at 0.16, `module` at 0.3, `axis` at 0.6). `tick` draws short marks at the four edges and the corner marks sit at the corners; both stay.
-
-**Files:**
-- Modify: `game-next/src/presentation/gridLayers.ts:139-147` and the now-dead builders
-- Modify: `game-next/src/presentation/GridPainter.ts:13-19` (`STYLE`)
-- Modify: `game-next/src/presentation/designTokens.ts` (`GRID_TOKENS`, only if nothing else reads the four styles)
-- Test: `game-next/tests/gridLayers.test.ts`
-
-**Interfaces:**
-- Produces: `GridLayerName` narrows to `'tick'`; `buildGridLayers` returns a single layer.
-
-- [ ] **Step 1: Update the test to the new shape**
-
-In `game-next/tests/gridLayers.test.ts`, replace the layer-list assertion:
-
-```typescript
-  test('chỉ còn lớp vạch rìa; lòng bia không còn đường kẻ nào', () => {
-    expect(layers.map((l) => l.name)).toEqual(['tick']);
-  });
-
-  test('không đoạn nào nằm sâu trong lòng bia', () => {
-    const inset = GRID_TOKENS.tick.longLen;
-    for (const layer of layers) {
-      for (const s of layer.segments) {
-        const touchesEdge =
-          Math.min(s.x1, s.x2) <= board.x + inset ||
-          Math.max(s.x1, s.x2) >= board.x + board.width - inset ||
-          Math.min(s.y1, s.y2) <= board.y + inset ||
-          Math.max(s.y1, s.y2) >= board.y + board.height - inset;
-        expect(touchesEdge).toBe(true);
-      }
-    }
-  });
-```
-
-Delete the four tests that assert the removed layers: the `fine` spacing test, the `module` 120px test, the `axis` test and the `diagonal` test. Keep the `tick` test and any corner-mark test.
-
-- [ ] **Step 2: Run the test to verify it fails**
-
-Run: `npm test -- gridLayers`
-Expected: FAIL — the list still has five names.
-
-- [ ] **Step 3: Shorten the layer list**
-
-In `game-next/src/presentation/gridLayers.ts`:
-
-```typescript
-export type GridLayerName = 'tick';
-```
-
-```typescript
-/**
- * Only the edge ruler marks are drawn. Reviewer decision 2026-10-06: the
- * stele's interior stays empty, so the player's own figure is the only thing
- * on it. The border and the corner marks carry the frame.
- */
-export function buildGridLayers(board: BoardBox): GridLayer[] {
-  return [{ name: 'tick', segments: ticks(board) }];
-}
-```
-
-Then delete the builders that are now unreachable: `lineGrid`, `diagonals`, `axes`, and any constants used only by them. Run `npm run typecheck` after each deletion — if a symbol is still referenced somewhere, keep it and say so in the commit message rather than forcing the deletion.
-
-- [ ] **Step 4: Shorten the style map**
-
-In `game-next/src/presentation/GridPainter.ts`:
-
-```typescript
-const STYLE: Record<GridLayerName, LayerStyle> = {
-  tick: GRID_TOKENS.tick,
-};
-```
-
-- [ ] **Step 5: Remove the dead style tokens, if they are dead**
-
-Run: `grep -rn "GRID_TOKENS.fine\|GRID_TOKENS.diagonal\|GRID_TOKENS.module\|GRID_TOKENS.axis" src tests`
-
-If that returns nothing, delete the `fine`, `diagonal`, `module` and `axis` entries from `GRID_TOKENS` in `designTokens.ts`. Keep `logicCellPx`, `displayCellInLogicCells`, `moduleInDisplayCells`, `tick` and `corner` — `tests/designTokens.test.ts:40-50` asserts the first three and `ticks()` still uses the module ratio for its long marks.
-
-If the grep finds a consumer, leave the tokens alone and note it in the commit message.
-
-- [ ] **Step 6: Run everything**
-
-Run: `npm test`
-Expected: PASS. `tests/gridAlignment.test.ts` reads only `GRID_TOKENS.moduleInDisplayCells`, which stays.
-
-Run: `npm run build`
-Expected: typecheck clean, bundle written.
-
-- [ ] **Step 7: Look at it**
-
-Run: `npm run dev` and open a level.
-Expected: the stele's interior is empty — no fine grid, no diagonals, no module lines, no centre cross. The four edges still carry their short ruler marks and the four corners their L marks. Confirm the pieces are still easy to place: snapping does the work, but say so if alignment now feels guessy.
-
-- [ ] **Step 8: Commit**
-
-```bash
-git add src/presentation/gridLayers.ts src/presentation/GridPainter.ts src/presentation/designTokens.ts tests/gridLayers.test.ts
-git commit -m "feat(board): empty the stele interior, keep the edge marks"
-```
 
 ---
 
-### Task 5: One outline for the whole target, not one per piece
+### Task 4: One outline for the whole target, not one per piece
 
-Reviewer finding, 2026-10-06, from `docs/screenshots/web/m1/image copy.png`: the house target shows a horizontal line where the roof meets the body. The cause is in `BoardRenderer.drawTargetSilhouette` (`:505-523`), which loops over `level.targetPlacements` and calls `drawJewelPolygon(..., variant: 'target')` once per placement. That variant both fills **and** dash-strokes its polygon (`JewelShape.ts:88-96`), so every shared edge is stroked twice and reads as a seam. The target should read as one silhouette.
+Reviewer finding, 2026-10-06, from `docs/screenshots/web/m1/Man1-2.png` (house), `man1-5.png` (boat) and `Man1-5-ytuong.png` (the reviewer's drawing of the wanted result): the targets show the seams between their pieces, and should show only one outer boundary. The board grid stays exactly as it is. The cause is in `BoardRenderer.drawTargetSilhouette` (`:505-523`), which loops over `level.targetPlacements` and calls `drawJewelPolygon(..., variant: 'target')` once per placement. That variant both fills **and** dash-strokes its polygon (`JewelShape.ts:88-96`), so every shared edge is stroked twice and reads as a seam. The target should read as one silhouette.
 
 **Fills stay per placement; only the stroke is merged.** Each placement carries its own `hoverAlpha[i]` (brightening the piece the player is dragging toward) and its own `targetReveal[i]` (the victory reveal). Merging the fills would throw both away. Fills of the same colour meeting along an edge produce no visible seam, so merging them buys nothing — the stroke is the whole problem and the whole fix.
 
@@ -806,7 +704,7 @@ Expected: typecheck clean.
 
 Run: `npm run dev` and step through the approved levels with `http://localhost:5173/?scene=play&level=<id>&mode=harness`, starting with `1-2`, the house from the screenshot.
 
-Expected: each target reads as one closed dashed figure with no internal lines. Pay particular attention to any level whose pieces share only part of an edge — the outline must follow the real boundary there rather than cut across it. If a level comes out with a broken or doubled outline, **stop and report it with the level id** instead of special-casing that level.
+Expected: each target reads as one closed dashed figure with no internal lines, and the board grid is untouched. Check `1-5` against `Man1-5-ytuong.png` specifically — its sail and hull share only part of an edge, which is the case that breaks a naive implementation. Pay the same attention to any other level whose pieces share only part of an edge — the outline must follow the real boundary there rather than cut across it. If a level comes out with a broken or doubled outline, **stop and report it with the level id** instead of special-casing that level.
 
 - [ ] **Step 9: Commit**
 
@@ -817,14 +715,14 @@ git commit -m "feat(board): outline the target once, not once per piece"
 
 ---
 
-### Task 6: Close out the plan
+### Task 5: Close out the plan
 
 **Files:**
 - Modify: `CHANGELOG.md`, `docs/ai/STATUS.md`, `docs/ai/DOCS-INDEX.md`, `docs/superpowers/specs/2026-10-06-vr3a-piece-feel-design.md`
 
-- [ ] **Step 1: Record both reviewer additions in the spec**
+- [ ] **Step 1: Confirm the spec matches what was built**
 
-Tasks 4 and 5 came from the reviewer after the spec was written. Add them as §3.4 (empty stele interior) and §3.5 (one outline for the whole target), each with its decision and its reason, so the spec and the code agree.
+Task 4 came from the reviewer after the spec was written and is recorded as §3.4. Check that section still describes what shipped.
 
 - [ ] **Step 2: Add the CHANGELOG entry**
 
@@ -858,7 +756,6 @@ git commit -m "docs(vr3a): record the piece feel pass"
 | §3.1 anticipation on pick up | 1 |
 | §3.2 ring at the anchor | 2, 3 |
 | §3.3 explicitly unchanged | None by design — no task touches §2, §4, §5.1 or §5.2 |
-| Reviewer addition: empty the stele interior | 4 (spec amended in Task 6 Step 1) |
-| Reviewer addition: one outline for the whole target | 5 (spec amended in Task 6 Step 1) |
+| §3.4 one outline for the whole target (reviewer addition) | 4 |
 | §5 testing | Each task's own test steps |
 | §6 out of scope | Unchanged |

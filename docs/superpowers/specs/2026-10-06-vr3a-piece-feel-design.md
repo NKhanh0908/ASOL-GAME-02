@@ -45,7 +45,8 @@ So VR3a reduces to two additions.
 | 1 | Add the §1 anticipation dip, given it delays the response to touch? | **Yes, in full** — dip to 0.97, then lift. The reviewer accepted the ~40 ms cost |
 | 2 | How should the approach be telegraphed? | **A ring at the anchor** that tightens as the piece closes, reusing the shape `snapRing` already draws |
 | 3 | Revisit the drag model (§2)? | **No.** Settled in VR0 §2.1 |
-| 4 | Is the dead `overlapInversionMs` token removed? | **No** — removing it would break `tests/designTokens.test.ts:102`, which asserts its value. Deleting a token and its assertion is a separate cleanup, not part of a visual spec |
+| 4 | Does the board grid change? | **No.** The reviewer confirmed on 2026-10-06, against `docs/screenshots/web/m1/Man1-5-ytuong.png`, that the board keeps its grid exactly as it is. An earlier reading of "the faint lines inside the stele" as the board grid was wrong; the lines meant were the target's internal seams, §3.4 |
+| 5 | Is the dead `overlapInversionMs` token removed? | **No** — removing it would break `tests/designTokens.test.ts:102`, which asserts its value. Deleting a token and its assertion is a separate cleanup, not part of a visual spec |
 
 ## 3. Changes
 
@@ -136,29 +137,14 @@ and §5.2 are implemented and this spec changes none of their timings, easings,
 colours or audio cues. `overlapFadeMs`, `overlapTraceMs`, `overlapTraceFraction`,
 `reviveFlashMs`, `bounceMs`, `snapRingMs` and `magnetStrength` keep their values.
 
-### 3.4 The stele's interior goes empty
+### 3.4 One outline for the whole target
 
-Reviewer decision, 2026-10-06. `buildGridLayers` returns five layers
-(`gridLayers.ts:139-147`). Four of them draw inside the board: `fine` at alpha
-0.13, `diagonal` at 0.16, `module` at 0.3 and `axis` at 0.6. They are dropped.
-`tick` — the short ruler marks at the four edges — and the four L-shaped corner
-marks stay, so the frame keeps its rhythm while the interior holds nothing but
-the player's own figure.
-
-`GridLayerName` narrows to `'tick'`, `lineGrid`, `diagonals` and `axes` become
-unreachable and are deleted, and the four unused style entries come out of
-`GRID_TOKENS`. The geometric ratios (`logicCellPx`, `displayCellInLogicCells`,
-`moduleInDisplayCells`) stay: `tests/designTokens.test.ts:40-50` asserts them
-and `ticks()` still uses the module ratio to decide which marks are long.
-
-The risk is placement readability: the grid was the only alignment reference
-besides the magnet. Snapping does the real work, so this should hold, but it is
-a device check, not a desk one.
-
-### 3.5 One outline for the whole target
-
-Reviewer finding, 2026-10-06, from `docs/screenshots/web/m1/image copy.png`: the
-house target in 1-2 shows a horizontal line where the roof meets the body. It is
+Reviewer finding, 2026-10-06, from three screenshots in
+`docs/screenshots/web/m1/`: `Man1-2.png` (the house shows a horizontal line
+where the roof meets the body), `man1-5.png` (the boat shows the seams between
+all three of its pieces) and `Man1-5-ytuong.png`, the reviewer's own drawing of
+the wanted result — a single outer boundary around the whole boat, with the
+board grid left exactly as it is. It is
 not a grid line. `BoardRenderer.drawTargetSilhouette` (`:505-523`) iterates
 `targetPlacements` and calls `drawJewelPolygon(..., variant: 'target')` once per
 placement, and that variant both fills and dash-strokes its own polygon
@@ -166,6 +152,11 @@ placement, and that variant both fills and dash-strokes its own polygon
 and reads as a seam cutting through the figure.
 
 The target must read as one silhouette, on every level.
+
+1-5 is the case that sets the algorithm. Its sail and its hull share only
+**part** of an edge, not the whole of one, so cancelling exact duplicate edges
+would fix 1-2 and leave 1-5 broken. Edges have to be split at every vertex
+lying on them before duplicates cancel.
 
 **The fills stay per placement; only the stroke is merged.** Each placement
 carries its own `hoverAlpha[i]`, which brightens the piece the player is
@@ -193,10 +184,9 @@ at the brightest of the placements' alphas.
 | `designTokens.ts` | `pickupMs`, the five `magnetRing*` tokens |
 | `feedback/FeedbackDirector.ts` | `pickup` uses the new ease and duration; draws the ring while dragging (§3.2) |
 | `pieceMotion.ts` | `magnetRing` pure function |
-| `BoardRenderer.ts` | One graphics layer for the ring, cleared per frame beside the preview (§3.2); one merged target outline (§3.5) |
-| `gridLayers.ts`, `GridPainter.ts` | Four interior layers removed, `tick` kept (§3.4) |
-| `polygonClip.ts` | `unionOutline` (§3.5) |
-| `JewelShape.ts` | Target variant fills; `strokeTargetOutline` strokes (§3.5) |
+| `BoardRenderer.ts` | One graphics layer for the ring, cleared per frame beside the preview (§3.2); one merged target outline (§3.4) |
+| `polygonClip.ts` | `unionOutline` (§3.4) |
+| `JewelShape.ts` | Target variant fills; `strokeTargetOutline` strokes (§3.4) |
 
 No extraction and no new module. `PieceView.ts` is not modified: the dip rides
 the lift path it already has.
@@ -215,8 +205,6 @@ the lift path it already has.
 - Reduced Motion: `scaleTiming(pickupMs)` is 0, and the ring still renders.
 - Nothing in `tests/feedbackEvents.test.ts` changes: the event sequence for
   pickup, snap, overlap-hollow and overlap-revive is untouched.
-- Grid layers: `buildGridLayers` returns only `tick`, and no segment it returns
-  lies deeper into the board than the long tick length.
 - `unionOutline`: a single square returns itself; two squares sharing a full
   edge return one four-corner loop; two sharing half an edge return a
   six-corner L; a triangle on a square returns the five-corner house with no
@@ -243,10 +231,6 @@ affordance rather than as clutter when several anchors sit close together.
   from a desktop browser. If it feels sluggish on a device, the fallback is
   decision 1's rejected option: keep `backOut` at 80 ms and drop §1. The
   reviewer should test this before the rest of the spec is accepted.
-- Emptying the stele interior removes the only alignment reference besides the
-  magnet. Snapping should carry it, but if placement starts to feel guessy the
-  fallback is the rejected option: keep `module` and `axis`, drop only `fine`
-  and `diagonal`.
 - `unionOutline` is the one piece of real geometry in this spec. It is correct
   for polygons that share edges exactly or partly, but it does **not** compute a
   true boolean union: two target pieces that genuinely cross, rather than abut,
