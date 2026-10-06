@@ -4,6 +4,15 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-06 - E4 spec: studio orientation picker and campaign round-trip
+
+- `docs/superpowers/specs/2026-10-06-e4-studio-orientation-and-roundtrip-design.md`: new design spec covering two studio gaps found by inspection.
+- Gap 1: the apex-up/down/left/right triangles already exist in `domain/shapes.ts` as orientations 4-7 ("mai"), fully supported by `isValidFrame`, `effectiveOrientation`, `mirrorOrientation` and the raster - but `studio/palette.ts` pins `selectedOrientation` to 0 and offers no orientation control, and `R` cycles inside one orientation family by design, so four of the twelve triangle/parallelogram configurations have no authoring path. The spec adds a palette orientation row drawn from `shapePolygon` and an inspector control; `effectiveOrientation` and the key bindings are deliberately left alone.
+- Gap 2: `studio/library.ts` can open a campaign level for editing but nothing writes it back, because `promoteStudioLevel` calls `registerInSourceIndex` / `registerInCatalog`, which throw on an id that already exists. The spec adds an `overwrite` mode that rewrites the source, bumps `contentRevision` (`-v1` -> `-v2`), downgrades `approved` -> `validated`, regenerates JSON/SVG/report, preserves the hand-written block comment between the import line and `export const`, and refuses the whole write when validation or solver uniqueness fails.
+- `docs/ai/DOCS-INDEX.md`: new E4 row, state `draft`.
+
+Verification: no code changed. Findings read directly from `domain/shapes.ts`, `studio/palette.ts`, `studio/keys.ts`, `studio/inspector.ts`, `studio/library.ts`, `content/promote.ts` and `scripts/studio/studioPlugin.ts`.
+
 ### 2026-10-06 - CH1H spec: chapter 1 hard tail (1-7, 1-8, 1-9)
 
 - `docs/superpowers/specs/2026-10-06-chapter-1-hard-tail-design.md`: new design spec. Chapter 1 tops out at difficulty 3 because rotation is reserved for chapter 4 and the XOR overlap rule for chapter 2. The spec adds three difficulty-4 levels at the end of the chapter that lean on geometric deduction alone: 1-7 Manh Khuat (a piece lying wholly inside the silhouette, so the outline hides it), 1-8 Loi Chia Sai (the obvious symmetric split is not the one the tray can make), 1-9 Ngu Hanh Tinh (five pieces, two same-kind pairs at different frame sizes, CROSS decoys).

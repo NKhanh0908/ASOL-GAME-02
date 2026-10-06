@@ -35,6 +35,7 @@ Paths below are relative to `docs/superpowers/`.
 | VR3b | Visual refactor: target medallion + victory ritual | specs/2026-10-06-vr3b-medallion-victory-ritual-design.md | plans/2026-10-06-vr3b-medallion-victory-ritual.md | done | Executed 2026-10-06 (Tasks 1–6). Card bottom-anchored and grown 262 → 310 px with 48 px strip slot; restore path dims sky; trace shortened 600 → 400 ms; medallion scrim (alpha 0.35) with glass motion family; Eye crossfade (piece/parity 0.55, target 0.35). Star-lighting audio cue deferred with VR2 §3.1 |
 | AI | AI onboarding context | specs/2026-10-03-ai-onboarding-context-design.md | plans/2026-10-03-ai-onboarding-context.md | done | Cold-start test passed 2026-10-03 |
 | CH1H | Chapter 1 hard tail: levels 1-7, 1-8, 1-9 | specs/2026-10-06-chapter-1-hard-tail-design.md | — (not written yet) | draft | Three difficulty-4 levels appended to chapter 1 using geometric deduction only (no overlap, no rotation). Raises `RELEASE_LEVEL_COUNT` 28 → 31 |
+| E4 | Studio: triangle orientation picker + campaign round-trip | specs/2026-10-06-e4-studio-orientation-and-roundtrip-design.md | — (not written yet) | draft | Roof triangles (orientation 4–7) exist in `shapes.ts` but no studio control reaches them. Adds a palette/inspector orientation picker and an `overwrite` mode for `promoteStudioLevel` that preserves the source's block comment |
 
 ## History (do not build on these)
 
