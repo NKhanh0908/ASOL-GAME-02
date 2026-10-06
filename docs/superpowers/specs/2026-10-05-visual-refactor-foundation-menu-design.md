@@ -163,13 +163,21 @@ A 6-second loop:
 
 | t | State |
 |---|---|
-| 0.0s | At rest, centres 76px apart |
+| 0.0s | At rest, centres 156px apart — a 20px gap between the jewels |
 | 2.0s | Drawing together, ease-in-out |
 | 3.0s | Overlap region becomes empty navy |
 | 3.4s | Star lights inside the empty region |
 | 6.0s | Separated, loop restarts |
 
-The existing bob, breathing pulse and orbiting dust ring are kept.
+The existing bob, breathing pulse and orbiting dust ring are kept, as are the
+four cut facets and the outline: the emblem is the same material as the board
+pieces, and `jewelFaces` in `jewelGeometry.ts` is the shared helper for it.
+
+**The rest offset must exceed the jewel radius.** With radius 68 the jewels are
+136px wide, so centres closer than 136px overlap before the animation begins and
+the drift-together beat never reads. The first draft of this spec said 76px
+apart, which made the jewels overlap by 60px at "rest" — see the CHANGELOG entry
+for 2026-10-06 recording how that reached the screen.
 
 The overlap is currently **not geometric** — `renderDualJewelEmblem` paints a
 fixed navy diamond between the two jewels. For the region to empty correctly at

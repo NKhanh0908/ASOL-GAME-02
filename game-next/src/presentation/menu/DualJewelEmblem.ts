@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { COLOR_NUMBERS, glowTier } from '../designTokens.ts';
-import { jewelOutline } from '../jewelGeometry.ts';
+import { jewelFaces, jewelOutline } from '../jewelGeometry.ts';
 import { getMotionScale, isReducedMotion } from '../transitions/motion.ts';
 import {
   emblemOffsetAt,
@@ -11,6 +11,18 @@ import {
 
 const JEWEL_RADIUS = 68;
 const ORBIT_RADIUS = 150;
+
+/**
+ * Face colours resolved once. `jewelFaces` returns the token hex strings, and
+ * converting them per face per frame would mean eight conversions every tick
+ * on a screen the GDD asks to be frugal on battery.
+ */
+const FACE_COLORS: Record<'north' | 'east' | 'south' | 'west', number> = {
+  north: COLOR_NUMBERS.jewelFaceNorth,
+  east: COLOR_NUMBERS.jewelFaceEast,
+  south: COLOR_NUMBERS.jewelFaceSouth,
+  west: COLOR_NUMBERS.jewelFaceWest,
+};
 
 export class DualJewelEmblem {
   private readonly emblemGraphics: Phaser.GameObjects.Graphics;
@@ -62,8 +74,7 @@ export class DualJewelEmblem {
 
     // Both jewels, then the overlap punched out in sky navy.
     for (const cx of [-offset, offset]) {
-      g.fillStyle(COLOR_NUMBERS.amberSolid, 1);
-      g.fillPoints(jewelOutline(cx, 0, JEWEL_RADIUS).map((p) => new Phaser.Geom.Point(p.x, p.y)), true);
+      this.drawFacetedJewel(g, cx, JEWEL_RADIUS);
     }
 
     const overlap = emblemOverlap(offset, JEWEL_RADIUS);
@@ -74,6 +85,27 @@ export class DualJewelEmblem {
       const alpha = emblemStarAlpha(this.elapsedMs);
       if (alpha > 0) this.drawStar(s, 0, 0, 14, alpha);
     }
+  }
+
+  /**
+   * Four cut facets plus an outline, so the emblem reads as the same material
+   * as the pieces on the board. `jewelFaces` is the shared helper the board
+   * pieces use, which keeps the colours on the token system instead of the
+   * hardcoded hexes the pre-VR1 emblem carried.
+   */
+  private drawFacetedJewel(g: Phaser.GameObjects.Graphics, cx: number, r: number): void {
+    for (const face of jewelFaces(cx, 0, r)) {
+      g.fillStyle(FACE_COLORS[face.name], 1);
+      g.fillPoints(
+        face.points.map((p) => new Phaser.Geom.Point(p.x, p.y)),
+        true
+      );
+    }
+    g.lineStyle(2, COLOR_NUMBERS.jewelOutline, 0.9);
+    g.strokePoints(
+      jewelOutline(cx, 0, r).map((p) => new Phaser.Geom.Point(p.x, p.y)),
+      true
+    );
   }
 
   private drawOrbitDust(g: Phaser.GameObjects.Graphics): void {

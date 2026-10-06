@@ -4,6 +4,16 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-06 - Fix the menu emblem: restore the cut facets and the rest pose
+
+Two defects reached the screen through the VR1 plan, not through its execution. Reported by the reviewer comparing `docs/screenshots/web/m1/image.png` against `docs/screenshots/mobile/m3/MenuGame.jpg`.
+
+- **Flat jewels.** `DualJewelEmblem.draw` filled `jewelOutline` with one solid amber, losing the four cut facets, the outline and the metallic highlight the pre-VR1 emblem had. Root cause: VR1 plan Task 4 Step 2 specified that flat fill and Step 3 told the executor to delete `drawFacetedJewel`; the task's purpose was to replace the fake overlap with real geometry, and the material was dropped by accident along the way. Fixed in `game-next/src/presentation/menu/DualJewelEmblem.ts` by drawing `jewelFaces` from `jewelGeometry.ts` — the same shared helper the board pieces use, which also moves the emblem onto `COLOR_NUMBERS.jewelFace*` instead of the hardcoded hexes the old private method carried. Face colours are resolved once into `FACE_COLORS` rather than converted per face per frame.
+- **Jewels overlapped at rest.** `REST_OFFSET` was 38 against a jewel radius of 68, so the two 136px-wide jewels overlapped by 60px before the animation started and the drift-together beat never read. The plan's own test asserted zero overlap at rest, which is geometrically impossible at those values, so the executor satisfied it by special-casing the guard to `offset >= REST_OFFSET`; that made the overlap pop from nothing to a large area instead of growing continuously. Raised `REST_OFFSET` to 78 (a 20px gap, still inside the 150px orbit ring) and restored the guard to `offset >= radius`.
+- Added three regression tests in `game-next/tests/dualJewelGeometry.test.ts`: the rest offset exceeds the radius, the overlap grows continuously from zero rather than jumping, and the area is exactly zero when the jewels touch at their tips. All three failed before the fix with `expected 38 to be greater than 68` and `expected 0 to be greater than 0`.
+- Corrected the VR1 spec §4.4, which still carried the 76px figure that caused this, and recorded why the rest offset must exceed the radius.
+- Verification: `npm test` 88 files / 1066 tests pass; `npm run typecheck` clean; `npm run build` clean in 6.92s; GitNexus `impact` on `emblemOverlap` returned LOW with 3 symbols inside the Menu module, and `detect_changes` reported 12 touched symbols, 0 affected processes, risk low. **The faceted appearance itself is not covered by a test** — this repo does not test Phaser rendering — so it needs the reviewer's eye on `npm run dev`.
+
 ### 2026-10-06 - Controller pass after VR0 and VR1: verification, index, missing invariant
 
 - Independently verified the VR0 and VR1 execution rather than accepting the executor's report: `npm test` 88 files / 1063 tests pass, `npm run typecheck` clean, `npm run build` clean in 7.02s, working tree clean. The executor's totals matched.
