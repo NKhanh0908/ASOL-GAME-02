@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { campaignManifest } from '../content/manifest.ts';
+import { loadLevel } from '../content/catalog.ts';
 import { levelAccess, resolveMapCompletedLevels } from '../domain/campaign.ts';
 import type { LevelAccessMode } from '../domain/campaign.ts';
 import type { Chapter } from '../domain/model.ts';
@@ -10,6 +11,7 @@ import { TEXTURE_KEYS, TextureFactory } from './TextureFactory.ts';
 import { applyDesignViewport, designSafeArea, designViewBounds } from './designViewport.ts';
 import { formatProgress } from './hudText.ts';
 import { layoutCampaignMap } from './constellationLayout.ts';
+import { NODE_SILHOUETTE_BOX, drawTargetSilhouette } from './targetSilhouette.ts';
 import { t, getLevelTitle, getChapterLabel } from './i18n.ts';
 import { director } from './transitions/SceneDirector.ts';
 import type { Choreographed, TransitionContext } from './transitions/SceneDirector.ts';
@@ -364,9 +366,25 @@ export class LevelSelectScene extends Phaser.Scene implements Choreographed {
 
       // Hiển thị số màn chơi rõ ràng
       if (node.state === 'completed') {
-        // Màn đã xong: Số màn nhỏ dưới node
+        // The node shows what the player built. Colours invert against the
+        // amber diamond: solid parity reads navy, hollow parity reads amber.
+        const silhouette = this.add.graphics();
+        try {
+          drawTargetSilhouette(
+            silhouette,
+            loadLevel(node.id, this.mode),
+            NODE_SILHOUETTE_BOX,
+            { filled: COLOR_NUMBERS.navyBackdrop, hollow: COLOR_NUMBERS.amberSolid }
+          );
+          nodeContainer.add(silhouette);
+        } catch {
+          // Level JSON missing or unavailable in this mode: the texture's own
+          // checkmark stays visible and the node still reads as completed.
+          silhouette.destroy();
+        }
+
         const numText = this.add
-          .text(0, 46, node.id, {
+          .text(0, 58, node.id, {
             fontFamily: TYPO_TOKENS.fontFamily.sans,
             fontSize: '18px',
             color: COLOR_TOKENS.amberGold.solidPrimary,

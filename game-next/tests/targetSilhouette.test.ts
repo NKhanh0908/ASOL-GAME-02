@@ -52,3 +52,22 @@ describe('silhouetteLayers', () => {
     expect(silhouetteLayers(level, BADGE_BOX)).toEqual([]);
   });
 });
+
+describe('node silhouette box', () => {
+  test('is the largest badge-aspect box the diamond allows', () => {
+    expect(NODE_BOX).toEqual({ width: 46, height: 32 });
+    expect((NODE_BOX.width + NODE_BOX.height) / 2).toBeLessThanOrEqual(39);
+  });
+
+  test('every approved level stays inside the diamond at node size', () => {
+    for (const entry of campaignManifest.filter((e) => e.status === 'approved')) {
+      const layers = silhouetteLayers(loadLevel(entry.id, 'campaign'), NODE_BOX);
+      expect(layers.length, entry.id).toBeGreaterThan(0);
+      for (const layer of layers) {
+        for (const p of layer.points) {
+          expect(Math.abs(p.x) + Math.abs(p.y), entry.id).toBeLessThanOrEqual(39.001);
+        }
+      }
+    }
+  });
+});
