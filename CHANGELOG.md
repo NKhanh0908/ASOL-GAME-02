@@ -4,6 +4,13 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-06 - Adopt layout C and lift the astronomy fact caption (VR1 Task 5)
+
+- Re-laid vertical stack in `src/presentation/MenuScene.ts` to Layout C: logo block (y≈300) → hero emblem (y≈620) → fact caption (y≈830) → primary button (y≈980) → secondary button (y≈1075) → footer (y≈1240).
+- Upgraded fact caption with ◆ prefix, `#B9C9F2` high contrast colour, and `TYPO_TOKENS.fontSize.caption` size.
+- Verification: `npm test` (88 files, 1063 tests pass); `npm run typecheck` clean.
+
+
 ### 2026-10-06 - Extract dual jewel emblem and animate the XOR rule (VR1 Task 4)
 
 - Extracted emblem rendering to `src/presentation/menu/DualJewelEmblem.ts` consuming `dualJewelGeometry.ts` and `glowTier(1)`.

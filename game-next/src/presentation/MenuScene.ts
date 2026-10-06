@@ -3,7 +3,7 @@ import { campaignManifest } from '../content/manifest.ts';
 import { resolveNextCampaignLevel } from '../domain/campaign.ts';
 import { createProgressRepository } from '../infrastructure/progressRepository.ts';
 import type { ProgressRepository } from '../application/progressPort.ts';
-import { COLOR_NUMBERS, COLOR_TOKENS, DEPTH_TOKENS, LAYOUT_TOKENS, TYPO_TOKENS } from './designTokens.ts';
+import { COLOR_NUMBERS, COLOR_TOKENS, DEPTH_TOKENS, LAYOUT_TOKENS, TYPO_TOKENS, glowTier } from './designTokens.ts';
 import { TEXTURE_KEYS, TextureFactory } from './TextureFactory.ts';
 import { applyDesignViewport, designSafeArea, designViewBounds } from './designViewport.ts';
 import { SettingsDialog } from './SettingsDialog.ts';
@@ -55,7 +55,7 @@ export class MenuScene extends Phaser.Scene implements Choreographed {
     this.viewHeight = view.height;
 
     // 2. Biểu tượng Ngọc Đôi (Dual Jewels XOR) lơ lửng ở trung tâm
-    this.emblem = new DualJewelEmblem(this, 360, 500 + this.blockOffsetY);
+    this.emblem = new DualJewelEmblem(this, 360, 620 + this.blockOffsetY);
 
     // 3. UI Container chính
     this.uiContainer = this.add.container(0, this.blockOffsetY);
@@ -147,25 +147,25 @@ export class MenuScene extends Phaser.Scene implements Choreographed {
     this.titleBlock = this.add.container(0, 0);
     this.buildCasualMirrorLogo();
 
-    // Dòng phụ đề: mỗi lần dựng menu bốc một mẩu thiên văn ngẫu nhiên
-    const subtitleText = this.add
-      .text(360, 316, getRandomMenuTagline(), {
+    // Dòng thông tin thiên văn (Layout C: đặt ngay dưới hero ở y=830)
+    const factCaption = this.add
+      .text(360, 830, `◆ ${getRandomMenuTagline()}`, {
         fontFamily: TYPO_TOKENS.fontFamily.display,
-        fontSize: '15px',
-        color: COLOR_TOKENS.text.secondary,
+        fontSize: TYPO_TOKENS.fontSize.caption,
+        color: '#B9C9F2',
         align: 'center',
         wordWrap: { width: 620 },
       })
       .setOrigin(0.5);
-    this.titleBlock.add(subtitleText);
+    this.titleBlock.add(factCaption);
 
     // -------------------------------------------------------------
-    // 1. NÚT CHÍNH: BẮT ĐẦU / TIẾP TỤC (Hero 3D Tactile Juicy Button)
+    // 1. NÚT CHÍNH: BẮT ĐẦU / TIẾP TỤC (Hero 3D Tactile Juicy Button, y=980)
     // -------------------------------------------------------------
     const btnWidth = 360;
     const btnHeight = 84;
     const btnX = 360;
-    const btnY = 820;
+    const btnY = 980;
 
     const primaryBtnContainer = this.add.container(btnX, btnY);
 
@@ -264,9 +264,9 @@ export class MenuScene extends Phaser.Scene implements Choreographed {
     this.primaryButton = primaryBtnContainer;
 
     // -------------------------------------------------------------
-    // 2. NÚT PHỤ: CHỌN MÀN CHƠI (Ice Crystal Glass 3D Button)
+    // 2. NÚT PHỤ: CHỌN MÀN CHƠI (Ice Crystal Glass 3D Button, y=1075)
     // -------------------------------------------------------------
-    const secBtnY = 926;
+    const secBtnY = 1075;
     const secHeight = 62;
     const secBtnContainer = this.add.container(btnX, secBtnY);
 
@@ -342,9 +342,9 @@ export class MenuScene extends Phaser.Scene implements Choreographed {
     secBtnContainer.add([secShadow, secFace, secIcon, secBtnText, secBtnZone]);
     this.secondaryButton = secBtnContainer;
 
-    // Chân trang phiên bản
+    // Chân trang phiên bản (y=1240)
     const footerText = this.add
-      .text(360, this.viewHeight - this.safe.bottom - 40 - this.blockOffsetY, t('version_footer'), {
+      .text(360, 1240, t('version_footer'), {
         fontFamily: TYPO_TOKENS.fontFamily.sans,
         fontSize: '12px',
         color: COLOR_TOKENS.text.secondary,
