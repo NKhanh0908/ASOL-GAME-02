@@ -130,6 +130,31 @@ export function updateAuthoredLevels(testText: string, targetId: string): string
   return testText.replace(match[0], formatted);
 }
 
+const SOURCE_IMPORT_LINE = "import type { LevelSource } from '../authoring.ts';";
+
+/**
+ * Giữ lại khối chú thích viết tay nằm giữa dòng import và `export const`
+ * của file nguồn cũ. Bản sinh từ serializeLevelSource không có khối này,
+ * mà nó thường chứa lý do thiết kế của màn (ví dụ 1-6 giải thích quy tắc ô
+ * biên chung). Thuần văn bản: chú thích có thể lạc hậu so với nội dung mới,
+ * báo cáo promote nhắc người duyệt đọc lại.
+ */
+export function preserveHeaderComment(oldText: string, newText: string): string {
+  const oldImport = oldText.indexOf(SOURCE_IMPORT_LINE);
+  const oldExport = oldText.indexOf('export const');
+  if (oldImport === -1 || oldExport === -1 || oldExport < oldImport) return newText;
+
+  const between = oldText.slice(oldImport + SOURCE_IMPORT_LINE.length, oldExport).trim();
+  if (between === '') return newText;
+
+  const newExport = newText.indexOf('export const');
+  if (newExport === -1) return newText;
+
+  const eol = newText.includes('\r\n') ? '\r\n' : '\n';
+  const head = newText.slice(0, newExport).replace(/\s+$/, '');
+  return `${head}${eol}${eol}${between}${eol}${newText.slice(newExport)}`;
+}
+
 export type PromoteOptions = {
   studioId: string;
   targetId: string;
@@ -143,6 +168,7 @@ export type PromoteResult =
       targetId: string;
       writtenFiles: string[];
       deletedFiles: string[];
+      preservedComment?: boolean;
     }
   | {
       ok: false;
@@ -245,8 +271,15 @@ export function promoteStudioLevel(opts: PromoteOptions): PromoteResult {
 
   // 1. src/content/sources/<targetId>.ts
   const constName = constNameFromTitle(newSource.title);
-  const sourceText = serializeLevelSource(newSource, constName);
+  let sourceText = serializeLevelSource(newSource, constName);
   const sourceFilePath = resolve(gameNextDir, 'src/content/sources', `${opts.targetId}.ts`);
+  let preservedComment = false;
+  if (overwrite && existsSync(sourceFilePath)) {
+    const oldText = readFileSync(sourceFilePath, 'utf8');
+    const merged = preserveHeaderComment(oldText, sourceText);
+    preservedComment = merged !== sourceText;
+    sourceText = merged;
+  }
   writeFileSync(sourceFilePath, sourceText, 'utf8');
   writtenFiles.push(relative(opts.root, sourceFilePath).replace(/\\/g, '/'));
 
@@ -318,5 +351,6 @@ export function promoteStudioLevel(opts: PromoteOptions): PromoteResult {
     targetId: opts.targetId,
     writtenFiles,
     deletedFiles,
+    preservedComment,
   };
 }

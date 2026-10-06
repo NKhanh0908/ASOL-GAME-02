@@ -5,6 +5,7 @@ import rawSongTinh from '../src/content/levels/1-1.json';
 import type { LevelDocument } from '../src/content/document.ts';
 import {
   bumpRevision,
+  preserveHeaderComment,
   promoteStudioLevel,
   registerInCatalog,
   sourceFromDocument,
@@ -362,6 +363,9 @@ describe('promoteStudioLevel overwrite', () => {
       [
         "import type { LevelSource } from '../authoring.ts';",
         '',
+        '/**',
+        ' * 1-4 Hải Đăng: đèn chiếu từ đỉnh tháp.',
+        ' */',
         'export const haiDang: LevelSource = {',
         "  id: '1-4',",
         "  title: 'Hải Đăng',",
@@ -450,6 +454,55 @@ describe('promoteStudioLevel overwrite', () => {
     const res = promoteStudioLevel({ studioId: 'da-nghiem', targetId: '1-4', root: TMP_ROOT, overwrite: true });
     expect(res.ok).toBe(false);
     expect(snapshotRepo(TMP_ROOT)).toEqual(before);
+  });
+
+  it('giữ khối chú thích của file nguồn khi overwrite', () => {
+    const res = promoteStudioLevel({ studioId: 'nhap', targetId: '1-4', root: TMP_ROOT, overwrite: true });
+    expect(res.ok).toBe(true);
+    if (res.ok) {
+      expect(res.preservedComment).toBe(true);
+      const source = readFileSync(resolve(TMP_ROOT, 'game-next/src/content/sources/1-4.ts'), 'utf8');
+      expect(source).toContain('đèn chiếu từ đỉnh tháp');
+    }
+  });
+});
+
+describe('preserveHeaderComment', () => {
+  const generated = [
+    "import type { LevelSource } from '../authoring.ts';",
+    '',
+    'export const moi: LevelSource = {',
+    '};',
+  ].join('\n');
+
+  it('giữ khối chú thích giữa dòng import và export const', () => {
+    const old = [
+      "import type { LevelSource } from '../authoring.ts';",
+      '',
+      '/**',
+      ' * 1-6 Vương Miện: giải thích quy tắc ô biên chung.',
+      ' */',
+      'export const cu: LevelSource = {',
+      '};',
+    ].join('\n');
+    const out = preserveHeaderComment(old, generated);
+    expect(out).toContain('quy tắc ô biên chung');
+    expect(out.indexOf('quy tắc')).toBeLessThan(out.indexOf('export const moi'));
+    expect(out).toContain('export const moi: LevelSource = {');
+  });
+
+  it('nguồn cũ không có chú thích thì trả nguyên bản sinh', () => {
+    const old = [
+      "import type { LevelSource } from '../authoring.ts';",
+      '',
+      'export const cu: LevelSource = {',
+      '};',
+    ].join('\n');
+    expect(preserveHeaderComment(old, generated)).toBe(generated);
+  });
+
+  it('nguồn cũ hỏng dạng thì trả nguyên bản sinh', () => {
+    expect(preserveHeaderComment('rác', generated)).toBe(generated);
   });
 });
 

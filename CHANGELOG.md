@@ -4,6 +4,13 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-06 - Keep hand-written comment block on source overwrite (E4 Task 6)
+
+- `game-next/src/content/promote.ts`: added `preserveHeaderComment` to retain the JSDoc/block comment between `import type { LevelSource }` and `export const` when overwriting a campaign source; returned `preservedComment: boolean` on `PromoteResult`.
+- `game-next/tests/promote.test.ts`: added unit tests for `preserveHeaderComment` and tested comment block preservation during `promoteStudioLevel` overwrite.
+
+Verification: `npm test -- tests/promote.test.ts` passes (18 tests), `npm run typecheck` clean.
+
 ### 2026-10-06 - FX spec: six reported play and map issues
 
 - `docs/superpowers/specs/2026-10-06-fx-play-and-map-fixes-design.md`: new spec covering six items reported from play. Each was investigated before being written up.
