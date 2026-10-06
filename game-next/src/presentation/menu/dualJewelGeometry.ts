@@ -5,7 +5,12 @@ import { clipConvex, type Pt } from '../polygonClip.ts';
 export const EMBLEM_LOOP_MS = 6000;
 
 /** Half-distance between the two jewel centres, in pixels. */
-export const REST_OFFSET = 38;
+/**
+ * Must exceed the jewel radius, or the two jewels already overlap at "rest"
+ * and the drift-together beat never reads. At 78 with radius 68 they sit 20px
+ * apart, and the pair still fits inside the 150px orbit ring.
+ */
+export const REST_OFFSET = 78;
 export const OVERLAP_OFFSET = 20;
 
 /** Pose held when Reduced Motion is on: overlapped, star lit. */
@@ -45,7 +50,7 @@ export function emblemOffsetAt(tMs: number): number {
  * can simply skip drawing rather than special-casing the rest pose.
  */
 export function emblemOverlap(offset: number, radius: number): Pt[] {
-  if (offset >= REST_OFFSET) return [];
+  if (offset >= radius) return [];
   const left = jewelOutline(-offset, 0, radius);
   const right = jewelOutline(offset, 0, radius);
   return clipConvex(left, right);

@@ -26,6 +26,24 @@ describe('Hình học vòng lặp XOR của biểu tượng Ngọc Đôi', () =>
     expect(polygonArea(emblemOverlap(offset, R))).toBeGreaterThan(0);
   });
 
+  test('hai viên rời hẳn khi nghỉ: khoảng cách tâm lớn hơn bề rộng một viên', () => {
+    // 38 với bán kính 68 khiến hai viên chồng nhau 60px ngay lúc "nghỉ".
+    expect(REST_OFFSET).toBeGreaterThan(R);
+  });
+
+  test('vùng giao xuất hiện liên tục từ 0, không bật đột ngột', () => {
+    // Ngay dưới ngưỡng chạm đỉnh, vùng giao phải còn rất nhỏ. Guard đặc cách
+    // theo REST_OFFSET từng làm nó nhảy thẳng từ 0 lên một mảng lớn.
+    const justTouching = polygonArea(emblemOverlap(R - 0.5, R));
+    const wellInside = polygonArea(emblemOverlap(OVERLAP_OFFSET, R));
+    expect(justTouching).toBeGreaterThan(0);
+    expect(justTouching).toBeLessThan(wellInside * 0.05);
+  });
+
+  test('đúng lúc chạm đỉnh thì chưa có diện tích giao', () => {
+    expect(polygonArea(emblemOverlap(R, R))).toBe(0);
+  });
+
   test('vùng giao lớn dần khi hai viên tiến lại gần nhau', () => {
     const far = polygonArea(emblemOverlap(30, R));
     const near = polygonArea(emblemOverlap(OVERLAP_OFFSET, R));
