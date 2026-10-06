@@ -4,6 +4,13 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-06 - Cut purple sky tail and remove banned colours (VR1 Task 1)
+
+- Replaced purple bottom sky gradient with deep navy `['#1A2470', '#1E2A80', '#24307F', '#1B2563']` and updated `COLOR_NUMBERS.skyBottom` to `0x1b2563`.
+- Replaced banned colours `#4ECDC4` and `#FFD166` in `FeedbackDirector.ts` and `stardust.ts` with tokens from amber and ice palettes.
+- Added repo-wide guard `tests/bannedColors.test.ts` scanning all `.ts` files under `src/` to prevent banned colours from returning; updated `tests/designTokens.test.ts`.
+- Verification: `npm test` (86 files, 1050 tests pass); `npm run typecheck` passes.
+
 ### 2026-10-06 - Declare the four motion families (VR0 Task 2)
 
 - Declared `MOTION_FAMILIES` table and typed helper `motionFamily` in `src/presentation/transitions/motion.ts` covering `ui`, `glass`, `magic`, and `piece` families.

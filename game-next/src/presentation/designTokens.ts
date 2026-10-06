@@ -1,7 +1,7 @@
 export const COLOR_TOKENS = {
   /** Gradient trời bốn chặng, từ trên xuống dưới */
   sky: {
-    stops: ['#1A2470', '#2B3192', '#4A3A9E', '#6B4BA8'],
+    stops: ['#1A2470', '#1E2A80', '#24307F', '#1B2563'],
     stopOffsets: [0, 0.45, 0.78, 1],
     nebulaBlue: '#7FB8FF',
     nebulaPink: '#FF9FD2',
@@ -44,7 +44,7 @@ export const COLOR_TOKENS = {
 
 export const COLOR_NUMBERS = {
   skyTop: 0x1a2470,
-  skyBottom: 0x6b4ba8,
+  skyBottom: 0x1b2563,
   boardSurfaceTop: 0x1d3482,
   boardSurfaceBottom: 0x14215e,
   navyBackdrop: 0x050a1a,

@@ -14,7 +14,7 @@ import {
 
 describe('Design Tokens Validation', () => {
   test('bảng màu trời bốn chặng theo mockup improve-v1', () => {
-    expect(COLOR_TOKENS.sky.stops).toEqual(['#1A2470', '#2B3192', '#4A3A9E', '#6B4BA8']);
+    expect(COLOR_TOKENS.sky.stops).toEqual(['#1A2470', '#1E2A80', '#24307F', '#1B2563']);
     expect(COLOR_TOKENS.sky.nebulaBlue).toBe('#7FB8FF');
     expect(COLOR_TOKENS.sky.nebulaPink).toBe('#FF9FD2');
     expect(COLOR_TOKENS.sky.moonCore).toBe('#FFF4D6');

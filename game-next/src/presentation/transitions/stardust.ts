@@ -14,7 +14,7 @@ export type DustParticle = {
   alpha: number;
 };
 
-const DUST_COLORS = [0xffd166, 0xf9c74f, 0x4ecdc4, 0xffffff] as const;
+const DUST_COLORS = [0xffc857, 0xf9c74f, 0xa9e3ff, 0xffffff] as const;
 
 /** Hạt sinh quanh tâm các mảnh, bay vào `center`. */
 export function planStardust(

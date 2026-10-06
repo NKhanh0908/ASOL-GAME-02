@@ -319,8 +319,8 @@ export class FeedbackDirector {
     const s = { r1: 10, a1: 0, r2: 10, a2: 0, t: 0 };
     const draw = () => {
       g.clear();
-      if (s.a1 > 0) { g.lineStyle(2.5, 0xffd166, s.a1); g.strokeCircle(c.x, c.y, s.r1); }
-      if (s.a2 > 0) { g.lineStyle(1.8, 0x4ecdc4, s.a2); g.strokeCircle(c.x, c.y, s.r2); }
+      if (s.a1 > 0) { g.lineStyle(2.5, COLOR_NUMBERS.amberSolid, s.a1); g.strokeCircle(c.x, c.y, s.r1); }
+      if (s.a2 > 0) { g.lineStyle(1.8, COLOR_NUMBERS.icePrimary, s.a2); g.strokeCircle(c.x, c.y, s.r2); }
       for (const p of particles) {
         const d = burstAt(p, s.t);
         if (d.alpha <= 0) continue;
