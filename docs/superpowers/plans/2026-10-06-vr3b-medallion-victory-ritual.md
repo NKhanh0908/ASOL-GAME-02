@@ -22,19 +22,19 @@
 
 ## Concurrency
 
-VR2 (`plans/2026-10-06-vr2-level-select.md`) is being executed by another agent in the same working tree, and VR3a (`plans/2026-10-06-vr3a-piece-feel.md`) may run beside this one.
+**Nothing blocks this plan any more.** VR2 and VR3a both landed on 2026-10-06 and
+were accepted by the reviewer — VR2 at `d3ae185`..`a0f0625` plus the silhouette fit
+in `c28aecd`, VR3a at `c6cdc0e`..`d21b336`. This is the last plan in the VR chain.
 
-- **VR2 touches** `LevelSelectScene.ts`, `TextureFactory.ts`, `TargetBadge.ts`, `hudText.ts`, `constellationMotion.ts`, `targetSilhouette.ts`.
-- **This plan touches** `TextureFactory.ts` (Task 1) and `TargetBadge.ts` (Task 4) — **both shared with VR2.**
-- **VR3a touches** `BoardRenderer.ts`, `polygonClip.ts`, `JewelShape.ts`, `pieceMotion.ts`, `designTokens.ts`, `transitions/motion.ts`; this plan touches `BoardRenderer.ts` and `designTokens.ts` too.
+What they changed under this plan's feet, to read before editing rather than after:
 
-**VR2's implementation landed on 2026-10-06** (`d3ae185`..`a0f0625`, Tasks 1-7; only its
-close-out task remains), so Tasks 1 and 4 are **no longer blocked** — but they now
-edit files VR2 has just rewritten. Read `TextureFactory.ts` and `TargetBadge.ts` as
-they stand before editing: VR2 grew the node canvases to 96px in the first and moved
-`drawTargetSilhouette` out of the second into `targetSilhouette.ts`. Within
-`designTokens.ts` this plan and VR3a add to different token groups, so any conflict
-there is mechanical.
+| This plan's task | File | What landed there first |
+|---|---|---|
+| 1 | `TextureFactory.ts` | VR2 grew the map node canvases to 96px |
+| 4 | `TargetBadge.ts` | VR2 moved `drawTargetSilhouette` out into `targetSilhouette.ts`; the badge now calls `BADGE_SILHOUETTE_FIT` |
+| 5 | `BoardRenderer.drawTargetSilhouette` | **VR3a Task 4 rewrote this method.** It now collects each placement's polygon while filling, then strokes `unionOutline` of them once |
+| 1, 4, 5 | `designTokens.ts` | VR2 and VR3a both added token groups; this plan adds its own, so conflicts are mechanical |
+| 4 | `transitions/motion.ts` | VR3a added the `anticipateOut` easing to `EASES`; `glass` is untouched and still unused |
 
 ## Scope note — the audio cue is deferred with §3.1
 
@@ -46,7 +46,7 @@ Spec §3.4 adds a dedicated star-lighting patch because VR2 §3.1 specified the 
 
 The card is anchored by its **top** edge at `trayBounds.y - 4` and runs 262 px down (`Hud.ts:217`), putting its bottom at 1274 of a 1280 px canvas — six pixels of margin. It cannot grow downward. Re-anchor it to its bottom edge and grow it to 310 px, reserving a 48 px slot for the strip VR2 will add later.
 
-VR2 has landed, so this is unblocked. It edits `TextureFactory.ts`, which VR2 just changed — read it first.
+Unblocked. It edits `TextureFactory.ts`, which VR2 changed — read it first.
 
 **Files:**
 - Modify: `game-next/src/presentation/Hud.ts:215-325`
@@ -319,7 +319,7 @@ git commit -m "fix(victory): stop the trace competing with the burst"
 
 `TargetBadge.animateZoom` (`:172-198`) already scales the badge 1.0 → 1.35, holds 900 ms and returns. Two things are missing: the background does not quiet down behind it, and its easings (`Back.easeOut` 180 ms out, `Cubic.easeOut` 200 ms back) belong to no VR0 family. The `glass` family exists and VR0 already names the target medallion as a member (`transitions/motion.ts:82-88`).
 
-VR2 has landed, so this is unblocked. VR2 Task 1 moved `drawTargetSilhouette` out of `TargetBadge.ts` into `targetSilhouette.ts` — read the file as it stands before editing.
+Unblocked. VR2 moved `drawTargetSilhouette` out of `TargetBadge.ts` into `targetSilhouette.ts` — read the file as it stands before editing.
 
 **Files:**
 - Modify: `game-next/src/presentation/TargetBadge.ts:172-198`
@@ -545,7 +545,7 @@ In `drawTargetSilhouette`, the per-placement alpha is `this.hoverAlpha[index] * 
 
 This keeps the hover brightening proportional rather than flattening it.
 
-**If VR3a Task 5 has already landed**, this is the same method it rewrote; apply the alpha change to its version, keeping its `unionOutline` stroke and feeding the stroke the same scaled `outlineAlpha`.
+**VR3a Task 4 has landed and rewrote this method**, so edit its version: keep the per-placement fill loop and the single `unionOutline` stroke, apply the alpha change to the per-placement `alpha`, and feed the stroke the same scaled `outlineAlpha` it already computes as the maximum.
 
 - [ ] **Step 7: Run everything**
 

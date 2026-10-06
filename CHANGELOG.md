@@ -4,6 +4,17 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-06 - Accept VR3a and hand VR3b over
+
+Controller pass. VR3a is accepted by the reviewer; VR3b goes to Antigravity as the last plan in the VR chain.
+
+- **Verified VR3a independently rather than on the executor's report.** `npm test` 89 files / 1094 tests and `npm run build` both pass at `d21b336`. The merged target boundary was checked visually by rendering all 22 approved levels through the real `unionOutline`, before and after: the seam across the 1-2 house and the three internal seams in the 1-5 boat are gone, 3-2's roof is wider than its body so the exposed part of the roof base is correctly kept, and the odd spur on 3-3 is present before and after — it is that level's geometry, not an artefact.
+- **One residual, not caused by this work:** where two same-colour parity fills abut, a hairline shows at high zoom — for example under 3-2's roof. The dashed stroke used to cover it. Removing it would mean filling the union as one shape, which would cost the per-placement hover and reveal alphas, so it is left alone and recorded here.
+- `docs/superpowers/plans/2026-10-06-vr3b-medallion-victory-ritual.md`: the Concurrency section is rewritten now both neighbours have landed. It carries a table of what changed under each task — in particular that **VR3a Task 4 rewrote `BoardRenderer.drawTargetSilhouette`**, which VR3b Task 5 also edits. The stale "if VR3a Task 5 has already landed" note in Task 5 is now definite.
+- `docs/ai/STATUS.md` records the acceptance and the handover; `DOCS-INDEX.md` marks VR3a accepted.
+
+Verification: documentation only in this commit; no `src/` change. The test and build figures above were produced by running them, and the visual check used a throwaway harness plus headless Chrome, deleted afterwards.
+
 ### 2026-10-06 - Record the piece feel pass (VR3a Close-out)
 
 Close-out of Visual Refactor VR3a (Piece Feel):

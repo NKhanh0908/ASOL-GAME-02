@@ -1,4 +1,4 @@
-# Status — updated 2026-10-06 by Antigravity (VR3a completed and accepted; VR3b ready)
+# Status — updated 2026-10-06 by Claude Code (VR3a accepted by the reviewer; VR3b handed to Antigravity)
 
 Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; keep this file ≤ 60 lines.
 
@@ -6,14 +6,15 @@ Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; k
 
 - Branch: `main`. Working directory D:\Working\ASOL\ASOL-GAME-02.
 - **VR1 accepted** on 2026-10-06. **VR2 provisionally accepted** ("tạm nghiệm thu").
-- **VR3a completed & accepted** by Antigravity: Tasks 1–5 executed. Pick-up anticipation dip (`anticipateOut`), magnet ring at anchor (`magnetRing`), and single merged target silhouette boundary (`unionOutline`) without inner seams. Reviewer stop point on pick-up feel tested and approved.
-- **VR3b is ready to execute**: `2026-10-06-vr3b-medallion-victory-ritual.md` (6 tasks, touches `TextureFactory.ts`, `TargetBadge.ts`, `Hud.ts`, `PlayScene.ts`).
-- `npm test` 89 files / 1094 tests pass, `npm run build` clean.
+- **VR3a executed by Antigravity and accepted by the reviewer** on 2026-10-06 (`c6cdc0e`..`d21b336`): pick-up anticipation (`anticipateOut`), the magnet ring (`magnetRing`), and one merged target boundary (`unionOutline`) instead of an outline per placement.
+- **VR3b is handed to Antigravity** and is the last plan in the VR chain: `2026-10-06-vr3b-medallion-victory-ritual.md`, 6 tasks.
+- Independently verified at `d21b336`: `npm test` 89 files / 1094 tests pass, `npm run build` clean, and the merged outline was checked by rendering all 22 approved levels before and after — the seams in 1-2 and 1-5 are gone, and 3-2's partly-shared roof edge correctly keeps the part that is exposed.
 
 ## Handing VR3b over
 
 - **Two stop points need a real device and the reviewer's hands**: VR3b Task 1 (the grown victory card overlaps the bottom 36 px of the board), VR3b Task 5 (the Eye crossfade alphas 0.55 / 0.35 in daylight).
-- VR3b Tasks 1 and 4 edit `TextureFactory.ts` and `TargetBadge.ts` which VR2 rewrote.
+- **Task 5 edits `BoardRenderer.drawTargetSilhouette`, which VR3a Task 4 rewrote**, and Tasks 1 and 4 edit `TextureFactory.ts` and `TargetBadge.ts`, which VR2 rewrote. The plan's Concurrency table names what landed in each file; read it before editing.
+- The spec's §3.2 was corrected during planning: the restore path already hides the tray through `setVictoryMode`, so only the sky dim is missing. Do not re-derive it from the original text.
 - VR2 §3.1 (the constellation strip) and VR3b §3.4 (its audio cue) are deferred together. VR3b Task 1 builds the 48 px slot the strip will need.
 
 ## Streams
