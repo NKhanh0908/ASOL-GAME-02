@@ -4,6 +4,15 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-06 - CH1H spec: chapter 1 hard tail (1-7, 1-8, 1-9)
+
+- `docs/superpowers/specs/2026-10-06-chapter-1-hard-tail-design.md`: new design spec. Chapter 1 tops out at difficulty 3 because rotation is reserved for chapter 4 and the XOR overlap rule for chapter 2. The spec adds three difficulty-4 levels at the end of the chapter that lean on geometric deduction alone: 1-7 Manh Khuat (a piece lying wholly inside the silhouette, so the outline hides it), 1-8 Loi Chia Sai (the obvious symmetric split is not the one the tray can make), 1-9 Ngu Hanh Tinh (five pieces, two same-kind pairs at different frame sizes, CROSS decoys).
+- Records the levers available without overlap (`choices`, `pieces`, `hiddenEdges`, `nearMiss` - ceiling 0.80 raw against a 0.43 threshold for difficulty 4) and the constraint they work against: the solver must still prove `solutionCount === 1` and `fewerPieceSolutions === 0`.
+- Code impact scoped: `RELEASE_LEVEL_COUNT` 28 -> 31, three manifest rows plus an `order` renumber, and test count updates. `constellationLayout.ts` needs no change - `TEN_NODE_PATTERN` applies only to a ten-node constellation, so a nine-node chapter 1 falls through to `zigzagX` and the map already scrolls.
+- `docs/ai/DOCS-INDEX.md`: new CH1H row, state `draft`.
+
+Verification: no code changed. GitNexus `impact` on `RELEASE_LEVEL_COUNT` (upstream) reports risk LOW with 0 callers in the graph; the three real references are `releaseGate` in the same file, three assertions in `tests/content.test.ts`, and one comment in `scripts/validate-content.ts`.
+
 ### 2026-10-06 - Visual polish and ritual feedback enhancements
 
 - `src/presentation/TargetBadge.ts`: expand interactive radius from 76px to 96px (`minTouchArea`), set container size to 192x192, and stop pointer event propagation to guarantee responsive medallion zoom tap.
