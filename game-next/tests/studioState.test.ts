@@ -1,4 +1,4 @@
-import { describe, expect, test } from 'vitest';
+import { describe, expect, it, test } from 'vitest';
 import { levelTemplate } from '../src/content/sources/_template.ts';
 import {
   cloneLevelSource,
@@ -233,5 +233,35 @@ describe('studioReducer và StudioState', () => {
 
     state = studioReducer(state, { type: 'mark-saved' });
     expect(isDirty(state)).toBe(false);
+  });
+});
+
+describe('set-orientation', () => {
+  it('đổi hướng của mảnh đang chọn', () => {
+    const start = createInitialState({
+      ...levelTemplate,
+      pieces: [
+        { id: 'T1', shapeKind: 'triangle', orientation: 0, frameSize: 48, anchors: [{ id: 'A', x: 0, y: 0 }] },
+      ],
+    });
+    const next = studioReducer(start, { type: 'set-orientation', id: 'T1', orientation: 4 });
+    expect(next.source.pieces[0].orientation).toBe(4);
+  });
+
+  it('từ chối khi khung không hợp lệ cho hướng mới', () => {
+    const start = createInitialState({
+      ...levelTemplate,
+      pieces: [
+        { id: 'T1', shapeKind: 'triangle', orientation: 0, frameSize: 40, anchors: [{ id: 'A', x: 0, y: 0 }] },
+      ],
+    });
+    const next = studioReducer(start, { type: 'set-orientation', id: 'T1', orientation: 4 });
+    expect(next).toBe(start);
+    expect(next.source.pieces[0].orientation).toBe(0);
+  });
+
+  it('bỏ qua mảnh không tồn tại', () => {
+    const start = createInitialState(levelTemplate);
+    expect(studioReducer(start, { type: 'set-orientation', id: 'nope', orientation: 2 })).toBe(start);
   });
 });

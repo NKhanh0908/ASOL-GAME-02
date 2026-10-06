@@ -1,6 +1,6 @@
 import type { Chapter, Orientation, PlacementMode, ShapeKind, Turns } from '../domain/model.ts';
 import { GRID_HEIGHT, GRID_WIDTH } from '../domain/model.ts';
-import { effectiveOrientation, mirrorOrientation } from '../domain/shapes.ts';
+import { effectiveOrientation, isValidFrame, mirrorOrientation } from '../domain/shapes.ts';
 import type { LevelSource, PieceSource } from '../content/authoring.ts';
 import { slugFromTitle } from '../content/newLevel.ts';
 import { DECOY_IDS } from '../content/kit.ts';
@@ -18,6 +18,7 @@ export type StudioAction =
   | { type: 'add-piece'; shapeKind: ShapeKind; frameSize: number; orientation: Orientation }
   | { type: 'move-piece'; id: string; x: number; y: number }
   | { type: 'rotate-piece'; id: string }
+  | { type: 'set-orientation'; id: string; orientation: Orientation }
   | { type: 'mirror-piece'; id: string }
   | { type: 'duplicate-piece'; id: string }
   | { type: 'delete-piece'; id: string }
@@ -210,6 +211,20 @@ export function studioReducer(state: StudioState, action: StudioAction): StudioS
         ...state,
         source,
       };
+    }
+
+    case 'set-orientation': {
+      const current = state.source.pieces.find((p) => p.id === action.id);
+      if (!current) return state;
+      // Khung phải hợp lệ cho hướng mới: họ Mái cần bội 16, họ Góc chỉ cần bội 8.
+      if (!isValidFrame(current.shapeKind, action.orientation, current.frameSize)) {
+        return state;
+      }
+      const source = deepClone(state.source);
+      const piece = source.pieces.find((p) => p.id === action.id);
+      if (!piece) return state;
+      piece.orientation = action.orientation;
+      return { ...state, source };
     }
 
     case 'mirror-piece': {

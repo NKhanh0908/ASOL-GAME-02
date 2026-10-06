@@ -4,6 +4,13 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-06 - set-orientation action with frame validation (E4 Task 3)
+
+- `game-next/src/studio/state.ts`: added `{ type: 'set-orientation'; id: string; orientation: Orientation }` to `StudioAction` and `studioReducer` with `isValidFrame` check to safely reject incompatible orientations (e.g., roof triangles on non-multiple-of-16 frames).
+- `game-next/tests/studioState.test.ts`: added unit tests for setting piece orientation, rejecting invalid frame combinations, and ignoring non-existent pieces.
+
+Verification: `npm test -- tests/studioState.test.ts` passes (19 tests).
+
 ### 2026-10-06 - Palette orientation preview buttons (E4 Task 2)
 
 - `game-next/src/studio/palette.ts`: replaced the `<select>` of bare numbers with family-grouped SVG preview buttons (`Góc`, `Mái`, `Nghiêng`), using `orientationOptions.ts` for valid frame sizes and snapping.
