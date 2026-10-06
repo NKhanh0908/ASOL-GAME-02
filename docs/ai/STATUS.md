@@ -7,8 +7,7 @@ Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; k
 - Branch: `main`. Working directory D:\Working\ASOL\ASOL-GAME-02.
 - **VR1 accepted by the reviewer** on 2026-10-06, after the two emblem defects were fixed (`1fe3818`, `015047d`).
 - **VR2 executed**: `docs/superpowers/plans/2026-10-06-vr2-level-select.md` Tasks 1–7 complete (`66ff115`..`a0f0625`). §3.1 excluded as planned (pending VR3b's victory card slot).
-- **VR3a spec written**: `docs/superpowers/specs/2026-10-06-vr3a-piece-feel-design.md`, awaiting reviewer review and device check.
-- **VR3b spec approved** by reviewer; plan deferred.
+- **VR3a and VR3b plans written**: `2026-10-06-vr3a-piece-feel.md` (6 tasks, reviewer stop point on pick-up dip) and `2026-10-06-vr3b-medallion-victory-ritual.md` (6 tasks). VR3b plan unblocked by VR2 completion.
 - Next step: reviewer review for VR2 changes & VR3a spec device judgement.
 
 ## Streams
