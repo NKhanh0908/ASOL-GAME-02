@@ -58,6 +58,9 @@ Screenshots: `scripts/shoot-level.sh <id> <outdir>` (headless Chrome, needs the 
 - `variant: 'target'` in `JewelShape.ts` both fills **and** dash-strokes. A caller that draws one target placement at a time therefore strokes every edge two pieces share twice, and that double stroke reads as a seam through the figure. Target pieces can share only *part* of an edge, so merging the boundary needs edges split at vertices before duplicates cancel.
 - `PieceView` drives the piece's scale **and** its shadow from one `lift` scalar (`1 + (liftScale - 1) * lift`). A second animation on scale multiplies against the lift instead of replacing it, so changes to how a piece lifts belong in the easing, not in a new tween.
 - `showTarget` persists in settings as a plain boolean; `PlayScene` reaches the won state by two routes — the victory timeline and `showWinModal` on re-entry — and both must leave the same screen. `setVictoryMode` covers the frame and tray; the sky dim is the timeline's alone.
+- **Triangle orientation families**: Triangles have two disjoint orientation families: Corner (`Góc`, [0, 2, 4, 6]) needing frame size divisible by 8, and Roof (`Mái`, [1, 3, 5, 7]) needing frame size divisible by 16. In-game 90° rotation (`R` key / turns) preserves family modulo 2, so a piece never switches family during play.
+- **Campaign overwrite round-trip**: `promoteStudioLevel` with `overwrite: true` is the only sanctioned pathway to update an existing campaign level from the studio. It bumps `contentRevision`, preserves hand-written header comment blocks in `sources/<id>.ts`, regenerates JSON, SVG preview and report, and always downgrades the manifest entry from `approved` to `validated` (forcing human replay & re-approval before release).
+
 
 ## Audio synthesis
 

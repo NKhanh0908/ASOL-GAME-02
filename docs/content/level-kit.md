@@ -197,3 +197,4 @@ export const mandalaThienCau: LevelSource = {
 - **Nhiều mảnh giống nhau:** đặt hai mảnh cùng hình, cùng khung ở hai chỗ; KIT-03 tự bỏ neo nhiễu trùng chỗ để nghiệm vẫn duy nhất.
 - **Đối xứng giả:** dùng `mirrorX` cho hình tổng thể nhưng cho một bên neo nhiễu khác bên kia.
 - **Chế độ đặt tự do** (spec D, khi có): mảnh hít vào mọi giao điểm lưới thay vì vài neo, nên không còn gợi ý vị trí.
+- **Họ hướng tam giác & khung hình:** Tam giác có 2 họ hướng: họ Góc vuông (`Góc`: 0, 2, 4, 6 - vuông góc ở góc) chỉ cần khung là bội của 8; họ Mái cân (`Mái`: 1, 3, 5, 7 - đỉnh ở giữa cạnh) yêu cầu khung là bội của 16 để đỉnh và đáy khớp vào lưới ô 8. Trong Studio (Palette & Inspector), mỗi hướng được hiển thị bằng hình vẽ trực quan nhóm theo họ, và tự động khoá (làm mờ) nếu cỡ khung không phù hợp.

@@ -4,6 +4,15 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-06 - Record studio orientation picker and round-trip (E4 Task 8)
+
+- `docs/content/level-kit.md`: documented the two triangle orientation families (Corner vs Roof), frame size constraints (multiples of 8 vs 16), and studio preview buttons.
+- `docs/ai/ARCHITECTURE.md`: added invariants for triangle orientation families and the campaign level overwrite round-trip pathway.
+- `docs/ai/DOCS-INDEX.md`: updated E4 plan status to `done`.
+- `docs/ai/STATUS.md`: updated current status, streams table, and gotchas.
+
+Verification: `npm test` passes (90 files, 1128 tests), `npm run typecheck`, `npm run build`, and `npm run content:validate` all pass cleanly.
+
 ### 2026-10-06 - FX spec: three items confirmed by the reporter
 
 - `docs/superpowers/specs/2026-10-06-fx-play-and-map-fixes-design.md`:
