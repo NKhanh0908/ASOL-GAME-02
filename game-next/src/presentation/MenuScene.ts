@@ -31,7 +31,13 @@ export class MenuScene extends Phaser.Scene implements Choreographed {
   private footer!: Phaser.GameObjects.Text;
   private mirrorLogoContainer?: Phaser.GameObjects.Container;
   private logoSheenGraphics?: Phaser.GameObjects.Graphics;
-  private letterObjects: { main: Phaser.GameObjects.Text; shadow: Phaser.GameObjects.Text; baseY: number }[] = [];
+  private letterObjects: {
+    highlight: Phaser.GameObjects.Text;
+    main: Phaser.GameObjects.Text;
+    extrusion: Phaser.GameObjects.Text;
+    shadow: Phaser.GameObjects.Text;
+    baseY: number;
+  }[] = [];
   private lastTrailTime = 0;
 
   private blockOffsetY = 0;
@@ -396,7 +402,7 @@ export class MenuScene extends Phaser.Scene implements Choreographed {
           fontFamily: TYPO_TOKENS.fontFamily.display,
           fontSize: '76px',
           color: '#7FD8FF',
-          stroke: '#3B2779',
+          stroke: '#0B163A',
           strokeThickness: 10,
         })
         .setOrigin(0.5)
@@ -407,7 +413,7 @@ export class MenuScene extends Phaser.Scene implements Choreographed {
 
       this.tweens.add({
         targets: refText,
-        alpha: 0.25,
+        alpha: 0.22,
         duration: 500,
         delay: 250 + i * 50,
         ease: 'Cubic.easeOut',
@@ -420,12 +426,12 @@ export class MenuScene extends Phaser.Scene implements Choreographed {
     const barHeight = 18;
     const barBg = this.add.graphics();
     // Đổ bóng thanh gương
-    barBg.fillStyle(0x22145a, 0.8);
+    barBg.fillStyle(0x0b163a, 0.8);
     barBg.fillRoundedRect(360 - barWidth / 2, barY - barHeight / 2 + 5, barWidth, barHeight, 9);
     // Thân thanh gương cyan
     barBg.fillStyle(0x7fd8ff, 1.0);
     barBg.fillRoundedRect(360 - barWidth / 2, barY - barHeight / 2, barWidth, barHeight, 9);
-    barBg.lineStyle(3, 0x3b2779, 1.0);
+    barBg.lineStyle(3, 0x0b163a, 1.0);
     barBg.strokeRoundedRect(360 - barWidth / 2, barY - barHeight / 2, barWidth, barHeight, 9);
     // Vệt highlight trên gương
     barBg.fillStyle(0xffffff, 0.7);
@@ -441,7 +447,7 @@ export class MenuScene extends Phaser.Scene implements Choreographed {
     ];
     centerJewel.fillStyle(0xffc94a, 1.0);
     centerJewel.fillPoints(jewelPts, true);
-    centerJewel.lineStyle(3.5, 0x3b2779, 1.0);
+    centerJewel.lineStyle(3.5, 0x0b163a, 1.0);
     centerJewel.strokePoints(jewelPts, true);
     centerJewel.fillStyle(0xffffff, 0.9);
     centerJewel.fillCircle(360, barY, 2.5);
@@ -476,39 +482,69 @@ export class MenuScene extends Phaser.Scene implements Choreographed {
       },
     });
 
-    // 3. Cụm chữ chính MIRROR màu vàng hổ phách thả rơi đàn hồi
+    // 3. Cụm chữ chính MIRROR: Face #FFC857, Highlight #FFF4D6, Extrusion #11204F / #0B163A
     for (let i = 0; i < letters.length; i++) {
       const item = letters[i];
       const x = 360 + item.dx;
 
-      // Lớp bóng đổ đậm (Deep shadow)
+      // Deep shadow / outer extrusion
       const shadowText = this.add
         .text(x, logoY - 50 + 7, item.char, {
           fontFamily: TYPO_TOKENS.fontFamily.display,
           fontSize: '76px',
-          color: '#22145A',
-          stroke: '#22145A',
+          color: '#0B163A',
+          stroke: '#0B163A',
           strokeThickness: 14,
         })
         .setOrigin(0.5)
         .setAngle(0)
         .setAlpha(0);
 
-      // Chữ chính màu vàng có viền tím đậm (Gold face with purple outline)
+      // Mid extrusion (#11204F)
+      const extrusionText = this.add
+        .text(x, logoY - 50 + 3, item.char, {
+          fontFamily: TYPO_TOKENS.fontFamily.display,
+          fontSize: '76px',
+          color: '#11204F',
+          stroke: '#11204F',
+          strokeThickness: 10,
+        })
+        .setOrigin(0.5)
+        .setAngle(0)
+        .setAlpha(0);
+
+      // Main face (#FFC857)
       const mainText = this.add
         .text(x, logoY - 50, item.char, {
           fontFamily: TYPO_TOKENS.fontFamily.display,
           fontSize: '76px',
-          color: '#FFD23F',
-          stroke: '#3B2779',
-          strokeThickness: 14,
+          color: '#FFC857',
+          stroke: '#0B163A',
+          strokeThickness: 8,
         })
         .setOrigin(0.5)
         .setAngle(0)
         .setAlpha(0);
 
-      this.mirrorLogoContainer.add([shadowText, mainText]);
-      this.letterObjects.push({ main: mainText, shadow: shadowText, baseY: logoY });
+      // Top highlight: #FFF4D6, 1px offset up-left
+      const highlightText = this.add
+        .text(x - 1, logoY - 50 - 1, item.char, {
+          fontFamily: TYPO_TOKENS.fontFamily.display,
+          fontSize: '76px',
+          color: '#FFF4D6',
+        })
+        .setOrigin(0.5)
+        .setAngle(0)
+        .setAlpha(0);
+
+      this.mirrorLogoContainer.add([shadowText, extrusionText, mainText, highlightText]);
+      this.letterObjects.push({
+        highlight: highlightText,
+        main: mainText,
+        extrusion: extrusionText,
+        shadow: shadowText,
+        baseY: logoY,
+      });
 
       // Staggered drop & bounce
       this.tweens.add({
@@ -522,9 +558,29 @@ export class MenuScene extends Phaser.Scene implements Choreographed {
       });
 
       this.tweens.add({
+        targets: extrusionText,
+        y: logoY + 3,
+        alpha: 1,
+        angle: item.rot,
+        duration: 520,
+        delay: i * 70,
+        ease: 'Back.easeOut',
+      });
+
+      this.tweens.add({
         targets: mainText,
         y: logoY,
         alpha: 1,
+        angle: item.rot,
+        duration: 520,
+        delay: i * 70,
+        ease: 'Back.easeOut',
+      });
+
+      this.tweens.add({
+        targets: highlightText,
+        y: logoY - 1,
+        alpha: 0.9,
         angle: item.rot,
         duration: 520,
         delay: i * 70,
@@ -617,14 +673,14 @@ export class MenuScene extends Phaser.Scene implements Choreographed {
     if (!letter) return;
 
     this.tweens.add({
-      targets: letter.main,
+      targets: [letter.main, letter.highlight],
       y: letter.baseY - 10,
       duration: 180,
       yoyo: true,
       ease: 'Quad.easeOut',
     });
     this.tweens.add({
-      targets: letter.shadow,
+      targets: [letter.extrusion, letter.shadow],
       y: letter.baseY + 7 - 10,
       duration: 180,
       yoyo: true,

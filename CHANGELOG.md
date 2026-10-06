@@ -4,6 +4,14 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-06 - Recolour the logo to ivory highlight and navy extrusion (VR1 Task 6)
+
+- Recoloured "MIRROR" title face in `src/presentation/MenuScene.ts` with warm gold `#FFC857`, 1px up-left ivory highlight `#FFF4D6`, deep navy extrusion `#11204F` / `#0B163A`, and tier 0 subtle glow (`glowTier(0)`).
+- Layered letter glyphs across 4 discrete text layers (highlight, face, extrusion, shadow) and unified per-letter jiggle tweens across all layers.
+- Lowered reflection baseline opacity to `0.22` with midnight navy stroke `#0B163A`.
+- Verification: `npm test -- bannedColors` passed (clean from banned colors); `npm test` (88 files, 1063 tests pass); `npm run typecheck` clean.
+
+
 ### 2026-10-06 - Adopt layout C and lift the astronomy fact caption (VR1 Task 5)
 
 - Re-laid vertical stack in `src/presentation/MenuScene.ts` to Layout C: logo block (y≈300) → hero emblem (y≈620) → fact caption (y≈830) → primary button (y≈980) → secondary button (y≈1075) → footer (y≈1240).
