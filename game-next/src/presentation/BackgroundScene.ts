@@ -52,4 +52,17 @@ export class BackgroundScene extends Phaser.Scene implements MoodTarget {
       ease: 'Sine.easeOut',
     });
   }
+
+  /** Thắng cuộc: bầu trời thắp sáng bừng lên (dim về 0) và sao trôi lấp lánh tương tác */
+  celebrateVictory(durationMs: number): void {
+    if (!this.sky) return;
+    this.tweens.killTweensOf(this.sky.moodState);
+    this.tweens.add({
+      targets: this.sky.moodState,
+      dim: 0,
+      driftSpeed: 2.5,
+      duration: durationMs,
+      ease: 'Sine.easeOut',
+    });
+  }
 }

@@ -4,6 +4,17 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-06 - Visual polish and ritual feedback enhancements
+
+- `src/presentation/TargetBadge.ts`: expand interactive radius from 76px to 96px (`minTouchArea`), set container size to 192x192, and stop pointer event propagation to guarantee responsive medallion zoom tap.
+- `src/presentation/designTokens.ts` & `src/presentation/pieceMotion.ts`: introduce `tau.selectAlpha = 220` (from 60) for smooth, lingering fade/glow transitions when switching selected pieces.
+- `src/presentation/feedback/FeedbackDirector.ts`: add `view.play('light', 320, 0.85)` on snap event for a warm additive light burst that settles smoothly.
+- `src/presentation/BoardRenderer.ts`: in `drawVictoryPulse`, highlight the completed shape with warm `amberSolid` outlines (scaled by victory pulse) so the assembled figure stands out radiantly instead of looking dim.
+- `src/presentation/skyMood.ts` & `tests/skyMood.test.ts`: deepen in-game sky dimness from 0.15 to 0.35 so celestial stars stand out prominently during play.
+- `src/presentation/BackgroundScene.ts` & `src/presentation/feedback/FeedbackDirector.ts`: add `celebrateVictory()` which brings sky dimness to 0 (bright dawn) and accelerates starry drift to 2.5 during the victory burst.
+
+Verification: `npm test` passes (89 files, 1104 tests), `npm run build` passes.
+
 ### 2026-10-06 - Crossfade Eye instead of toggling target
 
 - `src/presentation/designTokens.ts`: add `FEEDBACK_TOKENS.eyeResultAlpha = 0.55` and `eyeTargetAlpha = 0.35` for Eye crossfade.

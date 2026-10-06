@@ -6,7 +6,7 @@ export type MoodState = { driftSpeed: number; dim: number };
 export const SKY_MOODS: Record<SkyMood, MoodState> = {
   menu: { driftSpeed: 0, dim: 0 },
   map: { driftSpeed: 1, dim: 0 },
-  play: { driftSpeed: 0, dim: 0.15 },
+  play: { driftSpeed: 0, dim: 0.35 },
 };
 
 /**

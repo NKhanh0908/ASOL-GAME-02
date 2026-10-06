@@ -115,6 +115,7 @@ export class FeedbackDirector {
         view.glideTo(board.targetPoseFor(piece, state, level.pieces.indexOf(piece)), scaleTiming(F.snapMs), 'cubicOut');
         if (reduced) return;
         view.play('bounce', F.bounceMs);
+        view.play('light', 320, 0.85);
         const target = board.targetPoseFor(piece, state, 0);
         this.snapRing(target, pieceRadiusPx(piece.frameSize, this.deps.layout));
         const snapped = Object.values(this.deps.getState().pieces).filter((s) => s.kind === 'snapped').length;
@@ -266,6 +267,8 @@ export class FeedbackDirector {
       const dim = plan.skyDim;
       tl.call(dim.atMs, () => this.deps.background()?.deepen(dim.extra, dim.ms));
     }
+    // Khi nổ burst chào mừng chiến thắng: bầu trời thắp sáng bừng lên và sao trôi tương tác
+    tl.call(plan.burstAtMs, () => this.deps.background()?.celebrateVictory(1000));
 
     level.pieces.forEach((piece, i) => {
       const start = plan.lightStartsMs[i];

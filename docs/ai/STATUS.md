@@ -1,4 +1,4 @@
-# Status — updated 2026-10-06 by Antigravity (VR3b completed)
+# Status — updated 2026-10-06 by Antigravity (Visual polish & ritual enhancements)
 
 Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; keep this file ≤ 60 lines.
 
@@ -6,13 +6,13 @@ Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; k
 
 - Branch: `main`. Working directory D:\Working\ASOL\ASOL-GAME-02.
 - **VR chain complete**: VR0, VR1, VR2, VR3a, VR3b all executed and passing test/build.
-- **VR3b executed by Antigravity** on 2026-10-06 (`4d155c5`..`3db12f9`):
-  - Task 1: Victory card bottom-anchored, grown 262 → 310 px, 48 px slot reserved.
-  - Task 2: Restore path dims sky with `VICTORY_TOKENS.skyDimExtra` (duration 0).
-  - Task 3: Trace shortened 600 → 400 ms so it closes as burst opens at 1300 ms.
-  - Task 4: Target medallion gets dark scrim (alpha 0.35) and `glass` motion family.
-  - Task 5: Eye crossfade dims snapped pieces and parity layers to 0.55 and scales target ghost to 0.35.
-- Verification: `npm test` passes (89 files, 1104 tests), `npm run build` passes, debug APK built cleanly (`gradlew assembleDebug`).
+- **Visual Polish & Ritual Enhancements** (SelectSquare feedback pass):
+  - Target medallion hit area expanded to 96px radius for reliable touch input.
+  - Piece selection fade transition lengthened to tau 220ms for smoother glow/dim switching.
+  - Snap feedback enhanced with additive light flash (320ms, peak 0.85).
+  - Completed shape radiantly highlighted in warm amber glow upon victory.
+  - In-game sky deepened (dim: 0.35) for crisp starry contrast; victory sequence illuminates sky (dim: 0) with accelerated star drift.
+- Verification: `npm test` passes (89 files, 1104 tests), `npm run build` passes.
 
 ## Streams
 

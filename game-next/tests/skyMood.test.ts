@@ -6,7 +6,7 @@ describe('mood bầu trời', () => {
     expect(SKY_MOODS).toEqual({
       menu: { driftSpeed: 0, dim: 0 },
       map: { driftSpeed: 1, dim: 0 },
-      play: { driftSpeed: 0, dim: 0.15 },
+      play: { driftSpeed: 0, dim: 0.35 },
     });
   });
 

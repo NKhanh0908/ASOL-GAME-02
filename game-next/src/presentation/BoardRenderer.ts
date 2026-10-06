@@ -589,7 +589,8 @@ export class BoardRenderer {
 
   private drawVictoryPulse(): void {
     const { boardBounds } = this.layout;
-    this.fxGraphics.lineStyle(2.5, COLOR_NUMBERS.amberGlow, 0.6 + Math.sin(this.victoryPulse) * 0.3);
+    const pulse = 0.6 + Math.sin(this.victoryPulse) * 0.3;
+    this.fxGraphics.lineStyle(2.5, COLOR_NUMBERS.amberGlow, pulse);
     this.fxGraphics.strokeRoundedRect(
       boardBounds.x - 2,
       boardBounds.y - 2,
@@ -597,6 +598,17 @@ export class BoardRenderer {
       boardBounds.height + 4,
       38
     );
+
+    // Tô sáng bừng hình hoàn chỉnh khi tất cả mảnh đều khớp
+    if (this.currentParity.length > 0) {
+      this.fxGraphics.lineStyle(3, COLOR_NUMBERS.amberSolid, 0.85 * pulse);
+      for (const layer of this.currentParity) {
+        if (layer.filled) {
+          const pts = layer.points.map((p) => new Phaser.Geom.Point(p.x, p.y));
+          this.fxGraphics.strokePoints(pts, true, true);
+        }
+      }
+    }
   }
 
   public destroy(): void {

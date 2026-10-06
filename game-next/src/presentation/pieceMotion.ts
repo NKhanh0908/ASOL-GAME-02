@@ -14,9 +14,9 @@ export type PoseTau = { position: number; scale: number; angle: number; alpha: n
 const T = FEEDBACK_TOKENS.tau;
 
 export const POSE_TAU: Record<'dragging' | 'settling' | 'idle', PoseTau> = {
-  dragging: { position: T.follow, scale: T.scale, angle: T.tilt, alpha: T.settle },
-  settling: { position: T.settle, scale: T.scale, angle: T.tilt, alpha: T.settle },
-  idle: { position: T.idle, scale: T.scale, angle: T.tilt, alpha: T.settle },
+  dragging: { position: T.follow, scale: T.scale, angle: T.tilt, alpha: T.selectAlpha },
+  settling: { position: T.settle, scale: T.scale, angle: T.tilt, alpha: T.selectAlpha },
+  idle: { position: T.idle, scale: T.scale, angle: T.tilt, alpha: T.selectAlpha },
 };
 
 /**

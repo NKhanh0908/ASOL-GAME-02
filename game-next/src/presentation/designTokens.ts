@@ -223,7 +223,7 @@ export const FEEDBACK_TOKENS = {
   pickupDipLift: -0.375,
   pickupDipAt: 0.4,
   dropLiftMs: 120,
-  tau: { follow: 35, scale: 45, tilt: 120, settle: 60, idle: 90, hint: 60, targetHover: 40 },
+  tau: { follow: 35, scale: 45, tilt: 120, settle: 60, idle: 90, hint: 60, targetHover: 40, selectAlpha: 220 },
   tiltPerPxPerSec: 0.02,
   tiltMaxDeg: 4,
   magnetStrength: 0.3,

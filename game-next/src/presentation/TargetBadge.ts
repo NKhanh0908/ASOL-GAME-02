@@ -38,15 +38,16 @@ export class TargetBadge {
       hollow: COLOR_NUMBERS.boardSurfaceTop,
     });
 
-    // Vùng chạm hình tròn bán kính 76px
-    this.container.setSize(152, 152);
+    // Vùng chạm hình tròn mở rộng bán kính 96px (đạt chuẩn touch target)
+    this.container.setSize(192, 192);
     this.container.setInteractive(
-      new Phaser.Geom.Circle(0, 0, 76),
+      new Phaser.Geom.Circle(0, 0, 96),
       Phaser.Geom.Circle.Contains
     );
 
     // Chạm vào phóng to tạm thời (1.35x) để soi rõ mục tiêu
-    this.container.on('pointerdown', () => {
+    this.container.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
+      pointer.event?.stopPropagation?.();
       this.animateZoom(scene);
     });
   }
