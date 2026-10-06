@@ -4,6 +4,13 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-06 - Add real XOR overlap geometry for the dual jewel emblem (VR1 Task 3)
+
+- Implemented pure geometry helper module `src/presentation/menu/dualJewelGeometry.ts` calculating jewel center offsets, diamond polygon outlines, Sutherland-Hodgman convex clipping overlap, star fade alpha, and reduced motion loop timing.
+- Added `tests/dualJewelGeometry.test.ts` with 8 unit tests covering rest separation, positive overlap area during approach and hold, loop periodicity, star alpha timings, and frozen pose under reduced motion.
+- Verification: `npm test -- tests/dualJewelGeometry.test.ts` passes (8 tests); `npm run typecheck` clean.
+
+
 ### 2026-10-06 - Declare four-tier glow ladder as tokens (VR1 Task 2)
 
 - Declared `GLOW_TIERS` token table, `SCREEN_FOCUS` map, and `glowTier` helper in `src/presentation/designTokens.ts`.
