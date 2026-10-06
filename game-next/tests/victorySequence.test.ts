@@ -34,3 +34,15 @@ describe('lịch chuỗi thắng (kéo dài 2800 ms)', () => {
     });
   });
 });
+
+describe('one focus at a time', () => {
+  test('the trace closes no later than the burst opens', () => {
+    const plan = victoryPlan(3, false);
+    expect(plan.traceAtMs + plan.traceMs).toBeLessThanOrEqual(plan.burstAtMs);
+  });
+
+  test('the total length is unchanged at 2800ms', () => {
+    expect(victoryEndMs(victoryPlan(3, false))).toBe(2800);
+  });
+});
+

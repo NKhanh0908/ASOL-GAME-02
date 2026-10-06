@@ -278,7 +278,9 @@ export const VICTORY_TOKENS = {
   lightMs: 350,
   lightPeak: 0.7,
   traceAtMs: 900,
-  traceMs: 600,
+  // Closes exactly where burstAtMs opens: the ladder allows one tier-3
+  // element at a time, and the burst is the louder of the two.
+  traceMs: 400,
   burstAtMs: 1300,
   flashMs: 350,
   ringMs: 800,

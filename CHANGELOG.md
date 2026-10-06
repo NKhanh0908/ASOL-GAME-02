@@ -4,6 +4,14 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-06 - Stop victory trace competing with burst
+
+- `src/presentation/designTokens.ts`: shorten `VICTORY_TOKENS.traceMs` from 600 to 400 so the trace closes at 1300 ms exactly where `burstAtMs` (1300 ms) opens, obeying the glow ladder's rule of at most one tier-3 element at a time.
+- `tests/victorySequence.test.ts`: test that `traceAtMs + traceMs <= burstAtMs` and overall victory sequence length remains 2800 ms.
+
+Verification: `npm test` passes (89 files, 1101 tests).
+
+
 ### 2026-10-06 - Dim sky when restoring finished level
 
 - `src/presentation/PlayScene.ts`: on `phase === 'won'` restore path, deepen BackgroundScene sky with `VICTORY_TOKENS.skyDimExtra` (duration 0) so entering a finished level matches the dimmed sky left by the victory sequence timeline.
