@@ -1,10 +1,8 @@
 import Phaser from 'phaser';
-import { effectiveOrientation, shapePolygon } from '../domain/shapes.ts';
-import { parityLayers } from './polygonClip.ts';
 import type { Level } from '../domain/model.ts';
-import { GRID_WIDTH, GRID_HEIGHT } from '../domain/model.ts';
 import type { LayoutMetrics } from './layout.ts';
 import { COLOR_NUMBERS, DEPTH_TOKENS } from './designTokens.ts';
+import { BADGE_SILHOUETTE_BOX, drawTargetSilhouette } from './targetSilhouette.ts';
 
 export class TargetBadge {
   private container: Phaser.GameObjects.Container;
@@ -25,7 +23,10 @@ export class TargetBadge {
     this.container.add([this.badgeGraphics, this.targetGraphics]);
 
     this.drawBadgeBase();
-    this.drawTargetSilhouette(level);
+    drawTargetSilhouette(this.targetGraphics, level, BADGE_SILHOUETTE_BOX, {
+      filled: COLOR_NUMBERS.amberSolid,
+      hollow: COLOR_NUMBERS.boardSurfaceTop,
+    });
 
     // Vùng chạm hình tròn bán kính 76px
     this.container.setSize(152, 152);
@@ -115,60 +116,7 @@ export class TargetBadge {
     g.fillPoints(pts, true);
   }
 
-  private drawTargetSilhouette(level: Level): void {
-    const g = this.targetGraphics;
-    g.clear();
 
-    // Tìm bounding box của targetMask
-    let minX = GRID_WIDTH;
-    let maxX = 0;
-    let minY = GRID_HEIGHT;
-    let maxY = 0;
-
-    for (let y = 0; y < GRID_HEIGHT; y++) {
-      for (let x = 0; x < GRID_WIDTH; x++) {
-        if (level.targetMask[y * GRID_WIDTH + x] > 0) {
-          if (x < minX) minX = x;
-          if (x > maxX) maxX = x;
-          if (y < minY) minY = y;
-          if (y > maxY) maxY = y;
-        }
-      }
-    }
-
-    if (minX > maxX || minY > maxY) return;
-
-    const w = maxX - minX + 1;
-    const h = maxY - minY + 1;
-    const centerX = (minX + maxX + 1) / 2;
-    const centerY = (minY + maxY + 1) / 2;
-
-    // Hình mục tiêu phải nằm gọn trong vòng vàng (bán kính 63px)
-    const scale = Math.min(92 / w, 64 / h);
-
-    // Vẽ vector từ placement của nghiệm mẫu, mọi màn dùng chung một đường:
-    // trước đây 1-1 có nhánh riêng còn màn khác tô từng ô của mask (răng cưa).
-    const polygons = (level.targetPlacements ?? []).flatMap((placement) => {
-      const piece = level.pieces.find((p) => p.id === placement.pieceId);
-      if (!piece) return [];
-      const kind = piece.shapeKind ?? 'diamond';
-      const orientation = effectiveOrientation(kind, piece.orientation ?? 0, placement.turns);
-      return [
-        shapePolygon(kind, orientation, piece.frameSize).map((v) => ({
-          x: (placement.x + v.x - centerX) * scale,
-          y: (placement.y + v.y - centerY) * scale,
-        })),
-      ];
-    });
-
-    for (const layer of parityLayers(polygons)) {
-      g.fillStyle(layer.filled ? COLOR_NUMBERS.amberSolid : COLOR_NUMBERS.boardSurfaceTop, 1);
-      g.fillPoints(
-        layer.points.map((p) => new Phaser.Geom.Point(p.x, p.y)),
-        true
-      );
-    }
-  }
 
   private animateZoom(scene: Phaser.Scene): void {
     if (this.isEnlarged) return;
