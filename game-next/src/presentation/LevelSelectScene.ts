@@ -335,6 +335,23 @@ export class LevelSelectScene extends Phaser.Scene implements Choreographed {
         })
         .setOrigin(0.5);
 
+      // Links are generated from the layout tables and cross this row. A soft
+      // plate in the sky colour hides the crossing without moving any path.
+      const plate = this.add.graphics();
+      const plateW = chText.width + 120;
+      const plateH = 52;
+      for (let i = 0; i < 6; i++) {
+        const inset = i * 3;
+        plate.fillStyle(COLOR_NUMBERS.skyTop, 0.16);
+        plate.fillRoundedRect(
+          -plateW / 2 + inset,
+          -plateH / 2 + inset,
+          plateW - inset * 2,
+          plateH - inset * 2,
+          (plateH - inset * 2) / 2
+        );
+      }
+
       const chBg = this.add.graphics();
       chBg.lineStyle(1.5, COLOR_NUMBERS.gridModule, 0.5);
       const rule = 80;
@@ -342,7 +359,7 @@ export class LevelSelectScene extends Phaser.Scene implements Choreographed {
       chBg.lineBetween(-gap - rule, 0, -gap, 0);
       chBg.lineBetween(gap, 0, gap + rule, 0);
 
-      chContainer.add([chBg, chText]);
+      chContainer.add([plate, chBg, chText]);
       this.mapContainer.add(chContainer);
       this.linkParts.push(chContainer);
     }
