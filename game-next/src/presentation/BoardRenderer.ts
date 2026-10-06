@@ -21,7 +21,7 @@ import { getMotionScale, isReducedMotion } from './transitions/motion.ts';
 import type { Poseable } from './transitions/choreography.ts';
 import { PieceView } from './PieceView.ts';
 import type { PieceTextureSource } from './PieceTextureCache.ts';
-import { POSE_TAU, anchorCenter, pieceTargetPose, stepScalar } from './pieceMotion.ts';
+import { POSE_TAU, anchorCenter, magnetRing, pieceTargetPose, stepScalar } from './pieceMotion.ts';
 import type { Pose } from './pieceMotion.ts';
 import { diffLayers, overlapLayers } from './feedback/parityDiff.ts';
 
@@ -59,6 +59,7 @@ export class BoardRenderer {
   private readonly parityIncomingGraphics: Phaser.GameObjects.Graphics;
   private readonly parityFadeGraphics: Phaser.GameObjects.Graphics;
   private readonly previewGraphics: Phaser.GameObjects.Graphics;
+  private readonly magnetRingGraphics: Phaser.GameObjects.Graphics;
   private readonly temporaryGraphics: Phaser.GameObjects.Graphics;
   private readonly fxGraphics: Phaser.GameObjects.Graphics;
 
@@ -104,6 +105,8 @@ export class BoardRenderer {
     this.parityIncomingGraphics = scene.add.graphics().setDepth(DEPTH_TOKENS.placedPieces + 1);
     this.parityFadeGraphics = scene.add.graphics().setDepth(DEPTH_TOKENS.placedPieces + 1);
     this.previewGraphics = scene.add.graphics().setDepth(DEPTH_TOKENS.placedPieces + 2);
+    // Below the dragged piece: the ring is tier 2, the piece stays tier 3.
+    this.magnetRingGraphics = scene.add.graphics().setDepth(DEPTH_TOKENS.placedPieces + 2);
     this.temporaryGraphics = scene.add.graphics().setDepth(DEPTH_TOKENS.temporaryPieces);
     this.fxGraphics = scene.add.graphics().setDepth(DEPTH_TOKENS.draggingPiece + 1);
 
@@ -177,6 +180,7 @@ export class BoardRenderer {
     this.syncStaticOverlays(dragId, pieces);
     this.syncParity(dtMs, dragId, pieces);
     this.syncPreview(snapshot, pieces);
+    this.syncMagnetRing(snapshot, pieces);
     this.fxGraphics.clear();
     if (snapshot.phase === 'won') {
       this.victoryPulse += dtMs * 0.004 * getMotionScale();
@@ -256,6 +260,7 @@ export class BoardRenderer {
         this.parityGraphics,
         this.parityIncomingGraphics,
         this.previewGraphics,
+        this.magnetRingGraphics,
         this.temporaryGraphics,
         this.fxGraphics,
       ],
@@ -457,6 +462,50 @@ export class BoardRenderer {
     for (const layer of overlapLayers(polygons)) {
       this.previewGraphics.strokePoints(layer.points.map((p) => new Phaser.Geom.Point(p.x, p.y)), true, true);
     }
+  }
+
+  /**
+   * Canvas centre of the current snap candidate, for both placement modes:
+   * anchored levels carry an anchor id, free-placement levels carry
+   * `grid:gx,gy`. `anchorCenter` alone only answers the first.
+   */
+  private candidateCenter(
+    piece: Piece,
+    candidateId: string,
+    _turns?: number
+  ): { x: number; y: number } | null {
+    if (this.level.placement === 'free') {
+      const match = candidateId.match(/^grid:(-?\d+),(-?\d+)$/);
+      if (!match) return null;
+      return pieceCenterCanvas(
+        piece.frameSize,
+        Number.parseInt(match[1], 10),
+        Number.parseInt(match[2], 10),
+        this.layout
+      );
+    }
+    return anchorCenter(piece, candidateId, this.layout);
+  }
+
+  /**
+   * Ring at the candidate anchor, tightening as the piece closes. Redrawn
+   * every frame because it tracks distance; this is the hot path, so it is one
+   * clear and at most one strokeCircle.
+   */
+  private syncMagnetRing(snapshot: PlayViewSnapshot, pieces: Readonly<Record<string, PieceState>>): void {
+    this.magnetRingGraphics.clear();
+    const drag = snapshot.dragInfo;
+    if (!drag || !drag.snapCandidateId) return;
+    const piece = this.level.pieces.find((p) => p.id === drag.pieceId);
+    if (!piece) return;
+    const turns = (pieces[piece.id] ?? { turns: 0 }).turns;
+    const center = this.candidateCenter(piece, drag.snapCandidateId, turns);
+    if (!center) return;
+
+    const dist = Math.hypot(drag.x - center.x, drag.y - center.y);
+    const ring = magnetRing(dist, pieceRadiusPx(piece.frameSize, this.layout));
+    this.magnetRingGraphics.lineStyle(1.5, COLOR_NUMBERS.icePrimary, ring.alpha);
+    this.magnetRingGraphics.strokeCircle(center.x, center.y, ring.radius);
   }
 
   private drawLayers(g: Phaser.GameObjects.Graphics, layers: readonly ParityLayer[]): void {

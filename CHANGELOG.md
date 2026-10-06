@@ -4,6 +4,15 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-06 - Telegraph the magnet with a ring at the anchor (VR3a Task 3)
+
+Rendered magnet ring at candidate snap anchor:
+- Added `magnetRingGraphics` layer in `game-next/src/presentation/BoardRenderer.ts` at depth `placedPieces + 2` and wired to `getTransitionParts()`.
+- Implemented `candidateCenter()` helper supporting both free and anchored placements.
+- Implemented `syncMagnetRing()` called every frame in `tick` to draw a stroke circle tightening and brightening with distance using `icePrimary` color.
+
+Verification: `npm test` passed 89 files / 1087 tests. `npm run typecheck` clean.
+
 ### 2026-10-06 - Add the magnet ring geometry (VR3a Task 2)
 
 Added pure magnet ring geometry function:
