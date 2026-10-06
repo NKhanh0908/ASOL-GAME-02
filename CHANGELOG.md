@@ -4,6 +4,15 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-06 - FX spec: three items confirmed by the reporter
+
+- `docs/superpowers/specs/2026-10-06-fx-play-and-map-fixes-design.md`:
+- FX-2 gains a second, independent reason for being a non-issue. The reporter tested a chapter 1 level and found the two identical pieces **could not** be exchanged at all: chapter 1 uses anchored placement, where a piece only snaps to anchors declared on that piece, so it cannot occupy another piece's anchor. The solver's group canonicalisation and the anchored placement rule block the problem from different directions. Interchangeability is only reachable in a free-placement level, where it follows from the win rule rather than from a bug.
+- FX-3 target confirmed as the magnet ring, not the tap ripple, with the reporter's reason recorded: a ring drawn around the correct anchor is a free hint, the same help the hint eye gives deliberately and at a cost.
+- FX-5 approach confirmed: redraw the icons against the design tokens rather than re-plumbing them to SVG.
+
+Verification: no code changed. DOCS-INDEX row for FX left untouched in this commit because another session is editing that file.
+
 ### 2026-10-06 - Write an edited campaign level back from the studio (E4 Task 7)
 
 - `game-next/scripts/studio/studioPlugin.ts`: added `POST /__studio/promote` endpoint to run `promoteStudioLevel` with `overwrite` flag.

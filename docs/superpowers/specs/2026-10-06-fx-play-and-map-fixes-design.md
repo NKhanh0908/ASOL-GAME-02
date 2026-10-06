@@ -42,7 +42,9 @@ Probes run against `authorLevel` on 2026-10-06, each with two interchangeable pi
 
 Probe B tested a specific hypothesis raised during investigation — that the group key uses the *declared* orientation rather than the effective one, so two pieces that rotate into each other would fall into different groups and be counted twice. **It did not reproduce.** The hypothesis is recorded here as rejected so nobody re-raises it from reading the group key alone.
 
-That two identical pieces are interchangeable *in play* is inherent to the win rule: victory is the parity mask matching the target, and swapping identical pieces yields an identical mask. It is not a defect.
+**Corroborated from play.** The reporter then tested a chapter 1 level directly and found the two pieces **could not** be exchanged at all. That is the second, independent reason this is not a defect: chapter 1 uses anchored placement, where a piece only snaps to the anchors declared on that piece, so one piece cannot occupy another's anchor unless the author gave it that anchor too. The solver's grouping and the anchored placement rule both prevent the problem, from different directions.
+
+Interchangeability would only be reachable in a free-placement level, and even there it is inherent to the win rule rather than a bug: victory is the parity mask matching the target, and swapping identical pieces yields an identical mask.
 
 **Approach.** Change nothing. Add a regression test asserting `solutionCount === 1` for probe A and probe C, so a future change to `canonicalKey` or to the group key cannot silently start double-counting. The test is the deliverable for this item.
 
@@ -52,7 +54,9 @@ That two identical pieces are interchangeable *in play* is inherent to the win r
 
 **Target.** `presentation/BoardRenderer.ts:499-511` — `magnetRingGraphics` strokes a circle around the candidate anchor whose radius and alpha come from `magnetRing` in `pieceMotion.ts`, driven by `ANIM_TOKENS.magnetRingFarRatio` / `magnetRingNearRatio` in `designTokens.ts:230-231`. It was added by VR3a and accepted by the reviewer on 2026-10-06, so this removes work that is six commits old.
 
-**Not in scope:** the ripple from `PlayScene.spawnCosmicInteraction` (`PlayScene.ts:483-493`), which fires when the player taps empty space. It is a different effect and stays. If the reported circle is in fact the ripple, this item retargets and the magnet ring stays — settle that before the removal task runs.
+**Confirmed by the reporter on 2026-10-06:** the magnet ring is the target, and the ripple is not. Their reason is worth keeping: the ring around the correct anchor amounts to a free hint, which is the same help the hint eye gives deliberately and at a cost.
+
+**Not in scope:** the ripple from `PlayScene.spawnCosmicInteraction` (`PlayScene.ts:483-493`), which fires when the player taps empty space. It stays.
 
 **Approach.** Remove the ring's graphics object, its draw call, its `pieceMotion` helper and its two tokens, along with any test that pins them. Removal must be complete rather than disabled behind a flag; VR3a's other additions — the pickup anticipation dip and the unified target outline — are untouched.
 
@@ -84,7 +88,7 @@ The reset container sits at x = 84 with a 112 px circle (`Hud.ts:147`), so it oc
 
 **The actual defect is stylistic**, and it is real: these icons were drawn as generic glyphs and do not follow the diamond/jewel motif, stroke weight, or amber-and-ice palette that VR1–VR3b established for the rest of the UI.
 
-**Approach.** Redraw them against the existing design tokens, as a set: one stroke weight, one corner treatment, the diamond motif where an icon can carry it, colours drawn from `COLOR_TOKENS` rather than literals. The texture sizes, keys and call sites do not change, so no consumer moves. `bannedColors.test.ts` already scans `src/` for colour literals outside the three families and must keep passing.
+**Approach** (confirmed by the reporter on 2026-10-06: redraw rather than re-plumb). Redraw them against the existing design tokens, as a set: one stroke weight, one corner treatment, the diamond motif where an icon can carry it, colours drawn from `COLOR_TOKENS` rather than literals. The texture sizes, keys and call sites do not change, so no consumer moves. `bannedColors.test.ts` already scans `src/` for colour literals outside the three families and must keep passing.
 
 ## 6. FX-6 — The completed node's checkmark shows under the silhouette (defect)
 
