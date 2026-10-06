@@ -1,9 +1,11 @@
 # Visual Refactor VR2 — Level Select
 
 Date: 2026-10-06
-State: draft
+State: approved
 Scope: `game-next/src/presentation/`
-Depends on: VR0 (`2026-10-06-vr0-motion-language-design.md`) for easing and duration; VR1 (`2026-10-05-visual-refactor-foundation-menu-design.md`) for the sky gradient and the glow ladder
+Depends on: VR0 (`2026-10-06-vr0-motion-language-design.md`) for easing and duration; VR1 (`2026-10-05-visual-refactor-foundation-menu-design.md`) for the sky gradient and the glow ladder; VR3b
+(`2026-10-06-vr3b-medallion-victory-ritual-design.md`) for the victory card
+slot and the star-lighting audio cue
 
 ## 1. Why
 
@@ -68,9 +70,16 @@ unseen by most of the audience.
 A small two-node strip inside the victory card: the level just finished lights,
 a spark travels the link, the next node pops in.
 
+It fills the 48 px slot VR3b reserves at card offset +99…+147 (§3.1 of the VR3b
+spec). VR2 therefore changes no card geometry and no card texture; it adds the
+strip into the reserved slot and raises `VICTORY_CARD_GROUPS` from 4 to 5.
+
 - Duration 700–1000 ms, matching the assessment.
-- Uses the existing `shimmer` SFX from the GS audio work.
-- New node: scale `0.8 → 1.08 → 1.0` with a shimmer.
+- Uses the dedicated star-lighting cue VR3b adds (§3.4 of
+  `2026-10-06-vr3b-medallion-victory-ritual-design.md`), **not** `shimmer`:
+  `shimmer` is already bound to `overlap-revive` in play (`audioCues.ts:64-65`),
+  and the two events land seconds apart.
+- New node: scale `0.8 → 1.08 → 1.0` with a glint.
 - **Plays only on first completion** of a level, never on replay.
 - Skipped entirely under Reduced Motion — the card shows the end state directly.
 - Tap anywhere to skip to the end state.

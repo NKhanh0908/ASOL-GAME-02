@@ -4,6 +4,18 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-06 - VR3b spec: target medallion and victory ritual
+
+Wrote `docs/superpowers/specs/2026-10-06-vr3b-medallion-victory-ritual-design.md`, the spec STATUS named as the next step because it unblocks the VR2 plan. Source was `docs/gui/vr3/mirror-gameplay-animation-improvement.md` §6–7, a screenshot-based review; reading it against the code changed the shape of the work.
+
+- **The ritual already exists.** `victorySequence.ts` and `VICTORY_TOKENS` (`designTokens.ts:236-263`) already implement the 2800 ms, five-phase choreography the source proposes as new, down to the same total length. The card already carries the level name and verse (`Hud.ts:234-260`), so the source's Phase 4 needs no work, and `TargetBadge.animateZoom` already scales `1.0 → 1.35`. VR3b is therefore a re-timing plus a layout contract, not a new feature.
+- **The card cannot grow downward.** It is top-anchored at `trayBounds.y - 4` and runs 262 px, putting its bottom at 1274 of a 1280 px canvas. The spec re-anchors it to its bottom edge and grows it to 310 px, reserving a 48 px slot at offset +99…+147 for the constellation strip VR2 adds. `showWinModal` must now apply the board dim itself, because the grown card overlaps the board by 36 px and that path has no victory timeline to dim it.
+- **Audio collision found.** VR2 §3.1 specified the existing `shimmer` SFX for the strip, but `shimmer` is already bound to `overlap-revive` during play (`audioCues.ts:64-65`); the two events land seconds apart. VR3b adds a distinct star-lighting patch, and VR2 §3.1 was corrected to name it.
+- Genuinely new work in the spec: the Eye crossfade (placed result 0.55, target ghost 0.35 — today the toggle is binary), the medallion scrim, and moving the badge easing onto VR0's `glass` family. The source's board-level constellation knit was dropped rather than deferred, so the card strip is the only constellation moment.
+- Amended `docs/superpowers/specs/2026-10-06-visual-refactor-level-select-design.md` (VR3b dependency, reserved slot, audio cue, state `draft` → `approved` to match the index) and updated the VR2 and VR3b rows in `docs/ai/DOCS-INDEX.md`.
+
+Verification: documentation only, no code changed, so `npm test` and `npm run build` were not re-run. Every code reference in the spec was read from the working tree at `015047d` and the layout arithmetic was derived from `LAYOUT_TOKENS` (`designTokens.ts:100-116`) rather than from the source document. GitNexus `impact` was not applicable — no symbol was edited; `detect_changes()` is run before the commit.
+
 ### 2026-10-06 - Fix the menu emblem: restore the cut facets and the rest pose
 
 Two defects reached the screen through the VR1 plan, not through its execution. Reported by the reviewer comparing `docs/screenshots/web/m1/image.png` against `docs/screenshots/mobile/m3/MenuGame.jpg`.
