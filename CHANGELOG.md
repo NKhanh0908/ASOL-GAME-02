@@ -4,6 +4,19 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-06 - FX spec: six reported play and map issues
+
+- `docs/superpowers/specs/2026-10-06-fx-play-and-map-fixes-design.md`: new spec covering six items reported from play. Each was investigated before being written up.
+- FX-1 (defect): `pieceHitbox` (`layout.ts:164-195`) returns a square the size of the whole frame and `playController.ts:100-105` tests plain rectangle containment, with no polygon test in the input path. A triangle fills half its frame, so the rest of the box is dead space that still claims the pointer - matching the reported dead quadrant. Also notes that `playController.ts:93` only reverses declaration order while its comment claims a snapped/temporary/tray order.
+- FX-2 (**not a defect**): the solver already canonicalises identical pieces by group before counting. Three probes against `authorLevel` all returned `solutionCount: 1`, including one testing the hypothesis that the group key's use of the declared rather than effective orientation would double-count rotatable pieces. That hypothesis did not reproduce and is recorded as rejected. Deliverable is a regression test, not a fix.
+- FX-3: remove the VR3a magnet ring (`BoardRenderer.ts:499-511`); the tap ripple is a different effect and stays.
+- FX-4 (defect): `drawMatchBar` (`Hud.ts:375-396`) sizes the pill from the piece count with no upper bound and always centres it. The spec records that the arithmetic predicts a collision at ~10 pieces while the largest level has 7 and the bug was seen in play, so the first step is to measure rather than trust the estimate.
+- FX-5: corrects the premise - these icons are already generated in `TextureFactory` as canvas paths, not imported assets, so the fix is to redraw them against the design tokens, not to move them to SVG.
+- FX-6 (defect): `TextureFactory.ts:449-460` bakes a checkmark into `node_completed` on the stated assumption that `LevelSelectScene` covers it with the silhouette, but the silhouette is smaller than the diamond and the mark shows around it.
+- `docs/ai/DOCS-INDEX.md`: new FX row, state `draft`.
+
+Verification: no code changed. FX-2 probes run through `authorLevel` in a temporary test file, since removed.
+
 ### 2026-10-06 - Overwrite mode for promoteStudioLevel (E4 Task 5)
 
 - `game-next/src/content/promote.ts`: added `overwrite?: boolean` to `PromoteOptions`, `bumpRevision` helper (`-v1` -> `-v2`), and relaxed `updateManifestLine` to allow overwriting existing campaign levels (skipping re-registration in `sources/index.ts` and `catalog.ts`, downgrading status to `validated`).
