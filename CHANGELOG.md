@@ -4,6 +4,12 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-06 - Declare the four motion families (VR0 Task 2)
+
+- Declared `MOTION_FAMILIES` table and typed helper `motionFamily` in `src/presentation/transitions/motion.ts` covering `ui`, `glass`, `magic`, and `piece` families.
+- Added `tests/motionFamilies.test.ts` covering the four families, ease registry membership, timing consistency with `ANIM_TOKENS`, and the frame-by-frame nature of `piece`.
+- Verification: `npm test` (85 files, 1048 tests pass); `npm run typecheck` and `npm run build` clean; git diff touches no scene files.
+
 ### 2026-10-06 - Add quartOut easing for the glass family (VR0 Task 1)
 
 - Added `quartOut` to `EaseName` union and `EASES` registry in `src/presentation/transitions/motion.ts`.

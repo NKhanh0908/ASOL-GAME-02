@@ -1,4 +1,4 @@
-import { TRANSITION_TOKENS } from '../designTokens.ts';
+import { ANIM_TOKENS, TRANSITION_TOKENS } from '../designTokens.ts';
 
 export type RouteId = keyof typeof TRANSITION_TOKENS.routes;
 
@@ -44,3 +44,66 @@ export function isReducedMotion(scale: number = motionScale): boolean {
 export function scaleTiming(ms: number, scale: number = motionScale): number {
   return isReducedMotion(scale) ? 0 : ms;
 }
+
+export type MotionFamilyName = 'ui' | 'glass' | 'magic' | 'piece';
+
+/**
+ * One type per family rather than a single shape full of optional fields, so
+ * `MOTION_FAMILIES.ui.tapMs` is a `number` at the call site instead of
+ * `number | undefined`. A shared optional shape typechecks here but pushes a
+ * non-null assertion onto every consumer.
+ */
+export type UiFamily = Readonly<{ ease: EaseName; tapMs: number; standardMs: number }>;
+export type GlassFamily = Readonly<{ ease: EaseName; durationMs: number }>;
+export type MagicFamily = Readonly<{ ease: EaseName; minMs: number; maxMs: number }>;
+/** `piece` is integrated frame by frame by POSE_TAU, so it has no ease. */
+export type PieceFamily = Readonly<{ ease: null; governedBy: 'POSE_TAU' }>;
+
+export type MotionFamilies = Readonly<{
+  ui: UiFamily;
+  glass: GlassFamily;
+  magic: MagicFamily;
+  piece: PieceFamily;
+}>;
+
+export type MotionFamily = UiFamily | GlassFamily | MagicFamily | PieceFamily;
+
+/**
+ * One vocabulary for motion, so a reader can tell from the call site why a
+ * value was chosen. `cubicOut` and `sineInOut` already dominate the codebase —
+ * two of these four families describe what the code does rather than change it.
+ */
+export const MOTION_FAMILIES: MotionFamilies = {
+  // Buttons, modals, toggles, navigation. Two beats: acknowledging a press
+  // must feel immediate, while a transition reads better slower.
+  ui: {
+    ease: 'cubicOut',
+    tapMs: ANIM_TOKENS.duration.buttonTapMs,
+    standardMs: 200,
+  },
+  // Glass panels, the target medallion, the stele frame. Heavier deceleration
+  // than `ui` so these read as having mass.
+  glass: {
+    ease: 'quartOut',
+    durationMs: 300,
+  },
+  // Runes, constellations, shimmer, glow pulses. Slow and symmetric.
+  magic: {
+    ease: 'sineInOut',
+    minMs: 600,
+    maxMs: 1400,
+  },
+  // Drag, pickup, snap, settle. Governed by POSE_TAU exponential smoothing in
+  // pieceMotion.ts, not by a tween — see VR0 spec §2.1 for why that model was
+  // kept over the damped spring the assessment proposed.
+  piece: {
+    ease: null,
+    governedBy: 'POSE_TAU',
+  },
+} as const;
+
+/** Generic so the caller keeps the specific family type, not the union. */
+export function motionFamily<K extends MotionFamilyName>(name: K): MotionFamilies[K] {
+  return MOTION_FAMILIES[name];
+}
+
