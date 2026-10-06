@@ -4,6 +4,15 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-06 - Controller pass after VR0 and VR1: verification, index, missing invariant
+
+- Independently verified the VR0 and VR1 execution rather than accepting the executor's report: `npm test` 88 files / 1063 tests pass, `npm run typecheck` clean, `npm run build` clean in 7.02s, working tree clean. The executor's totals matched.
+- Checked the three traps the plans had planted, all passed: `tests/designTokens.test.ts` was updated to the new gradient rather than "fixed" by reverting the token; the two VR0 commits touched only `transitions/motion.ts`, its tests and `CHANGELOG.md`, so the family adoption did not leak in early; and the emblem was extracted, taking `MenuScene.ts` from 941 to 846 lines.
+- Added the motion vocabulary invariant to `docs/ai/ARCHITECTURE.md`, which VR0 plan Task 2 Step 7 required and the execution missed: `MOTION_FAMILIES` lives in `transitions/motion.ts`, not `designTokens.ts`, because the latter imports nothing and must stay a leaf module.
+- Recorded a discrepancy worth knowing about: the executor's summary described the four motion families as "glass, celestial, snap, paper" declared "in designTokens.ts". Both halves are wrong — the code correctly declares `ui`, `glass`, `magic` and `piece` in `transitions/motion.ts`, and `designTokens.ts` does not mention `MOTION_FAMILIES` at all. The implementation followed the plan; only the report did not.
+- Marked VR0 and VR1 `done` in `docs/ai/DOCS-INDEX.md` with their commit ranges, and rewrote `docs/ai/STATUS.md`: the concurrent-work ownership section is removed now that both agents have finished, and the next step is the VR3b spec, which unblocks the VR2 plan.
+- Verification: commands above run from `game-next/` with their output read, not inferred.
+
 ### 2026-10-06 - Reconcile the palette table with shipped tokens and record visual invariants (VR1 Task 8)
 
 - Updated `docs/gdd/master-gdd.md` §3.1 palette table to align with shipped tokens: navy (`#1A2470`, `#1D3482`, `#050A1A`), ice glass (`#A9E3FF`, `#CFEFFF`, `#3A5E78`), amber (`#FFC857`, `#FFD27A`, `#FFE8A6`), and documented the glow ladder governance rule.

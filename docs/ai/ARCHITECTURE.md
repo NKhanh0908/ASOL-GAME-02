@@ -52,6 +52,7 @@ Screenshots: `scripts/shoot-level.sh <id> <outdir>` (headless Chrome, needs the 
 - Validation: chapters 1–3 must not enable rotation and chapter 4 must enable it; chapter 1 solutions have no turns and no overlap.
 - Unlock: `order === 1` always open; otherwise predecessor completed.
 - Glow is a state, not decoration: `GLOW_TIERS` in `designTokens.ts` is the only source of glow values, and `SCREEN_FOCUS` names the single tier-3 element each screen is allowed. `tests/bannedColors.test.ts` scans all of `src/` for colours outside the three families — `#4ECDC4` reached production twice before it existed.
+- Motion vocabulary: `MOTION_FAMILIES` names the ease and duration for each kind of motion (`ui`, `glass`, `magic`, `piece`). It lives in `transitions/motion.ts`, **not** in `designTokens.ts`, because `designTokens.ts` imports nothing and must stay a leaf module — a family table there referencing `EaseName` would create an import cycle. `piece` carries no ease: piece motion is integrated by `POSE_TAU` in `pieceMotion.ts`. `backOut` sits outside the families on purpose, as an overshoot variant with eight existing call sites.
 
 ## Audio synthesis
 
