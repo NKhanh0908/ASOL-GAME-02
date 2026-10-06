@@ -71,7 +71,7 @@ A small two-node strip inside the victory card: the level just finished lights,
 a spark travels the link, the next node pops in.
 
 It fills the 48 px slot VR3b reserves at card offset +99…+147 (§3.1 of the VR3b
-spec). VR2 therefore changes no card geometry and no card texture; it adds the
+spec; built and unblocked in VR3b Task 1). VR2 therefore changes no card geometry and no card texture; it adds the
 strip into the reserved slot and raises `VICTORY_CARD_GROUPS` from 4 to 5.
 
 - Duration 700–1000 ms, matching the assessment.
