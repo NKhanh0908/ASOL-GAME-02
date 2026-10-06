@@ -136,6 +136,55 @@ and §5.2 are implemented and this spec changes none of their timings, easings,
 colours or audio cues. `overlapFadeMs`, `overlapTraceMs`, `overlapTraceFraction`,
 `reviveFlashMs`, `bounceMs`, `snapRingMs` and `magnetStrength` keep their values.
 
+### 3.4 The stele's interior goes empty
+
+Reviewer decision, 2026-10-06. `buildGridLayers` returns five layers
+(`gridLayers.ts:139-147`). Four of them draw inside the board: `fine` at alpha
+0.13, `diagonal` at 0.16, `module` at 0.3 and `axis` at 0.6. They are dropped.
+`tick` — the short ruler marks at the four edges — and the four L-shaped corner
+marks stay, so the frame keeps its rhythm while the interior holds nothing but
+the player's own figure.
+
+`GridLayerName` narrows to `'tick'`, `lineGrid`, `diagonals` and `axes` become
+unreachable and are deleted, and the four unused style entries come out of
+`GRID_TOKENS`. The geometric ratios (`logicCellPx`, `displayCellInLogicCells`,
+`moduleInDisplayCells`) stay: `tests/designTokens.test.ts:40-50` asserts them
+and `ticks()` still uses the module ratio to decide which marks are long.
+
+The risk is placement readability: the grid was the only alignment reference
+besides the magnet. Snapping does the real work, so this should hold, but it is
+a device check, not a desk one.
+
+### 3.5 One outline for the whole target
+
+Reviewer finding, 2026-10-06, from `docs/screenshots/web/m1/image copy.png`: the
+house target in 1-2 shows a horizontal line where the roof meets the body. It is
+not a grid line. `BoardRenderer.drawTargetSilhouette` (`:505-523`) iterates
+`targetPlacements` and calls `drawJewelPolygon(..., variant: 'target')` once per
+placement, and that variant both fills and dash-strokes its own polygon
+(`JewelShape.ts:88-96`). Every edge two pieces share is therefore stroked twice,
+and reads as a seam cutting through the figure.
+
+The target must read as one silhouette, on every level.
+
+**The fills stay per placement; only the stroke is merged.** Each placement
+carries its own `hoverAlpha[i]`, which brightens the piece the player is
+dragging toward, and its own `targetReveal[i]` for the victory reveal. Merging
+the fills would discard both, and buys nothing — two fills of the same colour
+meeting along an edge show no seam. The stroke is the entire problem.
+
+So `polygonClip.ts` gains `unionOutline(polygons): Pt[][]`: wind every polygon
+counter-clockwise, split each edge at any vertex lying on it so partly-shared
+edges still match, cancel every edge that appears in both directions, chain
+what survives into closed loops, and drop collinear vertices. The splitting step
+is what makes it correct for pieces that overlap an edge only partly, rather
+than only for pieces that share one exactly.
+
+`JewelShape.ts` splits its target branch: `drawJewelPolygon` fills, and a new
+`strokeTargetOutline` dash-strokes a loop. `BoardRenderer` fills per placement
+as it does today, collects the polygons, and strokes `unionOutline` of them once
+at the brightest of the placements' alphas.
+
 ## 4. Code structure
 
 | File | Change |
@@ -144,7 +193,10 @@ colours or audio cues. `overlapFadeMs`, `overlapTraceMs`, `overlapTraceFraction`
 | `designTokens.ts` | `pickupMs`, the five `magnetRing*` tokens |
 | `feedback/FeedbackDirector.ts` | `pickup` uses the new ease and duration; draws the ring while dragging (§3.2) |
 | `pieceMotion.ts` | `magnetRing` pure function |
-| `BoardRenderer.ts` | One graphics layer for the ring, cleared per frame beside the preview |
+| `BoardRenderer.ts` | One graphics layer for the ring, cleared per frame beside the preview (§3.2); one merged target outline (§3.5) |
+| `gridLayers.ts`, `GridPainter.ts` | Four interior layers removed, `tick` kept (§3.4) |
+| `polygonClip.ts` | `unionOutline` (§3.5) |
+| `JewelShape.ts` | Target variant fills; `strokeTargetOutline` strokes (§3.5) |
 
 No extraction and no new module. `PieceView.ts` is not modified: the dip rides
 the lift path it already has.
@@ -163,6 +215,13 @@ the lift path it already has.
 - Reduced Motion: `scaleTiming(pickupMs)` is 0, and the ring still renders.
 - Nothing in `tests/feedbackEvents.test.ts` changes: the event sequence for
   pickup, snap, overlap-hollow and overlap-revive is untouched.
+- Grid layers: `buildGridLayers` returns only `tick`, and no segment it returns
+  lies deeper into the board than the long tick length.
+- `unionOutline`: a single square returns itself; two squares sharing a full
+  edge return one four-corner loop; two sharing half an edge return a
+  six-corner L; a triangle on a square returns the five-corner house with no
+  edge spanning the join; two disjoint squares return two loops; and input
+  winding direction does not change the result.
 
 Manual check on a device: that the 40 ms dip does not make pick-up feel
 unresponsive during fast repeated drags, and that the ring reads as an
@@ -184,6 +243,17 @@ affordance rather than as clutter when several anchors sit close together.
   from a desktop browser. If it feels sluggish on a device, the fallback is
   decision 1's rejected option: keep `backOut` at 80 ms and drop §1. The
   reviewer should test this before the rest of the spec is accepted.
+- Emptying the stele interior removes the only alignment reference besides the
+  magnet. Snapping should carry it, but if placement starts to feel guessy the
+  fallback is the rejected option: keep `module` and `axis`, drop only `fine`
+  and `diagonal`.
+- `unionOutline` is the one piece of real geometry in this spec. It is correct
+  for polygons that share edges exactly or partly, but it does **not** compute a
+  true boolean union: two target pieces that genuinely cross, rather than abut,
+  would leave the crossing edges uncancelled and draw a line through the figure.
+  No shipped level does this, and the spec's testing step walks every approved
+  level to confirm it. If a future level crosses its target pieces, the renderer
+  needs a real clipping union, not a patch to this function.
 - The ring adds a `strokeCircle` per frame during drags. Negligible on its own,
   but it is drawn on the hottest path in the game; it must go in the existing
   per-frame clear-and-redraw block, never in a tween.

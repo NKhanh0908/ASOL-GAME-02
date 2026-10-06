@@ -107,18 +107,26 @@ immediately after rather than to tune the gap.
 
 ### 3.2 `showWinModal` must dim the board itself
 
-`playWinCard` runs inside the victory timeline, which has already dimmed the sky
-and faded the tray by the time the card appears. The grown card's top edge sits
-36 px over the bottom of the board, which is invisible under those conditions.
+The won state is reached two ways, and they must leave the screen identical.
 
-But `showWinModal` (`Hud.ts:472-475`) is a second entry point: it restores the
-won state immediately when the player re-enters an already-completed level, with
-no timeline and therefore **no dim**. There the card would overlap a fully lit
-board.
+Checked against the code, the gap is narrower than it first looks.
+`PlayScene.ts:241-242` already calls `boardRenderer.setVictoryMode(true)` before
+`hud.showWinModal(...)` on the restore path, and `setVictoryMode`
+(`BoardRenderer.ts:226-229`) turns the gold frame on and hides the tray — the
+same two things the timeline does. So the tray is out of the way on both paths,
+and the card's 36 px overlap with the bottom of the board is identical on both;
+it is a question of whether that overlap looks right at all, not of dim parity.
 
-`showWinModal` must therefore apply the end state of the dim — sky extra
-`skyDimExtra`, tray hidden — directly, rather than only showing the card. The
-two entry points must leave the screen in the same state.
+**One thing is genuinely missing on the restore path: the sky dim.** The
+timeline calls `background().deepen(skyDimExtra, skyDimMs)`
+(`FeedbackDirector.ts:265-267`); `setVictoryMode` does not, and `Hud` has no
+reference to the background scene to do it itself. So a player re-entering a
+finished level sees the card against an undimmed sky, while a player who just
+won sees it against a dimmed one.
+
+The fix belongs in `PlayScene`, next to the existing `setVictoryMode(true)`
+call, not in `Hud`: deepen the sky by `skyDimExtra` with a zero-length
+duration so the restored state matches the timeline's end state.
 
 ### 3.3 Re-weighting the ritual
 
@@ -195,7 +203,8 @@ Toggling crossfades over the `ui` family's 200 ms rather than cutting.
 
 | File | Change |
 |---|---|
-| `Hud.ts` | Card geometry (§3.1), `showWinModal` dims the board (§3.2) |
+| `Hud.ts` | Card geometry and inner offsets (§3.1) |
+| `PlayScene.ts` | Restore path deepens the sky to match the timeline (§3.2) |
 | `TextureFactory.ts` | `victory_card_frame` and `victory_card_surface` grow (§3.1) |
 | `designTokens.ts` | `traceMs`, medallion scrim alpha, the two Eye alphas |
 | `TargetBadge.ts` | Scrim and the `glass` family (§3.5) |
@@ -211,9 +220,8 @@ No extraction is proposed. Nothing here gains a second caller.
 - **Card geometry:** at the base layout and at two bottom safe-area insets, the
   card's bottom edge stays at `trayBounds.y + 258` and its top at
   `trayBounds.y - 52`; the bottom margin never goes below zero.
-- **Both entry points agree:** the screen state after `playWinCard` completes
-  and the state after `showWinModal` are equal — same sky dim, same tray
-  visibility, same card position.
+- **Both entry points agree:** the sky's extra dim after the victory timeline
+  completes equals the sky's extra dim after the restore path runs.
 - **Ritual timing:** `victoryEndMs(plan)` is unchanged at 2800 ms after the
   `traceMs` edit, and the trace closes no later than `burstAtMs`.
 - **Reduced motion:** the plan still collapses to `reducedMs`, and the grown
@@ -247,8 +255,10 @@ as a gap, and the Eye crossfade keeps 0.55 and 0.35 distinguishable in daylight.
   cannot be separated, the fallback is to shift the target ghost toward the ice
   palette rather than to push the alphas further apart.
 - **The empty slot ships visible.** Mitigated by landing VR2 next, §3.1.
-- **The card now overlaps the board by 36 px**, which is only acceptable while
-  the board is dimmed. §3.2 is the fix; if a third entry point to the won state
-  is ever added, it inherits the same obligation.
+- **The card now overlaps the bottom 36 px of the board** on both entry
+  paths. The board is not dimmed on either path — only the sky is — so this
+  overlap must simply look acceptable. It is the first thing to check on a
+  device; if it does not, the card cannot grow and the reserved slot has to be
+  found by removing something else from the card.
 - VR2 §3.1 must be corrected for the audio cue (§3.4) before its plan is
   written, or the plan will specify the colliding sound.

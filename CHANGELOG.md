@@ -4,6 +4,35 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-06 - VR3a and VR3b implementation plans
+
+Wrote both VR3 plans, and amended the VR3a spec with two findings the reviewer raised while they were being written.
+
+- `docs/superpowers/plans/2026-10-06-vr3a-piece-feel.md` — 6 tasks. Task 1 (pick-up anticipation) ends at a reviewer stop point, because spec §7 flags it as the one change that could make the game feel worse.
+- `docs/superpowers/plans/2026-10-06-vr3b-medallion-victory-ritual.md` — 6 tasks, with reviewer stop points on the card overlap and on the Eye alphas.
+- **Reviewer addition, VR3a §3.4:** the faint lines inside the stele are dropped. `buildGridLayers` returns five layers and four of them draw inside the board (`fine`, `diagonal`, `module`, `axis`); only the edge ruler marks and the corner marks stay.
+- **Reviewer addition, VR3a §3.5:** the horizontal line across the 1-2 house target is not a grid line. `BoardRenderer.drawTargetSilhouette` draws one `variant: 'target'` call per placement, and that variant both fills and dash-strokes, so every edge two pieces share is stroked twice. The fix adds `unionOutline` to `polygonClip.ts` and strokes the merged boundary once. Fills stay per placement so each keeps its own `hoverAlpha` and `targetReveal`; merging them would discard both and buys nothing, since same-coloured fills show no seam.
+- **Correction to the VR3b spec, found while planning.** §3.2 claimed the restore path left the board undimmed. `PlayScene.ts:241` already calls `setVictoryMode(true)`, which hides the tray and golds the frame, so the real gap was narrower: only `background().deepen(skyDimExtra)` was missing. The spec and its risk list were rewritten to say so.
+- **The star-lighting audio patch is deferred.** VR3b §3.4 added it to replace the colliding `shimmer` cue, but its only caller is VR2 §3.1, which the reviewer deferred. It lands with §3.1; the correction already recorded in the VR2 spec keeps the trap closed.
+- Both plans carry a Concurrency section. VR2 is being executed by another agent in this working tree, so VR3b Tasks 1 and 4 (which touch `TextureFactory.ts` and `TargetBadge.ts`) are marked blocked until VR2 lands.
+
+Verification: documentation only; no file under `src/` was changed by this commit, and the other agent's in-progress VR2 files were deliberately left unstaged. Every code reference was read from the working tree — `Hud.ts:217` and `LAYOUT_TOKENS` for the card arithmetic, `BoardRenderer.ts:226-229` and `PlayScene.ts:241` for the restore path, `JewelShape.ts:88-96` for the double stroke, `gridLayers.ts:139-147` for the layer list, `PieceView.ts:160` for the lift maths. `npm test` and `npm run build` were not re-run: the tree holds another agent's partial work, so a suite run here would not describe this change.
+
+### 2026-10-06 - VR2 Level Select
+
+Executed `docs/superpowers/plans/2026-10-06-vr2-level-select.md` Tasks 1–7 covering spec §3.2–§3.6 (§3.1 excluded as planned, pending VR3b's victory card slot).
+
+- **Pure target silhouette extraction (`src/presentation/targetSilhouette.ts`):** Extracted polygon rasterization and parity clipping from `TargetBadge.ts` into a pure module with type-only Phaser imports so Vitest tests run directly. Both badge and level select nodes consume it.
+- **Node size 72px → 96px (`TextureFactory.ts`, `tests/levelSelect.test.ts`):** Raised node texture canvas size to 96px (`diamondPath` r = 43) to match touch targets and fit target silhouettes. Clearance tests confirm nodes in the densest chapter (Chapter 3) still clear each other cleanly.
+- **Completed nodes show silhouettes (`LevelSelectScene.ts`, `tests/targetSilhouette.test.ts`):** Completed nodes display target silhouette within a 46×32 box (`NODE_SILHOUETTE_BOX`) using navy solid / amber hollow inverted colors, with level id number text shifted to y: 58. Verified all 22 approved levels stay inside the diamond boundary (`|x| + |y| <= 39`).
+- **Content frontier node (`TextureFactory.ts`, `LevelSelectScene.ts`, `tests/levelSelect.test.ts`):** Configured planned level node (4-1) with a dashed outline (`setLineDash([6, 6])`) and empty interior, plus a frontier status label beneath ("Màn 4-1 đang được tinh chỉnh" / `toast_level_polishing`) so unfinished state is clear before tapping.
+- **Plain 2-line current node label (`src/presentation/hudText.ts`, `LevelSelectScene.ts`, `tests/levelSelect.test.ts`):** Replaced decorative badge (`✦ 3-4 · Ngọn Nến ✦`) with a clean 2-line layout via `formatNodeLabel`: level title first in bold amber, followed by locator (`3-4 · Họa Phẩm`) in secondary text colour on a 52px height rounded rect plate at y: 68.
+- **Chapter backing plate (`LevelSelectScene.ts`):** Inserted a soft rounded backing plate in `COLOR_NUMBERS.skyTop` (alpha 0.16) behind chapter banners to prevent constellation links from colliding with chapter title text and horizontal rules.
+- **Single focus motion (`src/presentation/constellationMotion.ts`, `LevelSelectScene.ts`, `tests/constellationMotion.test.ts`):** Removed infinitely repeating link spark tweens. Exported `walkedLinkAlpha(isIntoCurrent)` (0.95 into current node, 0.55 on other walked links) to emphasize path to player. Guarded current node pulse and badge breathing with `!isReducedMotion()`.
+
+Verification: `npm test` passed (89 test files, 1078 tests); `npm run typecheck` clean; `npm run build` completed cleanly; GitNexus `impact` and `detect_changes` passed on all tasks.
+
+
 ### 2026-10-06 - VR3a spec: piece feel and the XOR animation
 
 Wrote `docs/superpowers/specs/2026-10-06-vr3a-piece-feel-design.md` from `docs/gui/vr3/mirror-gameplay-animation-improvement.md` §1–5, read against the code rather than the screenshots it was written from.
