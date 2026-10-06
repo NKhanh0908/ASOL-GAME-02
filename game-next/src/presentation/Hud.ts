@@ -7,6 +7,7 @@ import {
   FEEDBACK_TOKENS,
   LAYOUT_TOKENS,
   TYPO_TOKENS,
+  VICTORY_CARD,
 } from './designTokens.ts';
 import { TEXTURE_KEYS } from './TextureFactory.ts';
 import { computeLayout } from './layout.ts';
@@ -214,7 +215,12 @@ export class Hud {
     // giải vẫn hiện trọn phía trên, không có gì đè lên nó.
     // Thẻ chiến thắng bám mép trên khay (artboard gốc: 1016 - 4).
     const victoryLabels = getVictoryLabels();
-    const card = { x: 30, y: this.layout.trayBounds.y - 4, w: 660, h: 262 };
+    const card = {
+      x: VICTORY_CARD.x,
+      y: this.layout.trayBounds.y + VICTORY_CARD.bottomFromTray - VICTORY_CARD.h,
+      w: VICTORY_CARD.w,
+      h: VICTORY_CARD.h,
+    };
     const cx = card.x + card.w / 2;
 
     // Lớp chặn chạm xuống bàn, gần như trong suốt để không làm tối khung vàng
@@ -231,7 +237,7 @@ export class Hud {
       .setOrigin(0, 0);
 
     const winLabel = this.scene.add
-      .text(cx, card.y + 38, victoryLabels.title, {
+      .text(cx, card.y + VICTORY_CARD.offsets.label, victoryLabels.title, {
         fontFamily: TYPO_TOKENS.fontFamily.sans,
         fontSize: '22px',
         fontStyle: 'bold',
@@ -240,7 +246,7 @@ export class Hud {
       .setOrigin(0.5);
 
     const winTitle = this.scene.add
-      .text(cx, card.y + 79, levelName, {
+      .text(cx, card.y + VICTORY_CARD.offsets.title, levelName, {
         fontFamily: TYPO_TOKENS.fontFamily.levelTitle,
         fontSize: '36px',
         fontStyle: 'bold',
@@ -249,7 +255,7 @@ export class Hud {
       .setOrigin(0.5);
 
     const winVerse = this.scene.add
-      .text(cx, card.y + 123, '', {
+      .text(cx, card.y + VICTORY_CARD.offsets.verse, '', {
         fontFamily: TYPO_TOKENS.fontFamily.sans,
         fontSize: `${VICTORY_VERSE_FONT_SIZE}px`,
         color: '#D8E6FF',
@@ -260,8 +266,8 @@ export class Hud {
     this.winVerseText = winVerse;
 
     // Hai nút nằm ngang: Chọn màn (phụ, hẹp) | Màn tiếp theo (chính, rộng)
-    const btnTop = card.y + 152;
-    const btnH = 76;
+    const btnTop = card.y + VICTORY_CARD.offsets.buttonTop;
+    const btnH = VICTORY_CARD.buttonHeight;
     const innerLeft = card.x + 40;
     const selectW = 216;
     const nextX = innerLeft + selectW + 18;

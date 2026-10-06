@@ -1,5 +1,6 @@
 import { describe, expect, test } from 'vitest';
-import { COLOR_TOKENS, LAYOUT_TOKENS, TYPO_TOKENS } from '../src/presentation/designTokens.ts';
+import { COLOR_TOKENS, LAYOUT_TOKENS, TYPO_TOKENS, VICTORY_CARD } from '../src/presentation/designTokens.ts';
+import { computeLayout } from '../src/presentation/layout.ts';
 import {
   HUD_LEVEL_TITLE_MAX_WIDTH,
   HUD_LEVEL_TITLE_MIN_SIZE,
@@ -78,3 +79,40 @@ describe('HUD theo mockup improve-v1', () => {
     expect(COLOR_TOKENS.iceGlass.buttonFillBottom).toBe('#1B2A72');
   });
 });
+
+describe('victory card geometry', () => {
+  test('is bottom-anchored and keeps its old bottom edge', () => {
+    const layout = computeLayout(720, 1280, { top: 0, bottom: 0 });
+    const top = layout.trayBounds.y - (VICTORY_CARD.h - VICTORY_CARD.bottomFromTray);
+    const bottom = top + VICTORY_CARD.h;
+    expect(bottom).toBe(layout.trayBounds.y + VICTORY_CARD.bottomFromTray);
+    expect(bottom).toBeLessThanOrEqual(LAYOUT_TOKENS.canvas.height);
+  });
+
+  test('keeps its six pixels of bottom margin on every safe-area inset', () => {
+    for (const bottomInset of [0, 24, 48, 96]) {
+      const layout = computeLayout(720, 1280, { top: 0, bottom: bottomInset });
+      const bottom = layout.trayBounds.y + VICTORY_CARD.bottomFromTray;
+      expect(bottom, `inset ${bottomInset}`).toBeLessThanOrEqual(LAYOUT_TOKENS.canvas.height - 6);
+    }
+  });
+
+  test('the reserved slot sits between the level name and the verse', () => {
+    const o = VICTORY_CARD.offsets;
+    expect(o.title).toBeLessThan(o.slotTop);
+    expect(o.slotTop + VICTORY_CARD.slotHeight).toBe(o.slotBottom);
+    expect(o.slotBottom).toBeLessThanOrEqual(o.verse);
+  });
+
+  test('keeps the 34px of padding under the button row', () => {
+    const o = VICTORY_CARD.offsets;
+    expect(VICTORY_CARD.h - (o.buttonTop + VICTORY_CARD.buttonHeight)).toBe(34);
+  });
+
+  test('everything below the level name moved down by exactly the slot height', () => {
+    const o = VICTORY_CARD.offsets;
+    expect(o.verse - 123).toBe(VICTORY_CARD.slotHeight);
+    expect(o.buttonTop - 152).toBe(VICTORY_CARD.slotHeight);
+  });
+});
+

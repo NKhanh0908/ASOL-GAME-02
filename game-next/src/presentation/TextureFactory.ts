@@ -1,5 +1,5 @@
 import type Phaser from 'phaser';
-import { COLOR_TOKENS, GLASS_TOKENS, LAYOUT_TOKENS } from './designTokens.ts';
+import { COLOR_TOKENS, GLASS_TOKENS, LAYOUT_TOKENS, VICTORY_CARD } from './designTokens.ts';
 
 export const TEXTURE_KEYS = {
   steleBorder: 'stele_border_9slice',
@@ -60,12 +60,12 @@ export class TextureFactory {
     );
 
     // Thẻ hoàn thành: viền vàng, lòng xanh đậm, nút chính vàng bóng
-    TextureFactory.makeGlassFrame(scene, TEXTURE_KEYS.victoryCardFrame, 660, 262, 40, [
+    TextureFactory.makeGlassFrame(scene, TEXTURE_KEYS.victoryCardFrame, VICTORY_CARD.w, VICTORY_CARD.h, 40, [
       '#FFF6D6', '#FFC857', '#E9A240', '#C9842A',
     ]);
     TextureFactory.makeSurface(scene, TEXTURE_KEYS.victoryCardSurface, {
-      width: 648,
-      height: 250,
+      width: VICTORY_CARD.w - 12,
+      height: VICTORY_CARD.h - 12,
       radius: 34,
       stops: [[0, '#24358C'], [1, '#1A2468']],
     });

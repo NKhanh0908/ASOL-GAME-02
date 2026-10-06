@@ -4,6 +4,16 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-06 - Bottom-anchor victory card and reserve strip slot
+
+- `src/presentation/designTokens.ts`: export `VICTORY_CARD` tokens defining bottom-anchored geometry (`w: 660, h: 310, bottomFromTray: 258, slotHeight: 48, buttonHeight: 76`) and relative inner offsets.
+- `src/presentation/TextureFactory.ts`: update `victory_card_frame` and `victory_card_surface` to use `VICTORY_CARD.w` and `VICTORY_CARD.h`.
+- `src/presentation/Hud.ts`: anchor card to `trayBounds.y + VICTORY_CARD.bottomFromTray - VICTORY_CARD.h` and use `VICTORY_CARD.offsets.*` for elements inside the victory card.
+- `tests/hud.test.ts`: test bottom-anchoring, safe-area margin, slot placement, and button padding.
+
+Verification: `npm test` passes (89 files, 1099 tests) and `npm run typecheck` passes.
+
+
 ### 2026-10-06 - Accept VR3a and hand VR3b over
 
 Controller pass. VR3a is accepted by the reviewer; VR3b goes to Antigravity as the last plan in the VR chain.

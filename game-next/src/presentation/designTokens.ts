@@ -115,6 +115,31 @@ export const LAYOUT_TOKENS = {
   },
 } as const;
 
+/**
+ * Victory card geometry. Anchored by its BOTTOM edge: at `trayBounds.y + 258`
+ * the card already ends six pixels from the bottom of a 1280px canvas, so it
+ * can only grow upward. `trayBounds.y` already accounts for the bottom safe
+ * area, so both edges move together on a device with a gesture bar.
+ *
+ * The 48px slot is left empty here; VR2 fills it with the constellation strip.
+ */
+export const VICTORY_CARD = {
+  x: 30,
+  w: 660,
+  h: 310,
+  bottomFromTray: 258,
+  slotHeight: 48,
+  buttonHeight: 76,
+  offsets: {
+    label: 38,
+    title: 79,
+    slotTop: 99,
+    slotBottom: 147,
+    verse: 171,
+    buttonTop: 200,
+  },
+} as const;
+
 /** Quy tắc hình học từ artboard GridSpec */
 export const GRID_TOKENS = {
   logicCellPx: 5,
