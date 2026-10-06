@@ -128,6 +128,19 @@ describe('Bố cục bản đồ chòm sao (CH-03)', () => {
     expect(small.chapters.map((c) => [c.chapter, c.nodeCount])).toEqual([[1, 2], [2, 1]]);
     expect(small.nodes.map((n) => n.y)).toEqual([270, 430, 690]);
   });
+
+  test('96px nodes still clear each other in the densest chapter', () => {
+    const NODE = 96;
+    const hoaPham = layout.nodes.filter((n) => n.chapter === 3);
+    for (let i = 0; i < hoaPham.length; i++) {
+      for (let j = i + 1; j < hoaPham.length; j++) {
+        const a = hoaPham[i];
+        const b = hoaPham[j];
+        const clear = Math.abs(a.y - b.y) >= NODE || Math.abs(a.x - b.x) >= NODE;
+        expect(clear, `${a.id} và ${b.id}`).toBe(true);
+      }
+    }
+  });
 });
 
 describe('Màn chọn màn theo mockup improve-v1', () => {

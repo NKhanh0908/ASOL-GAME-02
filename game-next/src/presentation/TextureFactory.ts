@@ -433,132 +433,133 @@ export class TextureFactory {
     const tm = scene.textures;
     if (!tm) return;
 
-    // 1. Node Hoàn thành 72px (Vàng đặc + viền sáng + checkmark sắc nét)
+    // 1. Completed node 96px (solid amber + bright rim + crisp checkmark)
     if (!tm.exists(TEXTURE_KEYS.nodeCompleted)) {
-      const canvas = tm.createCanvas(TEXTURE_KEYS.nodeCompleted, 72, 72);
+      const canvas = tm.createCanvas(TEXTURE_KEYS.nodeCompleted, 96, 96);
       if (canvas) {
         const ctx = canvas.context;
         ctx.fillStyle = COLOR_TOKENS.amberGold.solidPrimary;
-        TextureFactory.diamondPath(ctx, 36, 36, 32);
+        TextureFactory.diamondPath(ctx, 48, 48, 43);
         ctx.fill();
 
-        // Viền sáng vàng lấp lánh
         ctx.strokeStyle = COLOR_TOKENS.amberGold.glowHighlight;
-        ctx.lineWidth = 3;
+        ctx.lineWidth = 4;
         ctx.stroke();
 
-        // Dấu checkmark navy đậm
+        // The checkmark is drawn here only as the fallback for a level whose
+        // silhouette cannot be built; LevelSelectScene draws the silhouette
+        // over it for every level that has one.
         ctx.strokeStyle = COLOR_TOKENS.sky.stops[0];
-        ctx.lineWidth = 4.5;
+        ctx.lineWidth = 6;
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
         ctx.beginPath();
-        ctx.moveTo(25, 36);
-        ctx.lineTo(33, 44);
-        ctx.lineTo(49, 28);
+        ctx.moveTo(33, 48);
+        ctx.lineTo(44, 59);
+        ctx.lineTo(65, 37);
         ctx.stroke();
         canvas.refresh();
       }
     }
 
-    // 2. Node Hiện tại 72px (Vành kính xanh + vòng vàng phát quang + tâm rực)
+    // 2. Node Hiện tại 96px (Vành kính xanh + vòng vàng phát quang + tâm rực)
     if (!tm.exists(TEXTURE_KEYS.nodeCurrent)) {
-      const canvas = tm.createCanvas(TEXTURE_KEYS.nodeCurrent, 72, 72);
+      const canvas = tm.createCanvas(TEXTURE_KEYS.nodeCurrent, 96, 96);
       if (canvas) {
         const ctx = canvas.context;
         ctx.fillStyle = COLOR_TOKENS.board.surfaceTop;
-        TextureFactory.diamondPath(ctx, 36, 36, 32);
+        TextureFactory.diamondPath(ctx, 48, 48, 43);
         ctx.fill();
 
         // Vành kính xanh
         ctx.strokeStyle = COLOR_TOKENS.iceGlass.primaryBorder;
-        ctx.lineWidth = 3.5;
+        ctx.lineWidth = 4.5;
         ctx.stroke();
 
         // Highlight kính cạnh trên
         ctx.strokeStyle = COLOR_TOKENS.iceGlass.bevelHighlight;
-        ctx.lineWidth = 2;
+        ctx.lineWidth = 2.5;
         ctx.beginPath();
-        ctx.arc(36, 36, 31, Math.PI * 1.1, Math.PI * 1.9);
+        ctx.arc(48, 48, 41, Math.PI * 1.1, Math.PI * 1.9);
         ctx.stroke();
 
         // Vành vàng phát quang bên trong
         ctx.strokeStyle = COLOR_TOKENS.amberGold.glowHighlight;
-        ctx.lineWidth = 2.5;
-        TextureFactory.diamondPath(ctx, 36, 36, 25);
+        ctx.lineWidth = 3.5;
+        TextureFactory.diamondPath(ctx, 48, 48, 33);
         ctx.stroke();
 
-        // Lõi vàng đặc radius 21px để hiển thị số màn rõ nét
+        // Lõi vàng đặc radius 28px để hiển thị số màn rõ nét
         ctx.fillStyle = COLOR_TOKENS.amberGold.solidPrimary;
-        TextureFactory.diamondPath(ctx, 36, 36, 21);
+        TextureFactory.diamondPath(ctx, 48, 48, 28);
         ctx.fill();
         canvas.refresh();
       }
     }
 
-    // 3. Node Đã mở chưa chơi 72px (Viền kính xanh trong suốt + bevel)
+    // 3. Node Đã mở chưa chơi 96px (Viền kính xanh trong suốt + bevel)
     if (!tm.exists(TEXTURE_KEYS.nodeUnlocked)) {
-      const canvas = tm.createCanvas(TEXTURE_KEYS.nodeUnlocked, 72, 72);
+      const canvas = tm.createCanvas(TEXTURE_KEYS.nodeUnlocked, 96, 96);
       if (canvas) {
         const ctx = canvas.context;
         ctx.fillStyle = COLOR_TOKENS.board.surfaceTop;
-        TextureFactory.diamondPath(ctx, 36, 36, 32);
+        TextureFactory.diamondPath(ctx, 48, 48, 43);
         ctx.fill();
 
         ctx.strokeStyle = COLOR_TOKENS.iceGlass.primaryBorder;
-        ctx.lineWidth = 3;
+        ctx.lineWidth = 4;
         ctx.stroke();
 
         ctx.strokeStyle = COLOR_TOKENS.iceGlass.bevelHighlight;
-        ctx.lineWidth = 2;
+        ctx.lineWidth = 2.5;
         ctx.beginPath();
-        ctx.arc(36, 36, 31, Math.PI * 1.1, Math.PI * 1.9);
+        ctx.arc(48, 48, 41, Math.PI * 1.1, Math.PI * 1.9);
         ctx.stroke();
 
         ctx.fillStyle = COLOR_TOKENS.iceGlass.primaryBorder;
-        TextureFactory.diamondPath(ctx, 36, 36, 7);
+        TextureFactory.diamondPath(ctx, 48, 48, 9);
         ctx.fill();
         canvas.refresh();
       }
     }
 
-    // 4. Node Khóa 72px (Mờ tối + Icon ổ khóa chiêm tinh)
+    // 4. Node Khóa 96px (Mờ tối + Icon ổ khóa chiêm tinh)
     if (!tm.exists(TEXTURE_KEYS.nodeLocked)) {
-      const canvas = tm.createCanvas(TEXTURE_KEYS.nodeLocked, 72, 72);
+      const canvas = tm.createCanvas(TEXTURE_KEYS.nodeLocked, 96, 96);
       if (canvas) {
         const ctx = canvas.context;
         ctx.fillStyle = 'rgba(11, 20, 48, 0.7)';
-        TextureFactory.diamondPath(ctx, 36, 36, 30);
+        TextureFactory.diamondPath(ctx, 48, 48, 40);
         ctx.fill();
 
         ctx.strokeStyle = 'rgba(157, 175, 199, 0.35)';
-        ctx.lineWidth = 2;
+        ctx.lineWidth = 2.5;
         ctx.stroke();
 
         // Quai khóa
         ctx.strokeStyle = COLOR_TOKENS.text.secondary;
-        ctx.lineWidth = 2.5;
+        ctx.lineWidth = 3.5;
         ctx.lineCap = 'round';
         ctx.beginPath();
-        ctx.arc(36, 32, 7.5, Math.PI, 0, false);
+        ctx.arc(48, 43, 10, Math.PI, 0, false);
         ctx.stroke();
 
         // Thân khóa
         ctx.fillStyle = COLOR_TOKENS.text.secondary;
         ctx.beginPath();
         if (ctx.roundRect) {
-          ctx.roundRect(26, 32, 20, 15, 3);
+          ctx.roundRect(35, 43, 26, 20, 4);
         } else {
-          ctx.rect(26, 32, 20, 15);
+          ctx.rect(35, 43, 26, 20);
         }
         ctx.fill();
 
         // Lỗ khóa
         ctx.fillStyle = COLOR_TOKENS.sky.stops[0];
         ctx.beginPath();
-        ctx.arc(36, 38, 2.5, 0, Math.PI * 2);
+        ctx.arc(48, 51, 3.5, 0, Math.PI * 2);
         ctx.fill();
-        ctx.fillRect(35, 38, 2, 4);
+        ctx.fillRect(46.5, 51, 3, 5.5);
 
         canvas.refresh();
       }
