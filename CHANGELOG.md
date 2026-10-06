@@ -4,6 +4,13 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-06 - Dim sky when restoring finished level
+
+- `src/presentation/PlayScene.ts`: on `phase === 'won'` restore path, deepen BackgroundScene sky with `VICTORY_TOKENS.skyDimExtra` (duration 0) so entering a finished level matches the dimmed sky left by the victory sequence timeline.
+
+Verification: `npm test` passes (89 files, 1099 tests).
+
+
 ### 2026-10-06 - Bottom-anchor victory card and reserve strip slot
 
 - `src/presentation/designTokens.ts`: export `VICTORY_CARD` tokens defining bottom-anchored geometry (`w: 660, h: 310, bottomFromTray: 258, slotHeight: 48, buttonHeight: 76`) and relative inner offsets.

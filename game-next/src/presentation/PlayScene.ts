@@ -18,7 +18,7 @@ import {
 } from './layout.ts';
 import type { LayoutMetrics } from './layout.ts';
 
-import { COLOR_NUMBERS, COLOR_TOKENS, DEPTH_TOKENS, TYPO_TOKENS } from './designTokens.ts';
+import { COLOR_NUMBERS, COLOR_TOKENS, DEPTH_TOKENS, TYPO_TOKENS, VICTORY_TOKENS } from './designTokens.ts';
 import { TextureFactory } from './TextureFactory.ts';
 
 import { PauseDialog } from './PauseDialog.ts';
@@ -239,6 +239,10 @@ export class PlayScene extends Phaser.Scene implements Choreographed {
 
     if (this.controller.getSnapshot().phase === 'won') {
       this.boardRenderer.setVictoryMode(true);
+      // The victory timeline deepens the sky at skyDimAtMs; this path has no
+      // timeline, so it jumps straight to the same end state. Without it the
+      // two routes into the won state leave different screens.
+      (this.scene.get('BackgroundScene') as BackgroundScene | null)?.deepen(VICTORY_TOKENS.skyDimExtra, 0);
       this.hud.showWinModal(this.level.victoryVerse);
     } else {
       // Thông báo banner chào đón đầu màn chơi
