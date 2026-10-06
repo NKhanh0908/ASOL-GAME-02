@@ -1,14 +1,22 @@
-# Status — updated 2026-10-06 by Claude Code (VR2 verified; VR3a scope corrected)
+# Status — updated 2026-10-06 by Claude Code (VR2 provisionally accepted; VR3a and VR3b handed to Antigravity)
 
 Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; keep this file ≤ 60 lines.
 
 ## Now
 
-- Branch: `main`, clean at `472b425`. Working directory D:\Working\ASOL\ASOL-GAME-02.
-- **VR1 accepted by the reviewer** on 2026-10-06, after the two emblem defects were fixed (`1fe3818`, `015047d`).
-- **VR2 executed** by Antigravity: Tasks 1–7 (`66ff115`..`a0f0625`). §3.1 excluded as planned, pending VR3b's victory card slot. The reviewer then rejected the completed-node silhouettes as unreadable; the fit was corrected from a fixed 46x32 box to a per-level diamond fit. `npm test` 89 files / 1078 tests pass, `npm run build` clean.
-- **Both VR3 plans written**: `2026-10-06-vr3a-piece-feel.md` (**5** tasks) and `2026-10-06-vr3b-medallion-victory-ritual.md` (6 tasks). VR3b is unblocked now VR2 has landed, but its Tasks 1 and 4 edit files VR2 just rewrote (`TextureFactory.ts`, `TargetBadge.ts`) — read those as they stand first.
-- Next step: reviewer plays the VR2 map and reads the VR3a spec, which is still `draft`. Then VR3a executes.
+- Branch: `main`, clean at `c28aecd`. Working directory D:\Working\ASOL\ASOL-GAME-02.
+- **VR1 accepted** on 2026-10-06, after the two emblem defects were fixed (`1fe3818`, `015047d`).
+- **VR2 executed** by Antigravity: Tasks 1–7 (`66ff115`..`a0f0625`). §3.1 excluded as planned, pending VR3b's victory card slot. The reviewer rejected the completed-node silhouettes as unreadable; the fit was corrected from a fixed 46×32 box to a per-level diamond fit (`c28aecd`) and VR2 is now **provisionally accepted** — "tạm nghiệm thu", not final.
+- **VR3a and VR3b are handed to Antigravity.** Both plans are written and ready: `2026-10-06-vr3a-piece-feel.md` (5 tasks) and `2026-10-06-vr3b-medallion-victory-ritual.md` (6 tasks). See "Handing VR3 over" below before starting either.
+- `npm test` 89 files / 1078 tests pass, `npm run build` clean, GitNexus index refreshed at this commit.
+
+## Handing VR3 over
+
+- **The VR3a spec is still `draft`.** The reviewer has not read it. Its decisions were taken in conversation and recorded, but nothing in it has been signed off, so treat its risk list as live rather than settled.
+- **Three stop points need a real device and the reviewer's hands**, not a desktop browser: VR3a Task 1 (the pick-up dip costs ~40 ms of touch response on the game's most repeated action — the one change that could make the game feel worse), VR3b Task 1 (the grown victory card overlaps the bottom 36 px of the board), VR3b Task 5 (the Eye crossfade alphas 0.55 / 0.35 in daylight). Stop and ask; do not tune past them alone.
+- **VR3b Tasks 1 and 4 edit `TextureFactory.ts` and `TargetBadge.ts`, which VR2 just rewrote.** Read both as they stand first: VR2 grew the node canvases to 96 px in the first and moved `drawTargetSilhouette` out of the second into `targetSilhouette.ts`.
+- VR3a and VR3b touch disjoint files from each other and can run in either order.
+- VR2 §3.1 (the constellation strip) and VR3b §3.4 (its audio cue) are still deferred together. VR3b Task 1 builds the 48 px slot the strip will need, so after VR3b the strip becomes a small follow-up rather than a geometry problem.
 
 ## Streams
 
@@ -22,7 +30,7 @@ Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; k
 | GS audio synthesis (Tasks 1–12) | complete; approved; acceptance passed | `docs/superpowers/plans/2026-10-05-gs-audio-synth-index.md` |
 | G audio (music, cues) | complete; approved | `docs/superpowers/plans/2026-10-03-g-audio-index.md` |
 | BF board-fit-by-cells | complete, merged to `main` with Plan C | `docs/superpowers/plans/2026-10-03-board-fit-by-cells.md` |
-| VR visual refactor (VR0 → VR1 → VR2 → VR3a → VR3b) | VR0, VR1, VR2 done; VR3a spec `draft` + plan ready; VR3b spec approved + plan ready | `docs/ai/DOCS-INDEX.md` rows VR0–VR3b |
+| VR visual refactor (VR0 → VR1 → VR2 → VR3a → VR3b) | VR0, VR1 accepted; VR2 done and provisionally accepted; VR3a and VR3b planned, handed to Antigravity | `docs/ai/DOCS-INDEX.md` rows VR0–VR3b |
 | Chapter 4 content (Luân Chuyển) | **not started**; 4-1…4-6 planned; 22 of 28 approved | `docs/superpowers/specs/2026-10-02-b-level-kit-chapters-design.md` |
 
 ## Open decisions / blockers
@@ -37,15 +45,11 @@ Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; k
 
 ## Gotchas learned recently
 
-- A map node is a **diamond**, so what fits it is `|x| + |y| <= r`, not an inscribed square or a box. Fitting a figure to a box inside a diamond wastes most of it and cannot adapt to the figure's proportions — that is how completed nodes shipped at 13–17px wide. Fit by scaling until the furthest vertex reaches the budget.
 
-- `variant: 'target'` in `JewelShape.ts` both fills **and** dash-strokes, and `BoardRenderer` calls it once per target placement, so every edge two target pieces share is stroked twice and reads as a seam through the figure. Target pieces can share only *part* of an edge (1-5's sail and hull), so merging the boundary needs edges split at vertices before duplicates cancel — cancelling exact duplicates alone fixes 1-2 and breaks 1-5.
 - The victory card is **bottom-constrained**: top-anchored at `trayBounds.y - 4` with height 262, its bottom sits at 1274 of 1280. Growing it needs bottom-anchoring, and `victory_card_frame` / `victory_card_surface` have their sizes hardcoded in `TextureFactory.ts`.
 - `PlayScene.ts:241` already calls `setVictoryMode(true)` on the restore path, which hides the tray and golds the frame. The only thing the victory timeline does that it does not is `background().deepen(skyDimExtra)`.
 - `shimmer` is already the `overlap-revive` cue in play (`audioCues.ts:64-65`); new "magical" moments need their own patch.
-- `PieceView` drives scale **and** shadow from one `lift` scalar (`1 + 0.08 × lift`), so changing the lift easing changes both — pick-up anticipation needs a new easing, not a second animation.
 - `ANIM_TOKENS.duration.overlapInversionMs` is dead but pinned by `tests/designTokens.test.ts:102`; the live XOR animation uses the `FEEDBACK_TOKENS.overlap*` values.
-- Music continuity: `MusicPort.setTrack` returns early when `id === wanted`.
 - PowerShell `Copy-Item` / `Test-Path` treats square brackets as wildcards — pass `-LiteralPath`.
 
 ## Two agents in one tree

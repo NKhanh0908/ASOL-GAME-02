@@ -4,6 +4,16 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-06 - Hand VR3a and VR3b over, and refresh the index
+
+Controller pass closing this session's work. VR2 is provisionally accepted by the reviewer ("tạm nghiệm thu") after the silhouette fit was corrected; VR3a and VR3b go to Antigravity.
+
+- `docs/ai/STATUS.md` gains a **Handing VR3 over** section naming what the plans do not say on their own: the VR3a spec is still `draft` and was never signed off, the three stop points that need the reviewer's hands on a device rather than a desktop browser, and the fact that VR3b Tasks 1 and 4 edit the two files VR2 just rewrote.
+- Moved four stable invariants out of STATUS gotchas into `docs/ai/ARCHITECTURE.md` §Invariants, per the end-of-task rule: how to fit a figure to a diamond, why `variant: 'target'` double-strokes shared edges, why `PieceView`'s single `lift` scalar means pick-up changes belong in the easing, and the two routes into the won state. STATUS is back under its 60-line cap at 57.
+- Ran `node .gitnexus/run.cjs analyze`. The index was stuck at `30d9e2d`, which predates VR2, so `impact` could not resolve `silhouetteLayers` during the fit correction and callers had to be found by grep. It now resolves: one direct caller, `drawTargetSilhouette`, then the two scenes. Only the generated stats lines in `AGENTS.md` and `CLAUDE.md` changed (5,759 nodes / 14,265 edges / 300 flows).
+
+Verification: documentation and index only; no `src/` change in this commit. `npm test` 89 files / 1078 tests and `npm run build` were run at `c28aecd`, the commit this one follows, and both passed. `detect_changes` reports docs-only scope.
+
 ### 2026-10-06 - Fit the node silhouette to the diamond, not to a box
 
 The reviewer reported that completed nodes on the map read as ink blots (`docs/screenshots/web/m1/Level.png`). They were: measured across the 22 approved levels, 1-4 drew 13px wide and 3-4 17px wide inside a 96px node.
