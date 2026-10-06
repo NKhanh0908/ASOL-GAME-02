@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { constellationPath, parallaxOffset, victoryGlow } from '../src/presentation/constellationMotion.ts';
+import { constellationPath, parallaxOffset, victoryGlow, walkedLinkAlpha } from '../src/presentation/constellationMotion.ts';
 
 describe('constellation motion', () => {
   test('level route bends away from the straight chord while preserving endpoints', () => {
@@ -18,5 +18,16 @@ describe('constellation motion', () => {
     expect(victoryGlow(0)).toBe(0);
     expect(victoryGlow(0.32)).toBeGreaterThan(0.9);
     expect(victoryGlow(1)).toBe(0);
+  });
+});
+
+describe('walked link emphasis', () => {
+  test('the link into the current node stays brighter than the rest', () => {
+    expect(walkedLinkAlpha(true)).toBeGreaterThan(walkedLinkAlpha(false));
+  });
+
+  test('both stay below the current node, which owns tier 3', () => {
+    expect(walkedLinkAlpha(true)).toBeLessThan(1);
+    expect(walkedLinkAlpha(false)).toBeLessThan(walkedLinkAlpha(true));
   });
 });

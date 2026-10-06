@@ -27,3 +27,13 @@ export function victoryGlow(progress: number): number {
   if (progress < 0.32) return Math.sin((progress / 0.32) * Math.PI / 2);
   return Math.max(0, 1 - (progress - 0.32) / 0.68);
 }
+
+/**
+ * Walked links are tier 1 — structure, not focus. The one arriving at the
+ * current node stays a little brighter so the eye can follow the path to
+ * where the player is, without competing with the node itself.
+ */
+export function walkedLinkAlpha(isIntoCurrent: boolean): number {
+  return isIntoCurrent ? 0.95 : 0.55;
+}
+

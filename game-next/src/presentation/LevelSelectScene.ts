@@ -11,6 +11,8 @@ import { TEXTURE_KEYS, TextureFactory } from './TextureFactory.ts';
 import { applyDesignViewport, designSafeArea, designViewBounds } from './designViewport.ts';
 import { formatNodeLabel, formatProgress } from './hudText.ts';
 import { layoutCampaignMap } from './constellationLayout.ts';
+import { walkedLinkAlpha } from './constellationMotion.ts';
+import { isReducedMotion } from './transitions/motion.ts';
 import { NODE_SILHOUETTE_BOX, drawTargetSilhouette } from './targetSilhouette.ts';
 import { t, getChapterLabel } from './i18n.ts';
 import { director } from './transitions/SceneDirector.ts';
@@ -287,32 +289,17 @@ export class LevelSelectScene extends Phaser.Scene implements Choreographed {
       const points = curve.getPoints(24);
 
       if (isPathWalked) {
-        // Đoạn đã đi: Vàng đặc 4px có glow 8px
-        linesGraphics.lineStyle(8, COLOR_NUMBERS.amberSolid, 0.22);
+        const alpha = walkedLinkAlpha(p2.state === 'current');
+
+        linesGraphics.lineStyle(8, COLOR_NUMBERS.amberSolid, 0.22 * alpha);
         for (let j = 0; j < points.length - 1; j++) {
           linesGraphics.lineBetween(points[j].x, points[j].y, points[j + 1].x, points[j + 1].y);
         }
 
-        linesGraphics.lineStyle(4, COLOR_NUMBERS.amberSolid, 0.95);
+        linesGraphics.lineStyle(4, COLOR_NUMBERS.amberSolid, 0.95 * alpha);
         for (let j = 0; j < points.length - 1; j++) {
           linesGraphics.lineBetween(points[j].x, points[j].y, points[j + 1].x, points[j + 1].y);
         }
-
-        // Đốm sáng chạy dọc đường. Phaser không có stroke-dashoffset như
-        // mockup, nên mô phỏng bằng một chấm tween theo các điểm của đường.
-        const spark = this.add.circle(points[0].x, points[0].y, 4, COLOR_NUMBERS.amberGlow, 0.9);
-        this.mapContainer.add(spark);
-        this.linkParts.push(spark);
-        this.tweens.addCounter({
-          from: 0,
-          to: points.length - 1,
-          duration: ANIM_TOKENS.duration.linkSweepMs,
-          repeat: -1,
-          onUpdate: (tween) => {
-            const point = points[Math.round(tween.getValue() ?? 0)];
-            if (point) spark.setPosition(point.x, point.y);
-          },
-        });
       } else {
         // Đoạn chưa tới: Xanh kính 25% opacity nét đứt
         linesGraphics.lineStyle(2, COLOR_NUMBERS.icePrimary, 0.35);
@@ -411,15 +398,17 @@ export class LevelSelectScene extends Phaser.Scene implements Choreographed {
         nodeContainer.add(numText);
       } else if (node.state === 'current') {
         // Node hiện tại: Thêm tween nhấp nháy phát quang hào quang
-        this.tweens.add({
-          targets: nodeSprite,
-          scaleX: 1.1,
-          scaleY: 1.1,
-          duration: 750,
-          yoyo: true,
-          repeat: -1,
-          ease: 'Sine.easeInOut',
-        });
+        if (!isReducedMotion()) {
+          this.tweens.add({
+            targets: nodeSprite,
+            scaleX: 1.1,
+            scaleY: 1.1,
+            duration: 750,
+            yoyo: true,
+            repeat: -1,
+            ease: 'Sine.easeInOut',
+          });
+        }
 
         // Số màn nổi bật ở tâm
         const numText = this.add
@@ -461,14 +450,16 @@ export class LevelSelectScene extends Phaser.Scene implements Choreographed {
         nodeContainer.add(titleBadge);
 
         // Tween nhịp thở nhẹ nhàng cho nhãn màn hiện tại
-        this.tweens.add({
-          targets: titleBadge,
-          y: 60,
-          duration: 800,
-          yoyo: true,
-          repeat: -1,
-          ease: 'Sine.easeInOut',
-        });
+        if (!isReducedMotion()) {
+          this.tweens.add({
+            targets: titleBadge,
+            y: 72,
+            duration: 800,
+            yoyo: true,
+            repeat: -1,
+            ease: 'Sine.easeInOut',
+          });
+        }
       } else if (node.state === 'unlocked') {
         const numText = this.add
           .text(0, 0, node.id, {
