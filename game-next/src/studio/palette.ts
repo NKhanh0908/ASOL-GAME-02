@@ -1,6 +1,11 @@
 import type { Orientation, ShapeKind } from '../domain/model.ts';
-import { isValidFrame } from '../domain/shapes.ts';
 import type { StudioAction, StudioState } from './state.ts';
+import {
+  orientationFamilies,
+  previewPoints,
+  snapFrameSize,
+  validFrameSizes,
+} from './orientationOptions.ts';
 
 export type PaletteOptions = {
   getState: () => StudioState;
@@ -20,8 +25,6 @@ const ALL_SHAPES: Array<{ kind: ShapeKind; label: string }> = [
   { kind: 'parallelogram', label: 'Bình hành' },
 ];
 
-const CANDIDATE_SIZES = [16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 112, 128];
-
 export function createPalette(options: PaletteOptions): Palette {
   const container = document.createElement('div');
   container.className = 'studio-palette';
@@ -39,13 +42,8 @@ export function createPalette(options: PaletteOptions): Palette {
   let selectedSize: number = 48;
 
   function updateValidSizes(): number[] {
-    const valid = CANDIDATE_SIZES.filter((s) =>
-      isValidFrame(selectedKind, selectedOrientation, s)
-    );
-    if (!valid.includes(selectedSize) && valid.length > 0) {
-      selectedSize = valid[0];
-    }
-    return valid;
+    selectedSize = snapFrameSize(selectedKind, selectedOrientation, selectedSize);
+    return validFrameSizes(selectedKind, selectedOrientation);
   }
 
   function render() {
@@ -104,29 +102,67 @@ export function createPalette(options: PaletteOptions): Palette {
     };
     container.appendChild(sizeSelect);
 
-    // 3. Orientation selector (for triangle and parallelogram)
-    const maxOri = selectedKind === 'triangle' ? 7 : selectedKind === 'parallelogram' ? 3 : 0;
-    if (maxOri > 0) {
-      const oriSelect = document.createElement('select');
-      oriSelect.style.padding = '6px 10px';
-      oriSelect.style.borderRadius = '4px';
-      oriSelect.style.backgroundColor = '#1e294b';
-      oriSelect.style.color = '#e2e8f0';
-      oriSelect.style.border = '1px solid #334155';
-      oriSelect.style.cursor = 'pointer';
-      for (let o = 0; o <= maxOri; o++) {
-        const opt = document.createElement('option');
-        opt.value = String(o);
-        opt.textContent = `Hướng ${o}`;
-        if (o === selectedOrientation) opt.selected = true;
-        oriSelect.appendChild(opt);
-      }
-      oriSelect.onchange = () => {
-        selectedOrientation = Number(oriSelect.value) as Orientation;
-        updateValidSizes();
-        render();
-      };
-      container.appendChild(oriSelect);
+    // 3. Orientation picker: ảnh xem trước thật, chia theo họ
+    const families = orientationFamilies(selectedKind);
+    if (families.length > 0) {
+      const oriGroup = document.createElement('div');
+      oriGroup.className = 'studio-orientation';
+      oriGroup.style.display = 'flex';
+      oriGroup.style.alignItems = 'center';
+      oriGroup.style.gap = '8px';
+
+      families.forEach((family) => {
+        const famWrap = document.createElement('div');
+        famWrap.style.display = 'flex';
+        famWrap.style.alignItems = 'center';
+        famWrap.style.gap = '3px';
+
+        const famLabel = document.createElement('span');
+        famLabel.textContent = family.label;
+        famLabel.style.fontSize = '11px';
+        famLabel.style.color = '#94a3b8';
+        famWrap.appendChild(famLabel);
+
+        family.orientations.forEach((o) => {
+          const btn = document.createElement('button');
+          btn.title = `${family.label} ${o}`;
+          btn.setAttribute('data-orientation', String(o));
+          btn.style.width = '32px';
+          btn.style.height = '32px';
+          btn.style.padding = '3px';
+          btn.style.borderRadius = '4px';
+          btn.style.cursor = 'pointer';
+          btn.style.lineHeight = '0';
+          if (o === selectedOrientation) {
+            btn.style.border = '1px solid #38bdf8';
+            btn.style.backgroundColor = '#0b2a3f';
+          } else {
+            btn.style.border = '1px solid #334155';
+            btn.style.backgroundColor = '#1e294b';
+          }
+
+          const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+          svg.setAttribute('width', '24');
+          svg.setAttribute('height', '24');
+          svg.setAttribute('viewBox', '0 0 24 24');
+          const poly = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+          poly.setAttribute('points', previewPoints(selectedKind, o, 24));
+          poly.setAttribute('fill', o === selectedOrientation ? '#38bdf8' : '#94a3b8');
+          svg.appendChild(poly);
+          btn.appendChild(svg);
+
+          btn.onclick = () => {
+            selectedOrientation = o;
+            updateValidSizes();
+            render();
+          };
+          famWrap.appendChild(btn);
+        });
+
+        oriGroup.appendChild(famWrap);
+      });
+
+      container.appendChild(oriGroup);
     }
 
     // 4. Add piece button

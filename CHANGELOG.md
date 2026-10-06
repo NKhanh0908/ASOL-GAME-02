@@ -4,6 +4,12 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-06 - Palette orientation preview buttons (E4 Task 2)
+
+- `game-next/src/studio/palette.ts`: replaced the `<select>` of bare numbers with family-grouped SVG preview buttons (`Góc`, `Mái`, `Nghiêng`), using `orientationOptions.ts` for valid frame sizes and snapping.
+
+Verification: `npm test` passes (90 files, 1114 tests), `npm run typecheck` clean.
+
 ### 2026-10-06 - Pure orientation-family and frame-size module (E4 Task 1)
 
 - `game-next/src/studio/orientationOptions.ts`: pure module providing `orientationFamilies`, `validFrameSizes`, `snapFrameSize`, `previewPoints`, and `CANDIDATE_SIZES` for studio UI without DOM dependencies.
