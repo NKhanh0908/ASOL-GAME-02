@@ -4,6 +4,13 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-06 - Overwrite mode for promoteStudioLevel (E4 Task 5)
+
+- `game-next/src/content/promote.ts`: added `overwrite?: boolean` to `PromoteOptions`, `bumpRevision` helper (`-v1` -> `-v2`), and relaxed `updateManifestLine` to allow overwriting existing campaign levels (skipping re-registration in `sources/index.ts` and `catalog.ts`, downgrading status to `validated`).
+- `game-next/tests/promote.test.ts`: tests for `bumpRevision`, overwrite status downgrade and revision bump, preventing duplicate registration, and ensuring non-unique solutions leave all files untouched.
+
+Verification: `npm test -- tests/promote.test.ts` passes (14 tests), `npm run typecheck` clean.
+
 ### 2026-10-06 - Inspector orientation control for selected piece (E4 Task 4)
 
 - `game-next/src/studio/inspector.ts`: added grouped SVG preview buttons to inspect and change the selected piece's orientation via `set-orientation`, disabling buttons for orientations incompatible with the current frame size.

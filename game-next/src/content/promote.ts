@@ -56,6 +56,13 @@ export function registerInCatalog(catalogText: string, id: string, varName: stri
   return lines.join(eol);
 }
 
+/** 'thuyen-sao-v1' → 'thuyen-sao-v2'; không có đuôi -v<N> thì thêm '-v2'. */
+export function bumpRevision(revision: string): string {
+  const m = /^(.*)-v(\d+)$/.exec(revision);
+  if (!m) return `${revision}-v2`;
+  return `${m[1]}-v${Number(m[2]) + 1}`;
+}
+
 export type ManifestUpdateData = {
   id: string;
   title: string;
@@ -67,7 +74,11 @@ export type ManifestUpdateData = {
 /**
  * Cập nhật dòng của targetId trong manifest.ts từ status: 'planned' sang 'validated'.
  */
-export function updateManifestLine(manifestText: string, entry: ManifestUpdateData): string {
+export function updateManifestLine(
+  manifestText: string,
+  entry: ManifestUpdateData,
+  expect: { fromStatus?: 'planned' | 'any' } = {}
+): string {
   const eol = manifestText.includes('\r\n') ? '\r\n' : '\n';
   const lines = manifestText.replace(/\r\n/g, '\n').split('\n');
 
@@ -79,8 +90,10 @@ export function updateManifestLine(manifestText: string, entry: ManifestUpdateDa
   }
 
   const currentLine = lines[lineIdx];
-  if (!currentLine.includes("'status': 'planned'") && !currentLine.includes("status: 'planned'")) {
-    throw new Error(`Màn ${entry.id} không ở trạng thái planned trong manifest.ts`);
+  if ((expect.fromStatus ?? 'planned') === 'planned') {
+    if (!currentLine.includes("'status': 'planned'") && !currentLine.includes("status: 'planned'")) {
+      throw new Error(`Màn ${entry.id} không ở trạng thái planned trong manifest.ts`);
+    }
   }
 
   const escapedTitle = entry.title.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
@@ -121,6 +134,7 @@ export type PromoteOptions = {
   studioId: string;
   targetId: string;
   root: string;
+  overwrite?: boolean;
 };
 
 export type PromoteResult =
@@ -182,8 +196,12 @@ export function promoteStudioLevel(opts: PromoteOptions): PromoteResult {
   }
 
   const [, , chapterStr, orderStr, , status] = targetMatch;
-  if (status !== 'planned') {
+  const overwrite = opts.overwrite === true;
+  if (!overwrite && status !== 'planned') {
     return { ok: false, error: `target-not-planned:${opts.targetId} (status is ${status})` };
+  }
+  if (overwrite && status === 'planned') {
+    return { ok: false, error: `overwrite-on-planned:${opts.targetId} (dùng chế độ thường)` };
   }
 
   const targetChapter = Number(chapterStr) as Chapter;
@@ -194,6 +212,11 @@ export function promoteStudioLevel(opts: PromoteOptions): PromoteResult {
     chapter: targetChapter,
     order: targetOrder,
   });
+
+  const currentRevision = targetMatch[4];
+  if (overwrite) {
+    newSource.contentRevision = bumpRevision(currentRevision);
+  }
 
   const authorResult = authorLevel(newSource);
   if (!authorResult.ok) {
@@ -227,12 +250,14 @@ export function promoteStudioLevel(opts: PromoteOptions): PromoteResult {
   writeFileSync(sourceFilePath, sourceText, 'utf8');
   writtenFiles.push(relative(opts.root, sourceFilePath).replace(/\\/g, '/'));
 
-  // 2. src/content/sources/index.ts
-  const indexPath = resolve(gameNextDir, 'src/content/sources/index.ts');
-  const indexText = readFileSync(indexPath, 'utf8');
-  const updatedIndexText = registerInSourceIndex(indexText, opts.targetId, constName);
-  writeFileSync(indexPath, updatedIndexText, 'utf8');
-  writtenFiles.push(relative(opts.root, indexPath).replace(/\\/g, '/'));
+  // 2. src/content/sources/index.ts — ghi đè thì id đã đăng ký rồi
+  if (!overwrite) {
+    const indexPath = resolve(gameNextDir, 'src/content/sources/index.ts');
+    const indexText = readFileSync(indexPath, 'utf8');
+    const updatedIndexText = registerInSourceIndex(indexText, opts.targetId, constName);
+    writeFileSync(indexPath, updatedIndexText, 'utf8');
+    writtenFiles.push(relative(opts.root, indexPath).replace(/\\/g, '/'));
+  }
 
   // 3. src/content/levels/<targetId>.json
   const levelJsonPath = resolve(gameNextDir, 'src/content/levels', `${opts.targetId}.json`);
@@ -250,20 +275,26 @@ export function promoteStudioLevel(opts: PromoteOptions): PromoteResult {
   writtenFiles.push(relative(opts.root, reportPath).replace(/\\/g, '/'));
 
   // 6. catalog.ts
-  const catalogPath = resolve(gameNextDir, 'src/content/catalog.ts');
-  const catalogText = readFileSync(catalogPath, 'utf8');
-  const updatedCatalogText = registerInCatalog(catalogText, opts.targetId, constName);
-  writeFileSync(catalogPath, updatedCatalogText, 'utf8');
-  writtenFiles.push(relative(opts.root, catalogPath).replace(/\\/g, '/'));
+  if (!overwrite) {
+    const catalogPath = resolve(gameNextDir, 'src/content/catalog.ts');
+    const catalogText = readFileSync(catalogPath, 'utf8');
+    const updatedCatalogText = registerInCatalog(catalogText, opts.targetId, constName);
+    writeFileSync(catalogPath, updatedCatalogText, 'utf8');
+    writtenFiles.push(relative(opts.root, catalogPath).replace(/\\/g, '/'));
+  }
 
   // 7. manifest.ts
-  const updatedManifestText = updateManifestLine(manifestText, {
-    id: opts.targetId,
-    title: newSource.title,
-    chapter: targetChapter,
-    order: targetOrder,
-    contentRevision: newSource.contentRevision,
-  });
+  const updatedManifestText = updateManifestLine(
+    manifestText,
+    {
+      id: opts.targetId,
+      title: newSource.title,
+      chapter: targetChapter,
+      order: targetOrder,
+      contentRevision: newSource.contentRevision,
+    },
+    { fromStatus: overwrite ? 'any' : 'planned' }
+  );
   writeFileSync(manifestPath, updatedManifestText, 'utf8');
   writtenFiles.push(relative(opts.root, manifestPath).replace(/\\/g, '/'));
 

@@ -1,9 +1,10 @@
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { afterEach, beforeEach, describe, expect, test } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, test } from 'vitest';
 import rawSongTinh from '../src/content/levels/1-1.json';
 import type { LevelDocument } from '../src/content/document.ts';
 import {
+  bumpRevision,
   promoteStudioLevel,
   registerInCatalog,
   sourceFromDocument,
@@ -288,6 +289,167 @@ describe('promoteStudioLevel (spec E, ST-08)', () => {
     if (!res.ok) {
       expect(res.error).toContain('authoring-validation-failed');
     }
+  });
+});
+
+function snapshotRepo(root: string): Record<string, string> {
+  const files = [
+    'game-next/src/content/manifest.ts',
+    'game-next/src/content/catalog.ts',
+    'game-next/src/content/sources/index.ts',
+    'game-next/src/content/sources/1-4.ts',
+  ];
+  const out: Record<string, string> = {};
+  for (const f of files) {
+    const p = resolve(root, f);
+    if (existsSync(p)) out[f] = readFileSync(p, 'utf8');
+  }
+  return out;
+}
+
+describe('promoteStudioLevel overwrite', () => {
+  beforeEach(() => {
+    rmSync(TMP_ROOT, { recursive: true, force: true });
+    mkdirSync(resolve(TMP_ROOT, 'game-next/src/content/sources'), { recursive: true });
+    mkdirSync(resolve(TMP_ROOT, 'game-next/src/content/levels'), { recursive: true });
+    mkdirSync(resolve(TMP_ROOT, 'game-next/tests'), { recursive: true });
+    mkdirSync(resolve(TMP_ROOT, 'docs/testing/levels'), { recursive: true });
+
+    // Mock manifest.ts with 1-4 approved and contentRevision: 'thu-nghiem-v1'
+    writeFileSync(
+      resolve(TMP_ROOT, 'game-next/src/content/manifest.ts'),
+      [
+        "import type { ManifestEntry } from './document.ts';",
+        'export const campaignManifest: readonly ManifestEntry[] = [',
+        "  { id: '1-1', title: 'Song Tinh', chapter: 1, order: 1, contentRevision: 'v1', status: 'validated', dataPath: 'src/content/levels/1-1.json' },",
+        "  { id: '1-4', title: 'Hải Đăng', chapter: 1, order: 4, contentRevision: 'thu-nghiem-v1', status: 'approved', dataPath: 'src/content/levels/1-4.json' },",
+        '];',
+      ].join('\n'),
+      'utf8'
+    );
+
+    // Mock catalog.ts
+    writeFileSync(
+      resolve(TMP_ROOT, 'game-next/src/content/catalog.ts'),
+      [
+        "import songTinh from './levels/1-1.json';",
+        "import haiDang from './levels/1-4.json';",
+        'const documents: Record<string, unknown> = {',
+        "  '1-1': songTinh,",
+        "  '1-4': haiDang,",
+        '};',
+      ].join('\n'),
+      'utf8'
+    );
+
+    // Mock sources/index.ts
+    writeFileSync(
+      resolve(TMP_ROOT, 'game-next/src/content/sources/index.ts'),
+      [
+        "import { songTinh } from './1-1.ts';",
+        "import { haiDang } from './1-4.ts';",
+        'export const LEVEL_SOURCES: Record<string, LevelSource> = {',
+        "  '1-1': songTinh,",
+        "  '1-4': haiDang,",
+        '};',
+      ].join('\n'),
+      'utf8'
+    );
+
+    // Mock sources/1-4.ts
+    writeFileSync(
+      resolve(TMP_ROOT, 'game-next/src/content/sources/1-4.ts'),
+      [
+        "import type { LevelSource } from '../authoring.ts';",
+        '',
+        'export const haiDang: LevelSource = {',
+        "  id: '1-4',",
+        "  title: 'Hải Đăng',",
+        '  chapter: 1,',
+        '  order: 4,',
+        "  contentRevision: 'thu-nghiem-v1',",
+        '  pieces: [],',
+        '};',
+      ].join('\n'),
+      'utf8'
+    );
+
+    // Save a valid studio level 'nhap'
+    const nhapSource = sourceFromDocument(rawSongTinh as unknown as LevelDocument, {
+      id: 'nhap',
+      title: 'Hải Đăng Mới',
+      chapter: 1,
+    });
+    saveStudioLevel({
+      source: nhapSource,
+      root: TMP_ROOT,
+      manifestIds: new Set(['1-1', '1-4']),
+      sourceIds: new Set(['1-1', '1-4']),
+    });
+
+    // Save a multi-solution studio level 'da-nghiem'
+    const daNghiemSource = sourceFromDocument(rawSongTinh as unknown as LevelDocument, {
+      id: 'da-nghiem',
+      title: 'Đa Nghiệm',
+      chapter: 1,
+    });
+    daNghiemSource.placement = 'free';
+    daNghiemSource.pieces = [
+      { id: 'S1', shapeKind: 'square', orientation: 0, frameSize: 48, anchors: [{ id: 'A', x: 16, y: 16 }] },
+      { id: 'T1', shapeKind: 'triangle', orientation: 0, frameSize: 48, anchors: [{ id: 'A', x: 64, y: 96 }] },
+      { id: 'T2', shapeKind: 'triangle', orientation: 2, frameSize: 48, anchors: [{ id: 'A', x: 64, y: 96 }] },
+    ];
+    daNghiemSource.sampleSolutions = [[
+      { pieceId: 'S1', anchorId: 'A', turns: 0 },
+      { pieceId: 'T1', anchorId: 'A', turns: 0 },
+      { pieceId: 'T2', anchorId: 'A', turns: 0 },
+    ]];
+    saveStudioLevel({
+      source: daNghiemSource,
+      root: TMP_ROOT,
+      manifestIds: new Set(['1-1', '1-4']),
+      sourceIds: new Set(['1-1', '1-4']),
+    });
+  });
+
+  afterEach(() => {
+    rmSync(TMP_ROOT, { recursive: true, force: true });
+  });
+
+  it('bumpRevision tăng đuôi -v<N>', () => {
+    expect(bumpRevision('thuyen-sao-v1')).toBe('thuyen-sao-v2');
+    expect(bumpRevision('thuyen-sao-v9')).toBe('thuyen-sao-v10');
+    expect(bumpRevision('khong-co-duoi')).toBe('khong-co-duoi-v2');
+  });
+
+  it('không có cờ overwrite thì id đã tồn tại vẫn lỗi', () => {
+    const res = promoteStudioLevel({ studioId: 'nhap', targetId: '1-4', root: TMP_ROOT });
+    expect(res.ok).toBe(false);
+  });
+
+  it('overwrite ghi đè nguồn, tăng revision, hạ approved về validated', () => {
+    const res = promoteStudioLevel({ studioId: 'nhap', targetId: '1-4', root: TMP_ROOT, overwrite: true });
+    expect(res.ok).toBe(true);
+
+    const manifest = readFileSync(resolve(TMP_ROOT, 'game-next/src/content/manifest.ts'), 'utf8');
+    expect(manifest).toContain("contentRevision: 'thu-nghiem-v2'");
+    expect(manifest).toContain("status: 'validated'");
+    expect(manifest).not.toContain("status: 'approved'");
+  });
+
+  it('overwrite không đăng ký trùng trong index.ts và catalog.ts', () => {
+    promoteStudioLevel({ studioId: 'nhap', targetId: '1-4', root: TMP_ROOT, overwrite: true });
+    const index = readFileSync(resolve(TMP_ROOT, 'game-next/src/content/sources/index.ts'), 'utf8');
+    const catalog = readFileSync(resolve(TMP_ROOT, 'game-next/src/content/catalog.ts'), 'utf8');
+    expect(index.match(/'1-4':/g)).toHaveLength(1);
+    expect(catalog.match(/'1-4':/g)).toHaveLength(1);
+  });
+
+  it('nghiệm không duy nhất thì không file nào bị đụng tới', () => {
+    const before = snapshotRepo(TMP_ROOT);
+    const res = promoteStudioLevel({ studioId: 'da-nghiem', targetId: '1-4', root: TMP_ROOT, overwrite: true });
+    expect(res.ok).toBe(false);
+    expect(snapshotRepo(TMP_ROOT)).toEqual(before);
   });
 });
 
