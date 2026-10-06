@@ -16,12 +16,12 @@ import { applySteps } from './transitions/choreography.ts';
 import type { Parts } from './transitions/choreography.ts';
 import { MENU_OUT_TO_MAP, MENU_OUT_TO_PLAY, MENU_SPECIAL, menuIn } from './transitions/routes.ts';
 import { playUiCue } from './audio/uiCues.ts';
+import { DualJewelEmblem } from './menu/DualJewelEmblem.ts';
 
 export class MenuScene extends Phaser.Scene implements Choreographed {
   readonly directorKey = 'MenuScene' as const;
   private progressRepo!: ProgressRepository;
-  private emblemGraphics!: Phaser.GameObjects.Graphics;
-  private sparkleGraphics!: Phaser.GameObjects.Graphics;
+  private emblem!: DualJewelEmblem;
   private uiContainer!: Phaser.GameObjects.Container;
   private titleBlock!: Phaser.GameObjects.Container;
   private primaryButton!: Phaser.GameObjects.Container;
@@ -29,8 +29,6 @@ export class MenuScene extends Phaser.Scene implements Choreographed {
   private settingsButton!: Phaser.GameObjects.Container;
   private langPillContainer!: Phaser.GameObjects.Container;
   private footer!: Phaser.GameObjects.Text;
-  /** Hệ số tốc độ vòng ấn; tween lên 4 khi đi vào màn chơi */
-  private readonly emblemMotion = { ringSpeed: 1 };
   private mirrorLogoContainer?: Phaser.GameObjects.Container;
   private logoSheenGraphics?: Phaser.GameObjects.Graphics;
   private letterObjects: { main: Phaser.GameObjects.Text; shadow: Phaser.GameObjects.Text; baseY: number }[] = [];
@@ -39,9 +37,6 @@ export class MenuScene extends Phaser.Scene implements Choreographed {
   private blockOffsetY = 0;
   private viewHeight: number = LAYOUT_TOKENS.canvas.height;
   private safe = { top: 0, right: 0, bottom: 0, left: 0 };
-  private ringAngle1 = 0;
-  private ringAngle2 = 0;
-  private pulseTime = 0;
 
   constructor() {
     super({ key: 'MenuScene' });
@@ -60,8 +55,7 @@ export class MenuScene extends Phaser.Scene implements Choreographed {
     this.viewHeight = view.height;
 
     // 2. Biểu tượng Ngọc Đôi (Dual Jewels XOR) lơ lửng ở trung tâm
-    this.emblemGraphics = this.add.graphics().setPosition(360, 500 + this.blockOffsetY);
-    this.sparkleGraphics = this.add.graphics().setPosition(360, 500 + this.blockOffsetY);
+    this.emblem = new DualJewelEmblem(this, 360, 500 + this.blockOffsetY);
 
     // 3. UI Container chính
     this.uiContainer = this.add.container(0, this.blockOffsetY);
@@ -464,7 +458,20 @@ export class MenuScene extends Phaser.Scene implements Choreographed {
       onComplete: () => {
         // Flash lấp lánh tại tâm ngọc khi thanh gương bung mở
         const flash = this.add.graphics();
-        this.drawSparkle(360, barY, 14, 0xffffff, 1.0);
+        flash.fillStyle(0xffffff, 1.0);
+        const r = 14;
+        const inner = r * 0.28;
+        const pts = [
+          new Phaser.Geom.Point(360, barY - r),
+          new Phaser.Geom.Point(360 + inner, barY - inner),
+          new Phaser.Geom.Point(360 + r, barY),
+          new Phaser.Geom.Point(360 + inner, barY + inner),
+          new Phaser.Geom.Point(360, barY + r),
+          new Phaser.Geom.Point(360 - inner, barY + inner),
+          new Phaser.Geom.Point(360 - r, barY),
+          new Phaser.Geom.Point(360 - inner, barY - inner),
+        ];
+        flash.fillPoints(pts, true);
         this.time.delayedCall(300, () => flash.destroy());
       },
     });
@@ -753,7 +760,7 @@ export class MenuScene extends Phaser.Scene implements Choreographed {
 
   private transitionParts(): Parts {
     return {
-      emblem: [this.emblemGraphics, this.sparkleGraphics],
+      emblem: this.emblem.graphics(),
       titleBlock: [this.titleBlock],
       primaryButton: [this.primaryButton],
       buttons: [this.primaryButton, this.secondaryButton],
@@ -769,173 +776,13 @@ export class MenuScene extends Phaser.Scene implements Choreographed {
   playOut(tl: TransitionTimeline, ctx: TransitionContext): void {
     if (ctx.route === 'menu-to-play') {
       applySteps(tl, MENU_OUT_TO_PLAY, this.transitionParts(), 'exit');
-      tl.at(MENU_SPECIAL.spinAtMs, this.emblemMotion, { ringSpeed: MENU_SPECIAL.spinPeak }, MENU_SPECIAL.spinMs, 'cubicInOut');
+      tl.call(MENU_SPECIAL.spinAtMs, () => this.emblem.setRingSpeed(MENU_SPECIAL.spinPeak));
     } else {
       applySteps(tl, MENU_OUT_TO_MAP, this.transitionParts(), 'exit');
     }
   }
 
   override update(_time: number, delta: number): void {
-    // Chuyển động lơ lửng và nhịp thở của biểu tượng Ngọc Đôi (Icon 1 XOR)
-    const spin = this.emblemMotion.ringSpeed * getMotionScale();
-    this.ringAngle1 += delta * 0.0003 * spin;
-    this.ringAngle2 -= delta * 0.0002 * spin;
-    this.pulseTime += delta * 0.003;
-
-    this.renderDualJewelEmblem();
-  }
-
-  /**
-   * Vẽ biểu tượng Ngọc Đôi (Icon 1) ở trung tâm màn hình chính:
-   * Hai viên ngọc thoi vàng lồng nhau, tạo vùng rỗng Parity XOR ở giữa
-   * kèm ngôi sao phát quang nhịp thở.
-   */
-  private renderDualJewelEmblem(): void {
-    this.emblemGraphics.clear();
-    this.sparkleGraphics.clear();
-
-    const cx = 0;
-    // Nhấp nhô nhẹ nhàng
-    const bobY = Math.sin(this.pulseTime * 0.7) * 5;
-    const cy = bobY;
-
-    // Vòng bụi sao xoay mờ ảo xung quanh (R = 150px)
-    this.emblemGraphics.lineStyle(1.2, COLOR_NUMBERS.icePrimary, 0.25);
-    this.emblemGraphics.strokeCircle(cx, cy, 150);
-
-    for (let i = 0; i < 4; i++) {
-      const angle = this.ringAngle1 + (i * Math.PI) / 2;
-      const x = cx + Math.cos(angle) * 150;
-      const y = cy + Math.sin(angle) * 150;
-      this.emblemGraphics.fillStyle(0xcfe6ff, 0.6);
-      this.emblemGraphics.fillCircle(x, y, 3);
-    }
-
-    for (let i = 0; i < 4; i++) {
-      const angle = this.ringAngle2 + (i * Math.PI) / 2 + Math.PI / 4;
-      const x = cx + Math.cos(angle) * 125;
-      const y = cy + Math.sin(angle) * 125;
-      this.emblemGraphics.fillStyle(0xffd27a, 0.5);
-      this.emblemGraphics.fillCircle(x, y, 2.5);
-    }
-
-    // Hai viên ngọc thoi:
-    // Viên trái: tâm cx - 38
-    // Viên phải: tâm cx + 38
-    const jewelR = 68; // Bán kính đường chéo
-    const overlapOffset = 38;
-
-    // Đổ bóng chân cụm ngọc
-    this.drawDiamond(cx - overlapOffset, cy + 8, jewelR, 0x1b0b4a, 0.45);
-    this.drawDiamond(cx + overlapOffset, cy + 8, jewelR, 0x1b0b4a, 0.45);
-
-    // Viên ngọc trái (Vát 4 mặt sáng tối)
-    this.drawFacetedJewel(cx - overlapOffset, cy, jewelR);
-
-    // Viên ngọc phải (Vát 4 mặt sáng tối)
-    this.drawFacetedJewel(cx + overlapOffset, cy, jewelR);
-
-    // VÙNG GIAO NHAU (Parity XOR): Rỗng thành nền đêm tím sâu
-    // Giao giữa 2 viên thoi tạo thành một hình thoi đứng ở chính giữa (cx, cy)
-    const xorHalfW = jewelR - overlapOffset; // 68 - 38 = 30
-    const xorHalfH = jewelR - overlapOffset; // 30
-
-    const xorPts = [
-      new Phaser.Geom.Point(cx, cy - xorHalfH),
-      new Phaser.Geom.Point(cx + xorHalfW, cy),
-      new Phaser.Geom.Point(cx, cy + xorHalfH),
-      new Phaser.Geom.Point(cx - xorHalfW, cy),
-    ];
-
-    // Nền XOR sâu thẳm
-    this.emblemGraphics.fillStyle(0x1a2470, 0.95);
-    this.emblemGraphics.fillPoints(xorPts, true);
-
-    // Viền XOR sắc nét
-    this.emblemGraphics.lineStyle(3.5, 0xb85c00, 1.0);
-    this.emblemGraphics.strokePoints(xorPts, true);
-
-    // Viền trong tối
-    this.emblemGraphics.lineStyle(1.5, 0x3a1585, 0.8);
-    this.emblemGraphics.strokePoints(xorPts, true);
-
-    // Ngôi sao 4 cánh phát quang nhịp thở tại tâm vùng XOR
-    const pulseScale = 0.8 + Math.sin(this.pulseTime * 2.2) * 0.3;
-    const starR = 14 * pulseScale;
-    this.drawSparkle(cx, cy, starR, 0xffffff, 0.95);
-
-    // Hai ngôi sao lấp lánh trang trí góc ngoài
-    const spark1Alpha = 0.6 + Math.sin(this.pulseTime * 1.5) * 0.35;
-    this.drawSparkle(cx - 100, cy - 65, 8, 0xffe8b8, spark1Alpha);
-    const spark2Alpha = 0.6 + Math.cos(this.pulseTime * 1.7) * 0.35;
-    this.drawSparkle(cx + 105, cy + 60, 9, 0xffe8b8, spark2Alpha);
-  }
-
-  /**
-   * Vẽ 1 viên ngọc thoi vát 4 mặt sáng tối (Faceted Jewel)
-   */
-  private drawFacetedJewel(cx: number, cy: number, r: number): void {
-    const top = new Phaser.Geom.Point(cx, cy - r);
-    const right = new Phaser.Geom.Point(cx + r, cy);
-    const bottom = new Phaser.Geom.Point(cx, cy + r);
-    const left = new Phaser.Geom.Point(cx - r, cy);
-    const center = new Phaser.Geom.Point(cx, cy);
-
-    // Mặt Bắc (North) - sáng nhất: #FFF0A6
-    this.emblemGraphics.fillStyle(0xfff0a6, 1.0);
-    this.emblemGraphics.fillPoints([top, right, center], true);
-
-    // Mặt Tây (West) - sáng vừa: #FFD23F
-    this.emblemGraphics.fillStyle(0xffd23f, 1.0);
-    this.emblemGraphics.fillPoints([top, left, center], true);
-
-    // Mặt Đông (East) - sẫm vàng: #FFB31F
-    this.emblemGraphics.fillStyle(0xffb31f, 1.0);
-    this.emblemGraphics.fillPoints([bottom, left, center], true);
-
-    // Mặt Nam (South) - tối cam: #F59400
-    this.emblemGraphics.fillStyle(0xf59400, 1.0);
-    this.emblemGraphics.fillPoints([bottom, right, center], true);
-
-    // Viền bao ngoài viên ngọc
-    this.emblemGraphics.lineStyle(3, 0xb85c00, 1.0);
-    this.emblemGraphics.strokePoints([top, right, bottom, left], true);
-
-    // Highlight ánh kim góc trên-trái
-    this.emblemGraphics.lineStyle(2, 0xffffff, 0.7);
-    this.emblemGraphics.lineBetween(left.x + 10, left.y - 10, top.x - 10, top.y + 10);
-  }
-
-  /**
-   * Vẽ hình thoi đơn giản dùng cho bóng đổ
-   */
-  private drawDiamond(cx: number, cy: number, r: number, color: number, alpha: number): void {
-    const pts = [
-      new Phaser.Geom.Point(cx, cy - r),
-      new Phaser.Geom.Point(cx + r, cy),
-      new Phaser.Geom.Point(cx, cy + r),
-      new Phaser.Geom.Point(cx - r, cy),
-    ];
-    this.emblemGraphics.fillStyle(color, alpha);
-    this.emblemGraphics.fillPoints(pts, true);
-  }
-
-  /**
-   * Vẽ ngôi sao 4 cánh phát quang (4-pointed Sparkle)
-   */
-  private drawSparkle(cx: number, cy: number, r: number, color: number, alpha: number): void {
-    this.sparkleGraphics.fillStyle(color, alpha);
-    const inner = r * 0.28;
-    const pts = [
-      new Phaser.Geom.Point(cx, cy - r),
-      new Phaser.Geom.Point(cx + inner, cy - inner),
-      new Phaser.Geom.Point(cx + r, cy),
-      new Phaser.Geom.Point(cx + inner, cy + inner),
-      new Phaser.Geom.Point(cx, cy + r),
-      new Phaser.Geom.Point(cx - inner, cy + inner),
-      new Phaser.Geom.Point(cx - r, cy),
-      new Phaser.Geom.Point(cx - inner, cy - inner),
-    ];
-    this.sparkleGraphics.fillPoints(pts, true);
+    this.emblem.update(delta);
   }
 }

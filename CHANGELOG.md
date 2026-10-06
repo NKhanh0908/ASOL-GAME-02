@@ -4,6 +4,13 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-06 - Extract dual jewel emblem and animate the XOR rule (VR1 Task 4)
+
+- Extracted emblem rendering to `src/presentation/menu/DualJewelEmblem.ts` consuming `dualJewelGeometry.ts` and `glowTier(1)`.
+- Refactored `src/presentation/MenuScene.ts` to delegate emblem lifecycle and updates to `DualJewelEmblem`, cleaned up inline emblem drawing helpers, and wired ring speed boost on scene exit.
+- Verification: `npm test` (88 files, 1063 tests pass); `npm run typecheck` clean.
+
+
 ### 2026-10-06 - Add real XOR overlap geometry for the dual jewel emblem (VR1 Task 3)
 
 - Implemented pure geometry helper module `src/presentation/menu/dualJewelGeometry.ts` calculating jewel center offsets, diamond polygon outlines, Sutherland-Hodgman convex clipping overlap, star fade alpha, and reduced motion loop timing.
