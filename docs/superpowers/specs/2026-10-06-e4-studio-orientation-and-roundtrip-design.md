@@ -4,7 +4,7 @@ Date: 2026-10-06 · Scope: `game-next/src/studio`, `game-next/src/content`, `gam
 
 ## 1. Two problems
 
-### 1.1 The roof triangles are unreachable from the studio
+### 1.1 The roof triangles are reachable but undiscoverable
 
 `domain/shapes.ts` already gives `triangle` eight orientations in two families:
 
@@ -18,9 +18,12 @@ Date: 2026-10-06 · Scope: `game-next/src/studio`, `game-next/src/content`, `gam
 
 `isValidOrientation` accepts 0–7, `isValidFrame` requires `frameSize % 16 === 0` for the roof family against `% 8` for the corner family, `effectiveOrientation` cycles each family independently, and `mirrorOrientation` maps all eight. The geometry, the solver, the renderer and the raster are all complete.
 
-The studio cannot produce them. `studio/palette.ts` holds `selectedOrientation` at `0`, resets it to `0` on every shape-button click, and exposes no orientation control at all. The only orientation input anywhere is the `R` key (`studio/keys.ts` → `rotate-piece`), and `effectiveOrientation` deliberately keeps rotation inside one family, as it should: rotating a right triangle by 90° cannot turn it into an isoceles triangle. `studio/inspector.ts` has no `orientation` field either, so a placed piece cannot be corrected.
+`studio/palette.ts` does expose an orientation control (lines 107-130): a `<select>` listing every valid orientation for the selected kind, 0-7 for `triangle` and 0-3 for `parallelogram`, whose `onchange` correctly re-runs `updateValidSizes()` and re-renders. The roof triangles can therefore be created today. The problem is that the options are labelled `Hướng 0` … `Hướng 7` and nothing else: bare numbers, no preview of the resulting shape, and no sign that 4-7 are a different family from 0-3. An author scanning the list sees eight numbers and has no way to learn that half of them are the apex triangles. Reported from use as "there are only the four right-angle corners".
 
-The result is that four of the engine's twelve triangle/parallelogram configurations exist but no authoring path reaches them. This is a missing control, not a missing shape.
+Two gaps follow:
+
+- **The palette control is illegible.** It needs the shape itself on each option and the two families named, so the choice can be made by sight.
+- **The inspector has no orientation control at all.** `studio/inspector.ts` is 569 lines and contains no `orientation` field, so once a piece is placed its orientation is fixed except through `R` (`studio/keys.ts` → `rotate-piece`), and `effectiveOrientation` deliberately keeps rotation inside one family, as it should: rotating a right triangle by 90° cannot turn it into an isoceles one. Picking the wrong family means deleting the piece and starting over.
 
 ### 1.2 A campaign level can be opened for editing but not written back
 
@@ -30,7 +33,7 @@ So the reviewer can open 1-4, change it, and have nowhere to put the result.
 
 ## 2. Goals
 
-- A — Make all eight triangle orientations (and all four parallelogram orientations) selectable in the studio, both when creating a piece and when editing a placed one.
+- A — Make the eight triangle orientations (and the four parallelogram ones) legible where they are already selectable, and selectable where they are not: the palette list gains shape previews and family labels, and the inspector gains an orientation control for a placed piece.
 - B — Let a campaign level be edited in the studio and written back over its own source, under a gate that forces re-approval.
 
 ### Non-goals
@@ -43,13 +46,13 @@ So the reviewer can open 1-4, change it, and have nowhere to put the result.
 
 ### A1. Palette orientation row (`studio/palette.ts`)
 
-A row appears below the shape buttons whenever the selected kind has more than one orientation — `triangle` (8) and `parallelogram` (4). It is hidden for `square`, `diamond` and `circle`, whose only valid orientation is 0.
+The existing `<select>` of bare numbers is replaced by a row of buttons, under the same visibility rule it already uses: shown when the selected kind has more than one orientation — `triangle` (8) and `parallelogram` (4) — and absent for `square`, `diamond` and `circle`, whose only valid orientation is 0.
 
-Each button renders a **miniature of the actual polygon** from `shapePolygon(kind, orientation, previewSize)` rather than a text label, so the author picks by sight. Triangle buttons are split into two labelled groups, **Góc** (0–3) and **Mái** (4–7), matching the families in `effectiveOrientation`.
+Each button renders a **miniature of the actual polygon** from `shapePolygon(kind, orientation, previewSize)` instead of the text `Hướng <n>`, so the author picks by sight. Triangle buttons are split into two groups labelled **Góc** (0–3) and **Mái** (4–7), matching the families in `effectiveOrientation`. The existing behaviour on change — `updateValidSizes()` then `render()` — is kept as is.
 
 ### A2. Orientation change refreshes the valid frame sizes
 
-`updateValidSizes()` already filters `CANDIDATE_SIZES` through `isValidFrame(kind, orientation, size)`, but today it is only called when the kind changes. It must also run when the orientation changes: moving from the corner family to the roof family drops 24, 40, 56, 72 and 88 from the list (112 is a multiple of 16 and survives), and the current `selectedSize` must snap to a valid one as the existing fallback already does.
+Already correct and kept: `updateValidSizes()` filters `CANDIDATE_SIZES` through `isValidFrame(kind, orientation, size)` and the orientation control already calls it, so moving from the corner family to the roof family drops 24, 40, 56, 72 and 88 from the list (112 is a multiple of 16 and survives) and `selectedSize` snaps to a valid value. The replacement buttons must preserve this call; a regression test pins it.
 
 ### A3. Inspector orientation control (`studio/inspector.ts`)
 
@@ -61,8 +64,8 @@ The inspector gains an orientation control for the selected piece, using the sam
 
 ### A5. Tests
 
-- `palette.test.ts`: the orientation row lists 8 entries for triangle, 4 for parallelogram, and is absent for square, diamond and circle.
-- `palette.test.ts`: selecting a roof orientation while `selectedSize` is 40 refreshes the size list to multiples of 16 and snaps the selection.
+- `palette.test.ts`: the orientation row lists 8 buttons for triangle, 4 for parallelogram, and is absent for square, diamond and circle; the triangle row carries the two family labels.
+- `palette.test.ts` (regression): selecting a roof orientation while `selectedSize` is 40 refreshes the size list to multiples of 16 and snaps the selection. This holds today and must keep holding after the `<select>` becomes buttons.
 - `studioState.test.ts`: `set-orientation` updates the piece, recomputes its cells from `shapePolygon`, and rejects an orientation whose family invalidates the current `frameSize`.
 
 ## 4. Feature B — campaign round-trip

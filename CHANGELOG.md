@@ -4,6 +4,14 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-06 - Correction to the E4 spec: the palette orientation control exists
+
+- `docs/superpowers/specs/2026-10-06-e4-studio-orientation-and-roundtrip-design.md`: section 1.1 and 3.1 corrected. The first version claimed `studio/palette.ts` "exposes no orientation control at all" and that the apex triangles were unreachable. That is wrong: palette.ts lines 107-130 render a `<select>` of every valid orientation (0-7 for triangle, 0-3 for parallelogram) whose `onchange` already re-runs `updateValidSizes()` and `render()`. The apex triangles can be authored today. The claim came from a case-sensitive grep for `orientation`, which does not match `selectedOrientation`; the file was not read.
+- The real defect is narrower and still real: the options are labelled `Huong 0` .. `Huong 7` with no shape preview and no family grouping, so nothing tells an author that 4-7 are the apex family - which is how it was reported from use. `studio/inspector.ts` separately has no orientation control at all (verified case-insensitively over all 569 lines), so a placed piece cannot change family, `R` cycling within one family by design.
+- Feature A is rescoped from "add a missing control" to "make the existing control legible, and add one to the inspector". Feature B (campaign round-trip) is unaffected; `registerInSourceIndex` throwing on an existing id was re-verified at `newLevel.ts:87`.
+
+Verification: `src/studio/palette.ts` read in full; `grep -in orientation src/studio/inspector.ts` returns nothing.
+
 ### 2026-10-06 - E4 spec: studio orientation picker and campaign round-trip
 
 - `docs/superpowers/specs/2026-10-06-e4-studio-orientation-and-roundtrip-design.md`: new design spec covering two studio gaps found by inspection.
