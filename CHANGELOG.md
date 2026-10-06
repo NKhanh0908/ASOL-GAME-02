@@ -4,6 +4,16 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-06 - Crossfade Eye instead of toggling target
+
+- `src/presentation/designTokens.ts`: add `FEEDBACK_TOKENS.eyeResultAlpha = 0.55` and `eyeTargetAlpha = 0.35` for Eye crossfade.
+- `src/presentation/pieceMotion.ts`: add `showTarget: boolean` to `PoseInput` and dim snapped pieces to `eyeResultAlpha` when `showTarget` is true (dragged piece remains 1.0).
+- `src/presentation/BoardRenderer.ts`: pass `snapshot.showTarget` in `syncPieceViews`, dim parity layers by `eyeResultAlpha` in `drawLayers`, and scale target silhouette alpha by `(hoverAlpha / targetIdleAlpha) * eyeTargetAlpha * reveal` in `drawTargetSilhouette`.
+- `tests/pieceMotion.test.ts`: test snapped piece dimming, dragged piece staying at 1.0, and alpha separation >= 0.15.
+
+Verification: `npm test` passes (89 files, 1104 tests), `npm run build` passes, debug APK built cleanly with `gradlew.bat assembleDebug`.
+
+
 ### 2026-10-06 - Scrim behind target medallion and glass motion family
 
 - `src/presentation/designTokens.ts`: add `FEEDBACK_TOKENS.medallionScrimAlpha = 0.35` for calming the background behind the enlarged medallion.

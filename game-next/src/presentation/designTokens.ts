@@ -233,6 +233,9 @@ export const FEEDBACK_TOKENS = {
   magnetRingAlphaFar: 0.18,
   magnetRingAlphaNear: 0.5,
   targetIdleAlpha: 0.7,
+  /** Eye on: the player's own figure recedes and the target shows over it. */
+  eyeResultAlpha: 0.55,
+  eyeTargetAlpha: 0.35,
   hintMs: 120,
   snapMs: 120,
   bounceMs: 180,

@@ -12,7 +12,7 @@ import {
   stepScalar,
   tiltDeg,
 } from '../src/presentation/pieceMotion.ts';
-import type { Pose } from '../src/presentation/pieceMotion.ts';
+import type { Pose, PoseInput } from '../src/presentation/pieceMotion.ts';
 import { loadLevel } from '../src/content/catalog.ts';
 import { computeLayout, pieceCenterCanvas, pieceHitbox } from '../src/presentation/layout.ts';
 import { FEEDBACK_TOKENS, PIECE_TOKENS } from '../src/presentation/designTokens.ts';
@@ -76,7 +76,7 @@ describe('hút, nghiêng và đường cong một lần', () => {
 });
 
 describe('tư thế đích của mảnh', () => {
-  const base = { layout, trayIndex: 0, trayCount: 2, selected: false, drag: null };
+  const base = { layout, trayIndex: 0, trayCount: 2, selected: false, showTarget: false, drag: null };
 
   test('khay: tâm ô khay, scale = bán kính khay / bán kính bàn', () => {
     const pose = pieceTargetPose(d1, { kind: 'tray', turns: 0 }, base);
@@ -148,3 +148,37 @@ describe('magnetRing', () => {
     }
   });
 });
+
+describe('Eye crossfade', () => {
+  const input = (over: Partial<PoseInput>): PoseInput => ({
+    layout,
+    trayIndex: 0,
+    trayCount: 2,
+    selected: false,
+    showTarget: false,
+    drag: null,
+    ...over,
+  });
+
+  test('a snapped piece dims when the Eye is on', () => {
+    const snapped = { kind: 'snapped', anchorId: d1.anchors[0].id, turns: 0 } as const;
+    expect(pieceTargetPose(d1, snapped, input({ showTarget: false })).alpha).toBe(1);
+    expect(pieceTargetPose(d1, snapped, input({ showTarget: true })).alpha).toBe(
+      FEEDBACK_TOKENS.eyeResultAlpha
+    );
+  });
+
+  test('the dragged piece never dims', () => {
+    const dragging = input({
+      showTarget: true,
+      drag: { x: 100, y: 100, candidate: { x: 100, y: 100 } },
+    });
+    const snapped = { kind: 'snapped', anchorId: d1.anchors[0].id, turns: 0 } as const;
+    expect(pieceTargetPose(d1, snapped, dragging).alpha).toBe(1);
+  });
+
+  test('the two alphas stay far enough apart to be told apart', () => {
+    expect(FEEDBACK_TOKENS.eyeResultAlpha - FEEDBACK_TOKENS.eyeTargetAlpha).toBeGreaterThanOrEqual(0.15);
+  });
+});
+

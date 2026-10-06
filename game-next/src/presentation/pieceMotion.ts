@@ -87,6 +87,7 @@ export type PoseInput = {
   trayIndex: number;
   trayCount: number;
   selected: boolean;
+  showTarget: boolean;
   /** Chỉ có khi chính mảnh này đang được kéo; toạ độ là tâm mảnh */
   drag: { x: number; y: number; candidate: Pt | null } | null;
 };
@@ -106,7 +107,15 @@ export function pieceTargetPose(piece: Piece, state: PieceState, input: PoseInpu
   }
   if (state.kind === 'snapped') {
     const c = anchorCenter(piece, state.anchorId, layout) ?? anchorCenter(piece, piece.anchors[0].id, layout)!;
-    return { x: c.x, y: c.y, scale: 1, angle: 0, alpha: 1 };
+    // With the Eye on, the figure the player built recedes so the target reads
+    // over it. The dragged piece is handled above and never dims.
+    return {
+      x: c.x,
+      y: c.y,
+      scale: 1,
+      angle: 0,
+      alpha: input.showTarget ? FEEDBACK_TOKENS.eyeResultAlpha : 1,
+    };
   }
   if (state.kind === 'temporary') {
     const c = pieceCenterCanvas(piece.frameSize, state.x, state.y, layout);

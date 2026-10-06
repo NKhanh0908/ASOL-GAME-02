@@ -203,6 +203,7 @@ export class BoardRenderer {
       trayIndex,
       trayCount: this.trayCount,
       selected: false,
+      showTarget: false,
       drag: null,
     });
   }
@@ -322,6 +323,7 @@ export class BoardRenderer {
         trayIndex: index,
         trayCount: this.trayCount,
         selected: snapshot.selectedPieceId === piece.id,
+        showTarget: snapshot.showTarget,
         drag: dragging
           ? {
               x: drag.x,
@@ -389,16 +391,17 @@ export class BoardRenderer {
       const anchorOrPos = state.kind === 'snapped' ? state.anchorId : `${state.x},${state.y}`;
       return `${piece.id}:${anchorOrPos}:${state.turns}`;
     }).join('|');
+    const parityAlpha = this.lastSnapshot?.showTarget ? FEEDBACK_TOKENS.eyeResultAlpha : 1;
     if (key !== this.parityKey) {
       this.parityKey = key;
       const next = overlapLayers(this.canvasPolygons(entries));
       const { kept, added } = diffLayers(this.currentParity, next);
       this.currentParity = next;
       this.parityGraphics.clear();
-      this.drawLayers(this.parityGraphics, kept);
+      this.drawLayers(this.parityGraphics, kept, parityAlpha);
       this.parityIncomingGraphics.clear();
       if (added.length > 0) {
-        this.drawLayers(this.parityIncomingGraphics, added);
+        this.drawLayers(this.parityIncomingGraphics, added, parityAlpha);
         this.incoming = { alpha: 0 };
         this.parityIncomingGraphics.setAlpha(0);
       } else {
@@ -410,7 +413,7 @@ export class BoardRenderer {
       this.parityIncomingGraphics.setAlpha(this.incoming.alpha);
       if (this.incoming.alpha >= 1) {
         this.parityGraphics.clear();
-        this.drawLayers(this.parityGraphics, this.currentParity);
+        this.drawLayers(this.parityGraphics, this.currentParity, parityAlpha);
         this.parityIncomingGraphics.clear();
         this.incoming = null;
       }
@@ -508,17 +511,21 @@ export class BoardRenderer {
     this.magnetRingGraphics.strokeCircle(center.x, center.y, ring.radius);
   }
 
-  private drawLayers(g: Phaser.GameObjects.Graphics, layers: readonly ParityLayer[]): void {
+  private drawLayers(
+    g: Phaser.GameObjects.Graphics,
+    layers: readonly ParityLayer[],
+    alpha: number = 1
+  ): void {
     for (const layer of layers) {
       const pts = layer.points.map((p) => new Phaser.Geom.Point(p.x, p.y));
       if (layer.filled) {
-        g.fillStyle(COLOR_NUMBERS.amberSolid, 1.0);
+        g.fillStyle(COLOR_NUMBERS.amberSolid, 1.0 * alpha);
         g.fillPoints(pts, true);
       } else {
         // Triệt tiêu quang học về màu mặt bia, rìa trong sáng nhẹ màu vàng nhạt
-        g.fillStyle(COLOR_NUMBERS.boardSurfaceTop, 1.0);
+        g.fillStyle(COLOR_NUMBERS.boardSurfaceTop, 1.0 * alpha);
         g.fillPoints(pts, true);
-        g.lineStyle(1.5, COLOR_NUMBERS.amberGlow, 0.7);
+        g.lineStyle(1.5, COLOR_NUMBERS.amberGlow, 0.7 * alpha);
         g.strokePoints(pts, true, true);
       }
     }
@@ -562,7 +569,8 @@ export class BoardRenderer {
       const piece = this.level.pieces.find((p) => p.id === placement.pieceId);
       if (!piece) return;
       const polygon = piecePolygonCanvas(piece, placement.x, placement.y, placement.turns, this.layout);
-      const alpha = this.hoverAlpha[index] * reveal;
+      const alpha =
+        (this.hoverAlpha[index] / FEEDBACK_TOKENS.targetIdleAlpha) * FEEDBACK_TOKENS.eyeTargetAlpha * reveal;
       drawJewelPolygon(this.targetGraphics, polygon, {
         variant: 'target',
         alpha,
