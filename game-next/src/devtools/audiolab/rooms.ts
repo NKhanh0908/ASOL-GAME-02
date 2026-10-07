@@ -130,16 +130,29 @@ function tail(spec: RoomSpec, sampleRate: number, seed: number): Float32Array {
   return out;
 }
 
-/** Scales a pair of channels so their combined RMS hits `target`. */
-function normalizePair(left: Float32Array, right: Float32Array, target: number): void {
-  let sum = 0;
-  for (let i = 0; i < left.length; i++) sum += left[i] * left[i] + right[i] * right[i];
-  const rms = Math.sqrt(sum / (left.length * 2));
-  if (rms === 0) return;
-  const k = target / rms;
+/**
+ * Scales a pair of channels so each has unit ENERGY (sum of squares = 1).
+ *
+ * Energy, not RMS, is what sets how loud a convolver is. A steady tone comes
+ * out of a convolver scaled by roughly the square root of the impulse's
+ * energy, so an impulse normalised to a fixed RMS gets louder the longer it
+ * is. The first version of this file did exactly that: a 3.5 s tail at
+ * RMS 0.12 has energy ~2200, so the reverb came out ~14x louder than the
+ * sound that fed it. With unit energy the wet path has roughly the same
+ * loudness as its input, and the wet knob means what it says.
+ */
+function normalizePair(left: Float32Array, right: Float32Array): void {
+  let l = 0;
+  let r = 0;
   for (let i = 0; i < left.length; i++) {
-    left[i] *= k;
-    right[i] *= k;
+    l += left[i] * left[i];
+    r += right[i] * right[i];
+  }
+  const kl = l === 0 ? 1 : 1 / Math.sqrt(l);
+  const kr = r === 0 ? 1 : 1 / Math.sqrt(r);
+  for (let i = 0; i < left.length; i++) {
+    left[i] *= kl;
+    right[i] *= kr;
   }
 }
 
@@ -150,7 +163,7 @@ function normalizePair(left: Float32Array, right: Float32Array, target: number):
  * decorrelation is the whole reason the tail sounds wide rather than like a
  * mono blob pasted in the middle of the head.
  *
- * Every room is normalised to the same RMS so switching rooms compares
+ * Every room has unit energy per channel, so switching rooms compares
  * character, not loudness. Without this the longest room always "wins".
  */
 export function generateImpulse(
@@ -159,6 +172,6 @@ export function generateImpulse(
 ): { left: Float32Array; right: Float32Array } {
   const left = tail(spec, sampleRate, 0x5eed);
   const right = tail(spec, sampleRate, 0xb33f);
-  normalizePair(left, right, 0.12);
+  normalizePair(left, right);
   return { left, right };
 }

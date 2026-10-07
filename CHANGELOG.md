@@ -4,6 +4,13 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-07 - Audio Lab: normalise impulse responses by energy, not RMS
+
+- `game-next/src/devtools/audiolab/rooms.ts`: `generateImpulse` scaled each room to a fixed RMS of 0.12. A convolver's loudness follows the impulse's total energy, not its RMS, so the longer the room the louder its tail: the 3.5 s room has energy ~2200 and came out about 14x louder than the sound feeding it. Each channel is now scaled to unit energy. Measured by convolving the `bell` patch (FFT convolution) at the panel defaults: wet energy relative to the dry sound went from +25.9 / +17.6 / +13.5 dB (stone temple / glass hall / close) to -7.6 / -13.4 / -15.3 dB; wet peak over dry peak from 13.6x / 8.0x / 7.0x to 0.3x / 0.2x / 0.3x.
+- This is the likeliest cause of the first listening pass being judged "khá tệ": the dry sound was buried under its own reverb. Dev-only; nothing in the product reads this file.
+
+Verification: `npm run typecheck` clean; the before/after figures above come from a throwaway measurement script (not committed) that renders `bell`, builds each room's impulse and convolves with a radix-2 FFT. Sound itself is unverified until a human listens.
+
 ### 2026-10-07 - Resonance bus listening prototype in the Audio Lab
 
 Throwaway prototype for the audio direction (resonant glass pieces, a board that breathes). It answers questions a spec cannot — what a room sounds like, whether a triangle is distinguishable from a circle by ear — before any spec is written. Everything lives under `src/devtools/audiolab/`, reached only through `audiolab.html`, which is not a rollup input, so none of it can reach a production bundle.
