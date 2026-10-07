@@ -4,6 +4,13 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-07 - Architecture deep dive for game-next
+
+- `docs/ai/ARCHITECTURE-DEEP-DIVE.md`: new long-form companion to `docs/ai/ARCHITECTURE.md`, written against the code rather than from the existing docs. Eighteen sections: technology choices and their reasons, the layered dependency rule with its three sanctioned exceptions, the boot sequence and why fonts are loaded explicitly, the domain core (mask as `Uint8Array`, `Orientation` vs `Turns`, the `applyCommand` state machine and its `changed` diff channel), the application façade, the presentation layer's token and motion discipline, both audio subsystems, the content pipeline end to end (three representations of a level, `authorLevel`, the solver, ~40 validator codes, the status lifecycle), the Studio and why it cannot reach a production bundle, naming conventions, build and release, the test strategy, nine invariants, and the known gaps.
+- Correction found while writing: `docs/ai/ARCHITECTURE.md` states `tests/*.test.ts (30 files)`; there are 90. Left for the next edit of that file rather than changed here.
+
+Verification: every claim checked against the source; no code changed.
+
 ### 2026-10-07 - Promote keeps the const name `sources/index.ts` already imports
 
 - `game-next/src/content/promote.ts`: `promoteStudioLevel` read `sources/index.ts` only when creating a level. On overwrite it still regenerated the exported const name with `constNameFromTitle(newSource.title)` and wrote it into `sources/<id>.ts`, leaving `index.ts` importing a name that no longer existed. Because `vite.config.ts` loads `studioPlugin.ts`, which imports `sources/index.ts`, that broke the dev server, the whole test suite and the build — not just `tsc`. The index is now read once before the source is written, and a registered level keeps its existing const name; the title may still change.
