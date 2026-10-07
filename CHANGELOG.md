@@ -4,6 +4,14 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-07 - Audio Lab handoff document
+
+- `docs/ai/AUDIO-LAB-HANDOFF.md`: new handoff for the next agent. Records the direction agreed with the reviewer (instrumentalised feedback, size → register / shape → timbre / progress → degree, shared reverb bus, idle breathing, steal-by-priority voices), the two existing decisions it revises (the audio-synth "runtime variation" non-goal and `maxVoices = 6` dropping the newest sound), what exists and where, what was measured and what is still unknown (nobody has heard the instruments), the libraries considered and why they were set aside, the next steps in order, and the traps in this tree.
+- Corrects an earlier claim: `sfx.ts` guards repeats per `cue.key` at 40 ms, so chord notes fired simultaneously are dropped but notes staggered by 40 ms or more pass; chords are not strictly impossible.
+- `docs/ai/ARCHITECTURE.md`: one pointer line under "Audio synthesis" to the handoff, and the stale `tests/*.test.ts (30 files)` corrected to 90.
+
+Verification: every file path, function and figure checked against the code and the commits `7fab4be`, `56a7d37`, `73c0697`; the repeat-gap behaviour re-read in `src/infrastructure/sfx.ts` lines 50-54; no code changed.
+
 ### 2026-10-07 - Audio Lab: ten synthesised instruments with a shared room
 
 Second listening prototype, replacing the idea that one bell could stand in for every voice. The first pass played a single FM bell for all five shapes, differing only by filter and `playbackRate`; that cannot read as different instruments.

@@ -68,6 +68,7 @@ Screenshots: `scripts/shoot-level.sh <id> <outdir>` (headless Chrome, needs the 
 - `MUSIC_ROOT_HZ` lives in its own leaf module `src/content/audio/root.ts`. The patches read it while their module evaluates and `src/content/audio/index.ts` imports the patches, so exporting it from that barrel makes an import cycle that throws `ReferenceError` at load time.
 - `AUDIO_REGISTRY_KEY = 'audio'`: `main.ts` registers `{ music, sfx }` into `game.registry`. Any scene reading `audioServices(scene)` safely falls back to `SILENT_AUDIO` if called before Phaser's `ready` event.
 - Concepts, patch model and porting steps: `src/audio-synth/README.md`. Design: `docs/superpowers/specs/2026-10-05-audio-synth-engine-design.md`.
+- Dev-only Audio Lab prototype (shared reverb bus, ten synthesised instruments, per-piece voices) and its decision trail: `docs/ai/AUDIO-LAB-HANDOFF.md`. Nothing in the product reads it yet; read that file before planning audio work.
 
 ## Persistence
 
@@ -101,7 +102,7 @@ Measured LOW (not listed): `PlayScene`, `loadLevel`, `computeLayout`, `campaignM
 
 ## Tests
 
-- `tests/*.test.ts` (30 files, flat), Vitest defaults, node environment; no `vitest.config`. Run `npm test` from `game-next/`.
+- `tests/*.test.ts` (90 files, flat), Vitest defaults, node environment; no `vitest.config`. Run `npm test` from `game-next/`.
 - `src/application/fixtureRunner.ts` (`runFixtureSolution`) solves the M0 technical fixture (`src/content/fixtures.ts`); covered by `tests/harness.test.ts`. `FixtureScene` renders it but is unreachable at runtime.
 - Prefer testing Phaser-free modules; only `tests/boardRendererLayers.test.ts` mocks Phaser.
 - In-memory `StoragePort` fakes with revision `'oracle-v1'` in `catalog`, `progress`, `playController` tests.
