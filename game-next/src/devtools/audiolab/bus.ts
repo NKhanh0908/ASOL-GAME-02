@@ -37,6 +37,7 @@ type ActiveVoice = {
 export type ResonanceBus = {
   setRoom(spec: RoomSpec): void;
   setWet(level: number): void;
+  setMaster(level: number): void;
   setMaxVoices(n: number): void;
   play(voice: VoiceSpec, priority: Priority): void;
   activeCount(): number;
@@ -49,9 +50,19 @@ export function createResonanceBus(
   ctx: AudioContext,
   buffers: Partial<Record<SfxKey, AudioBuffer>>
 ): ResonanceBus {
+  // Safety net for a listening tool: stacked voices plus their reverb can pass
+  // full scale, and a clipped chord would be mistaken for a bad instrument.
+  const limiter = ctx.createDynamicsCompressor();
+  limiter.threshold.value = -10;
+  limiter.knee.value = 8;
+  limiter.ratio.value = 8;
+  limiter.attack.value = 0.003;
+  limiter.release.value = 0.2;
+  limiter.connect(ctx.destination);
+
   const master = ctx.createGain();
   master.gain.value = 1;
-  master.connect(ctx.destination);
+  master.connect(limiter);
 
   const dry = ctx.createGain();
   dry.gain.value = 1;
@@ -131,12 +142,16 @@ export function createResonanceBus(
       wet.gain.setTargetAtTime(level, ctx.currentTime, 0.03);
     },
 
+    setMaster(level) {
+      master.gain.setTargetAtTime(level, ctx.currentTime, 0.02);
+    },
+
     setMaxVoices(n) {
       maxVoices = Math.max(1, Math.floor(n));
     },
 
     play(voice, priority) {
-      const buffer = buffers[voice.strike];
+      const buffer = voice.buffer ?? buffers[voice.strike];
       if (!buffer) return;
       void ctx.resume();
 
@@ -149,11 +164,15 @@ export function createResonanceBus(
       // universally implemented on buffer sources.
       source.playbackRate.value = voice.rate * 2 ** (voice.detuneCents / 1200);
 
-      const filter = ctx.createBiquadFilter();
-      filter.type = voice.filter.type;
-      filter.frequency.value = voice.filter.hz;
-      filter.Q.value = voice.filter.q;
-      if (voice.filter.type === 'peaking') filter.gain.value = 5;
+      // Instruments are already shaped by their patch and carry no filter.
+      let filter: BiquadFilterNode | null = null;
+      if (voice.filter) {
+        filter = ctx.createBiquadFilter();
+        filter.type = voice.filter.type;
+        filter.frequency.value = voice.filter.hz;
+        filter.Q.value = voice.filter.q;
+        if (voice.filter.type === 'peaking') filter.gain.value = 5;
+      }
 
       const gain = ctx.createGain();
       gain.gain.value = voice.gain;
@@ -161,8 +180,12 @@ export function createResonanceBus(
       const send = ctx.createGain();
       send.gain.value = voice.send;
 
-      source.connect(filter);
-      filter.connect(gain);
+      if (filter) {
+        source.connect(filter);
+        filter.connect(gain);
+      } else {
+        source.connect(gain);
+      }
       gain.connect(dry);
       gain.connect(send);
       send.connect(convolver);
@@ -190,7 +213,7 @@ export function createResonanceBus(
         const i = active.indexOf(entry);
         if (i >= 0) active.splice(i, 1);
         source.disconnect();
-        filter.disconnect();
+        filter?.disconnect();
         gain.disconnect();
         send.disconnect();
       };

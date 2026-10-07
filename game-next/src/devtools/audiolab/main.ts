@@ -11,6 +11,7 @@ import type { SfxKey } from '../../content/audio/index.ts';
 import { ViewMemory, formatIssues, sliderLabel, tryRender } from './guard.ts';
 import type { RenderView } from './guard.ts';
 import { ladderRates, patchToTypeScript } from './serialize.ts';
+import { mountInstrumentPanel } from './instrumentPanel.ts';
 import { mountResonancePanel } from './resonancePanel.ts';
 
 const SR = 44100;
@@ -218,6 +219,9 @@ function boot(): void {
   });
 
   select('bell');
+
+  const instruments = document.getElementById('instruments');
+  if (instruments) mountInstrumentPanel(instruments, ctx);
 
   const resonance = document.getElementById('resonance');
   if (resonance) mountResonancePanel(resonance, ctx);

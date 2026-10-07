@@ -4,6 +4,17 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-07 - Audio Lab: ten synthesised instruments with a shared room
+
+Second listening prototype, replacing the idea that one bell could stand in for every voice. The first pass played a single FM bell for all five shapes, differing only by filter and `playbackRate`; that cannot read as different instruments.
+
+- `game-next/src/devtools/audiolab/instruments.ts`: ten instruments (piano, nylon guitar, harp, music box, marimba, concert flute, bamboo flute, string ensemble, glass bowl, glass harmonica), each a function (pitch, note length, tweaks) -> `Patch`, so every note is synthesised at its own pitch instead of stretching a fixed sound. Built from the existing engine only (sine partials with per-partial decay, near-unison "twin" partials for beating, filtered noise bursts); `src/audio-synth/` is untouched. Three macro tweaks (spectral tilt, decay multiplier, noise multiplier) for tuning by ear.
+- `game-next/src/devtools/audiolab/instrumentPanel.ts`: audition UI: instrument picker, octave and D-major note keys, chord, scale, the game's pentatonic phrase, a "same note on every instrument" comparison, room picker, and sliders for master, wet, note length and the three tweaks. Notes are rendered first and scheduled on the audio clock.
+- `game-next/src/devtools/audiolab/bus.ts`: voices may carry a raw `AudioBuffer` and no filter; added `setMaster` and a peak limiter so stacked voices plus reverb cannot clip and be mistaken for a bad instrument. `pieceVoice.ts`: `VoiceSpec.buffer` optional, `filter` optional. `main.ts`, `audiolab.html`: mount the panel.
+- Found while verifying: the string ensemble detuned its three copies in cents, which at low pitch is under 1 Hz, so the fundamental swung ~7x within 1.5 s. Detune is now fixed in Hz with shallow side copies (swing ~2x, identical across pitches).
+
+Verification: `npm run typecheck`, `npm run build` clean; `audioSynthPortable`, `bannedColors`, `audiolabGuard`, `promote`, `newLevel` tests pass (56). Throwaway sweep (not committed) over ~1500 notes (MIDI 36-98, 44.1 and 48 kHz, neutral and extreme tweaks): no NaN, no clipping, peak normalised to 0.5, no silent note, and FFT pitch error under 2 cents everywhere measured. The dev server served all six Audio Lab modules with HTTP 200. Sound quality is unverified: nobody has listened yet.
+
 ### 2026-10-07 - Audio Lab: normalise impulse responses by energy, not RMS
 
 - `game-next/src/devtools/audiolab/rooms.ts`: `generateImpulse` scaled each room to a fixed RMS of 0.12. A convolver's loudness follows the impulse's total energy, not its RMS, so the longer the room the louder its tail: the 3.5 s room has energy ~2200 and came out about 14x louder than the sound feeding it. Each channel is now scaled to unit energy. Measured by convolving the `bell` patch (FFT convolution) at the panel defaults: wet energy relative to the dry sound went from +25.9 / +17.6 / +13.5 dB (stone temple / glass hall / close) to -7.6 / -13.4 / -15.3 dB; wet peak over dry peak from 13.6x / 8.0x / 7.0x to 0.3x / 0.2x / 0.3x.

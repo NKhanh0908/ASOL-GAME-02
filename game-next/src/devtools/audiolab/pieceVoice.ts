@@ -120,9 +120,11 @@ export function degreeSemitones(step: number): number {
 
 export type VoiceSpec = {
   strike: SfxKey;
+  /** When set, this exact buffer is played and `strike` is ignored. */
+  buffer?: AudioBuffer;
   rate: number;
   gain: number;
-  filter: { type: BiquadFilterType; hz: number; q: number };
+  filter?: { type: BiquadFilterType; hz: number; q: number };
   detuneCents: number;
   /** How much of this voice is sent to the room. */
   send: number;
