@@ -4,6 +4,19 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-07 - Resonance bus listening prototype in the Audio Lab
+
+Throwaway prototype for the audio direction (resonant glass pieces, a board that breathes). It answers questions a spec cannot — what a room sounds like, whether a triangle is distinguishable from a circle by ear — before any spec is written. Everything lives under `src/devtools/audiolab/`, reached only through `audiolab.html`, which is not a rollup input, so none of it can reach a production bundle.
+
+- `game-next/src/devtools/audiolab/rooms.ts`: impulse responses generated rather than shipped as files — noise, exponential decay, a one-pole lowpass whose cutoff falls across the tail, and early reflection taps. Four rooms (dry, stone temple 3.5 s, glass hall 2.0 s, close 1.2 s), all normalised to the same RMS so switching compares character and not loudness. Pure; imports only `audio-synth/dsp.ts`.
+- `game-next/src/devtools/audiolab/bus.ts`: the shared effects bus — one convolver and one feedback delay that every voice sends into, which is what makes separate sounds read as one place. Carries a voice manager that steals the lowest-priority, oldest voice with an 8 ms fade instead of dropping the newest sound, the policy `src/infrastructure/sfx.ts` lacks.
+- `game-next/src/devtools/audiolab/pieceVoice.ts`: size → register, shape → timbre, progress → scale degree. Size contributes only perfect intervals, so no board can produce a dissonance, and the existing pentatonic progression in `audioCues.ts` is preserved. Both inputs (`frameSize`, `shapeKind`) already exist in every `LevelDocument`; no level data changes.
+- `game-next/src/devtools/audiolab/resonancePanel.ts`, `main.ts`, `audiolab.html`: a 5 shapes × 6 sizes audition grid, a full five-piece solve, a 20-voice stress test for the stealing policy, and a breathing toggle.
+
+Two decisions this prototype exists to test, both recorded here because they revise earlier ones: the audio-synth design doc lists "runtime parameter variation" as a non-goal, and `AUDIO_TOKENS.maxVoices` is 6 with a drop-newest policy that would silence the win at the exact moment it matters. Neither is changed in the product yet.
+
+Verification: `npm run typecheck` and `npm run build` clean. Sound itself is unverified — it needs a human listening pass, which is the next step.
+
 ### 2026-10-07 - Architecture deep dive for game-next
 
 - `docs/ai/ARCHITECTURE-DEEP-DIVE.md`: new long-form companion to `docs/ai/ARCHITECTURE.md`, written against the code rather than from the existing docs. Eighteen sections: technology choices and their reasons, the layered dependency rule with its three sanctioned exceptions, the boot sequence and why fonts are loaded explicitly, the domain core (mask as `Uint8Array`, `Orientation` vs `Turns`, the `applyCommand` state machine and its `changed` diff channel), the application façade, the presentation layer's token and motion discipline, both audio subsystems, the content pipeline end to end (three representations of a level, `authorLevel`, the solver, ~40 validator codes, the status lifecycle), the Studio and why it cannot reach a production bundle, naming conventions, build and release, the test strategy, nine invariants, and the known gaps.
