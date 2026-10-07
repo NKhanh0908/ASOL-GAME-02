@@ -449,6 +449,35 @@ describe('promoteStudioLevel overwrite', () => {
     expect(catalog.match(/'1-4':/g)).toHaveLength(1);
   });
 
+  it('overwrite giữ nguyên tên hằng mà index.ts đang import, dù tiêu đề đổi', () => {
+    // Nguồn studio tên 'Hải Đăng Mới' → constNameFromTitle là 'haiDangMoi',
+    // nhưng index.ts đang import 'haiDang'. Ghi tên mới vào file nguồn mà
+    // không sửa index là làm hỏng build toàn repo.
+    const res = promoteStudioLevel({ studioId: 'nhap', targetId: '1-4', root: TMP_ROOT, overwrite: true });
+    expect(res.ok).toBe(true);
+
+    const source = readFileSync(resolve(TMP_ROOT, 'game-next/src/content/sources/1-4.ts'), 'utf8');
+    const index = readFileSync(resolve(TMP_ROOT, 'game-next/src/content/sources/index.ts'), 'utf8');
+
+    const exported = source.match(/export const (\w+): LevelSource/)?.[1];
+    const imported = index.match(/import \{ (\w+) \} from '\.\/1-4\.ts';/)?.[1];
+
+    expect(exported).toBe('haiDang');
+    expect(imported).toBe('haiDang');
+    expect(exported).toBe(imported);
+  });
+
+  it('overwrite không để lại tên hằng mồ côi trong file nguồn', () => {
+    promoteStudioLevel({ studioId: 'nhap', targetId: '1-4', root: TMP_ROOT, overwrite: true });
+    const source = readFileSync(resolve(TMP_ROOT, 'game-next/src/content/sources/1-4.ts'), 'utf8');
+    const index = readFileSync(resolve(TMP_ROOT, 'game-next/src/content/sources/index.ts'), 'utf8');
+
+    // Mọi tên hằng index import cho 1-4 phải thực sự được file nguồn xuất ra.
+    const imported = index.match(/import \{ (\w+) \} from '\.\/1-4\.ts';/)?.[1];
+    expect(imported).toBeDefined();
+    expect(source).toContain(`export const ${imported}: LevelSource`);
+  });
+
   it('nghiệm không duy nhất thì không file nào bị đụng tới', () => {
     const before = snapshotRepo(TMP_ROOT);
     const res = promoteStudioLevel({ studioId: 'da-nghiem', targetId: '1-4', root: TMP_ROOT, overwrite: true });

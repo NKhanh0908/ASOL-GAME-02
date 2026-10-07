@@ -4,6 +4,16 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-07 - Promote keeps the const name `sources/index.ts` already imports
+
+- `game-next/src/content/promote.ts`: `promoteStudioLevel` read `sources/index.ts` only when creating a level. On overwrite it still regenerated the exported const name with `constNameFromTitle(newSource.title)` and wrote it into `sources/<id>.ts`, leaving `index.ts` importing a name that no longer existed. Because `vite.config.ts` loads `studioPlugin.ts`, which imports `sources/index.ts`, that broke the dev server, the whole test suite and the build — not just `tsc`. The index is now read once before the source is written, and a registered level keeps its existing const name; the title may still change.
+- Same change closes a second gap: overwriting a level whose source file exists but was never registered used to skip registration entirely and leave an orphan file. Registration now keys off `registeredName === null` rather than `!overwrite`.
+- `game-next/src/content/newLevel.ts`: new pure `constNameInSourceIndex(indexText, id)`, returning the registered name only when the import line and the `LEVEL_SOURCES` entry agree on that id.
+- `game-next/tests/promote.test.ts`: two regression tests asserting the exported const and the imported const match after an overwrite that changes the title. The existing fixture missed this because its title, `Hải Đăng`, happens to produce the registered name `haiDang`; the real level is `Ngọn Hải Đăng` → `ngonHaiDang`.
+- `game-next/tests/newLevel.test.ts`: three unit tests for the lookup, including the half-registered case.
+
+Verification: tests written first and observed failing, then passing. `npx vitest run promote newLevel` 41/41, `npm run typecheck` clean, `npm run build` clean. GitNexus `impact` on `promoteStudioLevel` and `registerInSourceIndex` both LOW; `detect_changes` low risk, 0 affected execution flows, reported `partial: true` because the new symbol is not indexed yet.
+
 ### 2026-10-06 - FX implementation plan
 
 - `docs/superpowers/plans/2026-10-06-fx-play-and-map-fixes.md`: 7 tasks, ordered by how much each item annoys the player. Task 1 pins the FX-2 invariant with a test and no production change. Task 2 (FX-1) adds `pieceContainsPoint` testing the piece's rasterised cells, keeping `pieceHitbox` and its signature as the cheap rejection pass because the drag offset depends on it. Task 3 (FX-6) splits `node_completed` into a plain and a checkmark texture and moves the choice into the existing try/catch. Task 4 (FX-4) adds `matchBarMetrics` with a degradation ladder. Task 5 (FX-3) deletes the magnet ring. Task 6 (FX-5) redraws the icons. Task 7 closes out the docs.

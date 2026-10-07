@@ -71,6 +71,31 @@ const IMPORT_LINE = /^import \{ (\w+) \} from '\.\/([^']+)\.ts';$/;
 const ENTRY_LINE = /^  '([^']+)': (\w+),$/;
 type IndexRow = { line: number; id: string; name: string };
 
+/**
+ * The const name `sources/index.ts` currently registers for an id, or null.
+ *
+ * The const name is a stable identifier tied to the level id, NOT something
+ * re-derived from the title on every write. Several levels carry hand-written
+ * names shorter than their title (`baoThap` for "Bảo Tháp Tiên Tri"), so
+ * regenerating the name from the title on overwrite leaves `index.ts`
+ * importing a name that no longer exists, which breaks the whole build.
+ *
+ * Returns a name only when the import line and the LEVEL_SOURCES entry agree
+ * on that id; half a registration counts as none.
+ */
+export function constNameInSourceIndex(indexText: string, id: string): string | null {
+  const lines = indexText.replace(/\r\n/g, '\n').split('\n');
+  let importName: string | null = null;
+  let entryName: string | null = null;
+  for (const text of lines) {
+    const im = IMPORT_LINE.exec(text);
+    if (im && im[2] === id) importName = im[1];
+    const en = ENTRY_LINE.exec(text);
+    if (en && en[1] === id) entryName = en[2];
+  }
+  return importName !== null && importName === entryName ? importName : null;
+}
+
 /** Thêm một dòng import và một dòng trong bảng LEVEL_SOURCES, giữ thứ tự theo id. */
 export function registerInSourceIndex(indexText: string, id: string, constName: string): string {
   const eol = indexText.includes('\r\n') ? '\r\n' : '\n';

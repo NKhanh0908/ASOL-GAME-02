@@ -4,7 +4,12 @@ import type { Chapter, Orientation } from '../domain/model.ts';
 import type { LevelSource } from './authoring.ts';
 import { authorLevel } from './authorLevel.ts';
 import type { LevelDocument, ValidationIssue } from './document.ts';
-import { compareLevelIds, constNameFromTitle, registerInSourceIndex } from './newLevel.ts';
+import {
+  compareLevelIds,
+  constNameFromTitle,
+  constNameInSourceIndex,
+  registerInSourceIndex,
+} from './newLevel.ts';
 import { serializeLevelSource } from './serializeSource.ts';
 import { STUDIO_ID_PATTERN, deleteStudioLevel } from './studioStore.ts';
 
@@ -269,8 +274,15 @@ export function promoteStudioLevel(opts: PromoteOptions): PromoteResult {
 
   const writtenFiles: string[] = [];
 
+  const indexPath = resolve(gameNextDir, 'src/content/sources/index.ts');
+  const indexText = readFileSync(indexPath, 'utf8');
+  const registeredName = constNameInSourceIndex(indexText, opts.targetId);
+
   // 1. src/content/sources/<targetId>.ts
-  const constName = constNameFromTitle(newSource.title);
+  // A registered level keeps the const name index.ts already imports. The
+  // title may change; the const name may not, because index.ts — and through
+  // it the whole build — points at that name.
+  const constName = registeredName ?? constNameFromTitle(newSource.title);
   let sourceText = serializeLevelSource(newSource, constName);
   const sourceFilePath = resolve(gameNextDir, 'src/content/sources', `${opts.targetId}.ts`);
   let preservedComment = false;
@@ -283,10 +295,11 @@ export function promoteStudioLevel(opts: PromoteOptions): PromoteResult {
   writeFileSync(sourceFilePath, sourceText, 'utf8');
   writtenFiles.push(relative(opts.root, sourceFilePath).replace(/\\/g, '/'));
 
-  // 2. src/content/sources/index.ts — ghi đè thì id đã đăng ký rồi
-  if (!overwrite) {
-    const indexPath = resolve(gameNextDir, 'src/content/sources/index.ts');
-    const indexText = readFileSync(indexPath, 'utf8');
+  // 2. src/content/sources/index.ts
+  // Already registered: leave it alone, since step 1 took the name from here.
+  // Not registered (a new level, or an overwrite of one that never reached
+  // the index): register it now, or the source file nobody imports is orphaned.
+  if (registeredName === null) {
     const updatedIndexText = registerInSourceIndex(indexText, opts.targetId, constName);
     writeFileSync(indexPath, updatedIndexText, 'utf8');
     writtenFiles.push(relative(opts.root, indexPath).replace(/\\/g, '/'));

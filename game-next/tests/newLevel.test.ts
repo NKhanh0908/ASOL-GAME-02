@@ -9,6 +9,7 @@ import { searchSolutions } from '../src/content/authoringReport.ts';
 import {
   compareLevelIds,
   constNameFromTitle,
+  constNameInSourceIndex,
   createLevelSourceText,
   registerInSourceIndex,
   slugFromTitle,
@@ -240,5 +241,31 @@ describe('createNewLevel trên thư mục tạm', () => {
     expect(() => createNewLevel({ id: '3-12', from: '7-7', sourcesDir, studioDir, manifest: MANIFEST })).toThrow(/Không tìm thấy nguồn của màn 7-7/);
     expect(() => createNewLevel({ id: '3-12', from: '1-1', title: 'Song Tinh', sourcesDir, studioDir, manifest: MANIFEST })).toThrow(/Tên hằng songTinh/);
     expect(existsSync(join(sourcesDir, '3-12.ts'))).toBe(false);
+  });
+});
+
+describe('constNameInSourceIndex', () => {
+  const INDEX = [
+    "import type { LevelSource } from '../authoring.ts';",
+    "import { songTinh } from './1-1.ts';",
+    "import { baoThap } from './1-2.ts';",
+    '',
+    'export const LEVEL_SOURCES: Readonly<Record<string, LevelSource>> = {',
+    "  '1-1': songTinh,",
+    "  '1-2': baoThap,",
+    '};',
+  ].join('\n');
+
+  test('tra ra tên hằng đang được đăng ký cho một id', () => {
+    expect(constNameInSourceIndex(INDEX, '1-2')).toBe('baoThap');
+  });
+
+  test('trả null khi id chưa đăng ký', () => {
+    expect(constNameInSourceIndex(INDEX, '4-1')).toBeNull();
+  });
+
+  test('trả null khi import có mà dòng LEVEL_SOURCES thiếu', () => {
+    const broken = INDEX.replace("  '1-2': baoThap,\n", '');
+    expect(constNameInSourceIndex(broken, '1-2')).toBeNull();
   });
 });
