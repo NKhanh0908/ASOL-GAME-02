@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>Triển khai bằng Phaser</title>
+<script src="./vendor/react.js"></script>
+<script src="./vendor/react-dom.js"></script>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&amp;family=Be+Vietnam+Pro:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+@keyframes tw{0%,100%{opacity:.3}50%{opacity:1}}
+@keyframes pulse{0%{transform:scale(.7);opacity:1}100%{transform:scale(1.8);opacity:0}}
+@keyframes spin{to{transform:rotate(360deg)}}
+.tw{animation:tw 3s ease-in-out infinite}
+.pulse{animation:pulse 1.8s ease-out infinite;transform-box:fill-box;transform-origin:center}
+.spin{animation:spin 240s linear infinite;transform-box:fill-box;transform-origin:center}
+.spin2{animation:spin 400s linear infinite reverse;transform-box:fill-box;transform-origin:center}
+button{font:inherit}
+@keyframes inFade{from{opacity:0;transform:scale(.82)}to{opacity:1;transform:scale(1)}}
+.in{animation:inFade 1.4s cubic-bezier(.2,.8,.2,1) both;transform-box:fill-box;transform-origin:center}
+@keyframes driftA{from{transform:translate(-14px,4px)}to{transform:translate(14px,-4px)}}
+.driftA{animation:driftA 12s ease-in-out infinite alternate}
+.driftB{animation:driftA 16s ease-in-out infinite alternate-reverse}
+@keyframes draw{from{stroke-dashoffset:100}to{stroke-dashoffset:0}}
+.draw{stroke-dasharray:100;animation:draw 2.4s ease-out .3s both}
+@keyframes orbit{to{stroke-dashoffset:-100}}
+.orbit{stroke-dasharray:7 93;animation:orbit 6s linear infinite}
+.orbit2{stroke-dasharray:3 97;animation:orbit 6s linear -3s infinite}
+@keyframes breath{0%,100%{transform:scale(1);opacity:.85}50%{transform:scale(1.12);opacity:1}}
+.breath{animation:breath 3.2s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+@keyframes pop{0%{opacity:0;transform:scale(0)}70%{opacity:1;transform:scale(1.18)}100%{opacity:1;transform:scale(1)}}
+.pop{animation:pop .7s cubic-bezier(.3,1.6,.5,1) both;transform-box:fill-box;transform-origin:center}
+.spinS{animation:spin 40s linear infinite;transform-box:fill-box;transform-origin:center}
+@keyframes webp{0%,100%{opacity:.55}50%{opacity:1}}
+.webp{animation:webp 5s ease-in-out infinite}
+@keyframes meteor{0%{transform:translate(0,0);opacity:0}3%{opacity:1}13%{transform:translate(240px,160px);opacity:0}100%{transform:translate(240px,160px);opacity:0}}
+.meteor{animation:meteor 8s ease-in infinite}
+@keyframes beamIn{from{transform:scale(0)}to{transform:scale(1)}}
+.beamIn{animation:beamIn .9s ease-out both;transform-box:fill-box;transform-origin:0% 100%}
+@keyframes fanIn{from{transform:scaleY(0);opacity:0}to{transform:scaleY(1);opacity:1}}
+.fanIn{animation:fanIn 1.3s cubic-bezier(.2,.8,.2,1) .8s both;transform-box:fill-box;transform-origin:50% 100%}
+@keyframes fanLoop{0%,100%{opacity:.7}50%{opacity:1}}
+.fanLoop{animation:fanLoop 4s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(-5px) rotate(-5deg)}50%{transform:translateY(5px) rotate(5deg)}}
+.float{animation:float 5s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+.portalA{animation:spin 12s linear infinite;transform-box:fill-box;transform-origin:center}
+.portalB{animation:spin 18s linear infinite reverse;transform-box:fill-box;transform-origin:center}
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
+</style>
+</helmet>
+
+<div style="position:relative;width:1400px;height:1820px;overflow:hidden;font-family:'Be Vietnam Pro',sans-serif;color:#FFFFFF;background:linear-gradient(180deg,#0E1240,#080A26)">
+<div style="position:absolute;left:64px;top:44px;right:64px">
+<div style="font-family:'Baloo 2','Be Vietnam Pro',sans-serif;font-weight:800;font-size:40px;line-height:48px">Làm được bằng Phaser 3</div>
+<div style="font-size:15px;line-height:22px;color:#C9D2FF;margin-top:4px">Tách bản đồ thành 6 lớp, mỗi lớp cuộn với tốc độ khác nhau để có chiều sâu (parallax).</div>
+</div>
+<div style="position:absolute;left:64px;right:64px;top:150px;display:flex;flex-direction:column;gap:10px"><div style="font-size:13px;font-weight:700;color:#FFE29A">Thứ tự lớp, từ trên xuống</div><div style="display:grid;grid-template-columns:28px 190px minmax(0, 1fr) 250px;gap:14px;align-items:center;padding:14px 18px;border-radius:16px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12)">
+<div style="width:20px;height:20px;border-radius:6px;background:#FFFFFF"></div>
+<div style="font-family:'Baloo 2','Be Vietnam Pro',sans-serif;font-weight:800;font-size:18px">UI cố định</div><div style="font-size:14px;color:#E4E8FF">Nút quay lại, tiêu đề, bộ đếm</div>
+<div style="font-family:ui-monospace,Menlo,monospace;font-size:13px;color:#FFFFFF">setScrollFactor(0)</div></div><div style="display:grid;grid-template-columns:28px 190px minmax(0, 1fr) 250px;gap:14px;align-items:center;padding:14px 18px;border-radius:16px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12)">
+<div style="width:20px;height:20px;border-radius:6px;background:#FFE9A8"></div>
+<div style="font-family:'Baloo 2','Be Vietnam Pro',sans-serif;font-weight:800;font-size:18px">Hạt bụi sao</div><div style="font-size:14px;color:#E4E8FF">≤ 30 hạt cho mỗi màn hình, màu theo chương</div>
+<div style="font-family:ui-monospace,Menlo,monospace;font-size:13px;color:#FFE9A8">ParticleEmitter, scrollFactor 1.1</div></div><div style="display:grid;grid-template-columns:28px 190px minmax(0, 1fr) 250px;gap:14px;align-items:center;padding:14px 18px;border-radius:16px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12)">
+<div style="width:20px;height:20px;border-radius:6px;background:#FFB45A"></div>
+<div style="font-family:'Baloo 2','Be Vietnam Pro',sans-serif;font-weight:800;font-size:18px">Đường đi + nút màn</div><div style="font-size:14px;color:#E4E8FF">Đường vẽ sẵn, nút là Container có tween</div>
+<div style="font-family:ui-monospace,Menlo,monospace;font-size:13px;color:#FFB45A">scrollFactor 1</div></div><div style="display:grid;grid-template-columns:28px 190px minmax(0, 1fr) 250px;gap:14px;align-items:center;padding:14px 18px;border-radius:16px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12)">
+<div style="width:20px;height:20px;border-radius:6px;background:#E58BFF"></div>
+<div style="font-family:'Baloo 2','Be Vietnam Pro',sans-serif;font-weight:800;font-size:18px">Ảnh thiên hà</div><div style="font-size:14px;color:#E4E8FF">1 ảnh WebP ~1024 px mỗi chương, xoay chậm</div>
+<div style="font-family:ui-monospace,Menlo,monospace;font-size:13px;color:#E58BFF">scrollFactor 0.6, setAngle tween</div></div><div style="display:grid;grid-template-columns:28px 190px minmax(0, 1fr) 250px;gap:14px;align-items:center;padding:14px 18px;border-radius:16px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12)">
+<div style="width:20px;height:20px;border-radius:6px;background:#5AD1E0"></div>
+<div style="font-family:'Baloo 2','Be Vietnam Pro',sans-serif;font-weight:800;font-size:18px">Sao xa</div><div style="font-size:14px;color:#E4E8FF">TileSprite lặp, nhấp nháy bằng alpha tween</div>
+<div style="font-family:ui-monospace,Menlo,monospace;font-size:13px;color:#5AD1E0">scrollFactor 0.3</div></div><div style="display:grid;grid-template-columns:28px 190px minmax(0, 1fr) 250px;gap:14px;align-items:center;padding:14px 18px;border-radius:16px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12)">
+<div style="width:20px;height:20px;border-radius:6px;background:#3FA9F5"></div>
+<div style="font-family:'Baloo 2','Be Vietnam Pro',sans-serif;font-weight:800;font-size:18px">Màu nền</div><div style="font-size:14px;color:#E4E8FF">Nội suy giữa màu các chương theo vị trí cuộn</div>
+<div style="font-family:ui-monospace,Menlo,monospace;font-size:13px;color:#3FA9F5">Color.Interpolate mỗi frame</div></div></div>
+<div style="position:absolute;left:64px;right:64px;top:640px;display:flex;flex-direction:column;gap:10px"><div style="font-size:13px;font-weight:700;color:#FFE29A">Lưu ý hiệu năng</div><div style="display:grid;grid-template-columns:repeat(3, minmax(0, 1fr));gap:14px"><div style="padding:18px;border-radius:18px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12)"><div style="font-family:'Baloo 2','Be Vietnam Pro',sans-serif;font-weight:800;font-size:18px;color:#FFE29A">Vẽ sẵn, đừng vẽ thời gian thực</div><div style="font-size:14px;line-height:20px;color:#E4E8FF;margin-top:4px">Phần mờ, ánh sáng của thiên hà xuất thành ảnh PNG/WebP. Phaser chỉ dịch, xoay, đổi độ mờ.</div></div><div style="padding:18px;border-radius:18px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12)"><div style="font-family:'Baloo 2','Be Vietnam Pro',sans-serif;font-weight:800;font-size:18px;color:#FFE29A">Ánh sáng bằng blend ADD</div><div style="font-size:14px;line-height:20px;color:#E4E8FF;margin-top:4px">Glow dùng sprite mềm với blendMode ADD; postFX glow chỉ bật trên máy mạnh.</div></div><div style="padding:18px;border-radius:18px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12)"><div style="font-family:'Baloo 2','Be Vietnam Pro',sans-serif;font-weight:800;font-size:18px;color:#FFE29A">Tải theo chương</div><div style="font-size:14px;line-height:20px;color:#E4E8FF;margin-top:4px">Chỉ giữ ảnh của chương đang xem và chương kề bên; chương xa thì hủy texture.</div></div><div style="padding:18px;border-radius:18px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12)"><div style="font-family:'Baloo 2','Be Vietnam Pro',sans-serif;font-weight:800;font-size:18px;color:#FFE29A">Cuộn có quán tính</div><div style="font-size:14px;line-height:20px;color:#E4E8FF;margin-top:4px">Kéo camera bằng pointer, thả ra thì giảm tốc dần; giới hạn bằng setBounds.</div></div><div style="padding:18px;border-radius:18px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12)"><div style="font-family:'Baloo 2','Be Vietnam Pro',sans-serif;font-weight:800;font-size:18px;color:#FFE29A">Cổng chương</div><div style="font-size:14px;line-height:20px;color:#E4E8FF;margin-top:4px">Khi cuộn qua ranh giới, banner chương phóng to nhẹ và màu nền chuyển trong ~600 ms.</div></div><div style="padding:18px;border-radius:18px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12)"><div style="font-family:'Baloo 2','Be Vietnam Pro',sans-serif;font-weight:800;font-size:18px;color:#FFE29A">Giảm chuyển động</div><div style="font-size:14px;line-height:20px;color:#E4E8FF;margin-top:4px">Tắt xoay thiên hà và hạt bụi khi bật Reduced Motion hoặc FPS dưới 40.</div></div></div></div>
+<div style="position:absolute;left:64px;right:64px;top:930px;display:flex;flex-direction:column;gap:10px">
+<div style="display:grid;grid-template-columns:150px minmax(0, 1fr) minmax(0, 1fr) 330px;gap:16px;padding:0 18px;font-size:13px;font-weight:700;color:#FFE29A"><div>Hiệu ứng theo chương</div><div>Xuất hiện (chạy 1 lần)</div><div>Lặp liên tục</div><div>Phaser</div></div><div style="display:grid;grid-template-columns:150px minmax(0, 1fr) minmax(0, 1fr) 330px;gap:16px;align-items:start;padding:14px 18px;border-radius:16px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12)">
+<div><div style="font-size:12px;font-weight:700;color:#5AD1E0">Chương I</div><div style="font-family:'Baloo 2','Be Vietnam Pro',sans-serif;font-weight:800;font-size:17px;line-height:22px">Thiên hà lùn</div></div>
+<div style="font-size:13.5px;line-height:19px;color:#E4E8FF">Mây khí hiện dần và phóng nhẹ từ 82% lên 100%</div><div style="font-size:13.5px;line-height:19px;color:#E4E8FF">Hai lớp mây trôi qua lại ngược chiều; sao trẻ hồng nhấp nháy</div>
+<div style="font-family:ui-monospace,Menlo,monospace;font-size:12px;line-height:18px;color:#5AD1E0">tweens.add({alpha, scale, ease:'Cubic.Out'})<br>tween x yoyo, repeat:-1</div></div><div style="display:grid;grid-template-columns:150px minmax(0, 1fr) minmax(0, 1fr) 330px;gap:16px;align-items:start;padding:14px 18px;border-radius:16px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12)">
+<div><div style="font-size:12px;font-weight:700;color:#FFB45A">Chương III</div><div style="font-family:'Baloo 2','Be Vietnam Pro',sans-serif;font-weight:800;font-size:17px;line-height:22px">Thiên hà vòng</div></div>
+<div style="font-size:13.5px;line-height:19px;color:#E4E8FF">Vòng sáng được vẽ dần quanh lõi</div><div style="font-size:13.5px;line-height:19px;color:#E4E8FF">Hai vệt sáng chạy quanh vòng; lõi vàng thở phồng xẹp</div>
+<div style="font-family:ui-monospace,Menlo,monospace;font-size:12px;line-height:18px;color:#FFB45A">Graphics + tween progress vẽ cung<br>PathFollower trên Curves.Ellipse</div></div><div style="display:grid;grid-template-columns:150px minmax(0, 1fr) minmax(0, 1fr) 330px;gap:16px;align-items:start;padding:14px 18px;border-radius:16px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12)">
+<div><div style="font-size:12px;font-weight:700;color:#FFE9A8">Chương IV</div><div style="font-family:'Baloo 2','Be Vietnam Pro',sans-serif;font-weight:800;font-size:17px;line-height:22px">Cụm thiên hà</div></div>
+<div style="font-size:13.5px;line-height:19px;color:#E4E8FF">Các thiên hà con bật ra lần lượt</div><div style="font-size:13.5px;line-height:19px;color:#E4E8FF">Thiên hà con xoay chậm; lưới vũ trụ sáng mờ; sao băng mỗi vài giây</div>
+<div style="font-family:ui-monospace,Menlo,monospace;font-size:12px;line-height:18px;color:#FFE9A8">scale 0→1, ease:'Back.Out', delay: tweens.stagger(80)<br>time.addEvent + ParticleEmitter vệt đuôi</div></div><div style="display:grid;grid-template-columns:150px minmax(0, 1fr) minmax(0, 1fr) 330px;gap:16px;align-items:start;padding:14px 18px;border-radius:16px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12)">
+<div><div style="font-size:12px;font-weight:700;color:#FF7AD9">Chương V</div><div style="font-family:'Baloo 2','Be Vietnam Pro',sans-serif;font-weight:800;font-size:17px;line-height:22px">Lăng kính</div></div>
+<div style="font-size:13.5px;line-height:19px;color:#E4E8FF">Tia sáng bắn vào lăng kính, cầu vồng xoè ra, mảnh kính bật ra</div><div style="font-size:13.5px;line-height:19px;color:#E4E8FF">Mảnh kính trôi và nghiêng nhẹ; cầu vồng sáng tối nhịp nhàng</div>
+<div style="font-family:ui-monospace,Menlo,monospace;font-size:12px;line-height:18px;color:#FF7AD9">TweenChain: beam.scaleX → fan.scaleY → shards<br>tween y + angle yoyo, delay ngẫu nhiên</div></div><div style="display:grid;grid-template-columns:150px minmax(0, 1fr) minmax(0, 1fr) 330px;gap:16px;align-items:start;padding:14px 18px;border-radius:16px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12)">
+<div><div style="font-size:12px;font-weight:700;color:#FFFFFF">Mọi chương</div><div style="font-family:'Baloo 2','Be Vietnam Pro',sans-serif;font-weight:800;font-size:17px;line-height:22px">Ải Vô Tận</div></div>
+<div style="font-size:13.5px;line-height:19px;color:#E4E8FF">Cổng hiện ra sau khi mở khoá màn cuối chương</div><div style="font-size:13.5px;line-height:19px;color:#E4E8FF">Hai vòng nét đứt xoay ngược chiều; quầng sáng thở</div>
+<div style="font-family:ui-monospace,Menlo,monospace;font-size:12px;line-height:18px;color:#FFFFFF">2 Image cổng, tween angle ±360 repeat:-1<br>alpha/scale yoyo cho quầng sáng</div></div></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview": {"width": 1400, "height": 1820}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>

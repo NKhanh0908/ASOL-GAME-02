@@ -11,13 +11,16 @@ import { t, getLocale, setLocale, getLevelTitle, getRandomMenuTagline } from './
 import { director } from './transitions/SceneDirector.ts';
 import type { Choreographed, TransitionContext } from './transitions/SceneDirector.ts';
 import type { TransitionTimeline } from './transitions/TransitionTimeline.ts';
-import { getMotionScale } from './transitions/motion.ts';
+import { getMotionScale, isReducedMotion } from './transitions/motion.ts';
 import { applySteps } from './transitions/choreography.ts';
 import type { Parts } from './transitions/choreography.ts';
 import { MENU_OUT_TO_MAP, MENU_OUT_TO_PLAY, MENU_SPECIAL, menuIn } from './transitions/routes.ts';
 import { playUiCue } from './audio/uiCues.ts';
 import { DualJewelEmblem } from './menu/DualJewelEmblem.ts';
 import { strokeDiamond } from './menu/diamondMotif.ts';
+import { resolveCurrentGalaxyTheme, getChapterProgress } from './galaxyTheme.ts';
+import type { GalaxyTheme } from './galaxyTheme.ts';
+import { ChapterProgressBadge } from './menu/ChapterProgressBadge.ts';
 
 export class MenuScene extends Phaser.Scene implements Choreographed {
   readonly directorKey = 'MenuScene' as const;
@@ -77,9 +80,12 @@ export class MenuScene extends Phaser.Scene implements Choreographed {
   private buildMainMenu(completedLevels: readonly string[]): void {
     this.uiContainer.removeAll(true);
 
-    // Xác định màn kế tiếp an toàn
+    // Xác định màn kế tiếp và Theme thiên hà tương ứng
     const nextResolution = resolveNextCampaignLevel(campaignManifest, completedLevels);
     const targetLevel = nextResolution.level;
+    const currentTheme = resolveCurrentGalaxyTheme(completedLevels);
+    const chProgress = getChapterProgress(currentTheme.chapter, completedLevels);
+
     const btnLabelText =
       nextResolution.type === 'start'
         ? t('btn_start')
@@ -98,7 +104,7 @@ export class MenuScene extends Phaser.Scene implements Choreographed {
     const langPillBg = this.add.graphics();
     langPillBg.fillStyle(COLOR_NUMBERS.boardSurfaceTop, 0.85);
     langPillBg.fillRoundedRect(-pillW / 2, -pillH / 2, pillW, pillH, 19);
-    langPillBg.lineStyle(1.6, COLOR_NUMBERS.icePrimary, 0.8);
+    langPillBg.lineStyle(1.6, currentTheme.colors.accent, 0.9);
     langPillBg.strokeRoundedRect(-pillW / 2, -pillH / 2, pillW, pillH, 19);
 
     const activeBg = this.add.graphics();
@@ -152,11 +158,20 @@ export class MenuScene extends Phaser.Scene implements Choreographed {
     // LOGO PHƯƠNG ÁN 2: GƯƠNG ĐÔI (CASUAL LOGO WITH MIRROR REFLECTION)
     // -------------------------------------------------------------
     this.titleBlock = this.add.container(0, 0);
-    this.buildCasualMirrorLogo();
+    this.buildCasualMirrorLogo(currentTheme);
+
+    // Huy hiệu tiến độ chương (Chapter Progress Badge) tại y = 280
+    const chapterBadge = new ChapterProgressBadge(this, {
+      x: 360,
+      y: 280,
+      theme: currentTheme,
+      completedCount: chProgress.completed,
+    });
+    this.titleBlock.add(chapterBadge);
 
     // Dòng thông tin thiên văn (Layout C: đặt ngay dưới hero ở y=830)
     const factCaption = this.add
-      .text(360, 830, `◆ ${getRandomMenuTagline()}`, {
+      .text(360, 830, `◆ ${currentTheme.tagline}`, {
         fontFamily: TYPO_TOKENS.fontFamily.display,
         fontSize: TYPO_TOKENS.fontSize.caption,
         color: '#B9C9F2',
@@ -291,8 +306,8 @@ export class MenuScene extends Phaser.Scene implements Choreographed {
     secFace.fillStyle(0xffffff, 0.16);
     secFace.fillRoundedRect(-btnWidth / 2 + 14, -secHeight / 2 + 4, btnWidth - 28, 14, 7);
 
-    // Viền đôi ngọc băng phát quang
-    secFace.lineStyle(2.5, COLOR_NUMBERS.icePrimary, 0.95);
+    // Viền đôi màu accent của chương
+    secFace.lineStyle(2.5, currentTheme.colors.accent, 0.95);
     secFace.strokeRoundedRect(-btnWidth / 2, -secHeight / 2, btnWidth, secHeight - 3, 22);
     secFace.lineStyle(1.0, 0xffffff, 0.45);
     secFace.strokeRoundedRect(-btnWidth / 2 + 4, -secHeight / 2 + 3, btnWidth - 8, secHeight - 9, 18);
@@ -300,7 +315,7 @@ export class MenuScene extends Phaser.Scene implements Choreographed {
     // Icon lưới 4 ô chiêm tinh
     const secIcon = this.add.graphics();
     const iconX = -btnWidth / 2 + 40;
-    secIcon.fillStyle(0x7fd8ff, 0.9);
+    secIcon.fillStyle(currentTheme.colors.accent, 0.9);
     secIcon.fillRoundedRect(iconX - 10, -10, 8, 8, 2);
     secIcon.fillRoundedRect(iconX + 2, -10, 8, 8, 2);
     secIcon.fillRoundedRect(iconX - 10, 2, 8, 8, 2);
@@ -373,7 +388,7 @@ export class MenuScene extends Phaser.Scene implements Choreographed {
    * Dựng cụm logo MIRROR phong cách Phương án 2 (Gương Đôi)
    * Có hiệu ứng xuất hiện thả rơi đàn hồi và loop hoạt cảnh trôi / quét sáng
    */
-  private buildCasualMirrorLogo(): void {
+  private buildCasualMirrorLogo(theme?: GalaxyTheme): void {
     if (this.mirrorLogoContainer) {
       this.mirrorLogoContainer.destroy();
     }
@@ -392,8 +407,10 @@ export class MenuScene extends Phaser.Scene implements Choreographed {
 
     const logoY = 195;
     const barY = 248;
+    const accentHex = theme ? theme.colors.accentHex : '#7FD8FF';
+    const accentColor = theme ? theme.colors.accent : 0x7fd8ff;
 
-    // 1. Bóng phản chiếu màu kính cyan bên dưới thanh gương (Mirror Reflection)
+    // 1. Bóng phản chiếu màu accent của chương bên dưới thanh gương (Mirror Reflection)
     for (let i = 0; i < letters.length; i++) {
       const item = letters[i];
       const x = 360 + item.dx;
@@ -402,7 +419,7 @@ export class MenuScene extends Phaser.Scene implements Choreographed {
         .text(x, refY, item.char, {
           fontFamily: TYPO_TOKENS.fontFamily.display,
           fontSize: '76px',
-          color: '#7FD8FF',
+          color: accentHex,
           stroke: '#0B163A',
           strokeThickness: 10,
         })
@@ -421,7 +438,7 @@ export class MenuScene extends Phaser.Scene implements Choreographed {
       });
     }
 
-    // 2. Thanh gương kính cyan (Mirror Bar) ở giữa mở rộng từ tâm
+    // 2. Thanh gương kính màu accent ở giữa mở rộng từ tâm
     const barContainer = this.add.container(0, 0);
     const barWidth = 470;
     const barHeight = 18;
@@ -429,8 +446,8 @@ export class MenuScene extends Phaser.Scene implements Choreographed {
     // Đổ bóng thanh gương
     barBg.fillStyle(0x0b163a, 0.8);
     barBg.fillRoundedRect(360 - barWidth / 2, barY - barHeight / 2 + 5, barWidth, barHeight, 9);
-    // Thân thanh gương cyan
-    barBg.fillStyle(0x7fd8ff, 1.0);
+    // Thân thanh gương mang màu accent
+    barBg.fillStyle(accentColor, 1.0);
     barBg.fillRoundedRect(360 - barWidth / 2, barY - barHeight / 2, barWidth, barHeight, 9);
     barBg.lineStyle(3, 0x0b163a, 1.0);
     barBg.strokeRoundedRect(360 - barWidth / 2, barY - barHeight / 2, barWidth, barHeight, 9);
@@ -837,6 +854,14 @@ export class MenuScene extends Phaser.Scene implements Choreographed {
       tl.call(MENU_SPECIAL.spinAtMs, () => this.emblem.setRingSpeed(MENU_SPECIAL.spinPeak));
     } else {
       applySteps(tl, MENU_OUT_TO_MAP, this.transitionParts(), 'exit');
+      // Spatial Zoom: Camera phóng nhẹ về phía trước như lao vào tâm vũ trụ
+      if (!isReducedMotion()) {
+        const cam = this.cameras.main;
+        const zoomState = { zoom: 1 };
+        tl.at(0, zoomState, { zoom: 1.25 }, 500, 'cubicInOut', () => {
+          cam.setZoom(zoomState.zoom);
+        });
+      }
     }
   }
 

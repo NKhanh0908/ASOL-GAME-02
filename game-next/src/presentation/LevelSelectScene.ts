@@ -22,6 +22,8 @@ import { applySteps, orderByDistance } from './transitions/choreography.ts';
 import type { Parts, Poseable } from './transitions/choreography.ts';
 import { MAP_OUT_TO_MENU, MAP_OUT_TO_PLAY, MAP_SPECIAL, mapIn } from './transitions/routes.ts';
 import { playUiCue } from './audio/uiCues.ts';
+import { resolveGalaxyTheme, getChapterProgress } from './galaxyTheme.ts';
+import { ChapterEndlessGate } from './chapterEndlessGate.ts';
 
 type NodeInfo = {
   id: string;
@@ -139,6 +141,15 @@ export class LevelSelectScene extends Phaser.Scene implements Choreographed {
 
   playIn(tl: TransitionTimeline, ctx: TransitionContext): void {
     applySteps(tl, mapIn(ctx.from === 'PlayScene' ? 400 : 300), this.transitionParts(this.anchorIndex()), 'enter');
+    // Spatial Zoom: Tiếp nối pha zoom vào không gian chòm sao từ Menu
+    if (ctx.from === 'MenuScene' && !isReducedMotion()) {
+      const cam = this.cameras.main;
+      cam.setZoom(1.25);
+      const zoomState = { zoom: 1.25 };
+      tl.at(250, zoomState, { zoom: 1.0 }, 500, 'cubicOut', () => {
+        cam.setZoom(zoomState.zoom);
+      });
+    }
   }
 
   playOut(tl: TransitionTimeline, ctx: TransitionContext): void {
@@ -258,12 +269,15 @@ export class LevelSelectScene extends Phaser.Scene implements Choreographed {
     });
     const currentNode = nodes.find((n) => n.state === 'current') ?? null;
 
-    // 2. Sắc độ riêng cho từng chương theo dải của bố cục
+    // 2. Sắc độ dải thiên hà riêng cho từng chương (Galaxy Theme Bands)
     const chBackdrop = this.add.graphics();
     for (const band of layout.chapters) {
-      const tint = CHAPTER_TINTS[band.chapter];
-      chBackdrop.fillStyle(tint.color, tint.alpha);
-      chBackdrop.fillRect(0, band.top, 720, band.bottom - band.top);
+      const gTheme = resolveGalaxyTheme(band.chapter);
+      // Đổ nền gradient nhẹ chuyển sắc theo chương
+      chBackdrop.fillStyle(gTheme.colors.bgTop, 0.45);
+      chBackdrop.fillRect(0, band.top, 720, (band.bottom - band.top) * 0.5);
+      chBackdrop.fillStyle(gTheme.colors.bgBottom, 0.45);
+      chBackdrop.fillRect(0, band.top + (band.bottom - band.top) * 0.5, 720, (band.bottom - band.top) * 0.5);
     }
     this.mapContainer.add(chBackdrop);
 
@@ -309,44 +323,50 @@ export class LevelSelectScene extends Phaser.Scene implements Choreographed {
       }
     }
 
-    // 4. Tiêu đề phân đoạn Chương (B2: Bỏ thuật ngữ kỹ thuật, banner kính thanh lịch)
+    // 4. Banner phân đoạn Chương phong cách Viên Thuốc Kính Phát Quang (Galaxy Chapter Pill)
+    // Chuẩn mockup: GalaxyMap.dc.html
     for (const band of layout.chapters) {
+      const gTheme = resolveGalaxyTheme(band.chapter);
+      const chProgress = getChapterProgress(band.chapter, completedLevels);
       const chContainer = this.add.container(360, band.bannerY);
-      // Mockup dùng chữ serif có hai gạch amber hai bên, không có nền
-      const chText = this.add
-        .text(0, 0, getChapterLabel(band.chapter), {
-          fontFamily: TYPO_TOKENS.fontFamily.serif,
-          fontSize: TYPO_TOKENS.fontSize.sectionHeader,
-          color: COLOR_TOKENS.text.primary,
+
+      const pillWidth = 240;
+      const pillHeight = 56;
+      const pillRadius = 28;
+
+      // Hai đường line phát quang kéo dài sang 2 bên
+      const wingLines = this.add.graphics();
+      wingLines.lineStyle(1.6, gTheme.colors.accent, 0.7);
+      wingLines.lineBetween(-320, 0, -pillWidth / 2 - 8, 0);
+      wingLines.lineBetween(pillWidth / 2 + 8, 0, 320, 0);
+
+      // Thân viên thuốc kính
+      const pillBg = this.add.graphics();
+      pillBg.fillStyle(gTheme.colors.accentDark, 0.78);
+      pillBg.fillRoundedRect(-pillWidth / 2, -pillHeight / 2, pillWidth, pillHeight, pillRadius);
+      pillBg.lineStyle(2, gTheme.colors.accent, 0.95);
+      pillBg.strokeRoundedRect(-pillWidth / 2, -pillHeight / 2, pillWidth, pillHeight, pillRadius);
+
+      const romanNumeral = band.chapter === 1 ? 'I' : band.chapter === 2 ? 'II' : 'III';
+      const mainTitle = this.add
+        .text(0, -9, `Chương ${romanNumeral} · ${gTheme.name}`, {
+          fontFamily: TYPO_TOKENS.fontFamily.display,
+          fontSize: '17px',
+          color: '#FFFFFF',
           fontStyle: 'bold',
         })
         .setOrigin(0.5);
 
-      // Links are generated from the layout tables and cross this row. A soft
-      // plate in the sky colour hides the crossing without moving any path.
-      const plate = this.add.graphics();
-      const plateW = chText.width + 120;
-      const plateH = 52;
-      for (let i = 0; i < 6; i++) {
-        const inset = i * 3;
-        plate.fillStyle(COLOR_NUMBERS.skyTop, 0.16);
-        plate.fillRoundedRect(
-          -plateW / 2 + inset,
-          -plateH / 2 + inset,
-          plateW - inset * 2,
-          plateH - inset * 2,
-          (plateH - inset * 2) / 2
-        );
-      }
+      const subTitle = this.add
+        .text(0, 11, `${gTheme.galaxyType} · ${chProgress.completed}/${chProgress.total}`, {
+          fontFamily: TYPO_TOKENS.fontFamily.sans,
+          fontSize: '12px',
+          color: gTheme.colors.accentHex,
+          fontStyle: 'bold',
+        })
+        .setOrigin(0.5);
 
-      const chBg = this.add.graphics();
-      chBg.lineStyle(1.5, COLOR_NUMBERS.gridModule, 0.5);
-      const rule = 80;
-      const gap = chText.width / 2 + 24;
-      chBg.lineBetween(-gap - rule, 0, -gap, 0);
-      chBg.lineBetween(gap, 0, gap + rule, 0);
-
-      chContainer.add([plate, chBg, chText]);
+      chContainer.add([wingLines, pillBg, mainTitle, subTitle]);
       this.mapContainer.add(chContainer);
       this.linkParts.push(chContainer);
     }
@@ -516,8 +536,59 @@ export class LevelSelectScene extends Phaser.Scene implements Choreographed {
         }
       });
 
+      // Viền hình thoi phát quang mang màu accent của từng chương
+      const nodeTheme = resolveGalaxyTheme(node.chapter);
+      const diamondBorder = this.add.graphics();
+      diamondBorder.lineStyle(node.state === 'completed' ? 3.5 : 2.0, nodeTheme.colors.accent, node.state === 'locked' ? 0.45 : 0.85);
+      diamondBorder.beginPath();
+      diamondBorder.moveTo(0, -42);
+      diamondBorder.lineTo(42, 0);
+      diamondBorder.lineTo(0, 42);
+      diamondBorder.lineTo(-42, 0);
+      diamondBorder.closePath();
+      diamondBorder.strokePath();
+      nodeContainer.add(diamondBorder);
+
       this.mapContainer.add(nodeContainer);
       this.nodeViews.push({ info: node, container: nodeContainer });
+    }
+
+    // 6. Cổng vũ trụ Ải Vô Tận (Endless Gate) đặt ở cuối các chương (sau 1-7 và 2-7)
+    // Chuẩn mockup: GalaxyMap.dc.html
+    const chapterTails = [
+      { chapter: 1, lastNodeId: '1-7', gateX: 130, gateYOffset: 120 },
+      { chapter: 2, lastNodeId: '2-7', gateX: 130, gateYOffset: 120 },
+    ];
+
+    for (const tail of chapterTails) {
+      const tailNode = nodes.find((n) => n.id === tail.lastNodeId);
+      if (tailNode) {
+        const gateTheme = resolveGalaxyTheme(tail.chapter);
+        const gateX = tail.gateX;
+        const gateY = tailNode.y + tail.gateYOffset;
+
+        // Đường nhánh nét đứt nối từ nút cuối sang cổng
+        const connector = this.add.graphics();
+        connector.lineStyle(2, gateTheme.colors.accent, 0.65);
+        const curve = new Phaser.Curves.QuadraticBezier(
+          new Phaser.Math.Vector2(tailNode.x, tailNode.y),
+          new Phaser.Math.Vector2((tailNode.x + gateX) / 2, tailNode.y + 40),
+          new Phaser.Math.Vector2(gateX, gateY)
+        );
+        const pts = curve.getPoints(16);
+        for (let j = 0; j < pts.length - 1; j += 2) {
+          connector.lineBetween(pts[j].x, pts[j].y, pts[j + 1].x, pts[j + 1].y);
+        }
+        this.mapContainer.add(connector);
+
+        const endlessGate = new ChapterEndlessGate(this, {
+          x: gateX,
+          y: gateY,
+          theme: gateTheme,
+        });
+        this.mapContainer.add(endlessGate);
+        this.linkParts.push(endlessGate);
+      }
     }
 
     // Giới hạn cuộn cho bản đồ

@@ -36,7 +36,11 @@ Paths below are relative to `docs/superpowers/`.
 | AI | AI onboarding context | specs/2026-10-03-ai-onboarding-context-design.md | plans/2026-10-03-ai-onboarding-context.md | done | Cold-start test passed 2026-10-03 |
 | CH1H | Chapter 1 hard tail: levels 1-7, 1-8, 1-9 | specs/2026-10-06-chapter-1-hard-tail-design.md | plans/2026-10-06-ch1h-chapter-1-hard-tail.md | approved | Three difficulty-4 levels appended to chapter 1 using geometric deduction only (no overlap, no rotation). Raises `RELEASE_LEVEL_COUNT` 28 → 31 |
 | E4 | Studio: triangle orientation picker + campaign round-trip | specs/2026-10-06-e4-studio-orientation-and-roundtrip-design.md | plans/2026-10-06-e4-studio-orientation-and-roundtrip.md | done | Roof triangles (orientation 4–7) exist in `shapes.ts` but no studio control reaches them. Adds a palette/inspector orientation picker and an `overwrite` mode for `promoteStudioLevel` that preserves the source's block comment |
+| JM | Journey map visual refresh (menu sky + chapter zones, XOR gates) | specs/2026-10-08-c-journey-map-visual-refresh-design.md | plans/2026-10-08-jm-journey-map-visual-refresh.md | superseded | Superseded by GX plan with full mockup alignment |
 | FX | Play and map fixes + icon restyle (6 reported items) | specs/2026-10-06-fx-play-and-map-fixes-design.md | plans/2026-10-06-fx-play-and-map-fixes.md | approved | FX-1 piece hitbox is the whole frame; FX-2 verified non-issue, pin with a test; FX-3 remove the magnet ring; FX-4 match bar overruns the bottom row; FX-5 restyle the generated icons; FX-6 completed-node checkmark shows under the silhouette |
+| END-1 | Chapter 1 endless Tangram procedural generator | specs/2026-10-08-ch1-endless-tangram-generator-design.md | — | draft | Procedural edge-snapping generator for chapter 1 endless mode: 4-6 pieces, false-fitting decoys, unique-solution SAT verification |
+| GX | Galaxy Themes & Spatial Zoom (Chapters I & II) | specs/2026-10-08-galaxy-themes-and-spatial-zoom-design.md | plans/2026-10-08-galaxy-themes-and-spatial-zoom.md | done | Menu macro galaxy view, chapter progress badge, level select constellation map with chapter accents & endless gate |
+
 
 ## History (do not build on these)
 

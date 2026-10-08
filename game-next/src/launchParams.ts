@@ -21,5 +21,5 @@ export function resolveLaunch(search: string, isDev: boolean): LaunchTarget {
     return isDev && focus ? { scene: 'LevelSelectScene', focusLevelId: focus } : { scene: 'LevelSelectScene' };
   }
   const skipSplash = params.get('skipSplash') === '1' || params.get('scene') === 'menu';
-  return { scene: 'MenuScene', skipSplash };
+  return skipSplash ? { scene: 'MenuScene', skipSplash: true } : { scene: 'MenuScene' };
 }

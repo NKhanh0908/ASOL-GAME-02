@@ -4,6 +4,20 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-08 - Galaxy themes for Chapters I & II with spatial zoom transition
+
+- `game-next/src/presentation/galaxyTheme.ts`: pure theme token definitions for Chapter 1 (Khởi Nguyên - Dwarf Galaxy, `#0B2A5E`/`#123A7A`, accent `#5AD1E0`) and Chapter 2 (Giao Thoa - Spiral Galaxy, `#2A1670`/`#3A1A7E`, accent `#E58BFF`), theme resolvers `resolveGalaxyTheme`, `resolveCurrentGalaxyTheme`, and `getChapterProgress`.
+- `game-next/tests/galaxyTheme.test.ts`: unit tests for theme resolution, defaults, fallback, and progress computation.
+- `game-next/src/presentation/menu/ChapterProgressBadge.ts`: frosted glass badge component displaying current chapter number, name, and 7 step progress indicators.
+- `game-next/src/presentation/chapterEndlessGate.ts`: animated Endless Gate ("Ải Vô Tận") component with counter-rotating dashed portal rings (`portalA`, `portalB`), breathing pulse glow, and status pill badge.
+- `game-next/src/presentation/MenuScene.ts`: integrated chapter progress badge, active galaxy theme tinting for UI elements (language button, settings, play CTA, mirror reflection bar, tagline), and camera spatial zoom-out (`1.0` -> `1.25`) on scene transition to map.
+- `game-next/src/presentation/LevelSelectScene.ts`: updated chapter gradient bands with galaxy theme colors, added frosted glass chapter header banners with completed count badge, themed diamond outlines for level nodes, placed `ChapterEndlessGate` after levels 1-7 and 2-7, and added camera spatial zoom-in (`1.25` -> `1.0`) on transition from menu.
+- `game-next/src/launchParams.ts`: fixed conditional `skipSplash` object shape for deterministic test equality.
+- `docs/superpowers/specs/2026-10-08-galaxy-themes-and-spatial-zoom-design.md`, `docs/superpowers/plans/2026-10-08-galaxy-themes-and-spatial-zoom.md`: design specification and implementation plan for the galaxy theme identity and spatial transitions.
+- `docs/ai/DOCS-INDEX.md`, `docs/ai/STATUS.md`: updated documentation registry and active status.
+
+Verification: `npm run typecheck` clean (0 errors), `npm run build` clean (5.43s), `npx vitest run tests/galaxyTheme.test.ts` passed (4 tests), GitNexus `detect_changes()` reported low risk across 7 changed symbols and 0 affected processes, `git diff --check` clean.
+
 ### 2026-10-08 - Milky Way sky layer
 
 - `game-next/src/presentation/designTokens.ts`: added `cloud` palette tokens under `COLOR_TOKENS.sky` (`base`, `mid`, `violet`, `core`, `hot`).

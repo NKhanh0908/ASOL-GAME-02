@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Hướng A′ — Dải Ngân Hà</title>
+<link rel="stylesheet" href="shared.css"></head>
+<body>
+<h1>Hướng A′ · Dải Ngân Hà</h1>
+<p class="sub">Nền mây nhiều lớp (ref 2) giữ nguyên dải navy hiện có. Đường level chạy dọc dải sáng; level hiện tại là hành tinh có vòng quỹ đạo hổ phách. Menu giữ nguyên bố cục hiện tại (logo + thanh gương, emblem XOR, câu thiên văn, nút Tiếp tục có phụ đề). Mockup tham khảo, không phải code game.</p>
+<div class="row">
+ <div><div class="phone" id="menu"></div><div class="cap">Menu (giữ bố cục hiện tại)</div></div>
+ <div><div class="phone" id="map"></div><div class="cap">Chọn level · Chương 1</div></div>
+</div>
+<script src="shared.js"></script>
+<script>
+function sky(id,seed){
+  return `<svg class="bg" viewBox="0 0 360 640" preserveAspectRatio="xMidYMid slice">
+  <defs>
+   <linearGradient id="sk${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0B1048"/><stop offset=".5" stop-color="#1A2470"/><stop offset="1" stop-color="#0E1550"/></linearGradient>
+   <filter id="cl${id}" x="-30%" y="-30%" width="160%" height="160%"><feTurbulence type="fractalNoise" baseFrequency=".011" numOctaves="2" seed="${seed}"/><feDisplacementMap in="SourceGraphic" scale="70"/><feGaussianBlur stdDeviation="2.5"/></filter>
+   <filter id="gl${id}"><feGaussianBlur stdDeviation="14"/></filter>
+  </defs>
+  <rect width="360" height="640" fill="url(#sk${id})"/>
+  <g transform="rotate(-38 180 330)">
+   <rect x="-260" y="190" width="880" height="300" fill="#2A3CB4" opacity=".55" filter="url(#cl${id})"/>
+   <rect x="-260" y="236" width="880" height="200" fill="#4A56D8" opacity=".6" filter="url(#cl${id})"/>
+   <rect x="-260" y="272" width="880" height="130" fill="#8B5CE6" opacity=".7" filter="url(#cl${id})"/>
+   <rect x="-260" y="304" width="880" height="62" fill="#E9A4F0" opacity=".75" filter="url(#cl${id})"/>
+   <rect x="-260" y="322" width="880" height="26" fill="#FFE6F6" opacity=".7" filter="url(#gl${id})"/>
+  </g>
+  <g id="st${id}"></g></svg>`}
+function mount(id,seed,inner){
+  const el=document.getElementById(id);el.innerHTML=sky(id,seed)+inner;
+  stars(document.getElementById('st'+id),120,seed*7,360,640,{bigP:.09});
+}
+// ── Menu ──
+mount('menu',3,menuEmblem()+menuOverlay());
+// ── Map ──
+const P=[[62,548],[148,500],[104,420],[196,372],[262,296],[210,214]];
+const names=['Sao Trời','Tháp Tiên Tri','Tinh Điệp','Ngọn Hải Đăng','Chiếc Thuyền Sao','Vương Miện Cát Vàng'];
+const path=`M${P[0]} C${P[0][0]+50},${P[0][1]-20} ${P[1][0]-40},${P[1][1]+10} ${P[1]} S${P[2][0]+60},${P[2][1]+20} ${P[2]} S${P[3][0]-60},${P[3][1]+30} ${P[3]} S${P[4][0]-50},${P[4][1]+30} ${P[4]} S${P[5][0]+50},${P[5][1]+20} ${P[5]}`;
+let nodes='';
+P.forEach((p,i)=>{
+  if(i<4) nodes+=`<circle cx="${p[0]}" cy="${p[1]}" r="16" fill="#fff" opacity=".12"/>${spark(p[0],p[1],1.35,'#FFF4D6')}`;
+  else if(i==4) nodes+=`<ellipse cx="${p[0]}" cy="${p[1]}" rx="34" ry="12" fill="none" stroke="#FFC857" stroke-width="2" transform="rotate(-24 ${p[0]} ${p[1]})" opacity=".95"/>
+   <circle cx="${p[0]}" cy="${p[1]}" r="17" fill="url(#pl)"/><circle cx="${p[0]}" cy="${p[1]}" r="26" fill="#FFC857" opacity=".18"/>`;
+  else nodes+=`<circle cx="${p[0]}" cy="${p[1]}" r="9" fill="#6f7fd8" opacity=".55"/><circle cx="${p[0]}" cy="${p[1]}" r="9" fill="none" stroke="#A9E3FF" stroke-opacity=".5"/>`;
+});
+mount('map',9,`
+ <svg class="layer" viewBox="0 0 360 640"><defs><radialGradient id="pl" cx=".35" cy=".3"><stop offset="0" stop-color="#FFF4D6"/><stop offset="1" stop-color="#FFB13B"/></radialGradient></defs>
+  <path d="${path}" fill="none" stroke="#fff" stroke-opacity=".25" stroke-width="2" stroke-dasharray="2 7" stroke-linecap="round"/>
+  <path d="M${P[0]} C${P[0][0]+50},${P[0][1]-20} ${P[1][0]-40},${P[1][1]+10} ${P[1]} S${P[2][0]+60},${P[2][1]+20} ${P[2]} S${P[3][0]-60},${P[3][1]+30} ${P[3]} S${P[4][0]-50},${P[4][1]+30} ${P[4]}" fill="none" stroke="#FFE8A6" stroke-width="2.4" stroke-linecap="round" opacity=".9"/>
+  ${nodes}</svg>
+ <div class="pill" style="left:16px;top:18px">‹</div>
+ <div class="pill" style="right:16px;top:18px;color:#FFE8A6">9 / 28</div>
+ <div class="tag" style="top:24px;font-size:12px;font-weight:800;letter-spacing:.06em;color:#fff;padding:0 56px">CHƯƠNG I · KHỞI NGUYÊN</div>
+ <div class="nodeLabel" style="left:${P[4][0]-100}px;top:${P[4][1]+24}px;width:120px;text-align:right;color:#FFE8A6">5 · ${names[4]}</div>
+ <div class="nodeLabel" style="left:${P[3][0]+22}px;top:${P[3][1]-6}px;opacity:.8">4</div>
+ <div class="nodeLabel" style="left:${P[5][0]+16}px;top:${P[5][1]-6}px;opacity:.55">6</div>
+ <div style="position:absolute;left:16px;right:16px;bottom:16px;height:48px;border-radius:24px;background:#1D3482bb;border:1.2px solid #A9E3FF88;display:flex;justify-content:space-around;align-items:center;font-weight:700;font-size:14px">
+   <span style="background:#FFC857;color:#3A2300;border-radius:16px;padding:4px 16px">1</span><span>2</span><span style="opacity:.5">3</span><span style="opacity:.5">4</span></div>`);
+</script>
+</body></html>

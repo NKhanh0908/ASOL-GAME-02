@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Hướng B′ — Thiên hà phẳng</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+.phone{background:#2a0a6a}
+.btn.glass{background:linear-gradient(#6a3fd0cc,#33127Fcc);border-color:#d9c6ff}
+.pill{background:#3b1a8acc;border-color:#d9c6ffcc}
+.logo{filter:drop-shadow(0 3px 0 #3a0f8a) drop-shadow(0 0 18px #c58bff88)}
+</style></head>
+<body>
+<h1>Hướng B′ · Thiên hà phẳng</h1>
+<p class="sub">Các vòng elip đồng tâm (ref 1). Menu: emblem nằm ở lõi như “con mắt” thiên hà. Chọn level: mỗi chương là một vòng quỹ đạo, lõi hổ phách là đích. Màu tím chủ đạo thay navy.</p>
+<div class="row">
+ <div><div class="phone" id="menu"></div><div class="cap">Menu</div></div>
+ <div><div class="phone" id="map"></div><div class="cap">Chọn level · Chương 1 (vòng trong cùng)</div></div>
+</div>
+<script src="shared.js"></script>
+<script>
+const RING=['#33127F','#4a1aa0','#7a14a8','#b02a9e','#e8506a','#ff7a5a','#ffc857','#fff4d6'];
+function galaxy(cx,cy,rot,scale,seed,id){
+  const r=rnd(seed);let g=`<g transform="translate(${cx} ${cy}) rotate(${rot}) scale(${scale})">`;
+  const rx=[190,170,138,108,78,52,30],ry=[330,300,240,190,140,96,56];
+  rx.forEach((x,i)=>{g+=`<ellipse rx="${x}" ry="${ry[i]}" fill="${RING[i+1]}" opacity="${i==0?.35:.92}"/>`});
+  g+=`<ellipse rx="214" ry="356" fill="none" stroke="#6a4ae0" stroke-opacity=".45" stroke-width="2" stroke-dasharray="40 14"/>`;
+  g+=`<ellipse rx="14" ry="30" fill="#fff"/><ellipse rx="5" ry="10" cx="3" fill="#0d0830"/>`;
+  for(let i=0;i<110;i++){const t=r()*Math.PI*2,k=.45+r()*.62;const x=Math.cos(t)*210*k,y=Math.sin(t)*350*k;
+    const c=['#fff','#9fb4ff','#6a8bff','#d9c6ff'][Math.floor(r()*4)],rr=1+r()*(r()<.2?5:2);
+    g+=`<circle cx="${x}" cy="${y}" r="${rr}" fill="${c}" opacity="${.5+r()*.5}"/>`}
+  return g+`</g>`}
+function mount(id,seed,inner,gal){
+  const el=document.getElementById(id);
+  el.innerHTML=`<svg class="bg" viewBox="0 0 360 640" preserveAspectRatio="xMidYMid slice"><rect width="360" height="640" fill="#2a0a6a"/>${gal}<g id="st${id}"></g></svg>`+inner;
+  stars(document.getElementById('st'+id),70,seed*5,360,640,{bigP:.12});
+}
+mount('menu',4,`
+ <svg class="layer" viewBox="0 0 360 640">${emblem(180,330,.9,{halo:'#2a0a6a',hole:'#2a0a6a',a:['#E3F0FF','#8aa6ff'],b:['#FFF4D6','#FFC857']})}</svg>
+ <div class="pill" style="left:16px;top:18px">VI&nbsp;|&nbsp;EN</div>
+ <div class="pill" style="right:16px;top:18px;width:32px;justify-content:center;padding:0">⚙</div>
+ <div class="logo" style="top:92px">MIRROR</div>
+ <div class="tag" style="top:158px">XẾP · CHỒNG · SOI GƯƠNG</div>
+ <div class="btn amber" style="top:500px;width:240px">Tiếp tục</div>
+ <div class="btn glass" style="top:564px;width:240px;height:40px;font-size:15px">Chọn màn</div>`,
+ galaxy(180,330,-14,.82,5,'m'));
+// Map: chương 1 = vòng ngoài của lõi, các node trên elip
+function ringNodes(rx,ry,n,start,done,cur){let s='';for(let i=0;i<n;i++){const t=start+i*(Math.PI*1.7/(n-1));const x=Math.cos(t)*rx,y=Math.sin(t)*ry;
+ if(i<done)s+=spark(x,y,1.3,'#FFF4D6');else if(i==cur)s+=`<circle cx="${x}" cy="${y}" r="22" fill="#FFC857" opacity=".25"/><circle cx="${x}" cy="${y}" r="13" fill="#FFC857" stroke="#fff" stroke-width="2"/>`;else s+=`<circle cx="${x}" cy="${y}" r="8" fill="#b9a2ff" opacity=".6"/>`}return s}
+mount('map',6,`
+ <svg class="layer" viewBox="0 0 360 640"><g transform="translate(180 340) rotate(-14)">
+  <ellipse rx="46" ry="96" fill="none" stroke="#FFE8A6" stroke-width="2" stroke-opacity=".9"/>${ringNodes(46,96,6,-1.6,4,4)}
+  <ellipse rx="92" ry="170" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="1.6" stroke-dasharray="3 8"/>${ringNodes(92,170,6,-1.2,0,-1).replace(/#b9a2ff/g,'#8a6fe0')}
+  <ellipse rx="138" ry="244" fill="none" stroke="#fff" stroke-opacity=".2" stroke-width="1.4" stroke-dasharray="3 9"/>
+ </g></svg>
+ <div class="pill" style="left:16px;top:18px">‹</div>
+ <div class="pill" style="right:16px;top:18px;color:#FFE8A6">★ 12</div>
+ <div class="tag" style="top:24px;font-size:15px;font-weight:800;letter-spacing:.12em;color:#fff">CHƯƠNG 1 · SAO TRỜI</div>
+ <div style="position:absolute;left:50%;top:560px;transform:translateX(-50%);padding:8px 22px;border-radius:20px;background:#3b1a8acc;border:1.2px solid #d9c6ffcc;font-size:13px;font-weight:700;color:#FFE8A6;white-space:nowrap">5 · Chiếc Thuyền Sao</div>`,
+ galaxy(180,340,-14,.95,8,'p').replace('opacity="0.35"','opacity=".3"'));
+</script>
+</body></html>
