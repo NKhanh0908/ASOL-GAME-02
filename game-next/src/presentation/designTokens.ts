@@ -10,6 +10,14 @@ export const COLOR_TOKENS = {
     starWhite: '#FFFFFF',
     starBlue: '#CFE6FF',
     starWarm: '#FFE8B8',
+    /** Dải Ngân Hà nhiều lớp, từ ngoài vào lõi (ref: docs/ref/image copy.png) */
+    cloud: {
+      base: '#2A3CB4',
+      mid: '#4A56D8',
+      violet: '#8B5CE6',
+      core: '#E9A4F0',
+      hot: '#FFE6F6',
+    },
   },
   board: {
     surfaceTop: '#1D3482',

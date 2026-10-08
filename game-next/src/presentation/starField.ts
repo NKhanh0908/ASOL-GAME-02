@@ -34,7 +34,7 @@ const STAR_COLORS = [
  * Mulberry32: bộ sinh số giả ngẫu nhiên 32-bit, nhỏ và tái lập được.
  * Cần tái lập để test và ảnh chụp so sánh cho kết quả ổn định.
  */
-function mulberry32(seed: number): () => number {
+export function mulberry32(seed: number): () => number {
   let a = seed >>> 0;
   return () => {
     a = (a + 0x6d2b79f5) >>> 0;

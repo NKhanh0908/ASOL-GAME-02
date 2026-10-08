@@ -1,5 +1,5 @@
 export type LaunchTarget =
-  | { scene: 'MenuScene' }
+  | { scene: 'MenuScene'; skipSplash?: boolean }
   | { scene: 'LevelSelectScene'; focusLevelId?: string }
   | { scene: 'PlayScene'; levelId: string; mode: 'campaign' | 'harness' };
 
@@ -20,5 +20,6 @@ export function resolveLaunch(search: string, isDev: boolean): LaunchTarget {
     const focus = params.get('focus');
     return isDev && focus ? { scene: 'LevelSelectScene', focusLevelId: focus } : { scene: 'LevelSelectScene' };
   }
-  return { scene: 'MenuScene' };
+  const skipSplash = params.get('skipSplash') === '1' || params.get('scene') === 'menu';
+  return { scene: 'MenuScene', skipSplash };
 }

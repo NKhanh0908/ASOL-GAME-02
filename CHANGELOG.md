@@ -4,6 +4,18 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-08 - Milky Way sky layer
+
+- `game-next/src/presentation/designTokens.ts`: added `cloud` palette tokens under `COLOR_TOKENS.sky` (`base`, `mid`, `violet`, `core`, `hot`).
+- `game-next/src/presentation/starField.ts`: exported deterministic PRNG helper `mulberry32`.
+- `game-next/src/presentation/milkyWay.ts`: added pure PRNG generator `milkyWayBlobs` with 5 cloud layer specifications.
+- `game-next/tests/milkyWay.test.ts`: added unit tests verifying blob count (68), coordinate bounds, and seed determinism.
+- `game-next/src/presentation/SkyBackdrop.ts`: updated backdrop canvas generator to render multi-layered Milky Way diagonal band with `radialGlow`.
+- `game-next/src/launchParams.ts`, `game-next/src/main.ts`: added dev `skipSplash` / `?scene=menu` support to boot directly to `MenuScene`.
+- `docs/testing/journey-map/task1-menu.png`, `docs/testing/journey-map/task1-map.png`: generated visual comparison screenshots.
+
+Verification: `npx vitest run tests/milkyWay.test.ts tests/starField.test.ts tests/designTokens.test.ts` PASS (22 tests), `npm run typecheck` clean (0 errors), `npm run build` clean, GitNexus `detect_changes()` reported low risk across 5 touched symbols.
+
 ### 2026-10-08 - Approve updated Chapter 1 levels and align test expectations
 
 - `game-next/src/content/manifest.ts`: set levels `1-2`, `1-3`, `1-4`, `1-5` to status `approved`; updated chapter titles.

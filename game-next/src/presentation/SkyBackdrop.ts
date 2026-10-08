@@ -6,6 +6,7 @@ import type { DesignView } from './viewport.ts';
 import type { Star } from './starField.ts';
 import { advanceDrift } from './skyMood.ts';
 import type { MoodState } from './skyMood.ts';
+import { milkyWayBlobs, MILKY_WAY_SEED } from './milkyWay.ts';
 
 /**
  * Quầng sáng tròn mờ dần ra mép, dùng gradient thật của canvas 2D.
@@ -36,8 +37,8 @@ export type SkyBackdropOptions = {
 };
 
 /**
- * Nền trời dùng chung cho mọi màn: gradient bốn chặng, hai nebula, quầng
- * trăng, và trường sao.
+ * Nền trời dùng chung cho mọi màn: gradient bốn chặng, dải Ngân Hà nhiều lớp (Milky Way),
+ * hai nebula, quầng trăng, và trường sao.
  *
  * Chia làm ba lớp vì chúng có nhịp khác nhau:
  *  - Lớp trời (gradient, nebula, trăng) không bao giờ đổi -> RenderTexture.
@@ -114,7 +115,7 @@ export class SkyBackdrop {
   private paintSky(view: DesignView): void {
     const { width, height } = LAYOUT_TOKENS.canvas;
     const viewHeight = Math.ceil(view.height);
-    const key = `sky_base_${width}x${viewHeight}`;
+    const key = `sky_milky_${width}x${viewHeight}`;
     const tm = this.scene.textures;
 
     // Khung 1280 được căn giữa chiều cao thật, nên nền giữ nguyên bố cục gốc
@@ -132,6 +133,10 @@ export class SkyBackdrop {
         });
         ctx.fillStyle = sky;
         ctx.fillRect(0, 0, width, viewHeight);
+
+        for (const blob of milkyWayBlobs(MILKY_WAY_SEED, width, height)) {
+          radialGlow(ctx, blob.x, frameTop + blob.y, blob.r, blob.hex, blob.alpha);
+        }
 
         // Toạ độ theo mockup 390x844, quy đổi sang canvas 720x1280
         radialGlow(ctx, 108, frameTop + 436, 396, COLOR_TOKENS.sky.nebulaBlue, 0.45);

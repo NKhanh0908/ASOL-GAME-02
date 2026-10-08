@@ -167,6 +167,9 @@ async function bootstrap(): Promise<void> {
       } else if (launch.scene === 'LevelSelectScene') {
         director.boot('LevelSelectScene', launch.focusLevelId ? { focusLevelId: launch.focusLevelId } : {});
       }
+    } else if (launch.skipSplash) {
+      game.scene.stop('SplashScene');
+      director.boot('MenuScene', {});
     }
   });
 
