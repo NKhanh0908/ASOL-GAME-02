@@ -38,21 +38,21 @@
 <line x1="0" y1="576" x2="512" y2="576" stroke="#3b56b8" stroke-width="1"/>
 <line x1="0" y1="608" x2="512" y2="608" stroke="#22336f" stroke-width="1"/>
 <line x1="0" y1="640" x2="512" y2="640" stroke="#22336f" stroke-width="1"/>
-<path d="M160 132h4v4h-4zM160 136h8v4h-8zM160 140h12v4h-12zM160 144h16v4h-16zM160 148h20v4h-20zM160 152h24v4h-24zM160 156h28v4h-28zM160 160h32v4h-32zM160 164h36v4h-36zM160 168h40v4h-40zM160 172h44v4h-44zM160 176h48v4h-48zM160 180h52v4h-52zM160 184h56v4h-56zM160 188h60v4h-60zM160 192h64v4h-64zM160 196h68v4h-68zM160 200h72v4h-72zM160 204h76v4h-76zM160 208h80v4h-80zM160 212h84v4h-84zM160 216h88v4h-88zM160 220h92v4h-92zM160 224h96v4h-96zM160 228h100v4h-100zM160 232h104v4h-104zM160 236h108v4h-108zM160 240h112v4h-112zM160 244h116v4h-116zM160 248h120v4h-120zM160 252h124v4h-124zM160 256h128v4h-128zM160 260h132v4h-132zM160 264h136v4h-136zM160 268h140v4h-140zM160 272h144v4h-144zM160 276h148v4h-148zM160 280h152v4h-152zM160 284h156v4h-156zM160 288h160v4h-160zM160 292h164v4h-164zM160 296h168v4h-168zM160 300h172v4h-172zM160 304h176v4h-176zM160 308h180v4h-180zM160 312h184v4h-184zM160 316h188v4h-188zM64 320h380v4h-380zM64 324h376v4h-376zM64 328h372v4h-372zM64 332h368v4h-368zM64 336h364v4h-364zM64 340h360v4h-360zM64 344h356v4h-356zM64 348h352v4h-352zM64 352h348v4h-348zM64 356h344v4h-344zM64 360h340v4h-340zM64 364h336v4h-336zM64 368h332v4h-332zM64 372h328v4h-328zM64 376h324v4h-324zM64 380h320v4h-320zM64 384h316v4h-316zM64 388h312v4h-312zM64 392h308v4h-308zM64 396h304v4h-304zM64 400h300v4h-300zM64 404h296v4h-296zM64 408h292v4h-292zM64 412h288v4h-288zM64 416h284v4h-284zM64 420h280v4h-280zM64 424h276v4h-276zM64 428h272v4h-272zM64 432h268v4h-268zM64 436h264v4h-264zM64 440h260v4h-260zM64 444h256v4h-256zM64 448h252v4h-252zM64 452h248v4h-248zM64 456h244v4h-244zM64 460h240v4h-240zM64 464h236v4h-236zM64 468h232v4h-232zM64 472h228v4h-228zM64 476h224v4h-224zM64 480h220v4h-220zM64 484h216v4h-216zM64 488h212v4h-212zM64 492h208v4h-208zM64 496h204v4h-204zM64 500h200v4h-200zM64 504h196v4h-196zM64 508h192v4h-192z" fill="#BFE3FF" fill-opacity="0.35"/>
-<polygon data-piece="S1" points="64,320 256,320 256,512 64,512" fill="none" stroke="#FFC857" stroke-width="3"/>
-<polygon data-piece="P1" points="256,320 448,320 256,512" fill="none" stroke="#7EE0A1" stroke-width="3"/>
-<polygon data-piece="L1" points="160,128 160,320 352,320" fill="none" stroke="#FF8FA3" stroke-width="3"/>
-<polygon points="256,352 448,352 256,544" fill="none" stroke="#7EE0A1" stroke-width="2" stroke-dasharray="8 6" stroke-opacity="0.8"/>
-<polygon points="192,128 192,320 384,320" fill="none" stroke="#FF8FA3" stroke-width="2" stroke-dasharray="8 6" stroke-opacity="0.8"/>
-<circle cx="64" cy="320" r="4" fill="#FFC857"/>
-<text x="70" y="334" fill="#DDF2FF" font-family="sans-serif" font-size="12">S1.A</text>
-<circle cx="256" cy="320" r="4" fill="#7EE0A1"/>
-<text x="262" y="334" fill="#DDF2FF" font-family="sans-serif" font-size="12">P1.A</text>
-<circle cx="256" cy="352" r="4" fill="#7EE0A1"/>
-<text x="262" y="366" fill="#DDF2FF" font-family="sans-serif" font-size="12">P1.B</text>
-<circle cx="160" cy="128" r="4" fill="#FF8FA3"/>
-<text x="166" y="142" fill="#DDF2FF" font-family="sans-serif" font-size="12">L1.A</text>
-<circle cx="192" cy="128" r="4" fill="#FF8FA3"/>
-<text x="198" y="142" fill="#DDF2FF" font-family="sans-serif" font-size="12">L1.B</text>
-<text x="8" y="666" fill="#DDF2FF" font-family="sans-serif" font-size="16">1-5 · Chiếc Thuyền Sao · thuyen-sao-v1</text>
+<path d="M252 128h4v4h-4zM248 132h8v4h-8zM244 136h12v4h-12zM240 140h16v4h-16zM236 144h20v4h-20zM232 148h24v4h-24zM228 152h28v4h-28zM224 156h32v4h-32zM220 160h36v4h-36zM216 164h40v4h-40zM212 168h44v4h-44zM208 172h48v4h-48zM204 176h52v4h-52zM200 180h56v4h-56zM196 184h60v4h-60zM192 188h64v4h-64zM188 192h68v4h-68zM184 196h76v4h-76zM180 200h84v4h-84zM176 204h92v4h-92zM172 208h100v4h-100zM168 212h108v4h-108zM164 216h116v4h-116zM160 220h124v4h-124zM156 224h132v4h-132zM152 228h140v4h-140zM148 232h148v4h-148zM144 236h156v4h-156zM140 240h164v4h-164zM136 244h172v4h-172zM132 248h180v4h-180zM128 252h188v4h-188zM128 256h192v4h-192zM132 260h192v4h-192zM136 264h192v4h-192zM140 268h192v4h-192zM144 272h192v4h-192zM148 276h192v4h-192zM152 280h192v4h-192zM156 284h192v4h-192zM160 288h188v4h-188zM164 292h180v4h-180zM168 296h172v4h-172zM172 300h164v4h-164zM176 304h156v4h-156zM180 308h148v4h-148zM184 312h140v4h-140zM188 316h132v4h-132zM192 320h124v4h-124zM196 324h116v4h-116zM200 328h108v4h-108zM204 332h100v4h-100zM208 336h92v4h-92zM212 340h84v4h-84zM216 344h76v4h-76zM220 348h68v4h-68zM224 352h60v4h-60zM228 356h52v4h-52zM232 360h44v4h-44zM236 364h36v4h-36zM240 368h28v4h-28zM244 372h20v4h-20zM248 376h12v4h-12zM252 380h4v4h-4zM64 384h380v4h-380zM68 388h372v4h-372zM72 392h364v4h-364zM76 396h356v4h-356zM80 400h348v4h-348zM84 404h340v4h-340zM88 408h332v4h-332zM92 412h324v4h-324zM96 416h316v4h-316zM100 420h308v4h-308zM104 424h300v4h-300zM108 428h292v4h-292zM112 432h284v4h-284zM116 436h276v4h-276zM120 440h268v4h-268zM124 444h260v4h-260zM128 448h252v4h-252zM132 452h244v4h-244zM136 456h236v4h-236zM140 460h228v4h-228zM144 464h220v4h-220zM148 468h212v4h-212zM152 472h204v4h-204zM156 476h196v4h-196zM160 480h188v4h-188zM164 484h180v4h-180zM168 488h172v4h-172zM172 492h164v4h-164zM176 496h156v4h-156zM180 500h148v4h-148zM184 504h140v4h-140zM188 508h132v4h-132z" fill="#BFE3FF" fill-opacity="0.35"/>
+<polygon data-piece="S1" points="192,384 320,384 320,512 192,512" fill="none" stroke="#FFC857" stroke-width="3"/>
+<polygon data-piece="T1" points="64,384 192,384 192,512" fill="none" stroke="#7EE0A1" stroke-width="3"/>
+<polygon data-piece="T2" points="320,384 448,384 320,512" fill="none" stroke="#FF8FA3" stroke-width="3"/>
+<polygon data-piece="T3" points="256,192 256,384 352,288" fill="none" stroke="#8FB8FF" stroke-width="3"/>
+<polygon data-piece="T4" points="256,128 256,384 128,256" fill="none" stroke="#FFC857" stroke-width="3"/>
+<circle cx="192" cy="384" r="4" fill="#FFC857"/>
+<text x="198" y="398" fill="#DDF2FF" font-family="sans-serif" font-size="12">S1.A</text>
+<circle cx="64" cy="384" r="4" fill="#7EE0A1"/>
+<text x="70" y="398" fill="#DDF2FF" font-family="sans-serif" font-size="12">T1.A</text>
+<circle cx="320" cy="384" r="4" fill="#FF8FA3"/>
+<text x="326" y="398" fill="#DDF2FF" font-family="sans-serif" font-size="12">T2.A</text>
+<circle cx="256" cy="192" r="4" fill="#8FB8FF"/>
+<text x="262" y="206" fill="#DDF2FF" font-family="sans-serif" font-size="12">T3.A</text>
+<circle cx="0" cy="128" r="4" fill="#FFC857"/>
+<text x="6" y="142" fill="#DDF2FF" font-family="sans-serif" font-size="12">T4.A</text>
+<text x="8" y="666" fill="#DDF2FF" font-family="sans-serif" font-size="16">1-5 · Chiếc Thuyền Sao · thuyen-sao-v2</text>
 </svg>

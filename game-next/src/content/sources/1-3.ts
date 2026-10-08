@@ -8,45 +8,60 @@ import type { LevelSource } from '../authoring.ts';
  */
 export const canhChim: LevelSource = {
   id: '1-3',
-  title: 'Cánh Chim Báo Điềm',
+  title: 'Tinh điệp ',
   chapter: 1,
   order: 3,
-  contentRevision: 'canh-chim-v1',
+  contentRevision: 'canh-chim-v2',
   rotationEnabled: false,
   pieces: [
     {
-      id: 'W1',
+      id: 'T1',
       shapeKind: 'triangle',
-      orientation: 3,
-      frameSize: 48,
+      orientation: 5,
+      frameSize: 64,
       anchors: [
-        { id: 'A', x: 16, y: 56 },
-        { id: 'B', x: 64, y: 56 },
+        { id: 'A', x: 24, y: 48 },
       ],
     },
     {
-      id: 'W2',
+      id: 'T2',
       shapeKind: 'triangle',
-      orientation: 2,
-      frameSize: 48,
+      orientation: 7,
+      frameSize: 64,
       anchors: [
-        { id: 'A', x: 64, y: 56 },
-        { id: 'B', x: 16, y: 56 },
+        { id: 'A', x: 40, y: 48 },
+      ],
+    },
+    {
+      id: 'T3',
+      shapeKind: 'triangle',
+      orientation: 6,
+      frameSize: 32,
+      anchors: [
+        { id: 'A', x: 48, y: 72 },
+      ],
+    },
+    {
+      id: 'T4',
+      shapeKind: 'triangle',
+      orientation: 4,
+      frameSize: 16,
+      anchors: [
+        { id: 'A', x: 56, y: 56 },
       ],
     },
   ],
   sampleSolutions: [
     [
-      { pieceId: 'W1', anchorId: 'A', turns: 0 },
-      { pieceId: 'W2', anchorId: 'A', turns: 0 },
+      { pieceId: 'T1', anchorId: 'A', turns: 0 },
+      { pieceId: 'T2', anchorId: 'A', turns: 0 },
+      { pieceId: 'T3', anchorId: 'A', turns: 0 },
+      { pieceId: 'T4', anchorId: 'A', turns: 0 },
     ],
   ],
   learningObjective: 'Tự so bóng mục tiêu và đặt hai cánh đối xứng đúng bên',
   difficultyEstimate: 2,
-  distractors: [
-    { pieceId: 'W1', anchorId: 'B', reason: 'Cánh trái đặt sang bên phải' },
-    { pieceId: 'W2', anchorId: 'B', reason: 'Cánh phải đặt sang bên trái' },
-  ],
+  distractors: [],
   ftueSteps: [],
   victoryVerse: 'Đôi cánh mở ra, điềm lành bay về phương bắc.',
 };

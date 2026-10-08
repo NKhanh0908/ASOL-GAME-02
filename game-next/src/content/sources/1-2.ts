@@ -9,7 +9,7 @@ export const baoThap: LevelSource = {
   title: 'Bảo Tháp Tiên Tri',
   chapter: 1,
   order: 2,
-  contentRevision: 'bao-thap-v1',
+  contentRevision: 'bao-thap-v2',
   rotationEnabled: false,
   pieces: [
     {
@@ -18,8 +18,8 @@ export const baoThap: LevelSource = {
       orientation: 0,
       frameSize: 48,
       anchors: [
-        { id: 'A', x: 40, y: 64 },
-        { id: 'B', x: 48, y: 64 },
+        { id: 'A', x: 40, y: 72 },
+        { id: 'B', x: 48, y: 72 },
       ],
     },
     {
@@ -28,8 +28,26 @@ export const baoThap: LevelSource = {
       orientation: 4,
       frameSize: 48,
       anchors: [
-        { id: 'A', x: 40, y: 16 },
-        { id: 'B', x: 48, y: 16 },
+        { id: 'A', x: 40, y: 24 },
+        { id: 'B', x: 48, y: 24 },
+      ],
+    },
+    {
+      id: 'P1',
+      shapeKind: 'parallelogram',
+      orientation: 1,
+      frameSize: 48,
+      anchors: [
+        { id: 'A', x: 8, y: 72 },
+      ],
+    },
+    {
+      id: 'P2',
+      shapeKind: 'parallelogram',
+      orientation: 3,
+      frameSize: 48,
+      anchors: [
+        { id: 'A', x: 72, y: 72 },
       ],
     },
   ],
@@ -37,6 +55,8 @@ export const baoThap: LevelSource = {
     [
       { pieceId: 'S1', anchorId: 'A', turns: 0 },
       { pieceId: 'R1', anchorId: 'A', turns: 0 },
+      { pieceId: 'P1', anchorId: 'A', turns: 0 },
+      { pieceId: 'P2', anchorId: 'A', turns: 0 },
     ],
   ],
   learningObjective: 'Phối hợp hai hình khối khác nhau thành một biểu tượng',
@@ -46,12 +66,7 @@ export const baoThap: LevelSource = {
     { pieceId: 'R1', anchorId: 'B', reason: 'Mái lệch khỏi trục tháp' },
   ],
   ftueSteps: [
-    {
-      id: 'combine-shapes',
-      trigger: 'idle',
-      end: 'drag-start',
-      text: 'Mỗi mảnh một hình, ghép chúng thành bóng mục tiêu',
-    },
+    { id: 'combine-shapes', trigger: 'idle', end: 'drag-start', text: 'Mỗi mảnh một hình, ghép chúng thành bóng mục tiêu' },
   ],
   victoryVerse: 'Tháp vươn lên trời, lời tiên tri có chỗ đứng.',
 };

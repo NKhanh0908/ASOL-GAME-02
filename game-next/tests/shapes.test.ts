@@ -243,8 +243,10 @@ describe('quy tắc khung và lật gương', () => {
     expect(isValidFrame('diamond', 0, 48)).toBe(true);
     expect(isValidFrame('circle', 0, 16)).toBe(true);
     expect(isValidFrame('circle', 0, 40)).toBe(false);
+    expect(isValidFrame('parallelogram', 0, 24)).toBe(true);
     expect(isValidFrame('parallelogram', 0, 48)).toBe(true);
     expect(isValidFrame('parallelogram', 0, 32)).toBe(false);
+    expect(isValidFrame('parallelogram', 0, 72)).toBe(true);
     expect(isValidFrame('parallelogram', 0, 96)).toBe(true);
     expect(isValidFrame('square', 0, 136)).toBe(false);
   });

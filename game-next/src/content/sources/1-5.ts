@@ -11,50 +11,67 @@ export const thuyenSao: LevelSource = {
   title: 'Chiếc Thuyền Sao',
   chapter: 1,
   order: 5,
-  contentRevision: 'thuyen-sao-v1',
+  contentRevision: 'thuyen-sao-v2',
   rotationEnabled: false,
   pieces: [
     {
       id: 'S1',
       shapeKind: 'square',
       orientation: 0,
-      frameSize: 48,
-      anchors: [{ id: 'A', x: 16, y: 80 }],
-    },
-    {
-      id: 'P1',
-      shapeKind: 'triangle',
-      orientation: 0,
-      frameSize: 48,
+      frameSize: 32,
       anchors: [
-        { id: 'A', x: 64, y: 80 },
-        { id: 'B', x: 64, y: 88 },
+        { id: 'A', x: 48, y: 96 },
       ],
     },
     {
-      id: 'L1',
+      id: 'T1',
       shapeKind: 'triangle',
-      orientation: 3,
+      orientation: 1,
+      frameSize: 32,
+      anchors: [
+        { id: 'A', x: 16, y: 96 },
+      ],
+    },
+    {
+      id: 'T2',
+      shapeKind: 'triangle',
+      orientation: 0,
+      frameSize: 32,
+      anchors: [
+        { id: 'A', x: 80, y: 96 },
+      ],
+    },
+    {
+      id: 'T3',
+      shapeKind: 'triangle',
+      orientation: 5,
       frameSize: 48,
       anchors: [
-        { id: 'A', x: 40, y: 32 },
-        { id: 'B', x: 48, y: 32 },
+        { id: 'A', x: 64, y: 48 },
+      ],
+    },
+    {
+      id: 'T4',
+      shapeKind: 'triangle',
+      orientation: 7,
+      frameSize: 64,
+      anchors: [
+        { id: 'A', x: 0, y: 32 },
       ],
     },
   ],
   sampleSolutions: [
     [
       { pieceId: 'S1', anchorId: 'A', turns: 0 },
-      { pieceId: 'P1', anchorId: 'A', turns: 0 },
-      { pieceId: 'L1', anchorId: 'A', turns: 0 },
+      { pieceId: 'T1', anchorId: 'A', turns: 0 },
+      { pieceId: 'T2', anchorId: 'A', turns: 0 },
+      { pieceId: 'T3', anchorId: 'A', turns: 0 },
+      { pieceId: 'T4', anchorId: 'A', turns: 0 },
     ],
   ],
   learningObjective: 'Ghép thân, mũi và buồm tiếp giáp cạnh thành con thuyền',
   difficultyEstimate: 3,
-  distractors: [
-    { pieceId: 'P1', anchorId: 'B', reason: 'Mũi thuyền lệch dọc' },
-    { pieceId: 'L1', anchorId: 'B', reason: 'Buồm lệch ngang' },
-  ],
+  distractors: [],
   ftueSteps: [],
   victoryVerse: 'Thuyền sao giương buồm, dải ngân hà mở lối.',
 };

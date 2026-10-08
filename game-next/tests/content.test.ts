@@ -106,7 +106,7 @@ describe('Level Content and Validation', () => {
   test('tên màn chương 2–4 theo spec B (CH-02)', () => {
     const titles = (chapter: number) => campaignManifest.filter((e) => e.chapter === chapter).map((e) => e.title);
     expect(titles(2)).toEqual([
-      'Mũi Tên Chỉ Thiên', 'Cánh Bướm Điệp Ảnh', 'Trái Tim Tinh Thể', 'Mắt Tiên Tri', 'Đồng Hồ Cát', 'Đại Ấn Hộ Mệnh',
+      'Mũi Tên Chỉ Thiên', 'Cánh Bướm', 'Trái Tim Tinh Thể', 'Mắt Thần', 'Đồng Hồ Cát', 'Hộ Mệnh',
     ]);
     expect(titles(3)).toEqual([
       'Nhật Nguyệt Song Huyền', 'Đền Tiên Tri', 'Cá Chép Sao', 'Ngọn Nến', 'Thuyền Buồm Hoàng Hôn',

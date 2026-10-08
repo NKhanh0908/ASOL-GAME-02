@@ -4,7 +4,17 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
-### 2026-10-07 - Audio Lab handoff document
+### 2026-10-08 - Approve updated Chapter 1 levels and align test expectations
+
+- `game-next/src/content/manifest.ts`: set levels `1-2`, `1-3`, `1-4`, `1-5` to status `approved`; updated chapter titles.
+- `game-next/tests/chapter1Levels.test.ts`: updated piece count, target cells, and distractor expectations for levels `1-2` through `1-5` to match updated level content.
+- `game-next/tests/difficulty.test.ts`: updated expected difficulty metric breakdowns and scores for levels `1-2` through `1-5`.
+- `game-next/tests/content.test.ts`: aligned chapter 2 manifest titles assertion with updated titles in `campaignManifest`.
+- `game-next/tests/pieceTextureCache.test.ts`: calculated per-piece texture size based on individual piece `frameSize` rather than uniform frame sizes; updated `bakeNext` test fixture.
+- `docs/ai/STATUS.md`: updated status to reflect passing test suite and build.
+
+Verification: `npm test` clean (90 files, 1134 tests passing), `npm run build` clean (typecheck + vite build), `git diff --check` clean.
+
 
 - `docs/ai/AUDIO-LAB-HANDOFF.md`: new handoff for the next agent. Records the direction agreed with the reviewer (instrumentalised feedback, size → register / shape → timbre / progress → degree, shared reverb bus, idle breathing, steal-by-priority voices), the two existing decisions it revises (the audio-synth "runtime variation" non-goal and `maxVoices = 6` dropping the newest sound), what exists and where, what was measured and what is still unknown (nobody has heard the instruments), the libraries considered and why they were set aside, the next steps in order, and the traps in this tree.
 - Corrects an earlier claim: `sfx.ts` guards repeats per `cue.key` at 40 ms, so chord notes fired simultaneously are dropped but notes staggered by 40 ms or more pass; chords are not strictly impossible.
@@ -59,6 +69,16 @@ Verification: every claim checked against the source; no code changed.
 - `game-next/tests/newLevel.test.ts`: three unit tests for the lookup, including the half-registered case.
 
 Verification: tests written first and observed failing, then passing. `npx vitest run promote newLevel` 41/41, `npm run typecheck` clean, `npm run build` clean. GitNexus `impact` on `promoteStudioLevel` and `registerInSourceIndex` both LOW; `detect_changes` low risk, 0 affected execution flows, reported `partial: true` because the new symbol is not indexed yet.
+
+### 2026-10-07 - Fix studio plugin root path and guard hash loader for unsaved levels
+
+- `game-next/scripts/studio/studioPlugin.ts`: corrected `DEFAULT_ROOT` from `resolve(HERE, '../..')` to `resolve(HERE, '../../..')` so studio level save, list, and delete resolve against the workspace repository root instead of nesting inside `game-next/game-next/` and `game-next/docs/`.
+- `game-next/src/studio/main.ts`: added guard in `loadFromHash()` to skip fetching from disk when the URL hash matches `state.source.id` (preventing 404/HTML syntax crashes when creating or cloning levels in memory before saving).
+- `game-next/src/studio/api.ts`: enhanced `fetchStudioLevelDoc` to check for HTML responses on missing studio levels.
+- `game-next/src/studio/inspector.ts`: fixed input focus dropping while typing (preserved `activeElement` and selection cursor range across `render()` passes); added dedicated `victoryVerse` editor textarea.
+- Re-located misplaced studio files for `mau-1-4` (`.ts`, `.json`, `.svg`, `-report.md`) to canonical paths under `game-next/src/content/studio/` và `docs/testing/levels/studio/`.
+
+Verification: `npm test` passes (90 files, 1128 tests), `npm run typecheck`, `npm run build`, and `tests/catalog.test.ts` pass cleanly. GitNexus impact and detect_changes verified.
 
 ### 2026-10-06 - FX implementation plan
 

@@ -156,7 +156,7 @@ function initStudio() {
   // Hash loader
   async function loadFromHash() {
     const hash = window.location.hash.replace(/^#/, '');
-    if (!hash) return;
+    if (!hash || hash === state.source.id) return;
     try {
       const doc = await fetchStudioLevelDoc(hash);
       const src = sourceFromDocument(doc);

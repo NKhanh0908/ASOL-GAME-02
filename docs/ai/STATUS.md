@@ -1,14 +1,13 @@
-# Status — updated 2026-10-06 (E4 studio orientation & roundtrip completed)
+# Status — updated 2026-10-08 (Approve updated Chapter 1 levels and align tests)
 
 Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; keep this file ≤ 60 lines.
 
 ## Now
 
 - Branch: `feat/studio-e4`. Working directory D:\Working\ASOL\ASOL-GAME-02.
-- E4 plan (`docs/superpowers/plans/2026-10-06-e4-studio-orientation-and-roundtrip.md`) executed and verified:
-  - Feature A: Studio orientation picker showing real shape previews, grouped by family, with frame-size validation & snapping.
-  - Feature B: Studio campaign round-trip writeback (`promoteStudioLevel` overwrite mode with revision bump, status downgrade, comment block preservation, dev plugin endpoint, CLI flag, and library UI button).
-- **Next step**: Human reviewer merges `feat/studio-e4` into `main`, or proceeds to CH1H plan execution.
+- Approved updated Chapter 1 levels (1-2..1-5) and updated manifest titles; aligned expectations in `chapter1Levels`, `difficulty`, `content`, and `pieceTextureCache` tests.
+- All 90 test files (1134 tests) passing, clean typecheck and build.
+- **Next step**: Reviewer merges `feat/studio-e4` into `main`, or proceeds to CH1H plan execution.
 
 ## Streams
 

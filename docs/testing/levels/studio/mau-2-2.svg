@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="680" viewBox="0 0 512 680">
+<rect width="512" height="680" fill="#101a4f"/>
+<line x1="0" y1="0" x2="0" y2="640" stroke="#3b56b8" stroke-width="1"/>
+<line x1="32" y1="0" x2="32" y2="640" stroke="#22336f" stroke-width="1"/>
+<line x1="64" y1="0" x2="64" y2="640" stroke="#22336f" stroke-width="1"/>
+<line x1="96" y1="0" x2="96" y2="640" stroke="#3b56b8" stroke-width="1"/>
+<line x1="128" y1="0" x2="128" y2="640" stroke="#22336f" stroke-width="1"/>
+<line x1="160" y1="0" x2="160" y2="640" stroke="#22336f" stroke-width="1"/>
+<line x1="192" y1="0" x2="192" y2="640" stroke="#3b56b8" stroke-width="1"/>
+<line x1="224" y1="0" x2="224" y2="640" stroke="#22336f" stroke-width="1"/>
+<line x1="256" y1="0" x2="256" y2="640" stroke="#22336f" stroke-width="1"/>
+<line x1="288" y1="0" x2="288" y2="640" stroke="#3b56b8" stroke-width="1"/>
+<line x1="320" y1="0" x2="320" y2="640" stroke="#22336f" stroke-width="1"/>
+<line x1="352" y1="0" x2="352" y2="640" stroke="#22336f" stroke-width="1"/>
+<line x1="384" y1="0" x2="384" y2="640" stroke="#3b56b8" stroke-width="1"/>
+<line x1="416" y1="0" x2="416" y2="640" stroke="#22336f" stroke-width="1"/>
+<line x1="448" y1="0" x2="448" y2="640" stroke="#22336f" stroke-width="1"/>
+<line x1="480" y1="0" x2="480" y2="640" stroke="#3b56b8" stroke-width="1"/>
+<line x1="512" y1="0" x2="512" y2="640" stroke="#22336f" stroke-width="1"/>
+<line x1="0" y1="0" x2="512" y2="0" stroke="#3b56b8" stroke-width="1"/>
+<line x1="0" y1="32" x2="512" y2="32" stroke="#22336f" stroke-width="1"/>
+<line x1="0" y1="64" x2="512" y2="64" stroke="#22336f" stroke-width="1"/>
+<line x1="0" y1="96" x2="512" y2="96" stroke="#3b56b8" stroke-width="1"/>
+<line x1="0" y1="128" x2="512" y2="128" stroke="#22336f" stroke-width="1"/>
+<line x1="0" y1="160" x2="512" y2="160" stroke="#22336f" stroke-width="1"/>
+<line x1="0" y1="192" x2="512" y2="192" stroke="#3b56b8" stroke-width="1"/>
+<line x1="0" y1="224" x2="512" y2="224" stroke="#22336f" stroke-width="1"/>
+<line x1="0" y1="256" x2="512" y2="256" stroke="#22336f" stroke-width="1"/>
+<line x1="0" y1="288" x2="512" y2="288" stroke="#3b56b8" stroke-width="1"/>
+<line x1="0" y1="320" x2="512" y2="320" stroke="#22336f" stroke-width="1"/>
+<line x1="0" y1="352" x2="512" y2="352" stroke="#22336f" stroke-width="1"/>
+<line x1="0" y1="384" x2="512" y2="384" stroke="#3b56b8" stroke-width="1"/>
+<line x1="0" y1="416" x2="512" y2="416" stroke="#22336f" stroke-width="1"/>
+<line x1="0" y1="448" x2="512" y2="448" stroke="#22336f" stroke-width="1"/>
+<line x1="0" y1="480" x2="512" y2="480" stroke="#3b56b8" stroke-width="1"/>
+<line x1="0" y1="512" x2="512" y2="512" stroke="#22336f" stroke-width="1"/>
+<line x1="0" y1="544" x2="512" y2="544" stroke="#22336f" stroke-width="1"/>
+<line x1="0" y1="576" x2="512" y2="576" stroke="#3b56b8" stroke-width="1"/>
+<line x1="0" y1="608" x2="512" y2="608" stroke="#22336f" stroke-width="1"/>
+<line x1="0" y1="640" x2="512" y2="640" stroke="#22336f" stroke-width="1"/>
+<path d="M348 160h4v4h-4zM412 160h4v4h-4zM96 164h4v4h-4zM160 164h4v4h-4zM344 164h8v4h-8zM408 164h8v4h-8zM96 168h8v4h-8zM160 168h8v4h-8zM340 168h12v4h-12zM404 168h12v4h-12zM96 172h12v4h-12zM160 172h12v4h-12zM336 172h16v4h-16zM400 172h16v4h-16zM96 176h16v4h-16zM160 176h16v4h-16zM332 176h20v4h-20zM396 176h20v4h-20zM96 180h20v4h-20zM160 180h20v4h-20zM328 180h24v4h-24zM392 180h24v4h-24zM96 184h24v4h-24zM160 184h24v4h-24zM324 184h28v4h-28zM388 184h28v4h-28zM96 188h28v4h-28zM160 188h28v4h-28zM320 188h32v4h-32zM384 188h32v4h-32zM96 192h32v4h-32zM160 192h32v4h-32zM316 192h36v4h-36zM380 192h36v4h-36zM96 196h36v4h-36zM160 196h36v4h-36zM312 196h40v4h-40zM376 196h40v4h-40zM96 200h40v4h-40zM160 200h40v4h-40zM308 200h44v4h-44zM372 200h44v4h-44zM96 204h44v4h-44zM160 204h44v4h-44zM304 204h48v4h-48zM368 204h48v4h-48zM96 208h48v4h-48zM160 208h48v4h-48zM300 208h52v4h-52zM364 208h52v4h-52zM96 212h52v4h-52zM160 212h52v4h-52zM296 212h56v4h-56zM360 212h56v4h-56zM96 216h56v4h-56zM160 216h56v4h-56zM292 216h60v4h-60zM356 216h60v4h-60zM96 220h60v4h-60zM160 220h60v4h-60zM288 220h128v4h-128zM96 224h128v4h-128zM284 224h64v4h-64zM352 224h64v4h-64zM96 228h64v4h-64zM164 228h64v4h-64zM280 228h64v4h-64zM352 228h64v4h-64zM96 232h64v4h-64zM168 232h64v4h-64zM276 232h64v4h-64zM352 232h64v4h-64zM96 236h64v4h-64zM172 236h64v4h-64zM272 236h64v4h-64zM352 236h64v4h-64zM96 240h64v4h-64zM176 240h64v4h-64zM268 240h64v4h-64zM352 240h64v4h-64zM96 244h64v4h-64zM180 244h64v4h-64zM264 244h64v4h-64zM352 244h64v4h-64zM96 248h64v4h-64zM184 248h64v4h-64zM260 248h64v4h-64zM352 248h64v4h-64zM96 252h64v4h-64zM188 252h64v4h-64zM256 252h64v4h-64zM352 252h64v4h-64zM96 256h64v4h-64zM192 256h60v4h-60zM256 256h60v4h-60zM352 256h64v4h-64zM96 260h64v4h-64zM196 260h52v4h-52zM260 260h52v4h-52zM352 260h64v4h-64zM96 264h64v4h-64zM200 264h44v4h-44zM264 264h44v4h-44zM352 264h64v4h-64zM96 268h64v4h-64zM204 268h36v4h-36zM268 268h36v4h-36zM352 268h64v4h-64zM96 272h64v4h-64zM208 272h28v4h-28zM272 272h28v4h-28zM352 272h64v4h-64zM96 276h64v4h-64zM212 276h20v4h-20zM276 276h20v4h-20zM352 276h64v4h-64zM96 280h64v4h-64zM216 280h12v4h-12zM280 280h12v4h-12zM352 280h64v4h-64zM96 284h64v4h-64zM220 284h4v4h-4zM284 284h4v4h-4zM352 284h64v4h-64zM96 288h64v4h-64zM352 288h64v4h-64zM96 292h64v4h-64zM352 292h64v4h-64zM96 296h64v4h-64zM352 296h64v4h-64zM96 300h64v4h-64zM352 300h64v4h-64zM96 304h64v4h-64zM352 304h64v4h-64zM96 308h64v4h-64zM352 308h64v4h-64zM96 312h64v4h-64zM352 312h64v4h-64zM96 316h64v4h-64zM352 316h64v4h-64zM96 320h64v4h-64zM252 320h4v4h-4zM352 320h64v4h-64zM96 324h64v4h-64zM248 324h12v4h-12zM352 324h64v4h-64zM96 328h64v4h-64zM244 328h20v4h-20zM352 328h64v4h-64zM96 332h64v4h-64zM240 332h28v4h-28zM352 332h64v4h-64zM96 336h64v4h-64zM236 336h36v4h-36zM352 336h64v4h-64zM96 340h64v4h-64zM232 340h44v4h-44zM352 340h64v4h-64zM96 344h64v4h-64zM228 344h52v4h-52zM352 344h64v4h-64zM96 348h64v4h-64zM224 348h60v4h-60zM352 348h64v4h-64zM96 352h64v4h-64zM224 352h60v4h-60zM352 352h64v4h-64zM96 356h64v4h-64zM228 356h52v4h-52zM352 356h64v4h-64zM96 360h64v4h-64zM232 360h44v4h-44zM352 360h64v4h-64zM96 364h64v4h-64zM236 364h36v4h-36zM352 364h64v4h-64zM96 368h64v4h-64zM240 368h28v4h-28zM352 368h64v4h-64zM96 372h64v4h-64zM244 372h20v4h-20zM352 372h64v4h-64zM96 376h64v4h-64zM248 376h12v4h-12zM352 376h64v4h-64zM96 380h64v4h-64zM252 380h4v4h-4zM352 380h64v4h-64zM96 384h64v4h-64zM188 384h4v4h-4zM252 384h4v4h-4zM316 384h4v4h-4zM352 384h64v4h-64zM96 388h64v4h-64zM184 388h12v4h-12zM248 388h12v4h-12zM312 388h12v4h-12zM352 388h64v4h-64zM96 392h64v4h-64zM180 392h20v4h-20zM244 392h20v4h-20zM308 392h20v4h-20zM352 392h64v4h-64zM96 396h64v4h-64zM176 396h28v4h-28zM240 396h28v4h-28zM304 396h28v4h-28zM352 396h64v4h-64zM96 400h64v4h-64zM172 400h36v4h-36zM236 400h36v4h-36zM300 400h36v4h-36zM352 400h64v4h-64zM96 404h64v4h-64zM168 404h44v4h-44zM232 404h44v4h-44zM296 404h44v4h-44zM352 404h64v4h-64zM96 408h64v4h-64zM164 408h52v4h-52zM228 408h52v4h-52zM292 408h52v4h-52zM352 408h64v4h-64zM96 412h124v4h-124zM224 412h60v4h-60zM288 412h60v4h-60zM352 412h64v4h-64zM96 416h124v4h-124zM224 416h60v4h-60zM288 416h128v4h-128zM96 420h120v4h-120zM228 420h52v4h-52zM292 420h124v4h-124zM96 424h116v4h-116zM232 424h44v4h-44zM296 424h120v4h-120zM96 428h112v4h-112zM236 428h36v4h-36zM300 428h116v4h-116zM96 432h108v4h-108zM240 432h28v4h-28zM304 432h112v4h-112zM96 436h104v4h-104zM244 436h20v4h-20zM308 436h108v4h-108zM96 440h100v4h-100zM248 440h12v4h-12zM312 440h104v4h-104zM96 444h96v4h-96zM252 444h4v4h-4zM316 444h100v4h-100zM96 448h92v4h-92zM320 448h96v4h-96zM96 452h88v4h-88zM324 452h92v4h-92zM96 456h84v4h-84zM328 456h88v4h-88zM96 460h80v4h-80zM332 460h84v4h-84zM96 464h76v4h-76zM336 464h80v4h-80zM96 468h72v4h-72zM340 468h76v4h-76zM96 472h68v4h-68zM344 472h72v4h-72zM96 476h64v4h-64zM348 476h68v4h-68zM96 480h60v4h-60zM352 480h64v4h-64zM96 484h56v4h-56zM356 484h60v4h-60zM96 488h52v4h-52zM360 488h56v4h-56zM96 492h48v4h-48zM364 492h52v4h-52zM96 496h44v4h-44zM368 496h48v4h-48zM96 500h40v4h-40zM372 500h44v4h-44zM96 504h36v4h-36zM376 504h40v4h-40zM96 508h32v4h-32zM380 508h36v4h-36zM96 512h28v4h-28zM384 512h32v4h-32zM96 516h24v4h-24zM388 516h28v4h-28zM96 520h20v4h-20zM392 520h24v4h-24zM96 524h16v4h-16zM396 524h20v4h-20zM96 528h12v4h-12zM400 528h16v4h-16zM96 532h8v4h-8zM404 532h12v4h-12zM96 536h4v4h-4zM408 536h8v4h-8zM412 540h4v4h-4z" fill="#BFE3FF" fill-opacity="0.35"/>
+<polygon data-piece="T1" points="96,160 96,544 288,352" fill="none" stroke="#FFC857" stroke-width="3"/>
+<polygon data-piece="T2" points="416,160 416,544 224,352" fill="none" stroke="#7EE0A1" stroke-width="3"/>
+<polygon data-piece="T3" points="160,160 160,416 288,288" fill="none" stroke="#FF8FA3" stroke-width="3"/>
+<polygon data-piece="T4" points="352,160 352,416 224,288" fill="none" stroke="#8FB8FF" stroke-width="3"/>
+<polygon data-piece="D1" points="256,320 320,384 256,448 192,384" fill="none" stroke="#FFC857" stroke-width="3"/>
+<polygon points="64,160 64,544 256,352" fill="none" stroke="#FFC857" stroke-width="2" stroke-dasharray="8 6" stroke-opacity="0.8"/>
+<polygon points="96,192 96,576 288,384" fill="none" stroke="#FFC857" stroke-width="2" stroke-dasharray="8 6" stroke-opacity="0.8"/>
+<polygon points="96,128 96,512 288,320" fill="none" stroke="#FFC857" stroke-width="2" stroke-dasharray="8 6" stroke-opacity="0.8"/>
+<polygon points="448,160 448,544 256,352" fill="none" stroke="#7EE0A1" stroke-width="2" stroke-dasharray="8 6" stroke-opacity="0.8"/>
+<polygon points="416,192 416,576 224,384" fill="none" stroke="#7EE0A1" stroke-width="2" stroke-dasharray="8 6" stroke-opacity="0.8"/>
+<polygon points="416,128 416,512 224,320" fill="none" stroke="#7EE0A1" stroke-width="2" stroke-dasharray="8 6" stroke-opacity="0.8"/>
+<circle cx="96" cy="160" r="4" fill="#FFC857"/>
+<text x="102" y="174" fill="#DDF2FF" font-family="sans-serif" font-size="12">T1.A</text>
+<circle cx="64" cy="160" r="4" fill="#FFC857"/>
+<text x="70" y="174" fill="#DDF2FF" font-family="sans-serif" font-size="12">T1.B</text>
+<circle cx="96" cy="192" r="4" fill="#FFC857"/>
+<text x="102" y="206" fill="#DDF2FF" font-family="sans-serif" font-size="12">T1.C</text>
+<circle cx="96" cy="128" r="4" fill="#FFC857"/>
+<text x="102" y="142" fill="#DDF2FF" font-family="sans-serif" font-size="12">T1.D</text>
+<circle cx="32" cy="160" r="4" fill="#7EE0A1"/>
+<text x="38" y="174" fill="#DDF2FF" font-family="sans-serif" font-size="12">T2.A</text>
+<circle cx="64" cy="160" r="4" fill="#7EE0A1"/>
+<text x="70" y="174" fill="#DDF2FF" font-family="sans-serif" font-size="12">T2.B</text>
+<circle cx="32" cy="192" r="4" fill="#7EE0A1"/>
+<text x="38" y="206" fill="#DDF2FF" font-family="sans-serif" font-size="12">T2.C</text>
+<circle cx="32" cy="128" r="4" fill="#7EE0A1"/>
+<text x="38" y="142" fill="#DDF2FF" font-family="sans-serif" font-size="12">T2.D</text>
+<circle cx="160" cy="160" r="4" fill="#FF8FA3"/>
+<text x="166" y="174" fill="#DDF2FF" font-family="sans-serif" font-size="12">T3.A</text>
+<circle cx="96" cy="160" r="4" fill="#8FB8FF"/>
+<text x="102" y="174" fill="#DDF2FF" font-family="sans-serif" font-size="12">T4.A</text>
+<circle cx="192" cy="320" r="4" fill="#FFC857"/>
+<text x="198" y="334" fill="#DDF2FF" font-family="sans-serif" font-size="12">D1.A</text>
+<text x="8" y="666" fill="#DDF2FF" font-family="sans-serif" font-size="16">mau-2-2 · Cánh Bướm · canh-buom-v1</text>
+</svg>

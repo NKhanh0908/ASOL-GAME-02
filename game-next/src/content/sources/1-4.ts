@@ -9,29 +9,9 @@ export const haiDang: LevelSource = {
   title: 'Ngọn Hải Đăng',
   chapter: 1,
   order: 4,
-  contentRevision: 'hai-dang-v1',
+  contentRevision: 'hai-dang-v2',
   rotationEnabled: false,
   pieces: [
-    {
-      id: 'R1',
-      shapeKind: 'triangle',
-      orientation: 4,
-      frameSize: 48,
-      anchors: [
-        { id: 'A', x: 40, y: 0 },
-        { id: 'B', x: 48, y: 0 },
-      ],
-    },
-    {
-      id: 'D1',
-      shapeKind: 'diamond',
-      orientation: 0,
-      frameSize: 48,
-      anchors: [
-        { id: 'A', x: 40, y: 48 },
-        { id: 'B', x: 48, y: 48 },
-      ],
-    },
     {
       id: 'S1',
       shapeKind: 'square',
@@ -42,21 +22,77 @@ export const haiDang: LevelSource = {
         { id: 'B', x: 48, y: 96 },
       ],
     },
+    {
+      id: 'T1',
+      shapeKind: 'triangle',
+      orientation: 2,
+      frameSize: 32,
+      anchors: [
+        { id: 'A', x: 8, y: 112 },
+      ],
+    },
+    {
+      id: 'T2',
+      shapeKind: 'triangle',
+      orientation: 3,
+      frameSize: 32,
+      anchors: [
+        { id: 'A', x: 88, y: 112 },
+      ],
+    },
+    {
+      id: 'S2',
+      shapeKind: 'square',
+      orientation: 0,
+      frameSize: 32,
+      anchors: [
+        { id: 'A', x: 48, y: 64 },
+      ],
+    },
+    {
+      id: 'T3',
+      shapeKind: 'triangle',
+      orientation: 0,
+      frameSize: 16,
+      anchors: [
+        { id: 'A', x: 56, y: 48 },
+      ],
+    },
+    {
+      id: 'T4',
+      shapeKind: 'triangle',
+      orientation: 2,
+      frameSize: 16,
+      anchors: [
+        { id: 'A', x: 56, y: 48 },
+      ],
+    },
+    {
+      id: 'T5',
+      shapeKind: 'triangle',
+      orientation: 7,
+      frameSize: 48,
+      anchors: [
+        { id: 'A', x: 48, y: 24 },
+      ],
+    },
   ],
   sampleSolutions: [
     [
-      { pieceId: 'R1', anchorId: 'A', turns: 0 },
-      { pieceId: 'D1', anchorId: 'A', turns: 0 },
       { pieceId: 'S1', anchorId: 'A', turns: 0 },
+      { pieceId: 'T1', anchorId: 'A', turns: 0 },
+      { pieceId: 'T2', anchorId: 'A', turns: 0 },
+      { pieceId: 'S2', anchorId: 'A', turns: 0 },
+      { pieceId: 'T3', anchorId: 'A', turns: 0 },
+      { pieceId: 'T4', anchorId: 'A', turns: 0 },
+      { pieceId: 'T5', anchorId: 'A', turns: 0 },
     ],
   ],
   learningObjective: 'Ghép ba khối tiếp giáp theo trục đứng',
   difficultyEstimate: 2,
   distractors: [
-    { pieceId: 'R1', anchorId: 'B', reason: 'Mái lệch ngang' },
-    { pieceId: 'D1', anchorId: 'B', reason: 'Đèn lệch ngang' },
     { pieceId: 'S1', anchorId: 'B', reason: 'Đế lệch ngang' },
   ],
   ftueSteps: [],
-  victoryVerse: 'Ngọn hải đăng thắp sáng, thuyền lạc tìm thấy lối về.',
+  victoryVerse: 'Nơi Hải đăng thắp sáng, thuyền lạc tìm thấy lối về.',
 };

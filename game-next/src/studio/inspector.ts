@@ -49,6 +49,17 @@ export function createInspector(options: InspectorOptions): Inspector {
   let isSaving = false;
 
   function render() {
+    // Preserve focus & cursor position if user is typing in an input
+    const activeEl = document.activeElement as HTMLInputElement | HTMLTextAreaElement | null;
+    let focusedFieldId: string | null = null;
+    let selStart: number | null = null;
+    let selEnd: number | null = null;
+    if (activeEl && container.contains(activeEl) && activeEl.dataset.field) {
+      focusedFieldId = activeEl.dataset.field;
+      selStart = activeEl.selectionStart;
+      selEnd = activeEl.selectionEnd;
+    }
+
     container.innerHTML = '';
     const state = options.getState();
     const source = state.source;
@@ -116,6 +127,7 @@ export function createInspector(options: InspectorOptions): Inspector {
     // Title
     const titleInput = document.createElement('input');
     titleInput.type = 'text';
+    titleInput.dataset.field = 'title';
     titleInput.value = source.title;
     titleInput.style.padding = '6px 8px';
     titleInput.style.backgroundColor = '#1e294b';
@@ -258,6 +270,7 @@ export function createInspector(options: InspectorOptions): Inspector {
     // Learning Objective
     const objInput = document.createElement('input');
     objInput.type = 'text';
+    objInput.dataset.field = 'learningObjective';
     objInput.value = source.learningObjective ?? '';
     objInput.style.padding = '6px 8px';
     objInput.style.backgroundColor = '#1e294b';
@@ -268,6 +281,25 @@ export function createInspector(options: InspectorOptions): Inspector {
       options.dispatch({ type: 'set-field', field: 'learningObjective', value: objInput.value });
     };
     addRow('Mục tiêu học', objInput);
+
+    // Victory Verse (câu thơ hoàn thành màn)
+    const verseInput = document.createElement('textarea');
+    verseInput.dataset.field = 'victoryVerse';
+    verseInput.value = source.victoryVerse ?? '';
+    verseInput.rows = 2;
+    verseInput.placeholder = 'Ví dụ: Đêm trăng sáng tỏ mặt gương... (tuỳ chọn)';
+    verseInput.style.padding = '6px 8px';
+    verseInput.style.backgroundColor = '#1e294b';
+    verseInput.style.color = '#e2e8f0';
+    verseInput.style.border = '1px solid #334155';
+    verseInput.style.borderRadius = '4px';
+    verseInput.style.resize = 'vertical';
+    verseInput.style.fontFamily = 'inherit';
+    verseInput.style.fontSize = '12px';
+    verseInput.oninput = () => {
+      options.dispatch({ type: 'set-field', field: 'victoryVerse', value: verseInput.value });
+    };
+    addRow('Câu thơ mừng thắng (victoryVerse)', verseInput);
 
     // Difficulty Estimate
     const diffSelect = document.createElement('select');
@@ -639,6 +671,23 @@ export function createInspector(options: InspectorOptions): Inspector {
     actions.appendChild(svgBtn);
 
     container.appendChild(actions);
+
+    // Restore focus & cursor position if an input was active before re-render
+    if (focusedFieldId) {
+      const targetInput = container.querySelector<HTMLInputElement | HTMLTextAreaElement>(
+        `[data-field="${focusedFieldId}"]`
+      );
+      if (targetInput) {
+        targetInput.focus();
+        if (selStart !== null && selEnd !== null) {
+          try {
+            targetInput.setSelectionRange(selStart, selEnd);
+          } catch {
+            // Some input types don't support selection range
+          }
+        }
+      }
+    }
   }
 
   return {

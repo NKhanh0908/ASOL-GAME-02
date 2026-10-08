@@ -41,6 +41,13 @@ describe('validFrameSizes', () => {
     expect(sizes).toEqual([16, 32, 48, 64, 80, 96, 112, 128]);
     expect(sizes).not.toContain(40);
   });
+
+  it('bình hành nhận các cỡ là bội của 24', () => {
+    const sizes = validFrameSizes('parallelogram', 0);
+    expect(sizes).toEqual([24, 48, 72, 96, 120]);
+    expect(sizes).toContain(24);
+    expect(sizes).toContain(72);
+  });
 });
 
 describe('snapFrameSize', () => {

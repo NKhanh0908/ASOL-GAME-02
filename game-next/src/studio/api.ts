@@ -38,6 +38,10 @@ export async function fetchStudioLevelDoc(id: string): Promise<LevelDocument> {
   if (!res.ok) {
     throw new Error(`fetchStudioLevelDoc failed with status ${res.status}`);
   }
+  const contentType = res.headers.get('content-type') || '';
+  if (contentType.includes('text/html')) {
+    throw new Error(`fetchStudioLevelDoc: level "${id}" not found on disk`);
+  }
   return res.json();
 }
 

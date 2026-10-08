@@ -3,7 +3,7 @@ import { isValidFrame, shapePolygon } from '../domain/shapes.ts';
 
 /** Các cỡ khung chào mời trong palette; lọc lại theo isValidFrame của từng hướng. */
 export const CANDIDATE_SIZES: readonly number[] = [
-  16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 112, 128,
+  16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 112, 120, 128,
 ];
 
 export type OrientationFamily = {

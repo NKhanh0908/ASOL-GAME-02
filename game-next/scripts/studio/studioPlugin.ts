@@ -12,7 +12,7 @@ import {
 import { promoteStudioLevel } from '../../src/content/promote.ts';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-const DEFAULT_ROOT = resolve(HERE, '../..');
+const DEFAULT_ROOT = resolve(HERE, '../../..');
 
 export type StudioHandlerOptions = {
   root?: string;

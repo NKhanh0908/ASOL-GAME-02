@@ -38,24 +38,30 @@
 <line x1="0" y1="576" x2="512" y2="576" stroke="#3b56b8" stroke-width="1"/>
 <line x1="0" y1="608" x2="512" y2="608" stroke="#22336f" stroke-width="1"/>
 <line x1="0" y1="640" x2="512" y2="640" stroke="#22336f" stroke-width="1"/>
-<path d="M252 96h4v4h-4zM248 100h12v4h-12zM244 104h20v4h-20zM240 108h28v4h-28zM236 112h36v4h-36zM232 116h44v4h-44zM228 120h52v4h-52zM224 124h60v4h-60zM220 128h68v4h-68zM216 132h76v4h-76zM212 136h84v4h-84zM208 140h92v4h-92zM204 144h100v4h-100zM200 148h108v4h-108zM196 152h116v4h-116zM192 156h124v4h-124zM188 160h132v4h-132zM184 164h140v4h-140zM180 168h148v4h-148zM176 172h156v4h-156zM172 176h164v4h-164zM168 180h172v4h-172zM164 184h180v4h-180zM160 188h188v4h-188zM252 192h4v4h-4zM248 196h12v4h-12zM244 200h20v4h-20zM240 204h28v4h-28zM236 208h36v4h-36zM232 212h44v4h-44zM228 216h52v4h-52zM224 220h60v4h-60zM220 224h68v4h-68zM216 228h76v4h-76zM212 232h84v4h-84zM208 236h92v4h-92zM204 240h100v4h-100zM200 244h108v4h-108zM196 248h116v4h-116zM192 252h124v4h-124zM188 256h132v4h-132zM184 260h140v4h-140zM180 264h148v4h-148zM176 268h156v4h-156zM172 272h164v4h-164zM168 276h172v4h-172zM164 280h180v4h-180zM160 284h188v4h-188zM160 288h188v4h-188zM164 292h180v4h-180zM168 296h172v4h-172zM172 300h164v4h-164zM176 304h156v4h-156zM180 308h148v4h-148zM184 312h140v4h-140zM188 316h132v4h-132zM192 320h124v4h-124zM196 324h116v4h-116zM200 328h108v4h-108zM204 332h100v4h-100zM208 336h92v4h-92zM212 340h84v4h-84zM216 344h76v4h-76zM220 348h68v4h-68zM224 352h60v4h-60zM228 356h52v4h-52zM232 360h44v4h-44zM236 364h36v4h-36zM240 368h28v4h-28zM244 372h20v4h-20zM248 376h12v4h-12zM252 380h4v4h-4zM160 384h192v4h-192zM160 388h192v4h-192zM160 392h192v4h-192zM160 396h192v4h-192zM160 400h192v4h-192zM160 404h192v4h-192zM160 408h192v4h-192zM160 412h192v4h-192zM160 416h192v4h-192zM160 420h192v4h-192zM160 424h192v4h-192zM160 428h192v4h-192zM160 432h192v4h-192zM160 436h192v4h-192zM160 440h192v4h-192zM160 444h192v4h-192zM160 448h192v4h-192zM160 452h192v4h-192zM160 456h192v4h-192zM160 460h192v4h-192zM160 464h192v4h-192zM160 468h192v4h-192zM160 472h192v4h-192zM160 476h192v4h-192zM160 480h192v4h-192zM160 484h192v4h-192zM160 488h192v4h-192zM160 492h192v4h-192zM160 496h192v4h-192zM160 500h192v4h-192zM160 504h192v4h-192zM160 508h192v4h-192zM160 512h192v4h-192zM160 516h192v4h-192zM160 520h192v4h-192zM160 524h192v4h-192zM160 528h192v4h-192zM160 532h192v4h-192zM160 536h192v4h-192zM160 540h192v4h-192zM160 544h192v4h-192zM160 548h192v4h-192zM160 552h192v4h-192zM160 556h192v4h-192zM160 560h192v4h-192zM160 564h192v4h-192zM160 568h192v4h-192zM160 572h192v4h-192z" fill="#BFE3FF" fill-opacity="0.35"/>
-<polygon data-piece="R1" points="160,192 352,192 256,96" fill="none" stroke="#FFC857" stroke-width="3"/>
-<polygon data-piece="D1" points="256,192 352,288 256,384 160,288" fill="none" stroke="#7EE0A1" stroke-width="3"/>
-<polygon data-piece="S1" points="160,384 352,384 352,576 160,576" fill="none" stroke="#FF8FA3" stroke-width="3"/>
-<polygon points="192,192 384,192 288,96" fill="none" stroke="#FFC857" stroke-width="2" stroke-dasharray="8 6" stroke-opacity="0.8"/>
-<polygon points="288,192 384,288 288,384 192,288" fill="none" stroke="#7EE0A1" stroke-width="2" stroke-dasharray="8 6" stroke-opacity="0.8"/>
-<polygon points="192,384 384,384 384,576 192,576" fill="none" stroke="#FF8FA3" stroke-width="2" stroke-dasharray="8 6" stroke-opacity="0.8"/>
-<circle cx="160" cy="0" r="4" fill="#FFC857"/>
-<text x="166" y="14" fill="#DDF2FF" font-family="sans-serif" font-size="12">R1.A</text>
-<circle cx="192" cy="0" r="4" fill="#FFC857"/>
-<text x="198" y="14" fill="#DDF2FF" font-family="sans-serif" font-size="12">R1.B</text>
-<circle cx="160" cy="192" r="4" fill="#7EE0A1"/>
-<text x="166" y="206" fill="#DDF2FF" font-family="sans-serif" font-size="12">D1.A</text>
-<circle cx="192" cy="192" r="4" fill="#7EE0A1"/>
-<text x="198" y="206" fill="#DDF2FF" font-family="sans-serif" font-size="12">D1.B</text>
-<circle cx="160" cy="384" r="4" fill="#FF8FA3"/>
+<path d="M380 96h4v4h-4zM376 100h8v4h-8zM372 104h12v4h-12zM368 108h16v4h-16zM364 112h20v4h-20zM360 116h24v4h-24zM356 120h28v4h-28zM352 124h32v4h-32zM348 128h36v4h-36zM344 132h40v4h-40zM340 136h44v4h-44zM336 140h48v4h-48zM332 144h52v4h-52zM328 148h56v4h-56zM324 152h60v4h-60zM320 156h64v4h-64zM316 160h68v4h-68zM312 164h72v4h-72zM308 168h76v4h-76zM304 172h80v4h-80zM300 176h84v4h-84zM296 180h88v4h-88zM292 184h92v4h-92zM288 188h96v4h-96zM224 192h160v4h-160zM224 196h64v4h-64zM292 196h92v4h-92zM224 200h64v4h-64zM296 200h88v4h-88zM224 204h64v4h-64zM300 204h84v4h-84zM224 208h64v4h-64zM304 208h80v4h-80zM224 212h64v4h-64zM308 212h76v4h-76zM224 216h64v4h-64zM312 216h72v4h-72zM224 220h64v4h-64zM316 220h68v4h-68zM224 224h64v4h-64zM320 224h64v4h-64zM224 228h64v4h-64zM324 228h60v4h-60zM224 232h64v4h-64zM328 232h56v4h-56zM224 236h64v4h-64zM332 236h52v4h-52zM224 240h64v4h-64zM336 240h48v4h-48zM224 244h64v4h-64zM340 244h44v4h-44zM224 248h64v4h-64zM344 248h40v4h-40zM224 252h64v4h-64zM348 252h36v4h-36zM192 256h128v4h-128zM352 256h32v4h-32zM192 260h128v4h-128zM356 260h28v4h-28zM192 264h128v4h-128zM360 264h24v4h-24zM192 268h128v4h-128zM364 268h20v4h-20zM192 272h128v4h-128zM368 272h16v4h-16zM192 276h128v4h-128zM372 276h12v4h-12zM192 280h128v4h-128zM376 280h8v4h-8zM192 284h128v4h-128zM380 284h4v4h-4zM192 288h128v4h-128zM192 292h128v4h-128zM192 296h128v4h-128zM192 300h128v4h-128zM192 304h128v4h-128zM192 308h128v4h-128zM192 312h128v4h-128zM192 316h128v4h-128zM192 320h128v4h-128zM192 324h128v4h-128zM192 328h128v4h-128zM192 332h128v4h-128zM192 336h128v4h-128zM192 340h128v4h-128zM192 344h128v4h-128zM192 348h128v4h-128zM192 352h128v4h-128zM192 356h128v4h-128zM192 360h128v4h-128zM192 364h128v4h-128zM192 368h128v4h-128zM192 372h128v4h-128zM192 376h128v4h-128zM192 380h128v4h-128zM160 384h192v4h-192zM160 388h192v4h-192zM160 392h192v4h-192zM160 396h192v4h-192zM160 400h192v4h-192zM160 404h192v4h-192zM160 408h192v4h-192zM160 412h192v4h-192zM160 416h192v4h-192zM160 420h192v4h-192zM160 424h192v4h-192zM160 428h192v4h-192zM160 432h192v4h-192zM160 436h192v4h-192zM160 440h192v4h-192zM160 444h192v4h-192zM156 448h196v4h-196zM152 452h204v4h-204zM148 456h212v4h-212zM144 460h220v4h-220zM140 464h228v4h-228zM136 468h236v4h-236zM132 472h244v4h-244zM128 476h252v4h-252zM124 480h260v4h-260zM120 484h268v4h-268zM116 488h276v4h-276zM112 492h284v4h-284zM108 496h292v4h-292zM104 500h300v4h-300zM100 504h308v4h-308zM96 508h316v4h-316zM92 512h324v4h-324zM88 516h332v4h-332zM84 520h340v4h-340zM80 524h348v4h-348zM76 528h356v4h-356zM72 532h364v4h-364zM68 536h372v4h-372zM64 540h380v4h-380zM60 544h388v4h-388zM56 548h396v4h-396zM52 552h404v4h-404zM48 556h412v4h-412zM44 560h420v4h-420zM40 564h428v4h-428zM36 568h436v4h-436zM32 572h444v4h-444z" fill="#BFE3FF" fill-opacity="0.35"/>
+<polygon data-piece="S1" points="160,384 352,384 352,576 160,576" fill="none" stroke="#FFC857" stroke-width="3"/>
+<polygon data-piece="T1" points="160,448 160,576 32,576" fill="none" stroke="#7EE0A1" stroke-width="3"/>
+<polygon data-piece="T2" points="352,448 352,576 480,576" fill="none" stroke="#FF8FA3" stroke-width="3"/>
+<polygon data-piece="S2" points="192,256 320,256 320,384 192,384" fill="none" stroke="#8FB8FF" stroke-width="3"/>
+<polygon data-piece="T3" points="224,192 288,192 224,256" fill="none" stroke="#FFC857" stroke-width="3"/>
+<polygon data-piece="T4" points="288,192 288,256 224,256" fill="none" stroke="#7EE0A1" stroke-width="3"/>
+<polygon data-piece="T5" points="384,96 384,288 288,192" fill="none" stroke="#FF8FA3" stroke-width="3"/>
+<polygon points="192,384 384,384 384,576 192,576" fill="none" stroke="#FFC857" stroke-width="2" stroke-dasharray="8 6" stroke-opacity="0.8"/>
+<circle cx="160" cy="384" r="4" fill="#FFC857"/>
 <text x="166" y="398" fill="#DDF2FF" font-family="sans-serif" font-size="12">S1.A</text>
-<circle cx="192" cy="384" r="4" fill="#FF8FA3"/>
+<circle cx="192" cy="384" r="4" fill="#FFC857"/>
 <text x="198" y="398" fill="#DDF2FF" font-family="sans-serif" font-size="12">S1.B</text>
-<text x="8" y="666" fill="#DDF2FF" font-family="sans-serif" font-size="16">1-4 · Ngọn Hải Đăng · hai-dang-v1</text>
+<circle cx="32" cy="448" r="4" fill="#7EE0A1"/>
+<text x="38" y="462" fill="#DDF2FF" font-family="sans-serif" font-size="12">T1.A</text>
+<circle cx="352" cy="448" r="4" fill="#FF8FA3"/>
+<text x="358" y="462" fill="#DDF2FF" font-family="sans-serif" font-size="12">T2.A</text>
+<circle cx="192" cy="256" r="4" fill="#8FB8FF"/>
+<text x="198" y="270" fill="#DDF2FF" font-family="sans-serif" font-size="12">S2.A</text>
+<circle cx="224" cy="192" r="4" fill="#FFC857"/>
+<text x="230" y="206" fill="#DDF2FF" font-family="sans-serif" font-size="12">T3.A</text>
+<circle cx="224" cy="192" r="4" fill="#7EE0A1"/>
+<text x="230" y="206" fill="#DDF2FF" font-family="sans-serif" font-size="12">T4.A</text>
+<circle cx="192" cy="96" r="4" fill="#FF8FA3"/>
+<text x="198" y="110" fill="#DDF2FF" font-family="sans-serif" font-size="12">T5.A</text>
+<text x="8" y="666" fill="#DDF2FF" font-family="sans-serif" font-size="16">1-4 · Ngọn Hải Đăng · hai-dang-v2</text>
 </svg>

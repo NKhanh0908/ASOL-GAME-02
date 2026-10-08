@@ -39,23 +39,32 @@
 <line x1="0" y1="608" x2="512" y2="608" stroke="#22336f" stroke-width="1"/>
 <line x1="0" y1="640" x2="512" y2="640" stroke="#22336f" stroke-width="1"/>
 <path d="M252 192h4v4h-4zM248 196h12v4h-12zM244 200h20v4h-20zM240 204h28v4h-28zM236 208h36v4h-36zM232 212h44v4h-44zM228 216h52v4h-52zM224 220h60v4h-60zM220 224h68v4h-68zM216 228h76v4h-76zM212 232h84v4h-84zM208 236h92v4h-92zM204 240h100v4h-100zM200 244h108v4h-108zM196 248h116v4h-116zM192 252h124v4h-124zM188 256h132v4h-132zM184 260h140v4h-140zM180 264h148v4h-148zM176 268h156v4h-156zM172 272h164v4h-164zM168 276h172v4h-172zM164 280h180v4h-180zM160 284h188v4h-188zM160 288h192v4h-192zM412 288h4v4h-4zM96 292h4v4h-4zM160 292h192v4h-192zM408 292h8v4h-8zM96 296h8v4h-8zM160 296h192v4h-192zM404 296h12v4h-12zM96 300h12v4h-12zM160 300h192v4h-192zM400 300h16v4h-16zM96 304h16v4h-16zM160 304h192v4h-192zM396 304h20v4h-20zM96 308h20v4h-20zM160 308h192v4h-192zM392 308h24v4h-24zM96 312h24v4h-24zM160 312h192v4h-192zM388 312h28v4h-28zM96 316h28v4h-28zM160 316h192v4h-192zM384 316h32v4h-32zM96 320h32v4h-32zM160 320h192v4h-192zM380 320h36v4h-36zM96 324h36v4h-36zM160 324h192v4h-192zM376 324h40v4h-40zM96 328h40v4h-40zM160 328h192v4h-192zM372 328h44v4h-44zM96 332h44v4h-44zM160 332h192v4h-192zM368 332h48v4h-48zM96 336h48v4h-48zM160 336h192v4h-192zM364 336h52v4h-52zM96 340h52v4h-52zM160 340h192v4h-192zM360 340h56v4h-56zM96 344h56v4h-56zM160 344h192v4h-192zM356 344h60v4h-60zM96 348h60v4h-60zM160 348h256v4h-256zM96 352h320v4h-320zM96 356h320v4h-320zM96 360h320v4h-320zM96 364h320v4h-320zM96 368h320v4h-320zM96 372h320v4h-320zM96 376h320v4h-320zM96 380h320v4h-320zM96 384h320v4h-320zM96 388h320v4h-320zM96 392h320v4h-320zM96 396h320v4h-320zM96 400h320v4h-320zM96 404h320v4h-320zM96 408h320v4h-320zM96 412h320v4h-320zM96 416h316v4h-316zM100 420h308v4h-308zM104 424h300v4h-300zM108 428h292v4h-292zM112 432h284v4h-284zM116 436h276v4h-276zM120 440h268v4h-268zM124 444h260v4h-260zM128 448h252v4h-252zM132 452h244v4h-244zM136 456h236v4h-236zM140 460h228v4h-228zM144 464h220v4h-220zM148 468h212v4h-212zM152 472h204v4h-204zM156 476h196v4h-196z" fill="#BFE3FF" fill-opacity="0.35"/>
-<polygon data-piece="S1" points="160,288 352,288 352,480 160,480" fill="none" stroke="#FFC857" stroke-width="3"/>
-<polygon data-piece="R1" points="160,288 352,288 256,192" fill="none" stroke="#7EE0A1" stroke-width="3"/>
-<polygon data-piece="P1" points="160,352 160,480 96,416 96,288" fill="none" stroke="#FF8FA3" stroke-width="3"/>
-<polygon data-piece="P2" points="416,288 416,416 352,480 352,352" fill="none" stroke="#8FB8FF" stroke-width="3"/>
-<polygon points="192,288 384,288 384,480 192,480" fill="none" stroke="#FFC857" stroke-width="2" stroke-dasharray="8 6" stroke-opacity="0.8"/>
-<polygon points="192,288 384,288 288,192" fill="none" stroke="#7EE0A1" stroke-width="2" stroke-dasharray="8 6" stroke-opacity="0.8"/>
-<circle cx="160" cy="288" r="4" fill="#FFC857"/>
-<text x="166" y="302" fill="#DDF2FF" font-family="sans-serif" font-size="12">S1.A</text>
-<circle cx="192" cy="288" r="4" fill="#FFC857"/>
-<text x="198" y="302" fill="#DDF2FF" font-family="sans-serif" font-size="12">S1.B</text>
-<circle cx="160" cy="96" r="4" fill="#7EE0A1"/>
-<text x="166" y="110" fill="#DDF2FF" font-family="sans-serif" font-size="12">R1.A</text>
-<circle cx="192" cy="96" r="4" fill="#7EE0A1"/>
-<text x="198" y="110" fill="#DDF2FF" font-family="sans-serif" font-size="12">R1.B</text>
-<circle cx="32" cy="288" r="4" fill="#FF8FA3"/>
-<text x="38" y="302" fill="#DDF2FF" font-family="sans-serif" font-size="12">P1.A</text>
+<polygon data-piece="T1" points="256,192 256,384 160,288" fill="none" stroke="#FFC857" stroke-width="3"/>
+<polygon data-piece="T2" points="256,192 256,384 352,288" fill="none" stroke="#7EE0A1" stroke-width="3"/>
+<polygon data-piece="T3" points="96,288 96,416 160,352" fill="none" stroke="#FF8FA3" stroke-width="3"/>
+<polygon data-piece="T4" points="416,288 416,416 352,352" fill="none" stroke="#8FB8FF" stroke-width="3"/>
+<polygon data-piece="T5" points="160,288 160,480 256,384" fill="none" stroke="#FFC857" stroke-width="3"/>
+<polygon data-piece="T6" points="352,288 352,480 256,384" fill="none" stroke="#7EE0A1" stroke-width="3"/>
+<polygon data-piece="T7" points="160,480 352,480 256,384" fill="none" stroke="#FF8FA3" stroke-width="3"/>
+<polygon data-piece="T8" points="160,352 160,480 96,416" fill="none" stroke="#8FB8FF" stroke-width="3"/>
+<polygon data-piece="T9" points="352,352 352,480 416,416" fill="none" stroke="#FFC857" stroke-width="3"/>
+<circle cx="64" cy="192" r="4" fill="#FFC857"/>
+<text x="70" y="206" fill="#DDF2FF" font-family="sans-serif" font-size="12">T1.A</text>
+<circle cx="256" cy="192" r="4" fill="#7EE0A1"/>
+<text x="262" y="206" fill="#DDF2FF" font-family="sans-serif" font-size="12">T2.A</text>
+<circle cx="96" cy="288" r="4" fill="#FF8FA3"/>
+<text x="102" y="302" fill="#DDF2FF" font-family="sans-serif" font-size="12">T3.A</text>
 <circle cx="288" cy="288" r="4" fill="#8FB8FF"/>
-<text x="294" y="302" fill="#DDF2FF" font-family="sans-serif" font-size="12">P2.A</text>
-<text x="8" y="666" fill="#DDF2FF" font-family="sans-serif" font-size="16">1-2 · Bảo Tháp Tiên Tri · bao-thap-v2</text>
+<text x="294" y="302" fill="#DDF2FF" font-family="sans-serif" font-size="12">T4.A</text>
+<circle cx="160" cy="288" r="4" fill="#FFC857"/>
+<text x="166" y="302" fill="#DDF2FF" font-family="sans-serif" font-size="12">T5.A</text>
+<circle cx="160" cy="288" r="4" fill="#7EE0A1"/>
+<text x="166" y="302" fill="#DDF2FF" font-family="sans-serif" font-size="12">T6.A</text>
+<circle cx="160" cy="288" r="4" fill="#FF8FA3"/>
+<text x="166" y="302" fill="#DDF2FF" font-family="sans-serif" font-size="12">T7.A</text>
+<circle cx="32" cy="352" r="4" fill="#8FB8FF"/>
+<text x="38" y="366" fill="#DDF2FF" font-family="sans-serif" font-size="12">T8.A</text>
+<circle cx="352" cy="352" r="4" fill="#FFC857"/>
+<text x="358" y="366" fill="#DDF2FF" font-family="sans-serif" font-size="12">T9.A</text>
+<text x="8" y="666" fill="#DDF2FF" font-family="sans-serif" font-size="16">mau-1-2 · Tháp Tiên Tri Mở Rộng · thap-tien-tri-mo-rong-v1</text>
 </svg>

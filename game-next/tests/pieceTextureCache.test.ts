@@ -43,7 +43,8 @@ describe('kích thước và bộ nhớ texture', () => {
   test.each(['1-1', '1-2', '1-3', '1-4', '1-5', '1-6'])('%s dưới ngưỡng 24 MiB ở độ phân giải 1', (id) => {
     const level = loadLevel(id, 'harness');
     const bytes = levelTextureBytes(level, 5, 1);
-    expect(bytes).toBe(level.pieces.length * 777_600);
+    const expectedBytes = level.pieces.reduce((sum, p) => sum + pieceTurnBytes(p.frameSize, 5, 1), 0);
+    expect(bytes).toBe(expectedBytes);
     expect(bytes).toBeLessThan(TEXTURE_BUDGET_BYTES);
     expect(chooseResolution(level, 5)).toBe(1);
   });
@@ -64,9 +65,11 @@ describe('kích thước và bộ nhớ texture', () => {
 describe('PieceTextureCache vẽ rải', () => {
   test('mỗi bakeNext vẽ đúng một (mảnh × hướng); keys có sau khi vẽ', () => {
     const { scene, calls } = createFakeScene();
-    const level = loadLevel('1-4', 'harness');
+    const level = loadLevel('1-1', 'harness');
     const cache = new PieceTextureCache(scene as unknown as Phaser.Scene, level, 5);
-    level.pieces.forEach((p) => cache.enqueue(p.id, 0));
+    cache.enqueue(level.pieces[0].id, 0);
+    cache.enqueue(level.pieces[1].id, 0);
+    cache.enqueue(level.pieces[1].id, 1);
     expect(cache.keys(level.pieces[0].id, 0)).toBeNull();
     expect(cache.bakeNext()).toBe(true);
     expect(cache.keys(level.pieces[0].id, 0)).not.toBeNull();

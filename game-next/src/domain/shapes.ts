@@ -43,7 +43,7 @@ export function isValidFrame(kind: ShapeKind, orientation: Orientation, frameSiz
     case 'circle':
       return frameSize % 16 === 0;
     case 'parallelogram':
-      return frameSize % 48 === 0;
+      return frameSize % 24 === 0;
   }
 }
 
