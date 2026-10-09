@@ -4,6 +4,11 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-09 - Deploy Pages on version tags (VERSIONING.md §8)
+
+- `.github/workflows/deploy-pages.yml`: trigger changed from pushes to `release/v0.2.0` to tags `v*`, so only tagged releases are deployed; `main` stays release-only.
+- Verification: diff reviewed; deploy is verified when `v0.2.0` is tagged. GitNexus MCP was unavailable; no symbols edited.
+
 ### 2026-10-09 - Create release/v0.2.0 as the deploy branch
 
 - New branch `release/v0.2.0` (from `main`, per `VERSIONING.md`, which is now tracked). Version set to 0.2.0 in `game-next/package.json`, `game-next/package-lock.json` and `game-next/android/app/build.gradle` (`versionName "0.2.0"`, `versionCode 2`).
