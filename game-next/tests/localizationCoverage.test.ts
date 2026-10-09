@@ -34,13 +34,14 @@ describe('Localization Coverage & Symmetry', () => {
     }
   });
 
-  it('all locales provide chapters 1-4 in game.json', () => {
+  it('all locales provide chapters 1-5 in game.json', () => {
     for (const locale of localizationConfig.supportedLocales) {
       const ch = BUNDLES[locale].game.chapters as Record<string, string>;
       expect(ch['1']).toBeTruthy();
       expect(ch['2']).toBeTruthy();
       expect(ch['3']).toBeTruthy();
       expect(ch['4']).toBeTruthy();
+      expect(ch['5']).toBeTruthy();
     }
   });
 
