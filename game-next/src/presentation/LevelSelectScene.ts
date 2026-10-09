@@ -22,7 +22,7 @@ import { applySteps, orderByDistance } from './transitions/choreography.ts';
 import type { Parts, Poseable } from './transitions/choreography.ts';
 import { MAP_OUT_TO_MENU, MAP_OUT_TO_PLAY, MAP_SPECIAL, mapIn } from './transitions/routes.ts';
 import { playUiCue } from './audio/uiCues.ts';
-import { resolveGalaxyTheme, getChapterProgress } from './galaxyTheme.ts';
+import { resolveGalaxyTheme, getChapterProgress, nodeAccent } from './galaxyTheme.ts';
 import { chapterRoman } from '../content/chapters.ts';
 import { ChapterEndlessGate } from './chapterEndlessGate.ts';
 import { createGalaxyNodeBody, NODE_LABEL_Y, NODE_SCALE } from './galaxyNode.ts';
@@ -426,7 +426,7 @@ export class LevelSelectScene extends Phaser.Scene implements Choreographed {
       const nodeContainer = this.add.container(node.x, node.y);
       const nodeTheme = resolveGalaxyTheme(node.chapter);
       const bodyState = node.state === 'completed' ? 'completed' : node.state === 'current' ? 'current' : 'locked';
-      nodeContainer.add(createGalaxyNodeBody(this, bodyState, nodeTheme.colors.accent));
+      nodeContainer.add(createGalaxyNodeBody(this, bodyState, nodeAccent(nodeTheme, node.id)));
 
       // Vùng chạm 96x96px, tách khỏi phần hiển thị
       const nodeSprite = this.add

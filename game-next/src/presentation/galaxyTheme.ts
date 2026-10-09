@@ -5,11 +5,14 @@
  * - docs/gdd/assets/Bộ nhận diện năm thiên hà-html/GalaxyKit.dc.html
  * - docs/gdd/assets/Menu · Chương I Khởi Nguyên-html/Menu1.dc.html
  * - docs/gdd/assets/Menu · Chương II Giao Thoa-html/Menu2.dc.html
+ * - docs/gdd/assets/Menu · Chương III Luân Chuyển-html/Menu3.dc.html (ring galaxy, campaign chapter 4)
+ * - docs/gdd/assets/Menu · Chương IV Hội Tụ-html/Menu4.dc.html (cluster galaxy, campaign chapter 5)
  * - docs/gdd/assets/Chọn màn · bản đồ 5 thiên hà (cuộn dọc)-html/GalaxyMap.dc.html
  */
 
 import { campaignManifest } from '../content/manifest.ts';
 import { resolveNextCampaignLevel } from '../domain/campaign.ts';
+import type { Chapter } from '../domain/model.ts';
 
 export interface GalaxyThemeColors {
   /** Màu gradient đỉnh bầu trời */
@@ -50,6 +53,8 @@ export interface GalaxyTheme {
     color: number;
     ringColor: number;
   };
+  /** Optional per-level node colors (prism chapter): index = level number - 1, wraps. */
+  nodeColors?: readonly number[];
 }
 
 export const GALAXY_THEMES: Readonly<Record<number, GalaxyTheme>> = {
@@ -113,7 +118,7 @@ export const GALAXY_THEMES: Readonly<Record<number, GalaxyTheme>> = {
   },
   3: {
     chapter: 3,
-    id: 'ring',
+    id: 'tapestry',
     name: 'Họa Phẩm',
     galaxyType: 'Chòm sao Họa Phẩm',
     totalLevels: campaignManifest.filter(entry => entry.chapter === 3).length,
@@ -139,6 +144,94 @@ export const GALAXY_THEMES: Readonly<Record<number, GalaxyTheme>> = {
       color: 0xffb45a,
       ringColor: 0xffffff,
     },
+  },
+  4: {
+    chapter: 4,
+    id: 'ring',
+    name: 'Luân Chuyển',
+    galaxyType: 'Thiên hà vòng',
+    totalLevels: campaignManifest.filter(entry => entry.chapter === 4).length,
+    tagline: 'Vật thể Hoag là thiên hà vòng gần như tròn hoàn hảo',
+    colors: {
+      bgTop: 0x3a1a4e,
+      bgBottom: 0x4a2440,
+      bgTopHex: '#3A1A4E',
+      bgBottomHex: '#4A2440',
+      accent: 0xffb45a,
+      accentHex: '#FFB45A',
+      accentGlow: 0xffb45a,
+      accentDark: 0x120e36,
+      clouds: {
+        primary: 0xff9e5a,
+        secondary: 0xffb45a,
+        tertiary: 0xffe2a8,
+        highlight: 0x9fd8ff,
+      },
+      youngStars: 0x9fd8ff,
+    },
+    portal: {
+      color: 0xffb45a,
+      ringColor: 0xffffff,
+    },
+  },
+  5: {
+    chapter: 5,
+    id: 'cluster',
+    name: 'Hội Tụ',
+    galaxyType: 'Cụm thiên hà',
+    totalLevels: campaignManifest.filter(entry => entry.chapter === 5).length,
+    tagline: 'Cụm thiên hà Xử Nữ chứa hơn một nghìn thiên hà',
+    colors: {
+      bgTop: 0x140f3a,
+      bgBottom: 0x0a0824,
+      bgTopHex: '#140F3A',
+      bgBottomHex: '#0A0824',
+      accent: 0xffe9a8,
+      accentHex: '#FFE9A8',
+      accentGlow: 0xffe9a8,
+      accentDark: 0x120e36,
+      clouds: {
+        primary: 0x9fb4ff,
+        secondary: 0xffe9a8,
+        tertiary: 0xffc857,
+        highlight: 0xffffff,
+      },
+      youngStars: 0xffe9a8,
+    },
+    portal: {
+      color: 0xffe9a8,
+      ringColor: 0xffffff,
+    },
+  },
+  6: {
+    chapter: 6,
+    id: 'prism',
+    name: 'Lăng Kính',
+    galaxyType: 'Vũ trụ lăng kính',
+    totalLevels: campaignManifest.filter(entry => entry.chapter === 6).length,
+    tagline: 'Lăng kính tách tia sáng trắng thành dải màu',
+    colors: {
+      bgTop: 0x0a0824,
+      bgBottom: 0x160a2e,
+      bgTopHex: '#0A0824',
+      bgBottomHex: '#160A2E',
+      accent: 0x7fe3ff,
+      accentHex: '#7FE3FF',
+      accentGlow: 0x7fe3ff,
+      accentDark: 0x120e36,
+      clouds: {
+        primary: 0xb9a8ff,
+        secondary: 0x4da3ff,
+        tertiary: 0xff7ad9,
+        highlight: 0xffffff,
+      },
+      youngStars: 0x4be0b0,
+    },
+    portal: {
+      color: 0xff7ad9,
+      ringColor: 0xffffff,
+    },
+    nodeColors: [0xff5d7a, 0xff9f45, 0xffe15a, 0x4be0b0, 0x4da3ff, 0xb57cff, 0xff7ad9],
   },
 };
 
@@ -166,4 +259,19 @@ export function getChapterProgress(
 ): { completed: number; total: number } {
   const entries = campaignManifest.filter(entry => entry.chapter === chapter);
   return { completed: entries.filter(entry => completedLevels.includes(entry.id)).length, total: entries.length };
+}
+
+/** Accent for one level's node: prism levels carry their own colour. */
+export function nodeAccent(theme: GalaxyTheme, levelId: string): number {
+  const order = Number(/-(\d+)$/.exec(levelId)?.[1]);
+  const colors = theme.nodeColors;
+  return colors && Number.isInteger(order) && order > 0 ? colors[(order - 1) % colors.length] : theme.colors.accent;
+}
+
+/** Themed chapters with no manifest entry yet; the map shows them as banner-only bands. */
+export function teaserChapters(manifest: readonly { chapter: number }[]): Chapter[] {
+  return Object.keys(GALAXY_THEMES)
+    .map(Number)
+    .filter((chapter) => !manifest.some((entry) => entry.chapter === chapter))
+    .sort((a, b) => a - b) as Chapter[];
 }

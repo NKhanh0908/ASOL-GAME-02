@@ -4,6 +4,11 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-09 - Galaxy themes for chapters 4-6 (GX2 task 2)
+
+- `game-next/src/presentation/galaxyTheme.ts`: themes for Luân Chuyển (ring), Hội Tụ (cluster) and Lăng Kính (prism) with the kit/Menu3/Menu4 colors and mockup fact lines; chapter 3 id renamed `ring` -> `tapestry` (look unchanged); `nodeColors`, `nodeAccent()` and `teaserChapters()`. `menu/ChapterProgressBadge.ts`: 7 segments when a chapter has no levels yet. `LevelSelectScene.ts`: node accent via `nodeAccent`. `tests/galaxyTheme.test.ts`: new cases.
+- Verification: `npx vitest run tests/galaxyTheme.test.ts tests/levelSelect.test.ts --pool=forks` (25 tests) and `npx tsc --noEmit` pass. GitNexus MCP unavailable; no impact analysis run.
+
 ### 2026-10-09 - Chapters 5-6 in the chapter table and labels (GX2 task 1)
 
 - `game-next/src/domain/model.ts`, `src/content/chapters.ts`: `Chapter` is now 1-6; added Hội Tụ (V) and Lăng Kính (VI) and `chapterRoman()`. `src/presentation/i18n.ts`: chapter names 5-6 (vi/en) and roman numerals via `chapterRoman`. `LevelSelectScene.ts`, `menu/ChapterProgressBadge.ts`: roman arrays replaced, tints for chapters 5-6. `tests/content.test.ts`, `tests/i18n.test.ts`: updated (chapter 7 is now the invalid one).

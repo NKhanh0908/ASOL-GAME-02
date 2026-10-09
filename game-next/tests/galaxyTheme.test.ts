@@ -5,6 +5,8 @@ import {
   resolveGalaxyTheme,
   resolveCurrentGalaxyTheme,
   getChapterProgress,
+  nodeAccent,
+  teaserChapters,
 } from '../src/presentation/galaxyTheme.ts';
 
 describe('galaxyTheme', () => {
@@ -51,5 +53,41 @@ describe('galaxyTheme', () => {
     expect(getChapterProgress(1, ['1-1', '1-2', '2-1'])).toEqual({ completed: 2, total: 6 });
     expect(getChapterProgress(2, ['1-1', '2-1', '2-2', '2-3'])).toEqual({ completed: 3, total: 6 });
     expect(getChapterProgress(1, ['1-1', '1-1', '1-7', 'unknown'])).toEqual({ completed: 1, total: 6 });
+  });
+});
+
+describe('chapters 4-6 themes', () => {
+  it('matches the kit values', () => {
+    expect(GALAXY_THEMES[3].id).toBe('tapestry');
+    const ring = GALAXY_THEMES[4];
+    expect([ring.id, ring.name, ring.galaxyType]).toEqual(['ring', 'Luân Chuyển', 'Thiên hà vòng']);
+    expect([ring.colors.bgTopHex, ring.colors.bgBottomHex, ring.colors.accentHex]).toEqual(['#3A1A4E', '#4A2440', '#FFB45A']);
+    expect(ring.tagline).toBe('Vật thể Hoag là thiên hà vòng gần như tròn hoàn hảo');
+    const cluster = GALAXY_THEMES[5];
+    expect([cluster.id, cluster.name, cluster.galaxyType]).toEqual(['cluster', 'Hội Tụ', 'Cụm thiên hà']);
+    expect([cluster.colors.bgTopHex, cluster.colors.bgBottomHex, cluster.colors.accentHex]).toEqual(['#140F3A', '#0A0824', '#FFE9A8']);
+    expect(cluster.tagline).toBe('Cụm thiên hà Xử Nữ chứa hơn một nghìn thiên hà');
+    const prism = GALAXY_THEMES[6];
+    expect([prism.id, prism.name, prism.galaxyType]).toEqual(['prism', 'Lăng Kính', 'Vũ trụ lăng kính']);
+    expect([prism.colors.bgTopHex, prism.colors.bgBottomHex, prism.colors.accentHex]).toEqual(['#0A0824', '#160A2E', '#7FE3FF']);
+    expect(prism.nodeColors).toEqual([0xff5d7a, 0xff9f45, 0xffe15a, 0x4be0b0, 0x4da3ff, 0xb57cff, 0xff7ad9]);
+  });
+
+  it('nodeAccent uses per-level prism colors and the chapter accent elsewhere', () => {
+    expect(nodeAccent(GALAXY_THEMES[6], '6-1')).toBe(0xff5d7a);
+    expect(nodeAccent(GALAXY_THEMES[6], '6-7')).toBe(0xff7ad9);
+    expect(nodeAccent(GALAXY_THEMES[6], '6-8')).toBe(0xff5d7a);
+    expect(nodeAccent(GALAXY_THEMES[4], '4-3')).toBe(GALAXY_THEMES[4].colors.accent);
+    expect(nodeAccent(GALAXY_THEMES[6], 'dev-x')).toBe(GALAXY_THEMES[6].colors.accent);
+  });
+
+  it('teaserChapters lists themed chapters that have no levels', () => {
+    expect(teaserChapters(campaignManifest)).toEqual([5, 6]);
+    expect(teaserChapters([{ chapter: 1 }, { chapter: 5 }])).toEqual([2, 3, 4, 6]);
+  });
+
+  it('keeps the unknown-chapter fallback', () => {
+    expect(resolveGalaxyTheme(99).chapter).toBe(1);
+    expect(Object.keys(GALAXY_THEMES)).toHaveLength(6);
   });
 });

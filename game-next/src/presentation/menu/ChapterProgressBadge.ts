@@ -54,7 +54,8 @@ export class ChapterProgressBadge extends Phaser.GameObjects.Container {
     // 3. Thanh tiến độ: 150 px rộng, mỗi nấc cao 6, cách nhau 4
     this.progressBars = scene.add.graphics();
     const barH = 6;
-    const totalBars = config.theme.totalLevels;
+    // The mockups draw 7 segments; chapters without levels yet report 0 levels.
+    const totalBars = config.theme.totalLevels || 7;
     const gap = 4;
     const barW = (trackW - (totalBars - 1) * gap) / totalBars;
     const startX = -trackW / 2;
