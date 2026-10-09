@@ -21,39 +21,43 @@ export class ChapterProgressBadge extends Phaser.GameObjects.Container {
   constructor(scene: Phaser.Scene, config: ChapterProgressBadgeConfig) {
     super(scene, config.x, config.y);
 
-    const width = 236;
-    const height = 54;
-    const radius = 18;
-
-    // 1. Nền kính tối bán trong suốt viền màu accent của chương
-    this.badgeBg = scene.add.graphics();
-    this.badgeBg.fillStyle(config.theme.colors.accentDark, 0.65);
-    this.badgeBg.fillRoundedRect(-width / 2, -height / 2, width, height, radius);
-    this.badgeBg.lineStyle(1.6, config.theme.colors.accent, 0.9);
-    this.badgeBg.strokeRoundedRect(-width / 2, -height / 2, width, height, radius);
-    this.add(this.badgeBg);
-
-    // 2. Tên chương (ví dụ: "Chương I · Khởi Nguyên" hoặc "Chương II · Giao Thoa")
-    const romanNumeral = config.theme.chapter === 1 ? 'I' : config.theme.chapter === 2 ? 'II' : 'III';
+    // Drawn in mockup units (390 px wide); the caller scales the badge by 720/390.
+    const romanNumeral = ['I', 'II', 'III', 'IV'][config.theme.chapter - 1] ?? String(config.theme.chapter);
     this.titleText = scene.add
-      .text(0, -9, `Chương ${romanNumeral} · ${config.theme.name}`, {
+      .text(0, 0, `Chương ${romanNumeral} · ${config.theme.name}`, {
         fontFamily: TYPO_TOKENS.fontFamily.display,
         fontSize: '15px',
         color: '#FFFFFF',
         fontStyle: 'bold',
       })
-      .setOrigin(0.5);
+      .setOrigin(0.5)
+      .setResolution(2);
+
+    const trackW = 150;
+    const width = Math.max(this.titleText.width, trackW) + 32;
+    const height = 8 + 18 + 6 + 6 + 10;
+    const top = -height / 2;
+
+    // 1. Nền kính tối bán trong suốt, viền 1.5 màu accent của chương
+    this.badgeBg = scene.add.graphics();
+    this.badgeBg.fillStyle(0x0a0a28, 0.55);
+    this.badgeBg.fillRoundedRect(-width / 2, top, width, height, 18);
+    this.badgeBg.lineStyle(1.5, config.theme.colors.accent, 1);
+    this.badgeBg.strokeRoundedRect(-width / 2, top, width, height, 18);
+    this.add(this.badgeBg);
+
+    // 2. Tên chương
+    this.titleText.setY(top + 8 + 9);
     this.add(this.titleText);
 
-    // 3. Thanh tiến độ 7 nấc (150px rộng, 7 nấc cách nhau 4px)
+    // 3. Thanh tiến độ: 150 px rộng, mỗi nấc cao 6, cách nhau 4
     this.progressBars = scene.add.graphics();
-    const trackW = 150;
     const barH = 6;
     const totalBars = config.theme.totalLevels;
     const gap = 4;
     const barW = (trackW - (totalBars - 1) * gap) / totalBars;
     const startX = -trackW / 2;
-    const barY = 10;
+    const barY = top + 8 + 18 + 6;
 
     for (let i = 0; i < totalBars; i++) {
       const bx = startX + i * (barW + gap);

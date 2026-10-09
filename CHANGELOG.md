@@ -4,6 +4,38 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-09 - Widen the map preview to one chapter ahead and match the menu chrome to Menu1/Menu2
+
+- `game-next/src/presentation/mapReveal.ts`, `tests/mapReveal.test.ts`: the reveal limit is now the end of the next chapter (current chapter plus a one-chapter preview); fog starts after it and lifts when the current chapter is finished. Replaces the half-chapter limit.
+- `game-next/src/presentation/menu/menuButtons.ts` (new), `MenuScene.ts`, `menu/ChapterProgressBadge.ts`: language pill, settings button, chapter badge, fact box, "Tiếp tục" and "Chọn màn chơi" buttons, and footer are rebuilt from the Menu1/Menu2 mockup values (x720/390): glass panels `rgba(10,10,40,.55)` with chapter-accent rims, amber gradient hero button with 5 px lower edge and glow, flat glass secondary button, left-aligned fact text with an accent diamond. Button rows use the mockup's vertical ratios.
+- Follow-up: menu chrome scaled to 1.6x the mockup (was 1.85x), narrower buttons and fact box, fact text centred; map nodes, gate, captions, chapter banners and the fog hint scaled down (`menu/menuButtons.ts`, `MenuScene.ts`, `galaxyNode.ts`, `LevelSelectScene.ts`).
+- Verification: `npm test -- --maxWorkers=2 --minWorkers=1 --pool=forks` (94 files, 1,154 tests) and `npm run typecheck` pass; menu screenshots for chapters I and II were compared side by side with the rendered mockups. GitNexus MCP was unavailable, so `impact`/`detect_changes` were not run. Not run: `npm run build`, Android device.
+
+### 2026-10-09 - Align map nodes, Endless gate and chapter I hero with the GalaxyKit design; seal unopened chapters
+
+- `game-next/src/presentation/galaxyNode.ts` (new), `LevelSelectScene.ts`: level nodes now follow the GalaxyKit three-state buttons (gold "done" diamond with accent rim, cream "current" diamond with play mark and two pulse rings, dark "locked" diamond with padlock) with outlined id captions; links are cream/accent for walked segments and white dots for the rest. Replaces the texture-based nodes.
+- `game-next/src/presentation/chapterEndlessGate.ts`: the Endless Gate symbol is the mockup's lemniscate (four cubic Béziers) instead of two stray arcs; gate scaled to the 720/390 design factor and the chapter I gate moved clear of node 1-5.
+- `game-next/src/presentation/menu/DualJewelEmblem.ts`, `MenuScene.ts`: chapter I shows the Menu1 hero (two touching faceted amber jewels, tinted disc, slow dotted ring); later chapters keep the animated XOR emblem.
+- `game-next/src/presentation/mapReveal.ts` (new), `LevelSelectScene.ts`, `i18n.ts`: the map scrolls only to about half a chapter below the first unfinished level (at most the chapter tail plus its gate); everything beyond is under fog with a hint pill. The first time a new chapter becomes the frontier the fog lifts with a burst on its banner, the map glides into it and a toast announces it (seen chapter stored in `mirror.rebuild.mapUnlockSeen`; first ever visit and reduced motion skip the animation).
+- `game-next/tests/mapReveal.test.ts`: reveal limits at chapter start, chapter tail, and finished campaign.
+- Verification: `npm test -- --maxWorkers=2 --minWorkers=1 --pool=forks` (94 files, 1,155 tests) and `npm run typecheck` pass; Playwright screenshots of the menu, map (fresh, mid-chapter, tail) and the unlock transition checked by eye with no page errors. GitNexus MCP failed to connect (CONNECT_TIMEOUT), so `impact`/`detect_changes` were not run; blast radius was checked by hand (LevelSelectScene, MenuScene, DualJewelEmblem, ChapterEndlessGate). Not run: Android device, `npm run build`.
+
+### 2026-10-09 - Smooth chapter I clouds and add moving white stars
+
+- `game-next/src/presentation/GalaxyArtwork.ts`, `galaxyStars.ts`: preserve the blue galaxy and add 30 deterministic white stars with varied drift, soft glow, twinkle, edge fading, and reduced-motion freezing.
+- `game-next/scripts/extract-galaxy-art.mjs`, `public/assets/galaxies/`: use explicit user-space mask bounds and expanded blur filters to remove straight cloud clipping seams.
+- `game-next/tests/galaxyStars.test.ts`, `scripts/check-galaxy-clouds.mjs`, `scripts/check-galaxy-ui.mjs`: cover star movement, deterministic generation, wrapping, reduced motion, and rasterized cloud edge continuity.
+- Verification: 93 test files / 1,144 tests passed with two workers; production build passed (existing large-chunk warning). Browser QA passed with no runtime errors, verified moving stars and reduced-motion freezing; menu/map screenshots inspected. Cloud maximum adjacent alpha jumps improved from 17/10 to 4/3. GitNexus impact could not resolve the new unindexed artwork module; manual caller review limited it to menu/map. `detect_changes` retained the previously reported CRITICAL shared-transition scope for the combined uncommitted changes; no domain or persistence changes.
+
+### 2026-10-09 - Rebuild chapter I and II galaxy presentation from references
+
+- `game-next/src/presentation/GalaxyArtwork.ts`, `game-next/public/assets/galaxies/`, `game-next/scripts/extract-galaxy-art.mjs`: extract reference vector art into reusable textures, separate dwarf cloud layers, add slow spiral rotation, feather artwork boundaries, and render a continuous star-filled map gradient.
+- `game-next/src/presentation/MenuScene.ts`: responsive reference-aligned menu composition, chapter galaxy hero, readable fact panel and progress badge, and bidirectional spatial transitions preserving device camera scale.
+- `game-next/src/presentation/LevelSelectScene.ts`, `constellationLayout.ts`, `chapterEndlessGate.ts`: chapter-II spiral path, chapter art parallax, manifest-tail gates, inertial/wheel scrolling, drag-safe node activation, and reduced-motion gate behavior.
+- `game-next/src/presentation/galaxyTheme.ts`: derive chapter progress and current theme from actual campaign content; retain the campaign's Hoa Pham chapter name rather than the mockup's sample chapter ordering.
+- `game-next/tests/galaxyTheme.test.ts`, `levelSelect.test.ts`, `game-next/scripts/check-galaxy-ui.mjs`: cover real chapter counts, spiral geometry, isolated browser screenshots, responsive zoom restoration, drag gestures, navigation, and reduced motion. User screenshots under `docs/screenshots/web/m3/` were inspected and preserved.
+- Verification: full suite passed (92 files, 1,141 tests) with two workers; default parallel run exhausted memory and reported worker exits. Production build passed. Browser QA verified Chapters I/II, completed campaign, 390×844 and 390×690, menu/map/menu/play navigation and camera scale with no runtime errors. GitNexus impact/detect_changes identified expected menu/map/transition flows (CRITICAL through shared scene choreography); no puzzle rules, level content, or persistence schema changed.
+
 ### 2026-10-08 - Galaxy themes for Chapters I & II with spatial zoom transition
 
 - `game-next/src/presentation/galaxyTheme.ts`: pure theme token definitions for Chapter 1 (Khởi Nguyên - Dwarf Galaxy, `#0B2A5E`/`#123A7A`, accent `#5AD1E0`) and Chapter 2 (Giao Thoa - Spiral Galaxy, `#2A1670`/`#3A1A7E`, accent `#E58BFF`), theme resolvers `resolveGalaxyTheme`, `resolveCurrentGalaxyTheme`, and `getChapterProgress`.

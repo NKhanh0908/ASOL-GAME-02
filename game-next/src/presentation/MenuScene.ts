@@ -16,11 +16,13 @@ import { applySteps } from './transitions/choreography.ts';
 import type { Parts } from './transitions/choreography.ts';
 import { MENU_OUT_TO_MAP, MENU_OUT_TO_PLAY, MENU_SPECIAL, menuIn } from './transitions/routes.ts';
 import { playUiCue } from './audio/uiCues.ts';
-import { DualJewelEmblem } from './menu/DualJewelEmblem.ts';
+import { CHAPTER_ONE_HERO_SCALE, DualJewelEmblem } from './menu/DualJewelEmblem.ts';
+import { MENU_K, createPrimaryButtonImage, drawGear, drawGlassPanel } from './menu/menuButtons.ts';
 import { strokeDiamond } from './menu/diamondMotif.ts';
 import { resolveCurrentGalaxyTheme, getChapterProgress } from './galaxyTheme.ts';
 import type { GalaxyTheme } from './galaxyTheme.ts';
 import { ChapterProgressBadge } from './menu/ChapterProgressBadge.ts';
+import { addGalaxyArtwork, galaxyGradient, preloadGalaxyArtwork } from './GalaxyArtwork.ts';
 
 export class MenuScene extends Phaser.Scene implements Choreographed {
   readonly directorKey = 'MenuScene' as const;
@@ -43,6 +45,8 @@ export class MenuScene extends Phaser.Scene implements Choreographed {
     baseY: number;
   }[] = [];
   private lastTrailTime = 0;
+  private galaxy!: Phaser.GameObjects.Container;
+  private galaxySky!: Phaser.GameObjects.Image;
 
   private blockOffsetY = 0;
   private viewHeight: number = LAYOUT_TOKENS.canvas.height;
@@ -50,6 +54,10 @@ export class MenuScene extends Phaser.Scene implements Choreographed {
 
   constructor() {
     super({ key: 'MenuScene' });
+  }
+
+  preload(): void {
+    preloadGalaxyArtwork(this);
   }
 
   create(): void {
@@ -61,11 +69,19 @@ export class MenuScene extends Phaser.Scene implements Choreographed {
 
     const view = designViewBounds(this);
     this.safe = designSafeArea(this);
-    this.blockOffsetY = (view.height - LAYOUT_TOKENS.canvas.height) / 2;
+    this.blockOffsetY = 0;
     this.viewHeight = view.height;
 
+    const theme = resolveCurrentGalaxyTheme(progress.completed);
+    this.galaxySky = this.add.image(0, 0, galaxyGradient(this, theme))
+      .setOrigin(0).setDisplaySize(view.width, view.height).setDepth(-2);
+    this.galaxy = addGalaxyArtwork(this, theme, 360, view.height * 0.52, 900).setDepth(-1);
+
     // 2. Biểu tượng Ngọc Đôi (Dual Jewels XOR) lơ lửng ở trung tâm
-    this.emblem = new DualJewelEmblem(this, 360, 620 + this.blockOffsetY);
+    // Chapter I uses the static Menu1 hero; later chapters keep the animated XOR emblem.
+    const heroChapterOne = theme.chapter === 1;
+    this.emblem = new DualJewelEmblem(this, 360, view.height * 0.52, heroChapterOne ? theme.colors.accent : undefined);
+    this.emblem.graphics().forEach(graphic => graphic.setScale(heroChapterOne ? CHAPTER_ONE_HERO_SCALE : 1.35));
 
     // 3. UI Container chính
     this.uiContainer = this.add.container(0, this.blockOffsetY);
@@ -93,45 +109,39 @@ export class MenuScene extends Phaser.Scene implements Choreographed {
         ? t('btn_continue')
         : t('btn_replay');
 
-    const topY = this.safe.top + 52 - this.blockOffsetY;
+    const K = MENU_K;
+    const accent = currentTheme.colors.accent;
+    // Mockup: language pill at top 22 / left 16, settings at top 20 / right 16 (44 px circle)
+    const topY = this.safe.top + 74 - this.blockOffsetY;
 
-    // Nút chọn Ngôn ngữ (Pill Toggle: VI | EN ở góc trên trái: x=72)
+    // Nút chọn Ngôn ngữ: 3 px đệm, mỗi nút cao 28, viền 1.5 màu accent của chương
     const currentLoc = getLocale();
-    const pillW = 88;
-    const pillH = 38;
-    const pillX = 72;
+    const pad = 4.5 * K;
+    const viW = 36 * K;
+    const enW = 40 * K;
+    const segH = 28 * K;
+    const pillW = pad * 2 + viW + enW;
+    const pillH = 35 * K;
+    const pillX = 16 * K + pillW / 2;
 
     const langPillBg = this.add.graphics();
-    langPillBg.fillStyle(COLOR_NUMBERS.boardSurfaceTop, 0.85);
-    langPillBg.fillRoundedRect(-pillW / 2, -pillH / 2, pillW, pillH, 19);
-    langPillBg.lineStyle(1.6, currentTheme.colors.accent, 0.9);
-    langPillBg.strokeRoundedRect(-pillW / 2, -pillH / 2, pillW, pillH, 19);
+    drawGlassPanel(langPillBg, -pillW / 2, -pillH / 2, pillW, pillH, 18 * K, accent, 1.5 * K);
 
     const activeBg = this.add.graphics();
     activeBg.fillStyle(COLOR_NUMBERS.amberSolid, 1.0);
-    if (currentLoc === 'vi') {
-      activeBg.fillRoundedRect(-pillW / 2 + 2, -pillH / 2 + 2, pillW / 2 - 2, pillH - 4, 17);
-    } else {
-      activeBg.fillRoundedRect(0, -pillH / 2 + 2, pillW / 2 - 2, pillH - 4, 17);
-    }
+    const activeX = currentLoc === 'vi' ? -pillW / 2 + pad : -pillW / 2 + pad + viW;
+    activeBg.fillRoundedRect(activeX, -segH / 2, currentLoc === 'vi' ? viW : enW, segH, 14 * K);
 
-    const viText = this.add
-      .text(-22, 0, 'VI', {
-        fontFamily: TYPO_TOKENS.fontFamily.display,
-        fontSize: '15px',
-        color: currentLoc === 'vi' ? '#22145A' : COLOR_TOKENS.text.secondary,
-        fontStyle: 'bold',
+    const langText = (x: number, label: string, active: boolean): Phaser.GameObjects.Text => this.add
+      .text(x, 0, label, {
+        fontFamily: TYPO_TOKENS.fontFamily.sans,
+        fontSize: `${Math.round(12 * K)}px`,
+        color: active ? '#1A1446' : '#FFFFFF',
+        fontStyle: active ? '800' : 'bold',
       })
       .setOrigin(0.5);
-
-    const enText = this.add
-      .text(22, 0, 'EN', {
-        fontFamily: TYPO_TOKENS.fontFamily.display,
-        fontSize: '15px',
-        color: currentLoc === 'en' ? '#22145A' : COLOR_TOKENS.text.secondary,
-        fontStyle: 'bold',
-      })
-      .setOrigin(0.5);
+    const viText = langText(-pillW / 2 + pad + viW / 2, 'VI', currentLoc === 'vi');
+    const enText = langText(-pillW / 2 + pad + viW + enW / 2, 'EN', currentLoc === 'en');
 
     const langHitZone = this.add
       .zone(0, 0, pillW, pillH)
@@ -144,107 +154,102 @@ export class MenuScene extends Phaser.Scene implements Choreographed {
 
     this.langPillContainer = this.add.container(pillX, topY, [langPillBg, activeBg, viText, enText, langHitZone]);
 
-    // Nút Cài đặt góc trên phải (x=664, y=52)
-    const settingsBtn = this.add
-      .image(0, 0, TEXTURE_KEYS.btnCircle56)
-      .setInteractive({ useHandCursor: true });
-    const settingsIcon = this.add.image(0, 0, TEXTURE_KEYS.iconGear);
+    // Nút Cài đặt: vòng tròn 44 px, viền accent, bánh răng trắng 22 px
+    const gearD = 44 * K;
+    const settingsBg = this.add.graphics();
+    settingsBg.fillStyle(0x0a0a28, 0.55);
+    settingsBg.fillCircle(0, 0, gearD / 2);
+    settingsBg.lineStyle(1.5 * K, accent, 1);
+    settingsBg.strokeCircle(0, 0, gearD / 2 - 0.75 * K);
+    const settingsIcon = this.add.graphics();
+    drawGear(settingsIcon, 22 * K);
+    const settingsBtn = this.add.zone(0, 0, 96, 96).setInteractive({ useHandCursor: true });
+    this.settingsButton = this.add.container(720 - 16 * K - gearD / 2, topY + 3, [settingsBg, settingsIcon, settingsBtn]);
     settingsBtn.on('pointerdown', () => {
-      this.animateButtonTap(settingsBtn, () => this.openSettings());
+      this.animateButtonTap(this.settingsButton, () => this.openSettings());
     });
-    this.settingsButton = this.add.container(664, topY, [settingsBtn, settingsIcon]);
 
     // -------------------------------------------------------------
     // LOGO PHƯƠNG ÁN 2: GƯƠNG ĐÔI (CASUAL LOGO WITH MIRROR REFLECTION)
     // -------------------------------------------------------------
     this.titleBlock = this.add.container(0, 0);
     this.buildCasualMirrorLogo(currentTheme);
+    this.mirrorLogoContainer!.setPosition(-72, this.viewHeight * 0.20 - 234).setScale(1.2);
 
-    // Huy hiệu tiến độ chương (Chapter Progress Badge) tại y = 280
+    // Huy hiệu tiến độ chương (mockup: top 260, giữa màn hình)
     const chapterBadge = new ChapterProgressBadge(this, {
       x: 360,
-      y: 280,
+      y: this.viewHeight * 0.337,
       theme: currentTheme,
       completedCount: chProgress.completed,
     });
+    chapterBadge.setScale(K);
     this.titleBlock.add(chapterBadge);
 
-    // Dòng thông tin thiên văn (Layout C: đặt ngay dưới hero ở y=830)
+    // Dòng thông tin thiên văn: khung kính 28 px hai bên, mũi thoi accent + chữ canh trái
+    const factY = this.viewHeight * 0.738;
+    const factPadX = 14 * K;
+    const factPadY = 10 * K;
+    const factDiamond = 10 * K;
+    const factX = 64;
+    const factW = 720 - factX * 2;
+    // Chữ canh giữa; mũi thoi accent nằm ở mép trái, căn giữa theo chiều dọc
+    const factInset = factPadX + factDiamond + 8 * K;
     const factCaption = this.add
-      .text(360, 830, `◆ ${currentTheme.tagline}`, {
-        fontFamily: TYPO_TOKENS.fontFamily.display,
-        fontSize: TYPO_TOKENS.fontSize.caption,
-        color: '#B9C9F2',
+      .text(360, 0, currentTheme.tagline, {
+        fontFamily: TYPO_TOKENS.fontFamily.sans,
+        fontSize: `${Math.round(13 * K)}px`,
+        color: '#E4E8FF',
         align: 'center',
-        wordWrap: { width: 620 },
+        wordWrap: { width: factW - factInset * 2 },
       })
-      .setOrigin(0.5);
-    this.titleBlock.add(factCaption);
+      .setOrigin(0.5, 0);
+    // Mockup line height is 18 px: pin it so wrapped lines match the design
+    const factLines = Math.max(1, factCaption.getWrappedText().length);
+    factCaption.setLineSpacing(18 * K - factCaption.height / factLines);
+    const factH = factLines * 18 * K + factPadY * 2;
+    const factTop = factY - factH / 2;
+    factCaption.setY(factTop + factPadY);
+    const factBg = this.add.graphics();
+    factBg.fillStyle(0x0a0a28, 0.5);
+    factBg.fillRoundedRect(factX, factTop, factW, factH, 14 * K);
+    const dcx = factX + factPadX + factDiamond / 2;
+    const dcy = factY;
+    factBg.fillStyle(currentTheme.colors.accent, 1);
+    factBg.fillPoints([
+      new Phaser.Geom.Point(dcx, dcy - factDiamond / 2),
+      new Phaser.Geom.Point(dcx + factDiamond / 2, dcy),
+      new Phaser.Geom.Point(dcx, dcy + factDiamond / 2),
+      new Phaser.Geom.Point(dcx - factDiamond / 2, dcy),
+    ], true);
+    this.titleBlock.add([factBg, factCaption]);
 
     // -------------------------------------------------------------
-    // 1. NÚT CHÍNH: BẮT ĐẦU / TIẾP TỤC (Hero 3D Tactile Juicy Button, y=980)
+    // 1. NÚT CHÍNH: Tiếp tục (gradient hổ phách, cạnh dưới 5px, quầng sáng)
     // -------------------------------------------------------------
-    const btnWidth = 360;
-    const btnHeight = 84;
+    const btnWidth = 460;
+    const btnHeight = 60 * K;
     const btnX = 360;
-    const btnY = 980;
+    const btnY = this.viewHeight * 0.8246;
 
     const primaryBtnContainer = this.add.container(btnX, btnY);
+    const btnFace = createPrimaryButtonImage(this, btnWidth, btnHeight);
 
-    // Lớp đế đổ bóng 3D dày 6px màu tím sẫm
-    const btnShadow = this.add.graphics();
-    btnShadow.fillStyle(0x22145a, 1.0);
-    btnShadow.fillRoundedRect(-btnWidth / 2, -btnHeight / 2 + 6, btnWidth, btnHeight, 26);
-
-    // Mặt nút gradient vàng hổ phách tươi sáng
-    const btnFace = this.add.graphics();
-    btnFace.fillStyle(0xffa800, 1.0);
-    btnFace.fillRoundedRect(-btnWidth / 2, -btnHeight / 2, btnWidth, btnHeight - 4, 26);
-    btnFace.fillStyle(0xffd54f, 0.95);
-    btnFace.fillRoundedRect(-btnWidth / 2 + 2, -btnHeight / 2 + 2, btnWidth - 4, (btnHeight - 8) * 0.65, 24);
-
-    // Vệt bóng gương lấp lánh (Specular Gloss)
-    btnFace.fillStyle(0xffffff, 0.35);
-    btnFace.fillRoundedRect(-btnWidth / 2 + 18, -btnHeight / 2 + 6, btnWidth - 36, 16, 8);
-
-    // Đường viền tím sẫm sắc nét
-    btnFace.lineStyle(3, 0x3b2779, 1.0);
-    btnFace.strokeRoundedRect(-btnWidth / 2, -btnHeight / 2, btnWidth, btnHeight, 26);
-
-    // Icon Tam giác Play nổi khối bên trái
-    const playIcon = this.add.graphics();
-    playIcon.fillStyle(0x22145a, 1.0);
-    playIcon.beginPath();
-    playIcon.moveTo(-btnWidth / 2 + 36, -11);
-    playIcon.lineTo(-btnWidth / 2 + 52, 0);
-    playIcon.lineTo(-btnWidth / 2 + 36, 11);
-    playIcon.closePath();
-    playIcon.fillPath();
-    playIcon.fillStyle(0xffffff, 0.7);
-    playIcon.beginPath();
-    playIcon.moveTo(-btnWidth / 2 + 38, -7);
-    playIcon.lineTo(-btnWidth / 2 + 45, 0);
-    playIcon.lineTo(-btnWidth / 2 + 38, -1);
-    playIcon.closePath();
-    playIcon.fillPath();
-
-    // Tiêu đề nút chính (Baloo 2 28px đậm nét)
     const mainBtnText = this.add
-      .text(14, -12, btnLabelText, {
+      .text(0, -16, btnLabelText, {
         fontFamily: TYPO_TOKENS.fontFamily.display,
-        fontSize: '28px',
-        color: '#22145A',
+        fontSize: `${Math.round(21 * K)}px`,
+        color: '#1A1446',
         fontStyle: 'bold',
       })
       .setOrigin(0.5);
 
-    // Phụ đề tên màn chơi (15px rõ ràng)
     const localizedTitle = getLevelTitle(targetLevel.id, targetLevel.title);
     const subBtnText = this.add
-      .text(14, 18, `${targetLevel.id} · ${localizedTitle}`, {
+      .text(0, 22, `${targetLevel.id} · ${localizedTitle}`, {
         fontFamily: TYPO_TOKENS.fontFamily.sans,
-        fontSize: '15px',
-        color: '#3E2A00',
+        fontSize: `${Math.round(12 * K)}px`,
+        color: '#1A1446',
         fontStyle: 'bold',
       })
       .setOrigin(0.5);
@@ -282,52 +287,25 @@ export class MenuScene extends Phaser.Scene implements Choreographed {
       primaryBtnContainer.setScale(1);
     });
 
-    primaryBtnContainer.add([btnShadow, btnFace, playIcon, mainBtnText, subBtnText, btnZone]);
+    primaryBtnContainer.add([btnFace, mainBtnText, subBtnText, btnZone]);
     this.primaryButton = primaryBtnContainer;
 
     // -------------------------------------------------------------
-    // 2. NÚT PHỤ: CHỌN MÀN CHƠI (Ice Crystal Glass 3D Button, y=1075)
+    // 2. NÚT PHỤ: Chọn màn chơi (kính tối, viền accent 2 px)
     // -------------------------------------------------------------
-    const secBtnY = 1075;
-    const secHeight = 62;
+    const secBtnY = this.viewHeight * 0.91;
+    const secHeight = 48 * K;
     const secBtnContainer = this.add.container(btnX, secBtnY);
 
-    // Đế đổ bóng 3D tối màu
-    const secShadow = this.add.graphics();
-    secShadow.fillStyle(0x0e1438, 1.0);
-    secShadow.fillRoundedRect(-btnWidth / 2, -secHeight / 2 + 4, btnWidth, secHeight, 22);
-
-    // Mặt kính băng saphire viền ngọc
     const secFace = this.add.graphics();
-    secFace.fillStyle(COLOR_NUMBERS.boardSurfaceTop, 0.92);
-    secFace.fillRoundedRect(-btnWidth / 2, -secHeight / 2, btnWidth, secHeight - 3, 22);
-
-    // Lớp tráng gương phía trên
-    secFace.fillStyle(0xffffff, 0.16);
-    secFace.fillRoundedRect(-btnWidth / 2 + 14, -secHeight / 2 + 4, btnWidth - 28, 14, 7);
-
-    // Viền đôi màu accent của chương
-    secFace.lineStyle(2.5, currentTheme.colors.accent, 0.95);
-    secFace.strokeRoundedRect(-btnWidth / 2, -secHeight / 2, btnWidth, secHeight - 3, 22);
-    secFace.lineStyle(1.0, 0xffffff, 0.45);
-    secFace.strokeRoundedRect(-btnWidth / 2 + 4, -secHeight / 2 + 3, btnWidth - 8, secHeight - 9, 18);
-
-    // Icon lưới 4 ô chiêm tinh
-    const secIcon = this.add.graphics();
-    const iconX = -btnWidth / 2 + 40;
-    secIcon.fillStyle(currentTheme.colors.accent, 0.9);
-    secIcon.fillRoundedRect(iconX - 10, -10, 8, 8, 2);
-    secIcon.fillRoundedRect(iconX + 2, -10, 8, 8, 2);
-    secIcon.fillRoundedRect(iconX - 10, 2, 8, 8, 2);
-    secIcon.fillRoundedRect(iconX + 2, 2, 8, 8, 2);
+    drawGlassPanel(secFace, -btnWidth / 2, -secHeight / 2, btnWidth, secHeight, 16 * K, accent, 2 * K);
 
     const secBtnText = this.add
-      .text(14, 0, t('btn_select_level'), {
-        fontFamily: TYPO_TOKENS.fontFamily.display,
-        fontSize: '22px',
+      .text(0, 0, t('btn_select_level'), {
+        fontFamily: TYPO_TOKENS.fontFamily.sans,
+        fontSize: `${Math.round(15 * K)}px`,
         color: '#FFFFFF',
-        stroke: '#141C48',
-        strokeThickness: 3,
+        fontStyle: 'bold',
       })
       .setOrigin(0.5);
 
@@ -361,15 +339,15 @@ export class MenuScene extends Phaser.Scene implements Choreographed {
       secBtnContainer.setScale(1);
     });
 
-    secBtnContainer.add([secShadow, secFace, secIcon, secBtnText, secBtnZone]);
+    secBtnContainer.add([secFace, secBtnText, secBtnZone]);
     this.secondaryButton = secBtnContainer;
 
     // Chân trang phiên bản (y=1240)
     const footerText = this.add
-      .text(360, 1240, t('version_footer'), {
+      .text(360, this.viewHeight - this.safe.bottom - 46, t('version_footer'), {
         fontFamily: TYPO_TOKENS.fontFamily.sans,
-        fontSize: '12px',
-        color: COLOR_TOKENS.text.secondary,
+        fontSize: `${Math.round(11 * K)}px`,
+        color: '#C9D2FF',
       })
       .setOrigin(0.5);
     this.footer = footerText;
@@ -610,7 +588,7 @@ export class MenuScene extends Phaser.Scene implements Choreographed {
     // A. Nhấp nhô bồng bềnh
     this.tweens.add({
       targets: this.mirrorLogoContainer,
-      y: -4,
+      y: '-=4',
       duration: 2200,
       yoyo: true,
       repeat: -1,
@@ -846,9 +824,22 @@ export class MenuScene extends Phaser.Scene implements Choreographed {
 
   playIn(tl: TransitionTimeline, ctx: TransitionContext): void {
     applySteps(tl, menuIn(ctx.from === 'LevelSelectScene' ? 'map' : 'play'), this.transitionParts(), 'enter');
+    this.galaxySky.setAlpha(0);
+    this.galaxy.setAlpha(0);
+    tl.at(250, this.galaxySky, { alpha: 1 }, 450, 'cubicOut');
+    tl.at(250, this.galaxy, { alpha: 1 }, 550, 'cubicOut');
+    if (ctx.from === 'LevelSelectScene' && !isReducedMotion()) {
+      const cam = this.cameras.main;
+      const baseZoom = cam.zoom;
+      const state = { zoom: baseZoom * 0.85 };
+      cam.setZoom(state.zoom);
+      tl.at(250, state, { zoom: baseZoom }, 550, 'cubicOut', () => cam.setZoom(state.zoom));
+    }
   }
 
   playOut(tl: TransitionTimeline, ctx: TransitionContext): void {
+    tl.at(100, this.galaxySky, { alpha: 0 }, 400, 'cubicInOut');
+    tl.at(0, this.galaxy, { alpha: 0, scaleX: 1.4, scaleY: 1.4 }, 500, 'cubicInOut');
     if (ctx.route === 'menu-to-play') {
       applySteps(tl, MENU_OUT_TO_PLAY, this.transitionParts(), 'exit');
       tl.call(MENU_SPECIAL.spinAtMs, () => this.emblem.setRingSpeed(MENU_SPECIAL.spinPeak));
@@ -857,8 +848,9 @@ export class MenuScene extends Phaser.Scene implements Choreographed {
       // Spatial Zoom: Camera phóng nhẹ về phía trước như lao vào tâm vũ trụ
       if (!isReducedMotion()) {
         const cam = this.cameras.main;
-        const zoomState = { zoom: 1 };
-        tl.at(0, zoomState, { zoom: 1.25 }, 500, 'cubicInOut', () => {
+        const baseZoom = cam.zoom;
+        const zoomState = { zoom: baseZoom };
+        tl.at(0, zoomState, { zoom: baseZoom * 1.25 }, 500, 'cubicInOut', () => {
           cam.setZoom(zoomState.zoom);
         });
       }

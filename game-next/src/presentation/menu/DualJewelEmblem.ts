@@ -24,21 +24,53 @@ const FACE_COLORS: Record<'north' | 'east' | 'south' | 'west', number> = {
   west: COLOR_NUMBERS.jewelFaceWest,
 };
 
+/**
+ * Chapter I hero from the Menu1 mockup (docs/gdd/assets/Menu · Chương I
+ * Khởi Nguyên-html): two touching amber jewels inside a tinted disc. It is
+ * drawn in mockup units (390 px wide), so the caller scales it by 720/390.
+ */
+export const CHAPTER_ONE_HERO_SCALE = 720 / 390;
+const HERO_FACES: ReadonlyArray<{ color: number; pts: ReadonlyArray<readonly [number, number]> }> = [
+  { color: 0xfff0a6, pts: [[0, -42], [0, 0], [-42, 0]] },
+  { color: 0xffd23f, pts: [[0, -42], [42, 0], [0, 0]] },
+  { color: 0xf59400, pts: [[42, 0], [0, 42], [0, 0]] },
+  { color: 0xffb31f, pts: [[0, 42], [-42, 0], [0, 0]] },
+];
+
 export class DualJewelEmblem {
   private readonly emblemGraphics: Phaser.GameObjects.Graphics;
   private readonly sparkleGraphics: Phaser.GameObjects.Graphics;
+  private readonly ringGraphics?: Phaser.GameObjects.Graphics;
+  private readonly heroAccent?: number;
   private elapsedMs = 0;
   private ringAngle1 = 0;
   private ringAngle2 = 0;
   private ringSpeed = 1;
 
-  constructor(scene: Phaser.Scene, x: number, y: number) {
+  /** Pass `heroAccent` to render the static Chapter I hero instead of the XOR lesson. */
+  constructor(scene: Phaser.Scene, x: number, y: number, heroAccent?: number) {
     this.emblemGraphics = scene.add.graphics().setPosition(x, y);
     this.sparkleGraphics = scene.add.graphics().setPosition(x, y);
+    this.heroAccent = heroAccent;
+    if (heroAccent !== undefined) {
+      // Dotted outer ring (r132, dash 2/gap 8) turns slowly: one lap per 4 minutes.
+      const ring = scene.add.graphics().setPosition(x, y);
+      ring.lineStyle(1.2, heroAccent, 0.45);
+      const dashes = Math.round((2 * Math.PI * 132) / 10);
+      for (let i = 0; i < dashes; i++) {
+        const a = (i / dashes) * Math.PI * 2;
+        ring.beginPath();
+        ring.arc(0, 0, 132, a, a + 2 / 132);
+        ring.strokePath();
+      }
+      this.ringGraphics = ring;
+    }
   }
 
   graphics(): Phaser.GameObjects.Graphics[] {
-    return [this.emblemGraphics, this.sparkleGraphics];
+    return this.ringGraphics
+      ? [this.emblemGraphics, this.sparkleGraphics, this.ringGraphics]
+      : [this.emblemGraphics, this.sparkleGraphics];
   }
 
   setRingSpeed(speed: number): void {
@@ -54,6 +86,7 @@ export class DualJewelEmblem {
       const spin = this.ringSpeed * getMotionScale();
       this.ringAngle1 += deltaMs * 0.0003 * spin;
       this.ringAngle2 -= deltaMs * 0.0002 * spin;
+      if (this.ringGraphics) this.ringGraphics.rotation += ((2 * Math.PI) / 240000) * deltaMs * spin;
     }
     this.draw();
   }
@@ -63,6 +96,11 @@ export class DualJewelEmblem {
     const s = this.sparkleGraphics;
     g.clear();
     s.clear();
+
+    if (this.heroAccent !== undefined) {
+      this.drawChapterOneHero(g, this.heroAccent);
+      return;
+    }
 
     const offset = emblemOffsetAt(this.elapsedMs);
 
@@ -106,6 +144,34 @@ export class DualJewelEmblem {
       jewelOutline(cx, 0, r).map((p) => new Phaser.Geom.Point(p.x, p.y)),
       true
     );
+  }
+
+  private drawChapterOneHero(g: Phaser.GameObjects.Graphics, accent: number): void {
+    g.fillStyle(accent, 0.1);
+    g.fillCircle(0, 0, 118);
+    g.lineStyle(1.5, accent, 0.55);
+    g.strokeCircle(0, 0, 118);
+    // Soft core glow behind the jewels (stands in for the mockup's blurred disc).
+    for (let i = 0; i < 8; i++) {
+      g.fillStyle(accent, 0.055);
+      g.fillCircle(0, 0, 40 + i * 8);
+    }
+    for (const cx of [-42, 42]) {
+      for (const face of HERO_FACES) {
+        g.fillStyle(face.color, 1);
+        g.fillPoints(face.pts.map(([x, y]) => new Phaser.Geom.Point(cx + x, y)), true);
+      }
+      g.fillStyle(0xffe27a, 1);
+      g.fillPoints(
+        [[0, -17.6], [17.6, 0], [0, 17.6], [-17.6, 0]].map(([x, y]) => new Phaser.Geom.Point(cx + x, y)),
+        true
+      );
+      g.lineStyle(2.5, 0xfff6d6, 1);
+      g.strokePoints(
+        [[0, -42], [42, 0], [0, 42], [-42, 0]].map(([x, y]) => new Phaser.Geom.Point(cx + x, y)),
+        true
+      );
+    }
   }
 
   private drawOrbitDust(g: Phaser.GameObjects.Graphics): void {

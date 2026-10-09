@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import type { GalaxyTheme } from './galaxyTheme.ts';
 import { TYPO_TOKENS } from './designTokens.ts';
+import { isReducedMotion } from './transitions/motion.ts';
 
 export interface ChapterEndlessGateConfig {
   x: number;
@@ -35,7 +36,7 @@ export class ChapterEndlessGate extends Phaser.GameObjects.Container {
     this.add(this.portalOuterGlow);
 
     // Hiệu ứng thở (breath)
-    scene.tweens.add({
+    if (!isReducedMotion()) scene.tweens.add({
       targets: this.portalOuterGlow,
       scaleX: 1.15,
       scaleY: 1.15,
@@ -66,7 +67,7 @@ export class ChapterEndlessGate extends Phaser.GameObjects.Container {
     }
     this.add(this.ringA);
 
-    scene.tweens.add({
+    if (!isReducedMotion()) scene.tweens.add({
       targets: this.ringA,
       angle: 360,
       duration: 12000,
@@ -87,7 +88,7 @@ export class ChapterEndlessGate extends Phaser.GameObjects.Container {
     }
     this.add(this.ringB);
 
-    scene.tweens.add({
+    if (!isReducedMotion()) scene.tweens.add({
       targets: this.ringB,
       angle: -360,
       duration: 18000,
@@ -98,13 +99,21 @@ export class ChapterEndlessGate extends Phaser.GameObjects.Container {
     // 5. Biểu tượng vô cực / lốc xoáy trung tâm (Infinity sign)
     this.coreIcon = scene.add.graphics();
     this.coreIcon.lineStyle(3.2, 0xffffff, 1.0);
-    // Vẽ ký hiệu vô cực nhỏ
-    this.coreIcon.beginPath();
-    this.coreIcon.arc(-6, 0, 6, -Math.PI * 0.7, Math.PI * 0.7);
-    this.coreIcon.strokePath();
-    this.coreIcon.beginPath();
-    this.coreIcon.arc(6, 0, 6, Math.PI * 0.3, -Math.PI * 0.3);
-    this.coreIcon.strokePath();
+    // Lemniscate của mockup: M-12,0 C-12,-8 -2,-8 0,0 C2,8 12,8 12,0 C12,-8 2,-8 0,0 C-2,8 -12,8 -12,0
+    const loop = (pts: ReadonlyArray<readonly [number, number]>): Phaser.Math.Vector2[] =>
+      new Phaser.Curves.CubicBezier(
+        new Phaser.Math.Vector2(pts[0][0], pts[0][1]),
+        new Phaser.Math.Vector2(pts[1][0], pts[1][1]),
+        new Phaser.Math.Vector2(pts[2][0], pts[2][1]),
+        new Phaser.Math.Vector2(pts[3][0], pts[3][1])
+      ).getPoints(14);
+    const outline = [
+      ...loop([[-12, 0], [-12, -8], [-2, -8], [0, 0]]),
+      ...loop([[0, 0], [2, 8], [12, 8], [12, 0]]),
+      ...loop([[12, 0], [12, -8], [2, -8], [0, 0]]),
+      ...loop([[0, 0], [-2, 8], [-12, 8], [-12, 0]]),
+    ];
+    this.coreIcon.strokePoints(outline, true);
     this.add(this.coreIcon);
 
     // 6. Tiêu đề "Ải Vô Tận" (y = 52)

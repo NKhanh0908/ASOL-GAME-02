@@ -8,6 +8,9 @@
  * - docs/gdd/assets/Chọn màn · bản đồ 5 thiên hà (cuộn dọc)-html/GalaxyMap.dc.html
  */
 
+import { campaignManifest } from '../content/manifest.ts';
+import { resolveNextCampaignLevel } from '../domain/campaign.ts';
+
 export interface GalaxyThemeColors {
   /** Màu gradient đỉnh bầu trời */
   bgTop: number;
@@ -55,7 +58,7 @@ export const GALAXY_THEMES: Readonly<Record<number, GalaxyTheme>> = {
     id: 'dwarf',
     name: 'Khởi Nguyên',
     galaxyType: 'Thiên hà lùn',
-    totalLevels: 7,
+    totalLevels: campaignManifest.filter(entry => entry.chapter === 1).length,
     tagline: 'Đám Mây Magellan Lớn là một thiên hà lùn quay quanh Ngân Hà',
     colors: {
       bgTop: 0x0b2a5e,
@@ -84,7 +87,7 @@ export const GALAXY_THEMES: Readonly<Record<number, GalaxyTheme>> = {
     id: 'spiral',
     name: 'Giao Thoa',
     galaxyType: 'Thiên hà xoắn ốc',
-    totalLevels: 7,
+    totalLevels: campaignManifest.filter(entry => entry.chapter === 2).length,
     tagline: 'Ngân Hà của chúng ta là một thiên hà xoắn ốc có thanh ở giữa',
     colors: {
       bgTop: 0x2a1670,
@@ -111,10 +114,10 @@ export const GALAXY_THEMES: Readonly<Record<number, GalaxyTheme>> = {
   3: {
     chapter: 3,
     id: 'ring',
-    name: 'Luân Chuyển',
-    galaxyType: 'Thiên hà vòng',
-    totalLevels: 7,
-    tagline: 'Thiên hà Hoag là một cấu trúc vòng tròn hiếm gặp trong vũ trụ',
+    name: 'Họa Phẩm',
+    galaxyType: 'Chòm sao Họa Phẩm',
+    totalLevels: campaignManifest.filter(entry => entry.chapter === 3).length,
+    tagline: 'Kết nối những mảnh sáng để vẽ nên câu chuyện giữa các vì sao',
     colors: {
       bgTop: 0x3a1a4e,
       bgBottom: 0x4a2440,
@@ -151,15 +154,7 @@ export function resolveGalaxyTheme(chapter: number): GalaxyTheme {
  * Ví dụ: Đã vượt 1-1..1-7 thì màn tiếp theo thuộc Chương 2 -> trả về Theme Chương 2.
  */
 export function resolveCurrentGalaxyTheme(completedLevels: readonly string[]): GalaxyTheme {
-  // Tìm màn có chapter lớn nhất chưa hoàn thành hoặc đang tiến đến
-  const chapter1Complete = [1, 2, 3, 4, 5, 6, 7].every((idx) =>
-    completedLevels.includes(`1-${idx}`)
-  );
-
-  if (chapter1Complete) {
-    return resolveGalaxyTheme(2);
-  }
-  return resolveGalaxyTheme(1);
+  return resolveGalaxyTheme(resolveNextCampaignLevel(campaignManifest, completedLevels).level.chapter);
 }
 
 /**
@@ -169,12 +164,6 @@ export function getChapterProgress(
   chapter: number,
   completedLevels: readonly string[]
 ): { completed: number; total: number } {
-  const theme = resolveGalaxyTheme(chapter);
-  let completed = 0;
-  for (let i = 1; i <= theme.totalLevels; i++) {
-    if (completedLevels.includes(`${chapter}-${i}`)) {
-      completed++;
-    }
-  }
-  return { completed, total: theme.totalLevels };
+  const entries = campaignManifest.filter(entry => entry.chapter === chapter);
+  return { completed: entries.filter(entry => completedLevels.includes(entry.id)).length, total: entries.length };
 }

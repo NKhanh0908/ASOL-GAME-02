@@ -40,6 +40,9 @@ export const TRANSLATIONS = {
     level_prefix: 'Màn',
     toast_level_locked: 'Màn {id} chưa mở khóa',
     toast_level_polishing: 'Màn {id} đang được tinh chỉnh',
+    map_sealed_continue: 'Hoàn thành thêm màn để khám phá tiếp',
+    map_sealed_chapter: 'Hoàn thành {chapter} để mở khóa chương mới',
+    map_chapter_unlocked: 'Mở khóa {chapter}!',
 
     // Gameplay & HUD
     snap_hint: 'Thả để khớp',
@@ -84,6 +87,9 @@ export const TRANSLATIONS = {
     level_prefix: 'Level',
     toast_level_locked: 'Level {id} is locked',
     toast_level_polishing: 'Level {id} is being polished',
+    map_sealed_continue: 'Clear more levels to explore further',
+    map_sealed_chapter: 'Finish {chapter} to unlock the next chapter',
+    map_chapter_unlocked: '{chapter} unlocked!',
 
     // Gameplay & HUD
     snap_hint: 'Release to snap',

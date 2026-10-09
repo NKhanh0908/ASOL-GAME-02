@@ -81,10 +81,13 @@ describe('Constellation Map Layout Generator', () => {
 describe('Bố cục bản đồ chòm sao (CH-03)', () => {
   const layout = layoutCampaignMap(campaignManifest);
 
-  test('chòm sao 6 nút giữ toạ độ zigzag cũ của Chương 1–2', () => {
+  test('chapter I meanders and chapter II curls back into its galaxy', () => {
     expect(layout.nodes[0]).toMatchObject({ id: '1-1', x: 225, y: 270 });
     expect(layout.nodes[1]).toMatchObject({ id: '1-2', x: 503, y: 430 });
     expect(layout.nodes[6]).toMatchObject({ id: '2-1', y: 1330 });
+    const spiral = layout.nodes.filter(n => n.chapter === 2);
+    expect(spiral.at(-1)!.y).toBeLessThan(spiral.at(-2)!.y);
+    expect(spiral[0].x).toBeGreaterThan(spiral[1].x);
   });
 
   test('chòm sao Họa Phẩm dùng mẫu 10 nút', () => {

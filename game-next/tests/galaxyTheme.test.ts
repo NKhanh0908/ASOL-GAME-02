@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import { campaignManifest } from '../src/content/manifest.ts';
 import {
   GALAXY_THEMES,
   resolveGalaxyTheme,
@@ -38,14 +39,17 @@ describe('galaxyTheme', () => {
     expect(resolveCurrentGalaxyTheme([]).chapter).toBe(1);
     // Partway through Chapter 1
     expect(resolveCurrentGalaxyTheme(['1-1', '1-2', '1-3']).chapter).toBe(1);
-    // All 7 levels of Chapter 1 complete
-    const ch1All = ['1-1', '1-2', '1-3', '1-4', '1-5', '1-6', '1-7'];
+    // Completing the actual manifest chapter advances the menu theme.
+    const ch1All = campaignManifest.filter(e => e.chapter === 1).map(e => e.id);
     expect(resolveCurrentGalaxyTheme(ch1All).chapter).toBe(2);
+    const allReleased = campaignManifest.filter(e => e.status === 'approved').map(e => e.id);
+    expect(resolveCurrentGalaxyTheme(allReleased).name).toBe('Họa Phẩm');
   });
 
   it('calculates chapter progress correctly', () => {
-    expect(getChapterProgress(1, [])).toEqual({ completed: 0, total: 7 });
-    expect(getChapterProgress(1, ['1-1', '1-2', '2-1'])).toEqual({ completed: 2, total: 7 });
-    expect(getChapterProgress(2, ['1-1', '2-1', '2-2', '2-3'])).toEqual({ completed: 3, total: 7 });
+    expect(getChapterProgress(1, [])).toEqual({ completed: 0, total: 6 });
+    expect(getChapterProgress(1, ['1-1', '1-2', '2-1'])).toEqual({ completed: 2, total: 6 });
+    expect(getChapterProgress(2, ['1-1', '2-1', '2-2', '2-3'])).toEqual({ completed: 3, total: 6 });
+    expect(getChapterProgress(1, ['1-1', '1-1', '1-7', 'unknown'])).toEqual({ completed: 1, total: 6 });
   });
 });

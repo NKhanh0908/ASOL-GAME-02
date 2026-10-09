@@ -62,7 +62,16 @@ export function layoutCampaignMap(entries: readonly MapEntry[]): CampaignMapLayo
   groups.forEach((group, g) => {
     if (g > 0) cursorY += CHAPTER_GAP_Y;
     const firstY = cursorY;
-    if (group.entries.length === TEN_NODE_PATTERN.length) {
+    if (group.chapter === 2 && group.entries.length === 6) {
+      // An open spiral: descend along the outer arm, then turn toward the core.
+      const spiral = [[300, 0], [155, 200], [135, 440], [260, 660], [550, 660], [440, 370]];
+      group.entries.forEach((entry, i) => {
+        const [x, dy] = spiral[i];
+        nodes.push({ ...entry, index: nodes.length, x, y: firstY + dy });
+      });
+      // Reserve the whole chapter footprint, not the inner endpoint's height.
+      cursorY = firstY + group.entries.length * NODE_STEP_Y;
+    } else if (group.entries.length === TEN_NODE_PATTERN.length) {
       group.entries.forEach((entry, i) => {
         const [x, dy] = TEN_NODE_PATTERN[i];
         nodes.push({ ...entry, index: nodes.length, x, y: firstY + dy });

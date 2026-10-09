@@ -39,7 +39,7 @@ Paths below are relative to `docs/superpowers/`.
 | JM | Journey map visual refresh (menu sky + chapter zones, XOR gates) | specs/2026-10-08-c-journey-map-visual-refresh-design.md | plans/2026-10-08-jm-journey-map-visual-refresh.md | superseded | Superseded by GX plan with full mockup alignment |
 | FX | Play and map fixes + icon restyle (6 reported items) | specs/2026-10-06-fx-play-and-map-fixes-design.md | plans/2026-10-06-fx-play-and-map-fixes.md | approved | FX-1 piece hitbox is the whole frame; FX-2 verified non-issue, pin with a test; FX-3 remove the magnet ring; FX-4 match bar overruns the bottom row; FX-5 restyle the generated icons; FX-6 completed-node checkmark shows under the silhouette |
 | END-1 | Chapter 1 endless Tangram procedural generator | specs/2026-10-08-ch1-endless-tangram-generator-design.md | — | draft | Procedural edge-snapping generator for chapter 1 endless mode: 4-6 pieces, false-fitting decoys, unique-solution SAT verification |
-| GX | Galaxy Themes & Spatial Zoom (Chapters I & II) | specs/2026-10-08-galaxy-themes-and-spatial-zoom-design.md | plans/2026-10-08-galaxy-themes-and-spatial-zoom.md | done | Menu macro galaxy view, chapter progress badge, level select constellation map with chapter accents & endless gate |
+| GX | Galaxy Themes & Spatial Zoom (Chapters I & II) | specs/2026-10-08-galaxy-themes-and-spatial-zoom-design.md | plans/2026-10-08-galaxy-themes-and-spatial-zoom.md | done | Reference fidelity corrections on 2026-10-09: extracted artwork, continuous sky, manifest progress, spiral path, responsive transitions; awaiting visual acceptance |
 
 
 ## History (do not build on these)
