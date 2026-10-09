@@ -4,6 +4,14 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-09 - Core localization types, config and storage persistence (LOC task 1)
+
+- `game-next/src/localization/types.ts`: `SupportedLocale` ('en-US', 'vi', 'id', 'pt-BR', 'ja'), `LocaleMetadata`, `CommonTranslations`, `GameTranslations`, `TranslationBundle`.
+- `game-next/src/localization/localizationConfig.ts`: `localizationConfig`, `LOCALE_REGISTRY`.
+- `game-next/src/localization/LocaleSettings.ts`: safe `localStorage` wrapper, automatic migration of legacy `'en'` to `'en-US'`.
+- `game-next/tests/localeSettings.test.ts`: test suite covering save/get/clear, migration, and storage degradation.
+- Verification: `npx vitest run tests/localeSettings.test.ts --pool=forks` (5 tests pass); `npm run typecheck` clean; GitNexus `detect_changes` passed with low risk.
+
 ### 2026-10-09 - Dev server lifts the map fog by default (temporary)
 
 - `game-next/src/presentation/LevelSelectScene.ts`: `revealAll` now defaults to `import.meta.env.DEV`, so the local web build shows the whole level select like the phone debug build. Release builds are unchanged (fog stays). Remove the default to restore the fog in dev.

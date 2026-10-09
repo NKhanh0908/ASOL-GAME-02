@@ -1,15 +1,12 @@
-# Status — updated 2026-10-09 (GX2 galaxy themes for chapters 3–5 implemented)
+# Status — updated 2026-10-09 (multi-language localization engine started)
 
 Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; keep this file ≤ 60 lines.
 
 ## Now
 
-- Branch: `feat/journey-map-visuals`. Working directory D:\Working\ASOL\ASOL-GAME-02. The GX work up to `bd0c0ed` is pushed; the GX2 commits (`fcedaee` … latest) are local, not pushed.
-- GX2 done (plan `docs/superpowers/plans/2026-10-09-galaxy-themes-chapters-4-6.md`, 11 tasks, then re-numbered): `Chapter` is 1–5 (5 Lăng Kính), themes for ring/cluster/prism from GalaxyKit/Menu3/Menu4, layered artwork with motion, hero emblems for the menu, a banner-only teaser band for chapter 5 on the map, dev params `?scene=menu&chapter=N` and `?scene=levelSelect&revealAll=1`.
-- Mapping (matches the mockup numbering, reviewer decision 2026-10-09): 3 Luân Chuyển = ring (Menu3, the 10 existing levels), 4 Hội Tụ = cluster (Menu4, the 6 planned 4-x levels), 5 Lăng Kính = prism (no levels yet). The old interim Họa Phẩm theme is gone. `rotationEnabled` still follows the level content, so the rotation chapter is chapter 4, now named Hội Tụ.
-- Verified: 97 test files / 1,179 tests, typecheck, build, and `scripts/check-galaxy-chapters.mjs` (menu heroes, layers, motion/reduced motion, every map band) all pass; menus and layers were compared side by side with the mockups.
-- Chapter III menu hero: the refresh arrow and the pinwheel turn slowly and steadily (clockwise, 18 s / 26 s per lap; `RING_HERO_SPIN_MS`) to signal that pieces rotate from chapter III on; they stop under reduced motion.
-- **Next step**: reviewer visual acceptance of chapters 3–5 (menu heroes and map bands), then decisions below. Not pushed or merged.
+- Branch: `feat/multi-language-localization`. Working directory D:\Working\ASOL\ASOL-GAME-02.
+- Implementing multi-language localization engine (5 locales: en-US, vi, id, pt-BR, ja) per plan `docs/superpowers/plans/2026-10-09-multi-language-localization.md`.
+- Active step: Task 1 (Core Localization Types, Configuration & Persistence).
 
 ## Streams
 
@@ -29,6 +26,7 @@ Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; k
 | E4 studio orientation + round-trip | **done**; implemented on `feat/studio-e4` | `docs/superpowers/plans/2026-10-06-e4-studio-orientation-and-roundtrip.md` |
 | CH1H chapter 1 hard tail (1-7…1-9) | **plan approved; ready to execute** | `docs/superpowers/plans/2026-10-06-ch1h-chapter-1-hard-tail.md` |
 | Chapter 4 content (Hội Tụ, rotation levels) | **not started**; 4-1…4-6 planned; 22 of 28 approved | `docs/superpowers/specs/2026-10-02-b-level-kit-chapters-design.md` |
+| **LOC multi-language localization (5 locales)** | **in progress**; executing plan | `docs/superpowers/plans/2026-10-09-multi-language-localization.md` |
 
 ## Open decisions / blockers
 
@@ -36,7 +34,7 @@ Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; k
 - **Spec language**: `AGENTS.md` says specs are written in English, but every older spec (B, C, D, E…) is Vietnamese. CH1H, E4 and GX2 are English. Reviewer to decide.
 - Remaining content work is nine levels: chapter 4 (4-1…4-6) plus CH1H (1-7…1-9).
 - VR2 §3.1 (constellation strip) is unblocked by the 48 px slot created in VR3b Task 1. F3: approved, not started.
-- The LOC (multi-language) spec and its `DOCS-INDEX.md` row belong to another session and are uncommitted; leave them alone.
+- **Endless Chapter 2**: Standby on branch `feat/endless-ch2` and `stash@{1}`; will resume immediately upon completion of multi-language localization.
 
 ## Gotchas learned recently
 

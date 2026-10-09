@@ -41,6 +41,7 @@ Paths below are relative to `docs/superpowers/`.
 | END-1 | Chapter 1 endless Tangram procedural generator | specs/2026-10-08-ch1-endless-tangram-generator-design.md | — | draft | Procedural edge-snapping generator for chapter 1 endless mode: 4-6 pieces, false-fitting decoys, unique-solution SAT verification |
 | GX | Galaxy Themes & Spatial Zoom (Chapters I & II) | specs/2026-10-08-galaxy-themes-and-spatial-zoom-design.md | plans/2026-10-08-galaxy-themes-and-spatial-zoom.md | done | Reference fidelity corrections on 2026-10-09: extracted artwork, continuous sky, manifest progress, spiral path, responsive transitions; awaiting visual acceptance |
 | GX2 | Galaxy themes for chapters 3-5 (ring, cluster, prism) | specs/2026-10-09-galaxy-themes-chapters-4-6-design.md | plans/2026-10-09-galaxy-themes-chapters-4-6.md | done | Chapter 5 added, ring/cluster/prism styles on chapters 3-5 (mockup numbering), layered artwork, menu heroes, banner-only teaser band, dev params; implemented 2026-10-09, awaiting visual acceptance |
+| LOC | Multi-language localization (en-US, vi, id, pt-BR, ja) | specs/2026-10-09-multi-language-localization-design.md | plans/2026-10-09-multi-language-localization.md | in_progress | Modular localization architecture with 3-tier resolver, 5 locales, Menu modal selector, and CJK font fallback |
 
 
 ## History (do not build on these)
