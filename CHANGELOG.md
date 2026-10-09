@@ -4,6 +4,11 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-09 - Plan: galaxy themes for chapters 4-6
+
+- `docs/superpowers/plans/2026-10-09-galaxy-themes-chapters-4-6.md` (new): 11 tasks covering the chapter table, themes 4-6, banner-only teaser bands, layered ring/cluster/prism artwork, menu hero emblems, dev preview parameters, visual verification and docs. `docs/ai/DOCS-INDEX.md`: GX2 row now links the plan (the unrelated LOC row was left untouched).
+- Verification: documentation only; no code changed. The plan's SVG extraction code was prototyped and run against the kit (19 well-formed layer files). GitNexus MCP was unavailable this session.
+
 ### 2026-10-09 - Spec: galaxy themes for chapters 4-6 (Luân Chuyển, Hội Tụ, Lăng Kính)
 
 - `docs/superpowers/specs/2026-10-09-galaxy-themes-chapters-4-6-design.md` (new): extends the GX galaxy identity to ring, cluster and prism galaxies from the five-galaxy kit, Menu3/Menu4 and the scrolling map mockups. Keeps chapters 1-4 as they are, adds chapters 5-6, renders chapters without levels as banner-only bands behind the fog.
