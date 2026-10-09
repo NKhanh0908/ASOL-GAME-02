@@ -4,6 +4,12 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-09 - Complete translation bundles for en-US, vi, id, pt-BR, ja (LOC task 3)
+
+- `game-next/src/locales/{en-US, vi, id, pt-BR, ja}/{common.json, game.json}`: 10 structured translation dictionaries. Fully translated common keys (38 keys), 4 chapters, 28 campaign level titles, and 20 astronomical trivia taglines per locale.
+- `game-next/tests/localizationCoverage.test.ts`: test suite verifying key symmetry, non-empty values, 100% coverage of level titles (1-1 to 4-6), chapters, and 20 taglines across all 5 locales.
+- Verification: `npx vitest run tests/localizationCoverage.test.ts --pool=forks` (4 tests pass); `npm run typecheck` clean; GitNexus `detect_changes` passed with low risk.
+
 ### 2026-10-09 - 3-tier LocaleResolver engine with device language detection (LOC task 2)
 
 - `game-next/src/localization/LocaleResolver.ts`: 3-tier resolution algorithm (Tier 1: user saved preference; Tier 2: navigator.languages / navigator.language candidate matching; Tier 3: default fallback en-US). Device tag normalization for vi, id, pt, ja, and en prefixes.
