@@ -4,6 +4,11 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-09 - Chapters 5-6 in the chapter table and labels (GX2 task 1)
+
+- `game-next/src/domain/model.ts`, `src/content/chapters.ts`: `Chapter` is now 1-6; added Hội Tụ (V) and Lăng Kính (VI) and `chapterRoman()`. `src/presentation/i18n.ts`: chapter names 5-6 (vi/en) and roman numerals via `chapterRoman`. `LevelSelectScene.ts`, `menu/ChapterProgressBadge.ts`: roman arrays replaced, tints for chapters 5-6. `tests/content.test.ts`, `tests/i18n.test.ts`: updated (chapter 7 is now the invalid one).
+- Verification: `npx vitest run tests/content.test.ts tests/i18n.test.ts tests/levelSelect.test.ts --pool=forks` (57 tests) and `npx tsc --noEmit` pass. GitNexus MCP was unavailable, so no impact analysis was run.
+
 ### 2026-10-09 - Plan: galaxy themes for chapters 4-6
 
 - `docs/superpowers/plans/2026-10-09-galaxy-themes-chapters-4-6.md` (new): 11 tasks covering the chapter table, themes 4-6, banner-only teaser bands, layered ring/cluster/prism artwork, menu hero emblems, dev preview parameters, visual verification and docs. `docs/ai/DOCS-INDEX.md`: GX2 row now links the plan (the unrelated LOC row was left untouched).

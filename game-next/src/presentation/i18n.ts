@@ -4,6 +4,8 @@
  * Lưu trạng thái vào localStorage ('mirror.rebuild.locale').
  */
 
+import { chapterRoman } from '../content/chapters.ts';
+
 export type Locale = 'vi' | 'en';
 
 const LOCALE_STORAGE_KEY = 'mirror.rebuild.locale';
@@ -267,12 +269,16 @@ export const CHAPTER_NAMES: Record<Locale, Record<number, string>> = {
     2: 'Giao Thoa',
     3: 'Họa Phẩm',
     4: 'Luân Chuyển',
+    5: 'Hội Tụ',
+    6: 'Lăng Kính',
   },
   en: {
     1: 'Genesis',
     2: 'Intersections',
     3: 'Pictures',
     4: 'Rotations',
+    5: 'Convergence',
+    6: 'Prism',
   },
 };
 
@@ -283,7 +289,7 @@ export function getChapterName(chapter: number, fallbackName?: string): string {
 
 /** Lấy nhãn đầy đủ của chương (ví dụ: "Chương I · Khởi Nguyên" hoặc "Chapter I · Genesis") */
 export function getChapterLabel(chapter: number, fallbackName?: string): string {
-  const roman = ['I', 'II', 'III', 'IV'][chapter - 1] ?? String(chapter);
+  const roman = chapterRoman(chapter);
   const prefix = t('chapter_prefix');
   const name = getChapterName(chapter, fallbackName);
   return `${prefix} ${roman} · ${name}`;

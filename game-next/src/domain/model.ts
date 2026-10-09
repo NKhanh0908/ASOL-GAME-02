@@ -24,8 +24,8 @@ export type Piece = Readonly<{
   orientation?: Orientation;
 }>;
 
-/** Bốn chương campaign: 1 Khởi Nguyên, 2 Giao Thoa, 3 Họa Phẩm, 4 Luân Chuyển (xoay). */
-export type Chapter = 1 | 2 | 3 | 4;
+/** Sáu chương campaign: 1 Khởi Nguyên, 2 Giao Thoa, 3 Họa Phẩm, 4 Luân Chuyển (xoay), 5 Hội Tụ, 6 Lăng Kính. */
+export type Chapter = 1 | 2 | 3 | 4 | 5 | 6;
 
 /** Chế độ đặt mảnh: 'anchors' hít vào neo tác giả đặt; 'free' hít vào mọi giao điểm lưới (spec D) */
 export type PlacementMode = 'anchors' | 'free';

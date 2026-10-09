@@ -9,12 +9,14 @@ export type ChapterInfo = Readonly<{
   rotationEnabled: boolean;
 }>;
 
-/** Bốn chương của campaign (spec B mục 5). */
+/** Sáu chương của campaign (spec B mục 5; chương 5–6 theo spec GX2). */
 export const CHAPTERS: readonly ChapterInfo[] = [
   { chapter: 1, roman: 'I', name: 'Khởi Nguyên', rotationEnabled: false },
   { chapter: 2, roman: 'II', name: 'Giao Thoa', rotationEnabled: false },
   { chapter: 3, roman: 'III', name: 'Họa Phẩm', rotationEnabled: false },
   { chapter: 4, roman: 'IV', name: 'Luân Chuyển', rotationEnabled: true },
+  { chapter: 5, roman: 'V', name: 'Hội Tụ', rotationEnabled: false },
+  { chapter: 6, roman: 'VI', name: 'Lăng Kính', rotationEnabled: false },
 ];
 
 /** Bản phát hành cần đủ ngần này màn approved (CH-04). */
@@ -22,6 +24,11 @@ export const RELEASE_LEVEL_COUNT = 28;
 
 export function chapterInfo(chapter: number): ChapterInfo | undefined {
   return CHAPTERS.find((c) => c.chapter === chapter);
+}
+
+/** Số La Mã của chương; mã lạ trả về chính con số. */
+export function chapterRoman(chapter: number): string {
+  return chapterInfo(chapter)?.roman ?? String(chapter);
 }
 
 /** Chương suy từ mã màn "<chương>-<số>"; mã khác (màn dev) trả undefined. */

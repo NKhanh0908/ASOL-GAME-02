@@ -4,7 +4,7 @@ import { validateLevel } from '../src/content/validate.ts';
 import { campaignManifest } from '../src/content/manifest.ts';
 import { buildLevelDocument } from '../src/content/authoring.ts';
 import type { LevelSource } from '../src/content/authoring.ts';
-import { CHAPTERS, RELEASE_LEVEL_COUNT, chapterInfo, chapterLabel, chapterOfLevelId, releaseGate } from '../src/content/chapters.ts';
+import { CHAPTERS, RELEASE_LEVEL_COUNT, chapterInfo, chapterLabel, chapterOfLevelId, chapterRoman, releaseGate } from '../src/content/chapters.ts';
 
 /** Các màn đã có dữ liệu ngoài 1-1; trạng thái phải là validated hoặc approved */
 const AUTHORED_LEVELS = new Set(['1-2', '1-3', '1-4', '1-5', '1-6', '2-1', '2-2', '2-3', '2-4', '2-5', '2-6', '3-1', '3-2', '3-3', '3-4', '3-5', '3-6', '3-7', '3-8', '3-9', '3-10']);
@@ -126,12 +126,17 @@ describe('Bốn chương và luật xoay (CH-01, CH-04)', () => {
     expect(CHAPTERS.map((c) => [c.chapter, c.roman, c.name, c.rotationEnabled])).toEqual([
       [1, 'I', 'Khởi Nguyên', false], [2, 'II', 'Giao Thoa', false],
       [3, 'III', 'Họa Phẩm', false], [4, 'IV', 'Luân Chuyển', true],
+      [5, 'V', 'Hội Tụ', false], [6, 'VI', 'Lăng Kính', false],
     ]);
-    expect(chapterInfo(5)).toBeUndefined();
+    expect(chapterInfo(7)).toBeUndefined();
     expect(chapterOfLevelId('3-10')).toBe(3);
     expect(chapterOfLevelId('4-1')).toBe(4);
+    expect(chapterOfLevelId('6-2')).toBe(6);
     expect(chapterOfLevelId('dev-shapes-v2')).toBeUndefined();
     expect(chapterLabel(3)).toBe('Chương III · Họa Phẩm');
+    expect(chapterLabel(5)).toBe('Chương V · Hội Tụ');
+    expect(chapterRoman(6)).toBe('VI');
+    expect(chapterRoman(9)).toBe('9');
   });
 
   test('chương 4 bật xoay thì hợp lệ', () => {
@@ -159,9 +164,9 @@ describe('Bốn chương và luật xoay (CH-01, CH-04)', () => {
     expect(codes(validateLevel(doc))).toContain('chapter-rotation-required');
   });
 
-  test('chương ngoài 1–4 báo invalid-chapter; turns ≠ 0 ở chương 2–3 bị cấm', () => {
+  test('chương ngoài 1–6 báo invalid-chapter; turns ≠ 0 ở chương 2–3 bị cấm', () => {
     const bad = makeAdjacentFixture() as unknown as { chapter: number };
-    bad.chapter = 5;
+    bad.chapter = 7;
     expect(codes(validateLevel(bad))).toContain('invalid-chapter');
     const turned = makeAdjacentFixture();
     turned.chapter = 3;

@@ -23,6 +23,7 @@ import type { Parts, Poseable } from './transitions/choreography.ts';
 import { MAP_OUT_TO_MENU, MAP_OUT_TO_PLAY, MAP_SPECIAL, mapIn } from './transitions/routes.ts';
 import { playUiCue } from './audio/uiCues.ts';
 import { resolveGalaxyTheme, getChapterProgress } from './galaxyTheme.ts';
+import { chapterRoman } from '../content/chapters.ts';
 import { ChapterEndlessGate } from './chapterEndlessGate.ts';
 import { createGalaxyNodeBody, NODE_LABEL_Y, NODE_SCALE } from './galaxyNode.ts';
 import { computeMapReveal } from './mapReveal.ts';
@@ -46,6 +47,8 @@ const CHAPTER_TINTS: Readonly<Record<Chapter, { color: number; alpha: number }>>
   2: { color: 0xb48cff, alpha: 0.06 }, // Giao Thoa: tím giao thoa
   3: { color: 0x7ee0c8, alpha: 0.05 }, // Họa Phẩm: ngọc bích
   4: { color: 0xffb86b, alpha: 0.06 }, // Luân Chuyển: hổ phách hoàng hôn
+  5: { color: 0xffe9a8, alpha: 0.04 }, // Hội Tụ: ánh vàng nhạt
+  6: { color: 0x7fe3ff, alpha: 0.04 }, // Lăng Kính: xanh lăng kính
 };
 
 export class LevelSelectScene extends Phaser.Scene implements Choreographed {
@@ -394,7 +397,7 @@ export class LevelSelectScene extends Phaser.Scene implements Choreographed {
       pillBg.lineStyle(2, gTheme.colors.accent, 0.95);
       pillBg.strokeRoundedRect(-pillWidth / 2, -pillHeight / 2, pillWidth, pillHeight, pillRadius);
 
-      const romanNumeral = ['I', 'II', 'III', 'IV'][band.chapter - 1];
+      const romanNumeral = chapterRoman(band.chapter);
       const mainTitle = this.add
         .text(0, -13, band.chapter <= 2 ? `Chương ${romanNumeral} · ${gTheme.name}` : getChapterLabel(band.chapter), {
           fontFamily: TYPO_TOKENS.fontFamily.display,
@@ -645,7 +648,7 @@ export class LevelSelectScene extends Phaser.Scene implements Choreographed {
 
     const theme = resolveGalaxyTheme(reveal.sealedUntilChapter ?? 1);
     const message = reveal.chapterTail && reveal.sealedUntilChapter
-      ? t('map_sealed_chapter', { chapter: `${t('chapter_prefix')} ${['I', 'II', 'III', 'IV'][reveal.sealedUntilChapter - 1] ?? reveal.sealedUntilChapter}` })
+      ? t('map_sealed_chapter', { chapter: `${t('chapter_prefix')} ${chapterRoman(reveal.sealedUntilChapter)}` })
       : t('map_sealed_continue');
     const hint = this.add.container(360, reveal.limitY - 52);
     const bg = this.add.graphics();
