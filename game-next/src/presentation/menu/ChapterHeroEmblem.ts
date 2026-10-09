@@ -56,9 +56,10 @@ export class ChapterHeroEmblem {
     g.fillCircle(0, 0, 118);
     g.lineStyle(1.5, accent, 0.55);
     g.strokeCircle(0, 0, 118);
-    for (let i = 0; i < 8; i++) { // stands in for the mockup's blurred r=70 glow
-      g.fillStyle(accent, 0.055);
-      g.fillCircle(0, 0, 40 + i * 8);
+    // Stands in for the mockup's blurred r=70 glow: many faint discs so no ring edges show.
+    for (let i = 0; i < 36; i++) {
+      g.fillStyle(accent, 0.012);
+      g.fillCircle(0, 0, 140 - i * 3.4);
     }
   }
 

@@ -4,6 +4,13 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-09 - Visual and motion check for chapters 4-6, tuned against the mockups (GX2 task 10)
+
+- `game-next/scripts/check-galaxy-chapters.mjs` (new): for chapters 4-6 opens the menu preview, asserts every layer exists, that one layer per galaxy animates and freezes under reduced motion (meteors stay hidden by design), that a cluster meteor crosses within one cycle, then captures every map band with `revealAll`; fails on any page or console error. Screenshots go to `.shots/galaxy/` (not committed).
+- Tuning after side-by-side comparison with Menu3/Menu4/GalaxyMap: `GalaxyArtwork.addGalaxyArtwork` and `galaxyLayers.ts` take target ring semi-axes (menu 314x425, map 295x375 design units, from the mockup's rx170/ry230 and rx160) so the standing ring spans the screen like the mockup; orbit streaks use 16/9 smaller dots so they read as one line; `menu/ChapterHeroEmblem.ts` glow uses 36 faint discs instead of 8 (no visible ring edges).
+- Intended differences from the mockups: chapter numbering (menu chip says Chương V for Hội Tụ), no per-galaxy self-spin, prism hero is a placeholder.
+- Verification: `node scripts/check-galaxy-chapters.mjs` passes (3 consecutive runs; a first run exposed a race in the freeze check, fixed by waiting one frame); `npm test -- --maxWorkers=2 --minWorkers=1 --pool=forks` 97 files / 1179 tests pass; `npx tsc --noEmit` clean; `npm run build` succeeds (chunk-size warning only). GitNexus MCP unavailable.
+
 ### 2026-10-09 - Chapter preview and reveal-all launch parameters (GX2 task 9)
 
 - `game-next/src/launchParams.ts`, `src/main.ts`: dev-only `?scene=menu&chapter=1..6` forces the menu theme and `?scene=levelSelect&revealAll=1` lifts the map fog; ignored outside dev. `src/presentation/LevelSelectScene.ts`: `revealAll` init flag. `tests/launchParams.test.ts`: new cases.

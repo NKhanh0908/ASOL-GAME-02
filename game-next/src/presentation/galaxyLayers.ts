@@ -11,6 +11,8 @@ export type GalaxyLayerHost = {
   motion: Phaser.Tweens.Tween[];
   /** Per-frame animators fed with the accumulated running time. */
   frame: Array<(elapsedMs: number) => void>;
+  /** Target semi-axes (design units) of the ring ellipse once it stands up; omitted = the kit's own proportions. */
+  ring?: { rx: number; ry: number };
 };
 
 const kit = (host: GalaxyLayerHost) => host.size / 350;
@@ -65,12 +67,15 @@ function glowTexture(scene: Phaser.Scene): string {
 function buildRing(host: GalaxyLayerHost): void {
   // The kit draws the ring horizontally; Menu3 and the map draw it standing up.
   const group = host.scene.add.container(0, 0).setAngle(90);
+  // The kit ring is rx 115 / ry 75. Stretching the group in its own axes (before the 90 degree turn)
+  // lets each screen use the proportions its mockup draws.
+  if (host.ring) group.setScale(host.ring.ry / (115 * kit(host)), host.ring.rx / (75 * kit(host)));
   host.root.add(group);
   layer(host, group, 'ring');
   breathe(host, layer(host, group, 'ring-core'));
   const streaks: Array<{ spec: OrbitSpec; tint: number; width: number }> = [
-    { spec: { rx: 115, ry: 75, fraction: 0.07, phaseMs: 0, dots: 7 }, tint: 0xffffff, width: 11 },
-    { spec: { rx: 115, ry: 75, fraction: 0.03, phaseMs: 3000, dots: 5 }, tint: 0x9fd8ff, width: 9 },
+    { spec: { rx: 115, ry: 75, fraction: 0.07, phaseMs: 0, dots: 16 }, tint: 0xffffff, width: 7 },
+    { spec: { rx: 115, ry: 75, fraction: 0.03, phaseMs: 3000, dots: 9 }, tint: 0x9fd8ff, width: 6 },
   ];
   const glow = glowTexture(host.scene);
   for (const { spec, tint, width } of streaks) {

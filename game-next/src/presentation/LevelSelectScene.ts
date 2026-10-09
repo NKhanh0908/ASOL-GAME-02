@@ -323,7 +323,7 @@ export class LevelSelectScene extends Phaser.Scene implements Choreographed {
       const gTheme = resolveGalaxyTheme(band.chapter);
       if (gTheme.id !== 'tapestry') {
         const y = (band.top + band.bottom) / 2;
-        const art = addGalaxyArtwork(this, gTheme, 360, y, 1050);
+        const art = addGalaxyArtwork(this, gTheme, 360, y, 1050, { rx: 295, ry: 375 });
         this.mapContainer.add(art);
         this.galaxyLayers.push({ art, y });
         this.backdropParts.push(art);

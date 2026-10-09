@@ -92,7 +92,7 @@ export class MenuScene extends Phaser.Scene implements Choreographed {
     const theme = this.currentTheme(progress.completed);
     this.galaxySky = this.add.image(0, 0, galaxyGradient(this, theme))
       .setOrigin(0).setDisplaySize(view.width, view.height).setDepth(-2);
-    this.galaxy = addGalaxyArtwork(this, theme, 360, view.height * 0.52, 900).setDepth(-1);
+    this.galaxy = addGalaxyArtwork(this, theme, 360, view.height * 0.52, 900, { rx: 314, ry: 425 }).setDepth(-1);
 
     // 2. Biểu tượng Ngọc Đôi (Dual Jewels XOR) lơ lửng ở trung tâm
     // Chapter I uses the static Menu1 hero, chapters IV-VI their Menu3/Menu4 heroes; the rest keep the animated XOR emblem.

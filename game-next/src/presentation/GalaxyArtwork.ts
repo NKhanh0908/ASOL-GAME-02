@@ -67,12 +67,14 @@ export function galaxyGradient(scene: Phaser.Scene, theme: GalaxyTheme): string 
 /** Shared chapter art with a separate motion container for scene choreography. */
 export function addGalaxyArtwork(
   scene: Phaser.Scene, theme: GalaxyTheme, x: number, y: number, size: number,
+  /** Ring galaxy only: target semi-axes in design units (see GalaxyLayerHost.ring). */
+  ring?: { rx: number; ry: number },
 ): Phaser.GameObjects.Container {
   const root = scene.add.container(x, y);
   const motion: Phaser.Tweens.Tween[] = [];
   const frame: Array<(elapsedMs: number) => void> = [];
   if (isLayeredGalaxy(theme.id)) {
-    buildGalaxyLayers({ scene, root, size, motion, frame }, theme.id);
+    buildGalaxyLayers({ scene, root, size, motion, frame, ring }, theme.id);
   } else {
     const key = `galaxy-${theme.id === 'spiral' ? 'spiral' : 'dwarf'}`;
     const art = scene.add.image(0, 0, key).setDisplaySize(size, size);
