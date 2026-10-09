@@ -4,7 +4,7 @@ Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; k
 
 ## Now
 
-- Branch: `feat/multi-language-localization` complete (Tasks 1–8 + 100% full text localization).
+- Branch: `main` (`feat/multi-language-localization` merged to `main`).
 - Completed: Globalized chapter names, Menu knowledge taglines, victory verses, audio settings labels (`t('setting_music')`, `t('setting_sfx')`), and endless gate badges across all 5 locales (`en-US`, `vi`, `id`, `pt-BR`, `ja`).
 - Verification: 36 localization/UI tests pass, typecheck and Vite build clean.
 
@@ -26,7 +26,7 @@ Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; k
 | E4 studio orientation + round-trip | **done**; implemented on `feat/studio-e4` | `docs/superpowers/plans/2026-10-06-e4-studio-orientation-and-roundtrip.md` |
 | CH1H chapter 1 hard tail (1-7…1-9) | **plan approved; ready to execute** | `docs/superpowers/plans/2026-10-06-ch1h-chapter-1-hard-tail.md` |
 | Chapter 4 content (Hội Tụ, rotation levels) | **not started**; 4-1…4-6 planned; 22 of 28 approved | `docs/superpowers/specs/2026-10-02-b-level-kit-chapters-design.md` |
-| **LOC multi-language localization (5 locales)** | **done**; Tasks 1–8 verified | `docs/superpowers/plans/2026-10-09-multi-language-localization.md` |
+| **LOC multi-language localization (5 locales)** | **complete; merged to `main`** | `docs/superpowers/plans/2026-10-09-multi-language-localization.md` |
 
 ## Open decisions / blockers
 
