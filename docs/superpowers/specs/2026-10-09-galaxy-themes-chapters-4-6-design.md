@@ -40,7 +40,7 @@ Add themes 4–6; values from the kit's theme-config table and swatches.
 | accent | `#FFB45A` | `#FFE9A8` | `#7FE3FF` (banner/card; per-level node colors below) |
 | clouds / extra | ring `#FF9E5A`, `#FFB45A`, `#FFE2A8`; orbit `#FFFFFF`, `#9FD8FF` | web `#9FB4FF`; halo `#FFE9A8`, `#FFC857` | web `#B9A8FF`; prism colors below |
 | galaxyType | Thiên hà vòng | Cụm thiên hà | Vũ trụ lăng kính |
-| tagline (kit bullet) | Lõi vàng phát sáng nhịp thở | Lưới vũ trụ mờ nối các thiên hà | Lăng kính tách tia sáng trắng thành dải màu |
+| tagline (renders as the menu fact box; kit bullet for chapter 6) | Lõi vàng phát sáng nhịp thở | Lưới vũ trụ mờ nối các thiên hà | Lăng kính tách tia sáng trắng thành dải màu |
 | fact box | Vật thể Hoag là thiên hà vòng gần như tròn hoàn hảo | Cụm thiên hà Xử Nữ chứa hơn một nghìn thiên hà | (none in mockup; reuse tagline) |
 | gate color | `#FFB45A` | `#FFE9A8` | `#FF7AD9` (not drawn while the band has no nodes) |
 
@@ -50,15 +50,16 @@ Prism colors for levels 6-1…6-7: `#FF5D7A #FF9F45 #FFE15A #4BE0B0 #4DA3FF #B57
 
 Known mockup inconsistency (resolved here): kit art draws III/IV as radial gradients with reversed stops; menu and map use the vertical top→bottom values above. Use the vertical values.
 
-## 4. Artwork (`GalaxyArtwork.ts`, `scripts/extract-galaxy-art.mjs`)
+## 4. Artwork (`galaxyArtFiles.ts`, `galaxyLayers.ts`, `galaxyMotion.ts`, `scripts/extract-galaxy-art.mjs`)
 
-Extend the extraction script to emit, under `game-next/public/assets/galaxies/`:
+As built: the extraction script splits kit galaxies III/IV/V into one static body plus animated layers under `game-next/public/assets/galaxies/` (19 SVGs). Layers are assembled by `galaxyLayers.ts`; thin or glowing layers are rasterised at 512 px to limit texture memory.
 
-- `ring.svg` + `ring-orbit.svg` (white and blue orbit streaks) + `ring-core.svg`. Ring ellipse in the menu is vertical (rx 170, ry 230 at 390×844); body `#FFB45A` w34 α.55 blur 14, outer glow `#FF9E5A` w60 α.18 blur 30, bright line `#FFE2A8` w6 α.75, 9 blue beads, ~50 ring stars. Motion: core `breath` 3.2 s; orbit streaks dash-offset loop 6 s (second delayed −3 s); beads twinkle 3 s; one-time `draw` of the bright line (2.4 s).
-- `cluster.svg` + `cluster-web.svg` + `cluster-core.svg` + `cluster-meteor.svg`. About 20 mini-galaxies pop in sequentially (0.30 s then ~0.08 s steps, 0.7 s each) and each rotates slowly (`spinS` 40 s). Central giant breathes. Cosmic web stroke `#9FB4FF` α.2 blur 14 pulses 5 s. Three meteors, 8 s cycle, delays 1.5 / 4.2 / 6.9 s, travel (240, 160) px. No meteor in the Menu4 mockup itself; the map and kit have them, so the menu shows the web and galaxies only.
-- `prism.svg` + `prism-fan.svg` + `prism-shards.svg`. Prism triangle, incoming beam (`beamIn` 0.9 s), seven rainbow wedges (`fanIn` 1.3 s after 0.8 s, then `fanLoop` 4 s), ~20 glass shards (`mix-blend-mode: screen` approximated with ADD blend), each floating (`float` 4.2–6.7 s).
+- **Ring** (`ring`, `ring-core`): the kit ellipse (rx 115, ry 75) is rotated 90° and stretched to the semi-axes the caller passes (menu 314×425, map 295×375 design units, from Menu3's rx 170/ry 230 and the map's rx 160). Motion: core `breath` (3.2 s round trip); two orbit streaks drawn in code (`orbitDotPose`: white 7 % of the ring and blue 3 %, 6 s lap, blue offset by half a lap).
+- **Cluster** (`cluster`, `cluster-web`, `cluster-core`, `cluster-galaxies-0..3`, `cluster-meteor-0..2`): web pulses 5 s; giant core breathes; the 20 mini-galaxies fade in as four groups (0.3, 0.8, 1.3, 1.8 s); three meteors (`meteorPose`, 8 s cycle, delays 1.5 / 4.2 / 6.9 s, travel (240, 160) kit units).
+- **Prism** (`prism`, `prism-beam`, `prism-fan`, `prism-glass`, `prism-shards-0..2`): beam grows from its lower-left end (0.9 s), fan opens upward from the prism apex (1.3 s after 0.8 s, then 4 s shimmer), glass fades and scales in (1.4 s after 0.5 s), the **32** shards fade in as three groups and float as whole layers.
+- Dropped on purpose: per-galaxy self-spin (40 s) and per-shard rotation, which tween thirty-odd objects for almost no visible gain.
 
-`preloadGalaxyArtwork` loads the new keys. `addGalaxyArtwork` selects layers by `theme.id` and registers tweens in the existing `motion` list so reduced-motion and `root.visible` pause them. Textures are created once per key. Star and cloud helpers stay shared.
+`preloadGalaxyArtwork(scene, themeIds)` loads only the listed themes (default `dwarf`, `spiral`, `tapestry`). `addGalaxyArtwork` dispatches to the layered builder for `ring`, `cluster`, `prism`; all tweens join the existing pause list so reduced motion and hidden art stop them, and intros snap to their final state.
 
 ## 5. Menu (`MenuScene.ts`, `menu/*`)
 
@@ -78,7 +79,7 @@ Extend the extraction script to emit, under `game-next/public/assets/galaxies/`:
 - Artwork placement per band reuses `addGalaxyArtwork` with the band centre; ring, cluster and prism art are drawn behind nodes and path.
 - Locked node look follows the kit: fill `#17143F` α.85, stroke accent α.55 w2.5, padlock `#B9B6E8`. Chapter 6 nodes use `nodeColors`.
 - The Ải Vô Tận gate is drawn only for bands with `nodeCount > 0` (`chapterEndlessGate.ts` unchanged apart from its band filter).
-- `computeMapReveal` is unchanged in logic: teaser bands are ordinary bands, so they sit beyond the one-chapter preview until the previous chapter is finished. Its "open" branch must treat a teaser band as sealed, not as end of map.
+- `computeMapReveal` is unchanged: teaser bands are ordinary bands, so they sit beyond the one-chapter preview until the previous chapter is finished. When the only band left is the last teaser it simply opens (covered by tests).
 
 ## 7. Out of scope
 

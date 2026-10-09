@@ -4,6 +4,11 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-09 - Docs and handoff for GX2 chapters 4-6 (task 11)
+
+- `docs/ai/STATUS.md` rewritten (GX2 implemented, follow-ups, gotchas); `docs/ai/ARCHITECTURE.md`: layered galaxy art, teaser bands and dev launch parameters invariants, rotation rule now covers chapters 5-6; `docs/superpowers/specs/2026-10-09-galaxy-themes-chapters-4-6-design.md`: §4 and §6 aligned with what was built; `docs/ai/DOCS-INDEX.md`: GX2 row marked done (the unrelated LOC row stays uncommitted).
+- Verification: documentation only; the full suite, typecheck, build and `check-galaxy-chapters.mjs` results are recorded in the task 10 entry. GitNexus MCP was unavailable all session, so no impact analysis or `detect_changes` could run.
+
 ### 2026-10-09 - Visual and motion check for chapters 4-6, tuned against the mockups (GX2 task 10)
 
 - `game-next/scripts/check-galaxy-chapters.mjs` (new): for chapters 4-6 opens the menu preview, asserts every layer exists, that one layer per galaxy animates and freezes under reduced motion (meteors stay hidden by design), that a cluster meteor crosses within one cycle, then captures every map band with `revealAll`; fails on any page or console error. Screenshots go to `.shots/galaxy/` (not committed).
