@@ -232,6 +232,13 @@ body {
   width: 100vw;
   height: 100vh;
   max-width: calc(100vh * 720 / 1280);
+  /*
+   * Trình duyệt di động: `vh` tính theo viewport LỚN NHẤT (lúc thanh địa chỉ đã
+   * ẩn), nên khung cao hơn vùng nhìn thấy và đáy game bị khuất. `dvh` bám đúng
+   * vùng nhìn thấy, khớp với `window.innerHeight` mà viewport.ts dùng.
+   */
+  height: 100dvh;
+  max-width: calc(100dvh * 720 / 1280);
   position: fixed;
   top: 0;
   left: 50%;

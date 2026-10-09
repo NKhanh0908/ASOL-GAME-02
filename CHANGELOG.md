@@ -4,6 +4,11 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-09 - Fix mobile web bottom clipping (100vh → 100dvh)
+
+- `game-next/src/style.css`: `#game` height and `max-width` now use `100dvh` (with `100vh` fallback). On mobile browsers `vh` is the largest viewport (address bar hidden), so the container was taller than the visible area while `viewport.ts` sized the buffer from `window.innerHeight`; the bottom ~7–10% was cut off. The Android app was unaffected (no browser chrome).
+- Verification: `npm run build` clean. Not yet checked on a real phone browser; please reload the GitHub Pages link after deploy. GitNexus MCP was unavailable (connect timeout); change is CSS-only, no symbols edited.
+
 ### 2026-10-09 - Localize audio settings labels and endless gate badge text
 
 - `game-next/src/locales/{en-US, vi, id, pt-BR, ja}/common.json`: added `gate_endless` and `gate_coming_soon` keys across all 5 locales.

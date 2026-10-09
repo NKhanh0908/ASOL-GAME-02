@@ -8,6 +8,8 @@ Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; k
 - Completed: Globalized chapter names, Menu knowledge taglines, victory verses, audio settings labels (`t('setting_music')`, `t('setting_sfx')`), and endless gate badges across all 5 locales (`en-US`, `vi`, `id`, `pt-BR`, `ja`).
 - Verification: 36 localization/UI tests pass, typecheck and Vite build clean.
 
+- Latest fix: mobile web bottom clipping — `#game` in `style.css` uses `100dvh`; awaiting phone check after Pages deploy.
+
 ## Streams
 
 | Stream | State | Entry doc |
