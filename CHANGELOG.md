@@ -4,6 +4,12 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-09 - 3-tier LocaleResolver engine with device language detection (LOC task 2)
+
+- `game-next/src/localization/LocaleResolver.ts`: 3-tier resolution algorithm (Tier 1: user saved preference; Tier 2: navigator.languages / navigator.language candidate matching; Tier 3: default fallback en-US). Device tag normalization for vi, id, pt, ja, and en prefixes.
+- `game-next/tests/localeResolver.test.ts`: test suite covering tier 1, tier 2, single language property, tier 3 fallback, and device tag normalization.
+- Verification: `npx vitest run tests/localeResolver.test.ts tests/localeSettings.test.ts --pool=forks` (10 tests pass); `npm run typecheck` clean; GitNexus `detect_changes` passed with low risk.
+
 ### 2026-10-09 - Core localization types, config and storage persistence (LOC task 1)
 
 - `game-next/src/localization/types.ts`: `SupportedLocale` ('en-US', 'vi', 'id', 'pt-BR', 'ja'), `LocaleMetadata`, `CommonTranslations`, `GameTranslations`, `TranslationBundle`.
