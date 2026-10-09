@@ -4,6 +4,13 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-09 - Endless Chapter 2 Generator with HSR divination archetypes and symmetric snapping (END-2)
+
+- `game-next/experiments/endless-ch2/generator.ts`: procedural generator for Chapter 2 Endless Mode inspired by HSR Divination Slate mechanics. Features 5 balanced aesthetic archetypes (`oracle-butterfly`, `vanguard-chevron`, `prophetic-eye`, `concentric-dial`, `crystal-shield`), strict depth bounds ($\text{StackDepth} \le 3$, $0 \le \text{threeLayerSpots} \le 2$), mandatory XOR 2-layer negative space cancellation, and interchangeable solution anchors for identical symmetric pieces.
+- `game-next/experiments/endless-ch2/run.ts`: batch runner generating $N$ proven levels with SVG previews, `out/gallery.html`, `out/report.md`, and `--install` flag targeting `src/content/studio/levels/`.
+- `game-next/tests/endlessCh2.test.ts`: test suite verifying single proven unique SAT solution (`proven === true`, `solutionCount === 1`, `fewerPieceSolutions === 0`), 3–5 pieces, $\le 2$ three-layer spots, $\ge 2$ decoys per piece, interchangeable snapping of symmetric diamonds, and silhouette diversity across seeds.
+- Verification: `npx vitest run tests/endlessCh2.test.ts --pool=forks` (3 tests pass); `node --experimental-strip-types experiments/endless-ch2/run.ts --count 10 --install` generated 10 proven levels; `npm run typecheck` clean.
+
 ### 2026-10-09 - Multi-language localization engine full verification and plan completion (LOC task 8)
 
 - `game-next/tests/levelSelect.test.ts`: pinned `formatNodeLabel` test to Vietnamese locale explicitly to eliminate dependency on host environment OS language.

@@ -1,12 +1,12 @@
-# Status — updated 2026-10-09 (multi-language localization complete)
+# Status — updated 2026-10-09 (endless Chapter 2 generator complete)
 
 Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; keep this file ≤ 60 lines.
 
 ## Now
 
-- Branch: `feat/multi-language-localization` complete (Tasks 1–8). Ready to merge to `main`.
-- Next: Switch to `feat/endless-ch2` and execute Endless Chapter 2 generator (XOR / HSR style, max 3 layers).
-- Verification: 102 test files (1,209 tests) pass, typecheck and Vite build clean.
+- Branch: `feat/endless-ch2`. Working directory D:\Working\ASOL\ASOL-GAME-02.
+- Completed: Endless Chapter 2 generator (Giao Thoa XOR HSR) with 5 archetypes, interchangeable symmetric pieces, max 3 layers, and 1 proven solution.
+- 10 sample levels generated & installed to `src/content/studio/levels/` (`endless-ch2-001`...`010`).
 
 ## Streams
 
@@ -26,18 +26,15 @@ Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; k
 | E4 studio orientation + round-trip | **done**; implemented on `feat/studio-e4` | `docs/superpowers/plans/2026-10-06-e4-studio-orientation-and-roundtrip.md` |
 | CH1H chapter 1 hard tail (1-7…1-9) | **plan approved; ready to execute** | `docs/superpowers/plans/2026-10-06-ch1h-chapter-1-hard-tail.md` |
 | Chapter 4 content (Hội Tụ, rotation levels) | **not started**; 4-1…4-6 planned; 22 of 28 approved | `docs/superpowers/specs/2026-10-02-b-level-kit-chapters-design.md` |
-| **LOC multi-language localization (5 locales)** | **done**; Tasks 1–8 verified | `docs/superpowers/plans/2026-10-09-multi-language-localization.md` |
+| **LOC multi-language localization (5 locales)** | **merged to main**; 5 locales verified | `docs/superpowers/plans/2026-10-09-multi-language-localization.md` |
+| **END-2 Chapter 2 endless XOR HSR** | **done**; generator & 10 sample levels verified | `docs/superpowers/plans/2026-10-09-ch2-endless-hsr-generator.md` |
 
 ## Open decisions / blockers
 
 - **GX2 follow-ups for the reviewer**: (1) rotation levels re-homing; (2) chapter V Menu hero placeholder; (3) chapter 3 ten nodes on ellipse; (4) texture memory check on device.
-- **Spec language**: AGENTS.md says English; reviewer to decide.
-- Remaining content work: nine levels (chapter 4: 4-1…4-6, CH1H: 1-7…1-9).
-- **Endless Chapter 2**: Next stream on branch `feat/endless-ch2` (prototype in stash@{1}).
+- Reviewer can test endless levels in harness: `?scene=play&level=endless-ch2-001&mode=harness`.
 
 ## Gotchas learned recently
 
-- Visual QA: `.shots/galaxy/`; check-galaxy-ui and check-galaxy-chapters need :5173 server.
-- Vitest on Windows: use `npm test -- --maxWorkers=2 --minWorkers=1 --pool=forks`.
-- Vite build requires filesystem bypass on Windows to resolve realpath for `index.html`.
-- `formatNodeLabel` tests need `setLocale('vi')` to avoid relying on host OS `navigator.language`.
+- Symmetrical pieces in XOR levels must share solution anchors in `sampleSolutions` so players can place identical pieces into either slot naturally without false snap rejection.
+- Vitest on Windows: use `npx vitest run tests/<file>.test.ts --pool=forks` for fast targeted test runs.
