@@ -4,6 +4,12 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-09 - Dev server lifts the map fog by default (temporary)
+
+- `game-next/src/presentation/LevelSelectScene.ts`: `revealAll` now defaults to `import.meta.env.DEV`, so the local web build shows the whole level select like the phone debug build. Release builds are unchanged (fog stays). Remove the default to restore the fog in dev.
+- Music: no code change. The reported missing music did not reproduce in Chromium and is fine in Edge after the mp3 to ogg swap (`audioManifest.ts` now points at `.ogg`).
+- Verification: `npm run typecheck` passes. GitNexus MCP failed to connect this session (CONNECT_TIMEOUT), so impact analysis was skipped; the change is one default value in `LevelSelectScene.init`.
+
 ### 2026-10-09 - Chapter III menu hero turns gently (GX2 follow-up)
 
 - `game-next/src/presentation/menu/ChapterHeroEmblem.ts`, `menu/chapterHeroGeometry.ts`: in the ring hero the refresh arrow and the pinwheel are separate graphics that rotate about the emblem centre, clockwise, one lap per 18 s and 26 s (`RING_HERO_SPIN_MS`, `heroSpinDelta`); they stop under reduced motion. Cluster and prism heroes stay static. `tests/chapterHeroGeometry.test.ts`: spin timing test. `scripts/check-galaxy-chapters.mjs`: chapter 3 now asserts the gentle spin and its freeze under reduced motion. `docs/ai/STATUS.md`: one line.

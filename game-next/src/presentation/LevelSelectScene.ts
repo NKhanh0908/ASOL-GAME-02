@@ -103,7 +103,8 @@ export class LevelSelectScene extends Phaser.Scene implements Choreographed {
       ? data.previewCompletedThrough
       : undefined;
     this.focusLevelId = data.focusLevelId;
-    this.revealAll = data.revealAll ?? false;
+    // Temporary: the dev server lifts the map fog by default so every chapter can be browsed
+    this.revealAll = data.revealAll ?? import.meta.env.DEV;
   }
 
   create(): void {

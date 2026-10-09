@@ -28,9 +28,9 @@ export type MusicAsset = {
 export const MUSIC_ASSETS: readonly MusicAsset[] = [
   {
     id: 'music-sky',
-    files: ['music-sky.mp3'],
+    files: ['music-sky.ogg'],
     source: {
-      title: 'Starlit Night Sky',
+      title: 'Starry Arpeggio',
       author: 'Suno AI',
       url: 'https://suno.com',
       license: 'CC0-1.0',
@@ -38,7 +38,7 @@ export const MUSIC_ASSETS: readonly MusicAsset[] = [
   },
   {
     id: 'music-stele',
-    files: ['music-stele.mp3'],
+    files: ['music-stele.ogg'],
     source: {
       title: 'Meditative Silence',
       author: 'Suno AI',
