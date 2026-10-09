@@ -4,6 +4,11 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-09 - Pure motion poses for ring streaks and meteors (GX2 task 5)
+
+- `game-next/src/presentation/galaxyMotion.ts` (new): `orbitDotPose` (kit `orbit`, 6 s clockwise lap) and `meteorPose` (kit `meteor`, 8 s cycle, 3%/13% fade, (240,160) travel). `tests/galaxyMotion.test.ts` (new).
+- Verification: `npx vitest run tests/galaxyMotion.test.ts --pool=forks` (5 tests; failed first with the module missing) and `npx tsc --noEmit` pass.
+
 ### 2026-10-09 - Extract ring, cluster and prism galaxy layers (GX2 task 4)
 
 - `game-next/scripts/extract-galaxy-art.mjs`: splits GalaxyKit III/IV/V into a static body plus animated layers; `game-next/public/assets/galaxies/`: 19 new SVGs (`ring`, `ring-core`, `cluster`, `cluster-web`, `cluster-core`, `cluster-galaxies-0..3`, `cluster-meteor-0..2`, `prism`, `prism-beam`, `prism-fan`, `prism-glass`, `prism-shards-0..2`). The existing dwarf/spiral files regenerate unchanged. Deliberate deviations from the kit: per-galaxy self-spin dropped, 32 shards grouped into 3 float layers, orbit streaks drawn in code.
