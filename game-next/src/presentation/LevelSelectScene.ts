@@ -58,6 +58,8 @@ export class LevelSelectScene extends Phaser.Scene implements Choreographed {
   private headerContainer!: Phaser.GameObjects.Container;
   private toastContainer?: Phaser.GameObjects.Container;
   private focusLevelId?: string;
+  /** Dev-only: lift the fog so every band can be captured. */
+  private revealAll = false;
 
   private nodeViews: Array<{ info: NodeInfo; container: Phaser.GameObjects.Container }> = [];
   private linkParts: Poseable[] = [];
@@ -96,12 +98,13 @@ export class LevelSelectScene extends Phaser.Scene implements Choreographed {
     preloadGalaxyArtwork(this, Object.values(GALAXY_THEMES).map((theme) => theme.id));
   }
 
-  init(data: { mode?: LevelAccessMode; previewCompletedThrough?: string; focusLevelId?: string } = {}): void {
+  init(data: { mode?: LevelAccessMode; previewCompletedThrough?: string; focusLevelId?: string; revealAll?: boolean } = {}): void {
     this.mode = data.mode ?? 'campaign';
     this.previewCompletedThrough = this.mode === 'harness'
       ? data.previewCompletedThrough
       : undefined;
     this.focusLevelId = data.focusLevelId;
+    this.revealAll = data.revealAll ?? false;
   }
 
   create(): void {
@@ -614,6 +617,10 @@ export class LevelSelectScene extends Phaser.Scene implements Choreographed {
         };
         reveal = reach(computeMapReveal(layout, nodes[frontier.index - 1].id));
       }
+    }
+    if (this.revealAll) {
+      this.pendingUnlock = undefined;
+      reveal = { limitY: layout.totalHeight, chapterTail: false, sealedUntilChapter: null };
     }
     this.buildFog(reveal, layout.totalHeight);
     this.applyReveal(reveal, layout.totalHeight);

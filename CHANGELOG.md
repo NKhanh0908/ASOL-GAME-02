@@ -4,6 +4,11 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-09 - Chapter preview and reveal-all launch parameters (GX2 task 9)
+
+- `game-next/src/launchParams.ts`, `src/main.ts`: dev-only `?scene=menu&chapter=1..6` forces the menu theme and `?scene=levelSelect&revealAll=1` lifts the map fog; ignored outside dev. `src/presentation/LevelSelectScene.ts`: `revealAll` init flag. `tests/launchParams.test.ts`: new cases.
+- Verification: `npx vitest run tests/launchParams.test.ts tests/levelSelect.test.ts --pool=forks` (26 tests; the two new cases failed first) and `npx tsc --noEmit` pass.
+
 ### 2026-10-09 - Ring, cluster and prism menu hero emblems (GX2 task 8)
 
 - `game-next/src/presentation/menu/chapterHeroGeometry.ts` (new, pure): pinwheel faces/outline, cluster satellites, refresh-arrow arc, `heroKindFor`. `menu/ChapterHeroEmblem.ts` (new): Menu3 pinwheel + refresh arrow (ring), Menu4 pinwheel + four dashed-linked satellites (cluster), placeholder prism glyph; dotted r=132 ring turns once per 240 s. `MenuScene.ts`: picks the emblem by theme, loads only the current theme's artwork in `preload`, accepts a dev-only `chapter` override via `init`. `tests/chapterHeroGeometry.test.ts` (new). The dotted-ring drawing is duplicated from `DualJewelEmblem` on purpose to avoid touching the chapter I hero.

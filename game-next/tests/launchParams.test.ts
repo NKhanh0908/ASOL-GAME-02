@@ -29,4 +29,16 @@ describe('resolveLaunch', () => {
     expect(resolveLaunch('?scene=levelSelect&focus=3-4', false)).toEqual({ scene: 'LevelSelectScene' });
     expect(resolveLaunch('?scene=levelSelect', true)).toEqual({ scene: 'LevelSelectScene' });
   });
+  test('chapter previews the menu theme, dev only, 1-6 only', () => {
+    expect(resolveLaunch('?scene=menu&chapter=4', true)).toEqual({ scene: 'MenuScene', skipSplash: true, chapter: 4 });
+    expect(resolveLaunch('?scene=menu&chapter=4', false)).toEqual({ scene: 'MenuScene', skipSplash: true });
+    expect(resolveLaunch('?scene=menu&chapter=7', true)).toEqual({ scene: 'MenuScene', skipSplash: true });
+    expect(resolveLaunch('?scene=menu&chapter=x', true)).toEqual({ scene: 'MenuScene', skipSplash: true });
+  });
+
+  test('revealAll opens the whole map, dev only', () => {
+    expect(resolveLaunch('?scene=levelSelect&revealAll=1', true)).toEqual({ scene: 'LevelSelectScene', revealAll: true });
+    expect(resolveLaunch('?scene=levelSelect&revealAll=1', false)).toEqual({ scene: 'LevelSelectScene' });
+    expect(resolveLaunch('?scene=levelSelect&focus=3-4&revealAll=1', true)).toEqual({ scene: 'LevelSelectScene', focusLevelId: '3-4', revealAll: true });
+  });
 });

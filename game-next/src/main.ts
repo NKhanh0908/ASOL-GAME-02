@@ -165,11 +165,14 @@ async function bootstrap(): Promise<void> {
       if (launch.scene === 'PlayScene') {
         director.boot('PlayScene', { levelId: launch.levelId, mode: launch.mode });
       } else if (launch.scene === 'LevelSelectScene') {
-        director.boot('LevelSelectScene', launch.focusLevelId ? { focusLevelId: launch.focusLevelId } : {});
+        director.boot('LevelSelectScene', {
+          ...(launch.focusLevelId ? { focusLevelId: launch.focusLevelId } : {}),
+          ...(launch.revealAll ? { revealAll: true } : {}),
+        });
       }
     } else if (launch.skipSplash) {
       game.scene.stop('SplashScene');
-      director.boot('MenuScene', {});
+      director.boot('MenuScene', launch.chapter ? { chapter: launch.chapter } : {});
     }
   });
 

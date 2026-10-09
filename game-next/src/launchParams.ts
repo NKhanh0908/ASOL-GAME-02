@@ -1,6 +1,6 @@
 export type LaunchTarget =
-  | { scene: 'MenuScene'; skipSplash?: boolean }
-  | { scene: 'LevelSelectScene'; focusLevelId?: string }
+  | { scene: 'MenuScene'; skipSplash?: boolean; chapter?: number }
+  | { scene: 'LevelSelectScene'; focusLevelId?: string; revealAll?: boolean }
   | { scene: 'PlayScene'; levelId: string; mode: 'campaign' | 'harness' };
 
 /**
@@ -18,8 +18,16 @@ export function resolveLaunch(search: string, isDev: boolean): LaunchTarget {
   if (scene === 'levelSelect') {
     // focus chỉ dùng ở dev để chụp ảnh một chòm sao bất kỳ
     const focus = params.get('focus');
-    return isDev && focus ? { scene: 'LevelSelectScene', focusLevelId: focus } : { scene: 'LevelSelectScene' };
+    // revealAll lifts the map fog so every band can be captured (dev only)
+    return {
+      scene: 'LevelSelectScene',
+      ...(isDev && focus ? { focusLevelId: focus } : {}),
+      ...(isDev && params.get('revealAll') === '1' ? { revealAll: true } : {}),
+    };
   }
   const skipSplash = params.get('skipSplash') === '1' || params.get('scene') === 'menu';
-  return skipSplash ? { scene: 'MenuScene', skipSplash: true } : { scene: 'MenuScene' };
+  // chapter forces the menu's galaxy theme so chapters without levels can be previewed (dev only)
+  const chapter = Number(params.get('chapter'));
+  const preview = isDev && Number.isInteger(chapter) && chapter >= 1 && chapter <= 6 ? { chapter } : {};
+  return skipSplash ? { scene: 'MenuScene', skipSplash: true, ...preview } : { scene: 'MenuScene' };
 }
