@@ -4,6 +4,11 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-09 - Spec: galaxy themes for chapters 4-6 (Luân Chuyển, Hội Tụ, Lăng Kính)
+
+- `docs/superpowers/specs/2026-10-09-galaxy-themes-chapters-4-6-design.md` (new): extends the GX galaxy identity to ring, cluster and prism galaxies from the five-galaxy kit, Menu3/Menu4 and the scrolling map mockups. Keeps chapters 1-4 as they are, adds chapters 5-6, renders chapters without levels as banner-only bands behind the fog.
+- Verification: documentation only; no code changed. GitNexus MCP was unavailable this session, so no impact analysis was run.
+
 ### 2026-10-09 - Widen the map preview to one chapter ahead and match the menu chrome to Menu1/Menu2
 
 - `game-next/src/presentation/mapReveal.ts`, `tests/mapReveal.test.ts`: the reveal limit is now the end of the next chapter (current chapter plus a one-chapter preview); fog starts after it and lifts when the current chapter is finished. Replaces the half-chapter limit.
