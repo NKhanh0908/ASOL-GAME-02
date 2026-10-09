@@ -4,6 +4,12 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-09 - Create release/v0.2.0 as the deploy branch
+
+- New branch `release/v0.2.0` (from `main`, per `VERSIONING.md`, which is now tracked). Version set to 0.2.0 in `game-next/package.json`, `game-next/package-lock.json` and `game-next/android/app/build.gradle` (`versionName "0.2.0"`, `versionCode 2`).
+- `.github/workflows/deploy-pages.yml`: GitHub Pages now deploys on pushes to `release/v0.2.0` instead of `main`.
+- Verification: diff reviewed; the deploy run itself is checked on GitHub after push. GitNexus MCP was unavailable; no symbols edited.
+
 ### 2026-10-09 - Implementation plan for interchangeable piece anchors
 
 - `docs/superpowers/plans/2026-10-09-interchangeable-piece-anchors.md`: authored 4-task TDD implementation plan for piece equivalence grouping, anchor occupancy checks in drag & session, PlayScene & BoardRenderer integration, and Level 1-1 permutation e2e tests.
