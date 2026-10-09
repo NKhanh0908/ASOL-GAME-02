@@ -163,7 +163,7 @@ async function bootstrap(): Promise<void> {
     if (launch.scene !== 'MenuScene') {
       game.scene.stop('SplashScene');
       if (launch.scene === 'PlayScene') {
-        director.boot('PlayScene', { levelId: launch.levelId, mode: launch.mode });
+        director.boot('PlayScene', launch);
       } else if (launch.scene === 'LevelSelectScene') {
         director.boot('LevelSelectScene', {
           ...(launch.focusLevelId ? { focusLevelId: launch.focusLevelId } : {}),

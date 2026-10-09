@@ -25,6 +25,7 @@ import { playUiCue } from './audio/uiCues.ts';
 import { GALAXY_THEMES, resolveGalaxyTheme, getChapterProgress, nodeAccent, teaserChapters } from './galaxyTheme.ts';
 import { chapterRoman } from '../content/chapters.ts';
 import { ChapterEndlessGate } from './chapterEndlessGate.ts';
+import { getEndlessLevelNumber } from '../content/endless/endlessCatalog.ts';
 import { createGalaxyNodeBody, NODE_LABEL_Y, NODE_SCALE } from './galaxyNode.ts';
 import { computeMapReveal } from './mapReveal.ts';
 import type { MapReveal } from './mapReveal.ts';
@@ -586,10 +587,36 @@ export class LevelSelectScene extends Phaser.Scene implements Choreographed {
         }
         this.mapContainer.add(connector);
 
+        const isCh1 = tail.chapter === 1;
+        const isUnlocked = isCh1 && (tailNode.state === 'completed' || this.mode === 'harness');
+        const endlessLevel = isCh1 ? getEndlessLevelNumber(1) : 1;
+        const badgeText = isUnlocked
+          ? `Khởi Nguyên - ${endlessLevel}`
+          : t('gate_coming_soon');
+
         const endlessGate = new ChapterEndlessGate(this, {
           x: gateX,
           y: gateY,
           theme: gateTheme,
+          badgeText,
+          isUnlocked,
+          onPointerUp: () => {
+            if (this.dragged || this.celebrating || endlessGate.y > this.revealLimitY - 40) return;
+            if (isUnlocked) {
+              playUiCue(this, 'node');
+              director.go(this, 'PlayScene', {
+                mode: 'endless',
+                chapter: 1,
+                endlessLevel,
+              }, {
+                route: 'map-to-play',
+                origin: { x: gateX, y: gateY + this.mapContainer.y },
+              });
+            } else {
+              playUiCue(this, 'locked');
+              this.showToast(t('toast_level_locked', { id: tail.lastNodeId ?? '1-6' }));
+            }
+          },
         });
         endlessGate.setScale(NODE_SCALE);
         this.mapContainer.add(endlessGate);

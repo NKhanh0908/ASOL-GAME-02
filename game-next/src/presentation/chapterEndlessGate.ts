@@ -8,6 +8,10 @@ export interface ChapterEndlessGateConfig {
   x: number;
   y: number;
   theme: GalaxyTheme;
+  title?: string;
+  badgeText?: string;
+  isUnlocked?: boolean;
+  onPointerUp?: () => void;
 }
 
 /**
@@ -22,7 +26,7 @@ export class ChapterEndlessGate extends Phaser.GameObjects.Container {
   private ringA: Phaser.GameObjects.Graphics;
   private ringB: Phaser.GameObjects.Graphics;
   private coreIcon: Phaser.GameObjects.Graphics;
-  private labelText: Phaser.GameObjects.Text;
+  private labelText?: Phaser.GameObjects.Text;
   private badgeContainer: Phaser.GameObjects.Container;
 
   constructor(scene: Phaser.Scene, config: ChapterEndlessGateConfig) {
@@ -117,23 +121,26 @@ export class ChapterEndlessGate extends Phaser.GameObjects.Container {
     this.coreIcon.strokePoints(outline, true);
     this.add(this.coreIcon);
 
-    // 6. Tiêu đề "Ải Vô Tận" (y = 52)
-    this.labelText = scene.add
-      .text(0, 52, t('gate_endless'), {
-        fontFamily: TYPO_TOKENS.fontFamily.display,
-        fontSize: '14px',
-        color: '#FFFFFF',
-        fontStyle: 'bold',
-        stroke: '#120E36',
-        strokeThickness: 3,
-      })
-      .setOrigin(0.5);
-    this.add(this.labelText);
+    // 6. Tiêu đề (nếu truyền vào)
+    if (config.title) {
+      this.labelText = scene.add
+        .text(0, 52, config.title, {
+          fontFamily: TYPO_TOKENS.fontFamily.display,
+          fontSize: '14px',
+          color: '#FFFFFF',
+          fontStyle: 'bold',
+          stroke: '#120E36',
+          strokeThickness: 3,
+        })
+        .setOrigin(0.5);
+      this.add(this.labelText);
+    }
 
-    // 7. Nhãn viên thuốc "Sắp mở" (y = 70)
-    this.badgeContainer = scene.add.container(0, 70);
+    // 7. Nhãn viên thuốc (mặc định "Sắp mở", y = 52 khi không có tiêu đề, y = 70 khi có)
+    const badgeY = config.title ? 70 : 52;
+    this.badgeContainer = scene.add.container(0, badgeY);
     const tagText = scene.add
-      .text(0, 0, t('gate_coming_soon'), {
+      .text(0, 0, config.badgeText ?? t('gate_coming_soon'), {
         fontFamily: TYPO_TOKENS.fontFamily.sans,
         fontSize: '10px',
         color: '#FFFFFF',
@@ -143,13 +150,37 @@ export class ChapterEndlessGate extends Phaser.GameObjects.Container {
 
     const badgeW = Math.max(56, Math.round(tagText.width + 16));
     const tagBg = scene.add.graphics();
-    tagBg.fillStyle(accentColor, 0.25);
+    tagBg.fillStyle(accentColor, config.isUnlocked ? 0.45 : 0.25);
     tagBg.fillRoundedRect(-badgeW / 2, -9, badgeW, 18, 9);
-    tagBg.lineStyle(1, accentColor, 0.9);
+    tagBg.lineStyle(1.2, accentColor, 0.95);
     tagBg.strokeRoundedRect(-badgeW / 2, -9, badgeW, 18, 9);
 
     this.badgeContainer.add([tagBg, tagText]);
     this.add(this.badgeContainer);
+
+    // 8. Tương tác nhấn mở màn chơi
+    if (config.onPointerUp) {
+      const hitZoneY = config.title ? 20 : 12;
+      const hitZoneH = config.title ? 110 : 92;
+      const hitZone = scene.add
+        .zone(0, hitZoneY, 84, hitZoneH)
+        .setOrigin(0.5)
+        .setInteractive({ useHandCursor: config.isUnlocked ?? false });
+      this.add(hitZone);
+
+      hitZone.on('pointerup', () => {
+        config.onPointerUp?.();
+      });
+
+      if (config.isUnlocked) {
+        hitZone.on('pointerover', () => {
+          this.portalOuterGlow.setAlpha(0.8);
+        });
+        hitZone.on('pointerout', () => {
+          this.portalOuterGlow.setAlpha(0.35);
+        });
+      }
+    }
 
     scene.add.existing(this);
   }

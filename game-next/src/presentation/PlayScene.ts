@@ -3,6 +3,11 @@ import type { Level, PuzzleState, Transition } from '../domain/model.ts';
 import { GRID_WIDTH, GRID_HEIGHT } from '../domain/model.ts';
 import { loadLevel } from '../content/catalog.ts';
 import { campaignManifest } from '../content/manifest.ts';
+import {
+  getEndlessLevelNumber,
+  loadEndlessLevel,
+  saveEndlessLevelNumber,
+} from '../content/endless/endlessCatalog.ts';
 import { furthestLevelId, nextLevelId } from '../domain/campaign.ts';
 import { createProgressRepository } from '../infrastructure/progressRepository.ts';
 import { PlayController, type PlayViewSnapshot } from '../application/playController.ts';
@@ -42,7 +47,9 @@ export class PlayScene extends Phaser.Scene implements Choreographed {
   readonly directorKey = 'PlayScene' as const;
   private loadFailed = false;
   private level!: Level;
-  private mode: 'campaign' | 'harness' = 'campaign';
+  private mode: 'campaign' | 'harness' | 'endless' = 'campaign';
+  private endlessChapter = 1;
+  private endlessLevel = 1;
   private controller!: PlayController;
   private boardRenderer!: BoardRenderer;
   private textureCache!: PieceTextureCache;
@@ -59,24 +66,42 @@ export class PlayScene extends Phaser.Scene implements Choreographed {
 
   init(data: {
     levelId?: string;
-    mode?: 'campaign' | 'harness';
+    mode?: 'campaign' | 'harness' | 'endless';
+    chapter?: number;
+    endlessLevel?: number;
     previewCompletedThrough?: string;
   }): void {
     this.loadFailed = false;
-    const levelId = data.levelId ?? '1-1';
     this.mode = data.mode ?? 'campaign';
     this.previewCompletedThrough = this.mode === 'harness'
       ? data.previewCompletedThrough
       : undefined;
-    try {
-      this.level = loadLevel(levelId, this.mode);
-    } catch (err) {
-      console.warn(`[PlayScene] Không thể tải màn ${levelId}, tự động chuyển về màn 1-1 an toàn:`, err);
+
+    if (this.mode === 'endless') {
+      this.endlessChapter = data.chapter ?? 1;
+      this.endlessLevel = data.endlessLevel ?? getEndlessLevelNumber(this.endlessChapter);
       try {
-        this.level = loadLevel('1-1', this.mode);
-      } catch (fallbackErr) {
-        console.error('[PlayScene] Lỗi nghiêm trọng khi tải màn 1-1:', fallbackErr);
-        this.loadFailed = true;
+        this.level = loadEndlessLevel(this.endlessChapter, this.endlessLevel);
+      } catch (err) {
+        console.warn(`[PlayScene] Không thể tải màn endless chapter ${this.endlessChapter} level ${this.endlessLevel}:`, err);
+        try {
+          this.level = loadLevel('1-1', 'campaign');
+        } catch {
+          this.loadFailed = true;
+        }
+      }
+    } else {
+      const levelId = data.levelId ?? '1-1';
+      try {
+        this.level = loadLevel(levelId, this.mode);
+      } catch (err) {
+        console.warn(`[PlayScene] Không thể tải màn ${levelId}, tự động chuyển về màn 1-1 an toàn:`, err);
+        try {
+          this.level = loadLevel('1-1', this.mode);
+        } catch (fallbackErr) {
+          console.error('[PlayScene] Lỗi nghiêm trọng khi tải màn 1-1:', fallbackErr);
+          this.loadFailed = true;
+        }
       }
     }
   }
@@ -133,9 +158,13 @@ export class PlayScene extends Phaser.Scene implements Choreographed {
       },
     });
 
+    const displayTitle = this.mode === 'endless'
+      ? `Khởi Nguyên - ${this.endlessLevel}`
+      : `${this.level.id} · ${this.level.title}`;
+
     this.hud = new Hud(
       this,
-      `${this.level.id} · ${this.level.title}`,
+      displayTitle,
       {
         onMenu: () => {
           this.pauseDialog.open();
@@ -156,6 +185,14 @@ export class PlayScene extends Phaser.Scene implements Choreographed {
           this.openLevelSelect();
         },
         onNextLevel: () => {
+          if (this.mode === 'endless') {
+            director.go(this, 'PlayScene', {
+              mode: 'endless',
+              chapter: this.endlessChapter,
+              endlessLevel: this.endlessLevel + 1,
+            }, { route: 'next-level' });
+            return;
+          }
           const nextId = nextLevelId(campaignManifest, this.level.id);
           let playable = false;
           if (nextId) {
@@ -280,6 +317,9 @@ export class PlayScene extends Phaser.Scene implements Choreographed {
   /** Áp kết quả một lệnh: phát phản hồi rồi cập nhật HUD */
   private commit(prev: PuzzleState, transition: Transition | null, subject: FeedbackSubject): void {
     if (!transition) return;
+    if (transition.becameWon && this.mode === 'endless') {
+      saveEndlessLevelNumber(this.endlessChapter, this.endlessLevel + 1);
+    }
     this.feedback.handle(feedbackEvents(prev, transition, this.level, subject));
     this.refreshView();
   }
@@ -368,7 +408,7 @@ export class PlayScene extends Phaser.Scene implements Choreographed {
       ? this.level.id
       : undefined;
     director.go(this, 'LevelSelectScene', {
-      mode: this.mode,
+      mode: this.mode === 'endless' ? 'campaign' : this.mode,
       previewCompletedThrough: this.mode === 'harness'
         ? furthestLevelId(
             campaignManifest,

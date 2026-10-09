@@ -113,8 +113,12 @@ export class Hud {
       .setOrigin(0.5);
     this.titleText.setFontSize(fitHudTitleFontSize(this.titleText.width));
 
+    const subtitleContent = this.levelId.startsWith('endless')
+      ? `${chapterRoman} · ${t('gate_endless')}`
+      : `${chapterRoman} · ${t('level_prefix')} ${this.levelId}`;
+
     this.subtitleText = this.scene.add
-      .text(360, headerTop + 74, `${chapterRoman} · ${t('level_prefix')} ${this.levelId}`, {
+      .text(360, headerTop + 74, subtitleContent, {
         fontFamily: TYPO_TOKENS.fontFamily.sans,
         fontSize: '24px',
         color: COLOR_TOKENS.text.secondary,

@@ -1,7 +1,7 @@
 export type LaunchTarget =
   | { scene: 'MenuScene'; skipSplash?: boolean; chapter?: number }
   | { scene: 'LevelSelectScene'; focusLevelId?: string; revealAll?: boolean }
-  | { scene: 'PlayScene'; levelId: string; mode: 'campaign' | 'harness' };
+  | { scene: 'PlayScene'; levelId?: string; mode: 'campaign' | 'harness' | 'endless'; chapter?: number; endlessLevel?: number };
 
 /**
  * Đọc tham số URL lúc khởi động. Harness cho phép chơi thử màn validated,
@@ -11,8 +11,14 @@ export function resolveLaunch(search: string, isDev: boolean): LaunchTarget {
   const params = new URLSearchParams(search);
   const scene = params.get('scene');
   if (scene === 'play') {
+    const modeParam = params.get('mode');
+    if (isDev && modeParam === 'endless') {
+      const chapter = Number(params.get('chapter')) || 1;
+      const endlessLevel = Number(params.get('level')) || 1;
+      return { scene: 'PlayScene', mode: 'endless', chapter, endlessLevel };
+    }
     const levelId = params.get('level') ?? '1-1';
-    const mode = isDev && params.get('mode') === 'harness' ? 'harness' : 'campaign';
+    const mode = isDev && modeParam === 'harness' ? 'harness' : 'campaign';
     return { scene: 'PlayScene', levelId, mode };
   }
   if (scene === 'levelSelect') {
