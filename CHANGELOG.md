@@ -4,6 +4,12 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-09 - Implementation plan for interchangeable piece anchors
+
+- `docs/superpowers/plans/2026-10-09-interchangeable-piece-anchors.md`: authored 4-task TDD implementation plan for piece equivalence grouping, anchor occupancy checks in drag & session, PlayScene & BoardRenderer integration, and Level 1-1 permutation e2e tests.
+- `docs/ai/DOCS-INDEX.md`: updated IPA row with implementation plan path.
+- Verification: Self-reviewed plan against spec coverage, type consistency, and no-placeholder requirements.
+
 ### 2026-10-09 - Design spec for interchangeable piece anchors and equivalence grouping
 
 - `docs/superpowers/specs/2026-10-09-interchangeable-piece-anchors-design.md`: authored architectural design spec for grouping geometrically identical pieces at runtime, pooling their anchors, enforcing single-occupancy per anchor, and illuminating target silhouettes when hovering equivalent pieces.

@@ -1,12 +1,12 @@
-# Status — updated 2026-10-09 (wired Chapter 1 Endless gate and refined UI)
+# Status — updated 2026-10-09 (authored plan for interchangeable piece anchors)
 
 Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; keep this file ≤ 60 lines.
 
 ## Now
 
 - Branch: `main`.
-- Completed: Wired Chapter 1 Endless mode into Level Select gate and Play scene. Removed "Ải Vô Tận" / "Endless Gate" title text across all languages in Level Select, displaying only the badge pill (`Khởi Nguyên - X` or `Sắp mở`). Filtered out `endless-001` so endless pool starts directly at `endless-002`.
-- Verification: Vitest `tests/endlessCh1.test.ts` (3 pass); `npm run typecheck` clean; `npm run build` succeeds (327 modules, 8.53s); GitNexus `detect_changes` passed (low risk).
+- Completed: Authored implementation plan for Interchangeable Piece Anchors & Equivalence Grouping (IPA). 4 bite-sized TDD tasks covering piece equivalence domain module, anchor occupancy checks in drag & session, PlayScene & BoardRenderer integration, and Level 1-1 permutation e2e tests.
+- Verification: Self-reviewed plan against spec coverage, type consistency, and no-placeholder requirements; registered in DOCS-INDEX.md.
 
 ## Streams
 
@@ -28,7 +28,7 @@ Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; k
 | Chapter 4 content (Hội Tụ, rotation levels) | **not started**; 4-1…4-6 planned; 22 of 28 approved | `docs/superpowers/specs/2026-10-02-b-level-kit-chapters-design.md` |
 | **LOC multi-language localization (5 locales)** | **complete; merged to `main`** | `docs/superpowers/plans/2026-10-09-multi-language-localization.md` |
 | **END-1 Chapter 1 endless runtime gate** | **complete; wired to map & play** | `docs/superpowers/specs/2026-10-08-ch1-endless-tangram-generator-design.md` |
-| **IPA interchangeable piece anchors** | **spec approved; ready to plan** | `docs/superpowers/specs/2026-10-09-interchangeable-piece-anchors-design.md` |
+| **IPA interchangeable piece anchors** | **plan approved; ready to execute** | `docs/superpowers/plans/2026-10-09-interchangeable-piece-anchors.md` |
 
 ## Open decisions / blockers
 
