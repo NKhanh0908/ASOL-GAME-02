@@ -14,7 +14,7 @@ describe('i18n translation system', () => {
 
   test('chuyển sang tiếng Anh thành công', () => {
     setLocale('en');
-    expect(getLocale()).toBe('en');
+    expect(getLocale()).toBe('en-US');
     expect(t('btn_start')).toBe('Start');
     expect(t('level_select_title')).toBe('Prophecy Constellations');
     expect(t('pause_title')).toBe('Paused');
@@ -76,10 +76,10 @@ describe('i18n translation system', () => {
     });
 
     setLocale('en');
-    expect(notifiedLocale).toBe('en');
+    expect(notifiedLocale).toBe('en-US');
 
     unsubscribe();
     setLocale('vi');
-    expect(notifiedLocale).toBe('en'); // Không còn nhận vì đã unsubscribe
+    expect(notifiedLocale).toBe('en-US'); // Không còn nhận vì đã unsubscribe
   });
 });

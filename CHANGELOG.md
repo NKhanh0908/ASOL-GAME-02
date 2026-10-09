@@ -4,6 +4,15 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-09 - LocalizationManager singleton and zero-breaking i18n facade (LOC task 4)
+
+- `game-next/src/localization/LocalizationManager.ts`: singleton localization engine with bundled JSON loading, reactive listeners, string interpolation, dynamic chapter/level title resolution, and random menu taglines.
+- `game-next/src/localization/index.ts`: barrel exports for all localization modules.
+- `game-next/src/presentation/i18n.ts`: refactored into a zero-breaking backward-compatible facade maintaining all existing function signatures (`t`, `getLocale`, `setLocale`, `getLevelTitle`, `getChapterName`, `getChapterLabel`, `getRandomMenuTagline`, `onLocaleChange`).
+- `game-next/tests/localizationManager.test.ts`: test suite covering string interpolation, subscriber notifications, and title/chapter label formatting.
+- `game-next/tests/i18n.test.ts`: updated existing i18n tests to verify standard en-US locale resolution and facade compliance.
+- Verification: `npx vitest run tests/localizationManager.test.ts tests/i18n.test.ts tests/displayFontCoverage.test.ts --pool=forks` (129 tests pass); `npm run typecheck` clean; GitNexus impact analysis run for `t` (CRITICAL upstream risk mitigated by preserving 100% signature compatibility); `detect_changes` passed with low risk.
+
 ### 2026-10-09 - Complete translation bundles for en-US, vi, id, pt-BR, ja (LOC task 3)
 
 - `game-next/src/locales/{en-US, vi, id, pt-BR, ja}/{common.json, game.json}`: 10 structured translation dictionaries. Fully translated common keys (38 keys), 4 chapters, 28 campaign level titles, and 20 astronomical trivia taglines per locale.
