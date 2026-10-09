@@ -4,6 +4,12 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-09 - Native CJK system font stack for Japanese typography (LOC task 5)
+
+- `game-next/src/presentation/designTokens.ts`: extended `TYPO_TOKENS.fontFamily` (`display`, `serif`, `sans`, `levelTitle`) with native OS CJK fonts ('Hiragino Sans', 'Noto Sans CJK JP', 'Yu Gothic', 'Meiryo') while preserving primary 'Baloo 2' and 'Be Vietnam Pro' fonts.
+- `game-next/tests/displayFontCoverage.test.ts`: added test suite verifying CJK system font stack declarations and CJK/kana character coverage in Japanese translation strings.
+- Verification: `npx vitest run tests/displayFontCoverage.test.ts --pool=forks` (121 tests pass); `npm run typecheck` clean; GitNexus impact analysis run for `TYPO_TOKENS` (LOW risk); `detect_changes` passed with low risk.
+
 ### 2026-10-09 - LocalizationManager singleton and zero-breaking i18n facade (LOC task 4)
 
 - `game-next/src/localization/LocalizationManager.ts`: singleton localization engine with bundled JSON loading, reactive listeners, string interpolation, dynamic chapter/level title resolution, and random menu taglines.

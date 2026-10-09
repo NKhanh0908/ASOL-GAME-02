@@ -2,6 +2,8 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { TYPO_TOKENS } from '../src/presentation/designTokens.ts';
 import { MENU_TAGLINES, TRANSLATIONS } from '../src/presentation/i18n.ts';
+import jaCommon from '../src/locales/ja/common.json';
+import jaGame from '../src/locales/ja/game.json';
 
 /**
  * Canh cho font hiển thị phủ được mọi chuỗi giao diện.
@@ -101,3 +103,18 @@ describe('font thân chữ (Be Vietnam Pro)', () => {
     }
   });
 });
+
+describe('Typography & CJK Font Fallback', () => {
+  it('fontFamily includes Japanese system CJK font stack', () => {
+    expect(TYPO_TOKENS.fontFamily.display).toContain('Hiragino Sans');
+    expect(TYPO_TOKENS.fontFamily.display).toContain('Noto Sans CJK JP');
+    expect(TYPO_TOKENS.fontFamily.display).toContain('Yu Gothic');
+    expect(TYPO_TOKENS.fontFamily.sans).toContain('Hiragino Sans');
+  });
+
+  it('Japanese translation strings contain valid CJK and kana characters', () => {
+    const sample = jaCommon.btn_start + jaCommon.pause_title + (jaGame.chapters as Record<string, string>)['1'];
+    expect(/[\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff]/.test(sample)).toBe(true);
+  });
+});
+

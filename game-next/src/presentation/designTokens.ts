@@ -88,11 +88,11 @@ export const TYPO_TOKENS = {
      * Baloo 2 cùng chất bo tròn và có đủ bộ chữ tiếng Việt.
      * `tests/displayFontCoverage.test.ts` canh không cho lặp lại lỗi này.
      */
-    display: "'Baloo 2', -apple-system, sans-serif",
-    serif: "'Baloo 2', -apple-system, sans-serif",
-    sans: "'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-    /** Tên level cần bộ glyph tiếng Việt đầy đủ, kể cả khi webfont chưa tải. */
-    levelTitle: "'Be Vietnam Pro', 'Segoe UI', Arial, sans-serif",
+    display: "'Baloo 2', 'Hiragino Sans', 'Noto Sans CJK JP', 'Yu Gothic', 'Meiryo', -apple-system, sans-serif",
+    serif: "'Baloo 2', 'Hiragino Sans', 'Noto Sans CJK JP', 'Yu Gothic', 'Meiryo', -apple-system, sans-serif",
+    sans: "'Be Vietnam Pro', 'Hiragino Sans', 'Noto Sans CJK JP', 'Yu Gothic', 'Meiryo', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+    /** Tên level cần bộ glyph tiếng Việt và CJK đầy đủ, kể cả khi webfont chưa tải. */
+    levelTitle: "'Be Vietnam Pro', 'Hiragino Sans', 'Noto Sans CJK JP', 'Yu Gothic', 'Meiryo', 'Segoe UI', Arial, sans-serif",
   },
   fontSize: {
     heroTitle: '60px',
