@@ -19,6 +19,15 @@ export const REFRESH_ARROW = {
   head: [[52, -80], [74, -62], [48, -54]] as readonly Pt[],
 } as const;
 
+/** Chapter III is where pieces turn, so the ring hero's arrow and pinwheel rotate slowly and steadily (clockwise, one lap per period).
+ * Periods in ms; the dotted outer ring keeps its own 240 s lap. */
+export const RING_HERO_SPIN_MS = { arrow: 18000, pinwheel: 26000 } as const;
+
+/** Radians turned in `deltaMs` by something that completes a lap every `periodMs`. */
+export function heroSpinDelta(deltaMs: number, periodMs: number): number {
+  return (2 * Math.PI * deltaMs) / periodMs;
+}
+
 const rotate = ([x, y]: Pt, deg: number): Pt => {
   const a = (deg * Math.PI) / 180;
   return [x * Math.cos(a) - y * Math.sin(a), x * Math.sin(a) + y * Math.cos(a)];

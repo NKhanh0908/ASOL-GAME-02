@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
-  CLUSTER_SATELLITES, REFRESH_ARROW, heroKindFor, pinwheelFaces, pinwheelOutline,
+  CLUSTER_SATELLITES, REFRESH_ARROW, RING_HERO_SPIN_MS, heroKindFor, heroSpinDelta, pinwheelFaces, pinwheelOutline,
 } from '../src/presentation/menu/chapterHeroGeometry.ts';
 
 describe('chapterHeroGeometry', () => {
@@ -27,6 +27,14 @@ describe('chapterHeroGeometry', () => {
     expect(REFRESH_ARROW.radius).toBe(88);
     expect(Math.hypot(-84, -20)).toBeCloseTo(86.3, 1);
     expect(REFRESH_ARROW.startAngle).toBeLessThan(REFRESH_ARROW.endAngle);
+  });
+
+  it('turns the ring hero gently and clockwise: one lap per period', () => {
+    expect(heroSpinDelta(RING_HERO_SPIN_MS.pinwheel, RING_HERO_SPIN_MS.pinwheel)).toBeCloseTo(2 * Math.PI);
+    expect(heroSpinDelta(16, RING_HERO_SPIN_MS.arrow)).toBeGreaterThan(0);
+    expect(heroSpinDelta(16, RING_HERO_SPIN_MS.arrow)).toBeLessThan(0.01); // gentle: well under 0.6 rad/s
+    expect(RING_HERO_SPIN_MS.arrow).toBeGreaterThanOrEqual(15000);
+    expect(RING_HERO_SPIN_MS.pinwheel).toBeGreaterThanOrEqual(15000);
   });
 
   it('maps theme ids to hero kinds', () => {

@@ -4,6 +4,11 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-09 - Chapter III menu hero turns gently (GX2 follow-up)
+
+- `game-next/src/presentation/menu/ChapterHeroEmblem.ts`, `menu/chapterHeroGeometry.ts`: in the ring hero the refresh arrow and the pinwheel are separate graphics that rotate about the emblem centre, clockwise, one lap per 18 s and 26 s (`RING_HERO_SPIN_MS`, `heroSpinDelta`); they stop under reduced motion. Cluster and prism heroes stay static. `tests/chapterHeroGeometry.test.ts`: spin timing test. `scripts/check-galaxy-chapters.mjs`: chapter 3 now asserts the gentle spin and its freeze under reduced motion. `docs/ai/STATUS.md`: one line.
+- Verification: `npm test -- --maxWorkers=2 --minWorkers=1 --pool=forks` 97 files / 1,181 tests pass (the new test failed first); `npx tsc --noEmit` clean; `node scripts/check-galaxy-chapters.mjs` passes and the chapter 3 menu screenshot shows the arrow and pinwheel turned from their mockup pose. GitNexus MCP unavailable.
+
 ### 2026-10-09 - Re-number chapter styles to the mockup: 3 ring, 4 cluster, 5 prism (GX2 follow-up)
 
 - Reviewer correction: the styles built for chapters 4-6 move up to chapters 3-5 and the names follow the mockup (III Luân Chuyển, IV Hội Tụ, V Lăng Kính). `game-next/src/domain/model.ts`, `src/content/chapters.ts`, `src/presentation/i18n.ts`: `Chapter` is 1-5 and the chapter table/names changed; `rotationEnabled` still follows the level content (chapter 4). `src/presentation/galaxyTheme.ts`: ring/cluster/prism themes are now chapters 3/4/5, the interim Họa Phẩm theme (`tapestry`) is removed. `galaxyArtFiles.ts`, `GalaxyArtwork.ts`, `LevelSelectScene.ts` (tints, artwork and galaxy-type subtitle for every band), `launchParams.ts` (`chapter` 1-5), comments in `manifest.ts`, `validate.ts`, `constellationLayout.ts`, `Hud.ts`. Tests and `scripts/check-galaxy-chapters.mjs` updated; specs/plan/STATUS/ARCHITECTURE carry the new numbering.

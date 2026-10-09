@@ -61,6 +61,24 @@ try {
     }
     await page.evaluate(async () => (await import('/src/presentation/transitions/motion.ts')).setMotionScale(1));
 
+    if (chapter === 3) { // chapter III: the hero's arrow and pinwheel turn slowly, and stop under reduced motion
+      const heroSpin = () => page.evaluate(async () => {
+        const { director } = await import('/src/presentation/transitions/SceneDirector.ts');
+        const emblem = director.host.game.scene.getScene('MenuScene').emblem;
+        return [emblem.arrow.rotation, emblem.pinwheel.rotation];
+      });
+      const before = await heroSpin();
+      await page.waitForTimeout(1500);
+      const after = await heroSpin();
+      assert.ok(after[0] - before[0] > 0.01 && after[0] - before[0] < 1, 'ch3: arrow turns gently');
+      assert.ok(after[1] - before[1] > 0.01 && after[1] - before[1] < 1, 'ch3: pinwheel turns gently');
+      await page.evaluate(async () => (await import('/src/presentation/transitions/motion.ts')).setMotionScale(0));
+      await page.waitForTimeout(200);
+      const held = await heroSpin();
+      await page.waitForTimeout(400);
+      assert.deepEqual(await heroSpin(), held, 'ch3: reduced motion stops the hero spin');
+      await page.evaluate(async () => (await import('/src/presentation/transitions/motion.ts')).setMotionScale(1));
+    }
     if (chapter === 4) { // a meteor must cross within one 8 s cycle
       let seen = false;
       for (let i = 0; i < 90 && !seen; i++) {

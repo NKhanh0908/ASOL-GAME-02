@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import { isReducedMotion, getMotionScale } from '../transitions/motion.ts';
 import {
   CLUSTER_CENTER_HALF, CLUSTER_SATELLITES, CLUSTER_SATELLITE_HALF, PINWHEEL, PRISM_COLORS, REFRESH_ARROW,
-  RING_CENTER_HALF, RING_CENTER_ROTATION_DEG, pinwheelFaces, pinwheelOutline,
+  RING_CENTER_HALF, RING_CENTER_ROTATION_DEG, RING_HERO_SPIN_MS, heroSpinDelta, pinwheelFaces, pinwheelOutline,
   type HeroKind, type Pt,
 } from './chapterHeroGeometry.ts';
 
@@ -16,6 +16,9 @@ export class ChapterHeroEmblem {
   private readonly body: Phaser.GameObjects.Graphics;
   private readonly sparkle: Phaser.GameObjects.Graphics;
   private readonly ring: Phaser.GameObjects.Graphics;
+  /** Ring hero only: the refresh arrow and the pinwheel turn about the emblem centre. */
+  private arrow?: Phaser.GameObjects.Graphics;
+  private pinwheel?: Phaser.GameObjects.Graphics;
   private ringSpeed = 1;
 
   constructor(scene: Phaser.Scene, x: number, y: number, kind: HeroKind, accent: number) {
@@ -23,7 +26,7 @@ export class ChapterHeroEmblem {
     this.sparkle = scene.add.graphics().setPosition(x, y);
     this.ring = scene.add.graphics().setPosition(x, y);
     this.drawDisc(accent);
-    if (kind === 'ring') this.drawRing(accent);
+    if (kind === 'ring') this.drawRing(accent, x, y);
     else if (kind === 'cluster') this.drawCluster(accent);
     else this.drawPrism();
     this.ring.lineStyle(1.2, accent, 0.45);
@@ -37,17 +40,24 @@ export class ChapterHeroEmblem {
   }
 
   graphics(): Phaser.GameObjects.Graphics[] {
-    return [this.body, this.sparkle, this.ring];
+    const spinners = [this.arrow, this.pinwheel].filter((g): g is Phaser.GameObjects.Graphics => g !== undefined);
+    return [this.body, this.sparkle, this.ring, ...spinners];
   }
 
   setRingSpeed(speed: number): void {
     this.ringSpeed = speed;
   }
 
-  /** The dotted ring turns once per 4 minutes (kit `spin` 240 s); everything else is static. */
+  /**
+   * The dotted ring turns once per 4 minutes (kit `spin` 240 s). In the ring hero the arrow and pinwheel also
+   * turn slowly (RING_HERO_SPIN_MS) to say that pieces rotate from chapter III on; everything else is static.
+   */
   update(deltaMs: number): void {
     if (isReducedMotion()) return;
-    this.ring.rotation += ((2 * Math.PI) / 240000) * deltaMs * this.ringSpeed * getMotionScale();
+    const scale = getMotionScale();
+    this.ring.rotation += ((2 * Math.PI) / 240000) * deltaMs * this.ringSpeed * scale;
+    if (this.arrow) this.arrow.rotation += heroSpinDelta(deltaMs, RING_HERO_SPIN_MS.arrow) * scale;
+    if (this.pinwheel) this.pinwheel.rotation += heroSpinDelta(deltaMs, RING_HERO_SPIN_MS.pinwheel) * scale;
   }
 
   private drawDisc(accent: number): void {
@@ -63,8 +73,7 @@ export class ChapterHeroEmblem {
     }
   }
 
-  private drawPinwheel(cx: number, cy: number, half: number, rotationDeg = 0): void {
-    const g = this.body;
+  private drawPinwheel(g: Phaser.GameObjects.Graphics, cx: number, cy: number, half: number, rotationDeg = 0): void {
     for (const face of pinwheelFaces(half, rotationDeg)) {
       g.fillStyle(face.color, 1);
       g.fillPoints(toPoints(face.points, cx, cy), true);
@@ -73,15 +82,17 @@ export class ChapterHeroEmblem {
     g.strokePoints(toPoints(pinwheelOutline(half, rotationDeg), cx, cy), true);
   }
 
-  private drawRing(accent: number): void {
-    const g = this.body;
-    g.lineStyle(5, accent, 1);
-    g.beginPath();
-    g.arc(0, 0, REFRESH_ARROW.radius, REFRESH_ARROW.startAngle, REFRESH_ARROW.endAngle, false);
-    g.strokePath();
-    g.fillStyle(accent, 1);
-    g.fillPoints(toPoints(REFRESH_ARROW.head), true);
-    this.drawPinwheel(0, 0, RING_CENTER_HALF, RING_CENTER_ROTATION_DEG);
+  private drawRing(accent: number, x: number, y: number): void {
+    // Own graphics so each can rotate about the emblem centre; the pinwheel starts at its mockup pose (22 degrees).
+    const arrow = this.arrow = this.body.scene.add.graphics().setPosition(x, y);
+    arrow.lineStyle(5, accent, 1);
+    arrow.beginPath();
+    arrow.arc(0, 0, REFRESH_ARROW.radius, REFRESH_ARROW.startAngle, REFRESH_ARROW.endAngle, false);
+    arrow.strokePath();
+    arrow.fillStyle(accent, 1);
+    arrow.fillPoints(toPoints(REFRESH_ARROW.head), true);
+    const pinwheel = this.pinwheel = this.body.scene.add.graphics().setPosition(x, y);
+    this.drawPinwheel(pinwheel, 0, 0, RING_CENTER_HALF, RING_CENTER_ROTATION_DEG);
   }
 
   private drawCluster(accent: number): void {
@@ -95,8 +106,8 @@ export class ChapterHeroEmblem {
         g.lineBetween(sx * (1 - t0), sy * (1 - t0), sx * (1 - t1), sy * (1 - t1));
       }
     }
-    for (const [sx, sy] of CLUSTER_SATELLITES) this.drawPinwheel(sx, sy, CLUSTER_SATELLITE_HALF);
-    this.drawPinwheel(0, 0, CLUSTER_CENTER_HALF);
+    for (const [sx, sy] of CLUSTER_SATELLITES) this.drawPinwheel(g, sx, sy, CLUSTER_SATELLITE_HALF);
+    this.drawPinwheel(g, 0, 0, CLUSTER_CENTER_HALF);
   }
 
   /** Placeholder for chapter V (no Menu mockup yet): the kit's prism triangle with a seven-colour fan. */

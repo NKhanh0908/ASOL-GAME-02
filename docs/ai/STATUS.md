@@ -8,6 +8,7 @@ Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; k
 - GX2 done (plan `docs/superpowers/plans/2026-10-09-galaxy-themes-chapters-4-6.md`, 11 tasks, then re-numbered): `Chapter` is 1–5 (5 Lăng Kính), themes for ring/cluster/prism from GalaxyKit/Menu3/Menu4, layered artwork with motion, hero emblems for the menu, a banner-only teaser band for chapter 5 on the map, dev params `?scene=menu&chapter=N` and `?scene=levelSelect&revealAll=1`.
 - Mapping (matches the mockup numbering, reviewer decision 2026-10-09): 3 Luân Chuyển = ring (Menu3, the 10 existing levels), 4 Hội Tụ = cluster (Menu4, the 6 planned 4-x levels), 5 Lăng Kính = prism (no levels yet). The old interim Họa Phẩm theme is gone. `rotationEnabled` still follows the level content, so the rotation chapter is chapter 4, now named Hội Tụ.
 - Verified: 97 test files / 1,179 tests, typecheck, build, and `scripts/check-galaxy-chapters.mjs` (menu heroes, layers, motion/reduced motion, every map band) all pass; menus and layers were compared side by side with the mockups.
+- Chapter III menu hero: the refresh arrow and the pinwheel turn slowly and steadily (clockwise, 18 s / 26 s per lap; `RING_HERO_SPIN_MS`) to signal that pieces rotate from chapter III on; they stop under reduced motion.
 - **Next step**: reviewer visual acceptance of chapters 3–5 (menu heroes and map bands), then decisions below. Not pushed or merged.
 
 ## Streams
