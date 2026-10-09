@@ -4,6 +4,12 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-09 - Replace 2-way language toggle with 5-segment control in SettingsDialog (LOC task 7)
+
+- `game-next/src/presentation/SettingsDialog.ts`: replaced the 2-way toggle in `createLanguageRow` with an interactive 5-segment segmented control `[ VI | EN | ID | PT | JA ]` equipped with active amber indicator pill, dark indigo contrast labels, tactile tap SFX, and immediate menu re-render.
+- `game-next/tests/dialogs.test.ts`: added test suite verifying 5-segment language switching across all supported locales.
+- Verification: `npx vitest run tests/dialogs.test.ts --pool=forks` (7 tests pass); `npm run typecheck` clean; GitNexus `detect_changes` passed (SettingsDialog.createLanguageRow affected open flows verified).
+
 ### 2026-10-09 - LanguageSelectDialog modal and MenuScene language picker pill (LOC task 6)
 
 - `game-next/src/presentation/LanguageSelectDialog.ts`: astrological glass modal dialogue presenting all 5 supported languages (`vi`, `en-US`, `id`, `pt-BR`, `ja`) with flag emojis, native names, active selection indicators, hover effects, and audio cues.

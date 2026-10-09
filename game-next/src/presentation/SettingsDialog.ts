@@ -5,6 +5,7 @@ import { COLOR_NUMBERS, COLOR_TOKENS, TYPO_TOKENS } from './designTokens.ts';
 import { designViewBounds } from './designViewport.ts';
 import { TEXTURE_KEYS } from './TextureFactory.ts';
 import { t, getLocale, setLocale } from './i18n.ts';
+import type { SupportedLocale } from '../localization/types.ts';
 import { setMotionScale } from './transitions/motion.ts';
 import { audioServices } from './audio/audioServices.ts';
 import { playUiCue } from './audio/uiCues.ts';
@@ -163,7 +164,7 @@ export class SettingsDialog {
   }
 
   /**
-   * Hàng chọn ngôn ngữ Song ngữ Tiếng Việt | English với 3D Pill Slider
+   * Hàng chọn ngôn ngữ 5 phân đoạn: [ VI | EN | ID | PT | JA ]
    */
   private createLanguageRow(y: number): void {
     if (!this.container) return;
@@ -173,80 +174,77 @@ export class SettingsDialog {
     const rowLabel = this.scene.add
       .text(-190, y, t('setting_language'), {
         fontFamily: TYPO_TOKENS.fontFamily.display,
-        fontSize: '17px',
+        fontSize: '16px',
         color: '#FFFFFF',
       })
       .setOrigin(0, 0.5);
 
-    // Pill Selector: [ VI ] [ EN ]
-    const pillW = 126;
-    const pillH = 38;
-    const pillX = 132;
+    // 5-Segment Pill Track: [ VI | EN | ID | PT | JA ]
+    const segments: Array<{ code: SupportedLocale; label: string }> = [
+      { code: 'vi', label: 'VI' },
+      { code: 'en-US', label: 'EN' },
+      { code: 'id', label: 'ID' },
+      { code: 'pt-BR', label: 'PT' },
+      { code: 'ja', label: 'JA' },
+    ];
+
+    const pillW = 245;
+    const pillH = 34;
+    const pillX = 85;
+    const slotW = pillW / segments.length;
 
     const pillBg = this.scene.add.graphics();
     pillBg.fillStyle(0x0e153b, 1.0);
-    pillBg.fillRoundedRect(pillX - pillW / 2, y - pillH / 2, pillW, pillH, 19);
-    pillBg.lineStyle(1.6, 0x3b4a82, 0.85);
-    pillBg.strokeRoundedRect(pillX - pillW / 2, y - pillH / 2, pillW, pillH, 19);
+    pillBg.fillRoundedRect(pillX - pillW / 2, y - pillH / 2, pillW, pillH, 17);
+    pillBg.lineStyle(1.5, 0x3b4a82, 0.85);
+    pillBg.strokeRoundedRect(pillX - pillW / 2, y - pillH / 2, pillW, pillH, 17);
 
-    // Tab hoạt động (Active Pill) nổi khối 3D vàng hổ phách
+    // Vị trí phân đoạn đang kích hoạt
+    const activeIdx = Math.max(0, segments.findIndex((s) => s.code === current));
+    const activeSlotCenterX = pillX - pillW / 2 + (activeIdx + 0.5) * slotW;
+    const activePillW = slotW - 3;
+    const activePillH = pillH - 4;
+
     const activeBg = this.scene.add.graphics();
-    const isVi = current === 'vi';
-    const activeX = isVi ? pillX - pillW / 2 + 2 : pillX;
-    const activeW = pillW / 2 - 2;
-
     activeBg.fillStyle(0xffa800, 1.0);
-    activeBg.fillRoundedRect(activeX, y - pillH / 2 + 2, activeW, pillH - 4, 17);
+    activeBg.fillRoundedRect(activeSlotCenterX - activePillW / 2, y - activePillH / 2, activePillW, activePillH, 14);
     activeBg.fillStyle(0xffd54f, 0.95);
-    activeBg.fillRoundedRect(activeX + 1, y - pillH / 2 + 2, activeW - 2, (pillH - 4) * 0.6, 15);
-    activeBg.lineStyle(1.8, 0x3b2779, 1.0);
-    activeBg.strokeRoundedRect(activeX, y - pillH / 2 + 2, activeW, pillH - 4, 17);
+    activeBg.fillRoundedRect(activeSlotCenterX - activePillW / 2 + 1, y - activePillH / 2, activePillW - 2, activePillH * 0.6, 12);
+    activeBg.lineStyle(1.6, 0x3b2779, 1.0);
+    activeBg.strokeRoundedRect(activeSlotCenterX - activePillW / 2, y - activePillH / 2, activePillW, activePillH, 14);
 
-    // Nửa bên chọn VI (x: pillX - 30)
-    const viText = this.scene.add
-      .text(pillX - 31, y, 'VI', {
-        fontFamily: TYPO_TOKENS.fontFamily.display,
-        fontSize: '16px',
-        color: isVi ? '#22145A' : '#7A89B8',
-        fontStyle: 'bold',
-      })
-      .setOrigin(0.5)
-      .setInteractive({ useHandCursor: true });
+    const textElements: Phaser.GameObjects.Text[] = [];
 
-    viText.on('pointerdown', () => {
-      if (getLocale() !== 'vi') {
-        setLocale('vi');
-        this.close();
-        this.open();
-        if ('buildMainMenu' in this.scene) {
-          (this.scene as any).buildMainMenu(this.progressRepo.read().progress.completed);
+    segments.forEach((seg, i) => {
+      const slotCenterX = pillX - pillW / 2 + (i + 0.5) * slotW;
+      const isActive = i === activeIdx;
+
+      const segText = this.scene.add
+        .text(slotCenterX, y, seg.label, {
+          fontFamily: TYPO_TOKENS.fontFamily.display,
+          fontSize: '13px',
+          color: isActive ? '#22145A' : '#7A89B8',
+          fontStyle: 'bold',
+        })
+        .setOrigin(0.5)
+        .setInteractive({ useHandCursor: true });
+
+      segText.on('pointerdown', () => {
+        if (getLocale() !== seg.code) {
+          playUiCue(this.scene, 'tap');
+          setLocale(seg.code);
+          this.close();
+          this.open();
+          if ('buildMainMenu' in this.scene) {
+            (this.scene as any).buildMainMenu(this.progressRepo.read().progress.completed);
+          }
         }
-      }
+      });
+
+      textElements.push(segText);
     });
 
-    // Nửa bên chọn EN (x: pillX + 30)
-    const enText = this.scene.add
-      .text(pillX + 31, y, 'EN', {
-        fontFamily: TYPO_TOKENS.fontFamily.display,
-        fontSize: '16px',
-        color: !isVi ? '#22145A' : '#7A89B8',
-        fontStyle: 'bold',
-      })
-      .setOrigin(0.5)
-      .setInteractive({ useHandCursor: true });
-
-    enText.on('pointerdown', () => {
-      if (getLocale() !== 'en') {
-        setLocale('en');
-        this.close();
-        this.open();
-        if ('buildMainMenu' in this.scene) {
-          (this.scene as any).buildMainMenu(this.progressRepo.read().progress.completed);
-        }
-      }
-    });
-
-    this.container.add([rowLabel, pillBg, activeBg, viText, enText]);
+    this.container.add([rowLabel, pillBg, activeBg, ...textElements]);
   }
 
   /**

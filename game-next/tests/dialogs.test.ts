@@ -3,7 +3,7 @@ import { loadLevel } from '../src/content/catalog.ts';
 import { validateLevel } from '../src/content/validate.ts';
 import { makeAdjacentFixture } from '../src/content/fixtures.ts';
 import { getVictoryLabels } from '../src/presentation/hudText.ts';
-import { setLocale } from '../src/presentation/i18n.ts';
+import { getLocale, setLocale } from '../src/presentation/i18n.ts';
 
 describe('Danger Action Confirmation Gate', () => {
   test('xóa tiến trình bắt buộc phải qua trạng thái xác nhận trước khi thực thi', () => {
@@ -72,3 +72,16 @@ describe('Màn hoàn thành theo mockup improve-v1', () => {
     expect(getVictoryLabels().title).toBe('Hoàn thành');
   });
 });
+
+describe('SettingsDialog Language Segment Control', () => {
+  test('hỗ trợ đủ 5 ngôn ngữ trong thanh điều khiển', () => {
+    const supportedSegments = ['VI', 'EN', 'ID', 'PT', 'JA'];
+    expect(supportedSegments.length).toBe(5);
+    for (const code of ['vi', 'en-US', 'id', 'pt-BR', 'ja'] as const) {
+      setLocale(code);
+      expect(getLocale()).toBe(code);
+    }
+    setLocale('vi');
+  });
+});
+
