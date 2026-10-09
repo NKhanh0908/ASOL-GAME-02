@@ -4,6 +4,24 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-09 - Design spec for interchangeable piece anchors and equivalence grouping
+
+- `docs/superpowers/specs/2026-10-09-interchangeable-piece-anchors-design.md`: authored architectural design spec for grouping geometrically identical pieces at runtime, pooling their anchors, enforcing single-occupancy per anchor, and illuminating target silhouettes when hovering equivalent pieces.
+- `docs/ai/DOCS-INDEX.md`: registered IPA spec row in active and upcoming table.
+- Verification: Self-reviewed spec for placeholders, internal consistency, scope, and ambiguity.
+
+### 2026-10-09 - Wire Chapter 1 Endless Gate into level select and play scene
+
+- `game-next/src/content/endless/ch1Pool.json`: packaged 149 offline-generated, verified unique-solution Chapter 1 Endless levels starting from `endless-002` (dropped `endless-001`).
+- `game-next/src/content/endless/endlessCatalog.ts`: service for loading endless levels, dynamic document generation with title `Khởi Nguyên - X`, and localStorage progress persistence (`mirror.endless.ch1.level`).
+- `game-next/src/presentation/chapterEndlessGate.ts`: made `title` optional; omitted `labelText` when no title is provided, centering the badge pill directly beneath the portal rings with an adjusted hit zone.
+- `game-next/src/presentation/LevelSelectScene.ts`: removed the "Ải Vô Tận" / "Endless Gate" title text across all languages; now displays only the clean badge pill ("Khởi Nguyên - X" when unlocked, or localized "Sắp mở" / "Coming soon" when locked).
+- `game-next/src/presentation/PlayScene.ts`: supported `mode: 'endless'`, dynamic HUD title `Khởi Nguyên - X`, endless subtitle in `Hud.ts`, auto-advancement to level X + 1 on win with progress saved, and returning to LevelSelectScene map.
+- `game-next/src/launchParams.ts` & `game-next/src/main.ts`: enabled direct dev launch parameter `?scene=play&mode=endless&chapter=1&level=X`.
+- `game-next/tests/endlessCh1.test.ts`: minimal unit test verifying endless catalog loading (starting from `endless-002`), pool cycling, and localStorage progress persistence.
+- Verification: Vitest `tests/endlessCh1.test.ts` (3 tests pass in 70ms); `npm run typecheck` clean (0 errors); `npm run build` succeeds (327 modules transformed, built in 8.53s); GitNexus `detect_changes` passed with low risk (0 affected execution flows).
+
+
 ### 2026-10-09 - Fix mobile web bottom clipping (100vh → 100dvh)
 
 - `game-next/src/style.css`: `#game` height and `max-width` now use `100dvh` (with `100vh` fallback). On mobile browsers `vh` is the largest viewport (address bar hidden), so the container was taller than the visible area while `viewport.ts` sized the buffer from `window.innerHeight`; the bottom ~7–10% was cut off. The Android app was unaffected (no browser chrome).

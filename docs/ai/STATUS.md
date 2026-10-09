@@ -1,14 +1,12 @@
-# Status — updated 2026-10-09 (full text localization & audio/gate labels completed)
+# Status — updated 2026-10-09 (wired Chapter 1 Endless gate and refined UI)
 
 Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; keep this file ≤ 60 lines.
 
 ## Now
 
-- Branch: `main` (`feat/multi-language-localization` merged to `main`).
-- Completed: Globalized chapter names, Menu knowledge taglines, victory verses, audio settings labels (`t('setting_music')`, `t('setting_sfx')`), and endless gate badges across all 5 locales (`en-US`, `vi`, `id`, `pt-BR`, `ja`).
-- Verification: 36 localization/UI tests pass, typecheck and Vite build clean.
-
-- Latest fix: mobile web bottom clipping — `#game` in `style.css` uses `100dvh`; awaiting phone check after Pages deploy.
+- Branch: `main`.
+- Completed: Wired Chapter 1 Endless mode into Level Select gate and Play scene. Removed "Ải Vô Tận" / "Endless Gate" title text across all languages in Level Select, displaying only the badge pill (`Khởi Nguyên - X` or `Sắp mở`). Filtered out `endless-001` so endless pool starts directly at `endless-002`.
+- Verification: Vitest `tests/endlessCh1.test.ts` (3 pass); `npm run typecheck` clean; `npm run build` succeeds (327 modules, 8.53s); GitNexus `detect_changes` passed (low risk).
 
 ## Streams
 
@@ -29,17 +27,15 @@ Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; k
 | CH1H chapter 1 hard tail (1-7…1-9) | **plan approved; ready to execute** | `docs/superpowers/plans/2026-10-06-ch1h-chapter-1-hard-tail.md` |
 | Chapter 4 content (Hội Tụ, rotation levels) | **not started**; 4-1…4-6 planned; 22 of 28 approved | `docs/superpowers/specs/2026-10-02-b-level-kit-chapters-design.md` |
 | **LOC multi-language localization (5 locales)** | **complete; merged to `main`** | `docs/superpowers/plans/2026-10-09-multi-language-localization.md` |
+| **END-1 Chapter 1 endless runtime gate** | **complete; wired to map & play** | `docs/superpowers/specs/2026-10-08-ch1-endless-tangram-generator-design.md` |
+| **IPA interchangeable piece anchors** | **spec approved; ready to plan** | `docs/superpowers/specs/2026-10-09-interchangeable-piece-anchors-design.md` |
 
 ## Open decisions / blockers
 
 - **GX2 follow-ups for the reviewer**: (1) rotation levels re-homing; (2) chapter V Menu hero placeholder; (3) chapter 3 ten nodes on ellipse; (4) texture memory check on device.
-- **Spec language**: AGENTS.md says English; reviewer to decide.
-- Remaining content work: nine levels (chapter 4: 4-1…4-6, CH1H: 1-7…1-9).
-- **Endless Chapter 2**: Next stream on branch `feat/endless-ch2` (prototype in stash@{1}).
+- **Endless Chapter 2**: Next stream on branch `feat/endless-ch2`.
 
 ## Gotchas learned recently
 
-- Visual QA: `.shots/galaxy/`; check-galaxy-ui and check-galaxy-chapters need :5173 server.
 - Vitest on Windows: use `npm test -- --maxWorkers=2 --minWorkers=1 --pool=forks`.
 - Vite build requires filesystem bypass on Windows to resolve realpath for `index.html`.
-- `formatNodeLabel` tests need `setLocale('vi')` to avoid relying on host OS `navigator.language`.
