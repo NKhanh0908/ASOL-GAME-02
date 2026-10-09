@@ -19,15 +19,22 @@ import { playUiCue } from './audio/uiCues.ts';
 import { CHAPTER_ONE_HERO_SCALE, DualJewelEmblem } from './menu/DualJewelEmblem.ts';
 import { MENU_K, createPrimaryButtonImage, drawGear, drawGlassPanel } from './menu/menuButtons.ts';
 import { strokeDiamond } from './menu/diamondMotif.ts';
-import { resolveCurrentGalaxyTheme, getChapterProgress } from './galaxyTheme.ts';
+import { resolveCurrentGalaxyTheme, resolveGalaxyTheme, getChapterProgress } from './galaxyTheme.ts';
+import { ChapterHeroEmblem } from './menu/ChapterHeroEmblem.ts';
+import { heroKindFor } from './menu/chapterHeroGeometry.ts';
 import type { GalaxyTheme } from './galaxyTheme.ts';
 import { ChapterProgressBadge } from './menu/ChapterProgressBadge.ts';
 import { addGalaxyArtwork, galaxyGradient, preloadGalaxyArtwork } from './GalaxyArtwork.ts';
 
+/** The surface MenuScene drives on whichever hero emblem the chapter uses. */
+type MenuEmblem = Pick<DualJewelEmblem, 'graphics' | 'setRingSpeed' | 'update'>;
+
 export class MenuScene extends Phaser.Scene implements Choreographed {
   readonly directorKey = 'MenuScene' as const;
   private progressRepo!: ProgressRepository;
-  private emblem!: DualJewelEmblem;
+  private emblem!: MenuEmblem;
+  /** Dev-only theme override from ?chapter=N. */
+  private previewChapter?: number;
   private uiContainer!: Phaser.GameObjects.Container;
   private titleBlock!: Phaser.GameObjects.Container;
   private primaryButton!: Phaser.GameObjects.Container;
@@ -56,8 +63,18 @@ export class MenuScene extends Phaser.Scene implements Choreographed {
     super({ key: 'MenuScene' });
   }
 
+  init(data: { chapter?: number } = {}): void {
+    this.previewChapter = data.chapter;
+  }
+
+  private currentTheme(completed: readonly string[]): GalaxyTheme {
+    return this.previewChapter ? resolveGalaxyTheme(this.previewChapter) : resolveCurrentGalaxyTheme(completed);
+  }
+
   preload(): void {
-    preloadGalaxyArtwork(this);
+    // Only the current chapter's artwork is needed here; the map loads the rest.
+    const { progress } = createProgressRepository(localStorage, campaignManifest, 'oracle-v1').read();
+    preloadGalaxyArtwork(this, [this.currentTheme(progress.completed).id]);
   }
 
   create(): void {
@@ -72,16 +89,20 @@ export class MenuScene extends Phaser.Scene implements Choreographed {
     this.blockOffsetY = 0;
     this.viewHeight = view.height;
 
-    const theme = resolveCurrentGalaxyTheme(progress.completed);
+    const theme = this.currentTheme(progress.completed);
     this.galaxySky = this.add.image(0, 0, galaxyGradient(this, theme))
       .setOrigin(0).setDisplaySize(view.width, view.height).setDepth(-2);
     this.galaxy = addGalaxyArtwork(this, theme, 360, view.height * 0.52, 900).setDepth(-1);
 
     // 2. Biểu tượng Ngọc Đôi (Dual Jewels XOR) lơ lửng ở trung tâm
-    // Chapter I uses the static Menu1 hero; later chapters keep the animated XOR emblem.
+    // Chapter I uses the static Menu1 hero, chapters IV-VI their Menu3/Menu4 heroes; the rest keep the animated XOR emblem.
     const heroChapterOne = theme.chapter === 1;
-    this.emblem = new DualJewelEmblem(this, 360, view.height * 0.52, heroChapterOne ? theme.colors.accent : undefined);
-    this.emblem.graphics().forEach(graphic => graphic.setScale(heroChapterOne ? CHAPTER_ONE_HERO_SCALE : 1.35));
+    const heroKind = heroKindFor(theme.id);
+    const heroStatic = heroChapterOne || heroKind !== undefined;
+    this.emblem = heroKind
+      ? new ChapterHeroEmblem(this, 360, view.height * 0.52, heroKind, theme.colors.accent)
+      : new DualJewelEmblem(this, 360, view.height * 0.52, heroChapterOne ? theme.colors.accent : undefined);
+    this.emblem.graphics().forEach(graphic => graphic.setScale(heroStatic ? CHAPTER_ONE_HERO_SCALE : 1.35));
 
     // 3. UI Container chính
     this.uiContainer = this.add.container(0, this.blockOffsetY);
@@ -99,7 +120,7 @@ export class MenuScene extends Phaser.Scene implements Choreographed {
     // Xác định màn kế tiếp và Theme thiên hà tương ứng
     const nextResolution = resolveNextCampaignLevel(campaignManifest, completedLevels);
     const targetLevel = nextResolution.level;
-    const currentTheme = resolveCurrentGalaxyTheme(completedLevels);
+    const currentTheme = this.currentTheme(completedLevels);
     const chProgress = getChapterProgress(currentTheme.chapter, completedLevels);
 
     const btnLabelText =

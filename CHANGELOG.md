@@ -4,6 +4,11 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-09 - Ring, cluster and prism menu hero emblems (GX2 task 8)
+
+- `game-next/src/presentation/menu/chapterHeroGeometry.ts` (new, pure): pinwheel faces/outline, cluster satellites, refresh-arrow arc, `heroKindFor`. `menu/ChapterHeroEmblem.ts` (new): Menu3 pinwheel + refresh arrow (ring), Menu4 pinwheel + four dashed-linked satellites (cluster), placeholder prism glyph; dotted r=132 ring turns once per 240 s. `MenuScene.ts`: picks the emblem by theme, loads only the current theme's artwork in `preload`, accepts a dev-only `chapter` override via `init`. `tests/chapterHeroGeometry.test.ts` (new). The dotted-ring drawing is duplicated from `DualJewelEmblem` on purpose to avoid touching the chapter I hero.
+- Verification: `npx vitest run tests/chapterHeroGeometry.test.ts --pool=forks` (5 tests; failed first with the module missing) and `npx tsc --noEmit` pass. Visual comparison with Menu3/Menu4 happens in task 10 once the `?chapter=` parameter exists (task 9). GitNexus MCP unavailable; no impact analysis run for `MenuScene.create`/`buildMainMenu`.
+
 ### 2026-10-09 - Chapters 4-6 on the campaign map (GX2 task 7)
 
 - `game-next/src/presentation/LevelSelectScene.ts`: loads artwork for every themed galaxy, lays the map out with teaser bands, draws band artwork for every chapter except Họa Phẩm, and shows the mockup banner (`<galaxy type> · done/total`, or `<galaxy type> · Sắp ra mắt` for chapters without levels). `src/presentation/i18n.ts`: `map_coming_soon`. `tests/i18n.test.ts`: new assertions.
