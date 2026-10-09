@@ -35,3 +35,21 @@ describe('computeMapReveal', () => {
     expect(reveal.sealedUntilChapter).toBeNull();
   });
 });
+
+describe('computeMapReveal with teaser bands', () => {
+  const teased = layoutCampaignMap(entries, [4, 5]);
+
+  it('shows the next chapter (a teaser) as the preview and seals the one after', () => {
+    const reveal = computeMapReveal(teased, '3-1');
+    expect(reveal.limitY).toBe(teased.chapters[3].bottom);
+    expect(reveal.limitY).toBeLessThan(teased.totalHeight);
+    expect(reveal.sealedUntilChapter).toBe(3);
+  });
+
+  it('opens the map when the only remaining chapter is the last teaser', () => {
+    const single = layoutCampaignMap(entries, [4]);
+    const reveal = computeMapReveal(single, '3-1');
+    expect(reveal.limitY).toBe(single.totalHeight);
+    expect(reveal.sealedUntilChapter).toBeNull();
+  });
+});

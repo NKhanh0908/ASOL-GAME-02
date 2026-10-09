@@ -19,6 +19,8 @@ const CHAPTER_GAP_Y = 100;
 const BANNER_OFFSET_Y = 85;
 const BAND_OFFSET_Y = 170;
 const BOTTOM_PADDING = 240;
+/** Room reserved for a themed chapter that has no levels yet (banner plus its galaxy artwork). */
+const TEASER_SPAN_Y = 1000;
 
 /**
  * Chòm sao 10 nút (Họa Phẩm): chuỗi đèn lồng — một nút giữa, một cặp hai
@@ -48,7 +50,7 @@ function zigzagX(index: number): number {
  * Toạ độ nút và dải chương suy ra từ manifest: mỗi nhóm chương liền nhau là
  * một chòm sao. Chòm sao đúng 10 nút dùng TEN_NODE_PATTERN, còn lại zigzag.
  */
-export function layoutCampaignMap(entries: readonly MapEntry[]): CampaignMapLayout {
+export function layoutCampaignMap(entries: readonly MapEntry[], teaserChapters: readonly Chapter[] = []): CampaignMapLayout {
   const groups: Array<{ chapter: Chapter; entries: MapEntry[] }> = [];
   for (const entry of entries) {
     const last = groups[groups.length - 1];
@@ -92,7 +94,22 @@ export function layoutCampaignMap(entries: readonly MapEntry[]): CampaignMapLayo
     });
   });
 
-  const totalHeight = nodes.length > 0 ? nodes[nodes.length - 1].y + BOTTOM_PADDING : FIRST_NODE_Y;
+  // Themed chapters without levels: a banner and room for their artwork, no nodes.
+  let teaserEndY: number | null = null;
+  for (const chapter of teaserChapters) {
+    cursorY += CHAPTER_GAP_Y;
+    const firstY = cursorY;
+    bands.push({
+      chapter,
+      bannerY: firstY - BANNER_OFFSET_Y,
+      top: firstY - BAND_OFFSET_Y,
+      nodeCount: 0,
+    });
+    cursorY = firstY + TEASER_SPAN_Y;
+    teaserEndY = cursorY;
+  }
+
+  const totalHeight = teaserEndY ?? (nodes.length > 0 ? nodes[nodes.length - 1].y + BOTTOM_PADDING : FIRST_NODE_Y);
   const chapters: ChapterBand[] = bands.map((band, i) => ({
     ...band,
     bottom: i + 1 < bands.length ? bands[i + 1].top : totalHeight,

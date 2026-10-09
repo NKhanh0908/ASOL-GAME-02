@@ -4,6 +4,11 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-09 - Banner-only teaser bands in the campaign map layout (GX2 task 3)
+
+- `game-next/src/presentation/constellationLayout.ts`: `layoutCampaignMap(entries, teaserChapters = [])` appends node-less bands (`nodeCount: 0`, 1000 world px of room) for themed chapters without levels; layout without teasers is unchanged. `tests/levelSelect.test.ts`, `tests/mapReveal.test.ts`: band geometry and fog behaviour with teasers (`computeMapReveal` needed no change).
+- Verification: `npx vitest run tests/levelSelect.test.ts tests/mapReveal.test.ts --pool=forks` (25 tests) and `npx tsc --noEmit` pass. GitNexus MCP unavailable; no impact analysis run.
+
 ### 2026-10-09 - Galaxy themes for chapters 4-6 (GX2 task 2)
 
 - `game-next/src/presentation/galaxyTheme.ts`: themes for Luân Chuyển (ring), Hội Tụ (cluster) and Lăng Kính (prism) with the kit/Menu3/Menu4 colors and mockup fact lines; chapter 3 id renamed `ring` -> `tapestry` (look unchanged); `nodeColors`, `nodeAccent()` and `teaserChapters()`. `menu/ChapterProgressBadge.ts`: 7 segments when a chapter has no levels yet. `LevelSelectScene.ts`: node accent via `nodeAccent`. `tests/galaxyTheme.test.ts`: new cases.

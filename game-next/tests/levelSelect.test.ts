@@ -23,6 +23,25 @@ describe('Constellation Map Layout Generator', () => {
     expect(layout.nodes.map((n) => n.id)).toEqual(campaignManifest.map((e) => e.id));
   });
 
+  test('teaser chapters become node-less bands that extend the map', () => {
+    const plain = layoutCampaignMap(campaignManifest);
+    const layout = layoutCampaignMap(campaignManifest, [5, 6]);
+    expect(layout.chapters.map((c) => [c.chapter, c.nodeCount])).toEqual([[1, 6], [2, 6], [3, 10], [4, 6], [5, 0], [6, 0]]);
+    expect(layout.nodes).toEqual(plain.nodes);
+    layout.chapters.forEach((band, i) => {
+      if (i > 0) expect(band.top).toBe(layout.chapters[i - 1].bottom);
+    });
+    expect(layout.chapters.at(-1)!.bottom).toBe(layout.totalHeight);
+    for (const band of layout.chapters.slice(-2)) expect(band.bottom - band.top).toBeGreaterThanOrEqual(1000);
+    const lastNodeY = Math.max(...layout.nodes.map((n) => n.y));
+    expect(layout.chapters[4].bannerY - lastNodeY).toBeGreaterThanOrEqual(60);
+    expect(layout.totalHeight).toBeGreaterThan(plain.totalHeight + 2000);
+  });
+
+  test('without teasers the layout is unchanged', () => {
+    expect(layoutCampaignMap(campaignManifest, [])).toEqual(layoutCampaignMap(campaignManifest));
+  });
+
   test('xác định đúng 4 trạng thái node theo tiến trình', () => {
     const getNodeState = (manifest: typeof campaignManifest, completed: string[], id: string) => {
       const access = levelAccess(manifest, completed, id);
