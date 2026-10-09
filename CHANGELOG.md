@@ -4,6 +4,11 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-09 - Chapters 4-6 on the campaign map (GX2 task 7)
+
+- `game-next/src/presentation/LevelSelectScene.ts`: loads artwork for every themed galaxy, lays the map out with teaser bands, draws band artwork for every chapter except Họa Phẩm, and shows the mockup banner (`<galaxy type> · done/total`, or `<galaxy type> · Sắp ra mắt` for chapters without levels). `src/presentation/i18n.ts`: `map_coming_soon`. `tests/i18n.test.ts`: new assertions.
+- Verification: `npx vitest run tests/i18n.test.ts tests/levelSelect.test.ts tests/mapReveal.test.ts tests/galaxyTheme.test.ts --pool=forks` and `npx tsc --noEmit` pass. Browser smoke (Playwright, progress = chapters 1-3 done): no page or console errors; chapter 4 shows the standing ring with orbiting streaks and six locked nodes, chapter 5 shows the cluster art with the 'Cụm thiên hà · Sắp ra mắt' banner behind the fog; fog limit is the end of chapter 5. Known gap vs GalaxyMap mockup: chapter 4 nodes still use the generic zigzag instead of sitting on the ring.
+
 ### 2026-10-09 - Layered ring, cluster and prism galaxy artwork (GX2 task 6)
 
 - `game-next/src/presentation/galaxyArtFiles.ts` (new, pure): theme id -> SVG stems, `isLayeredGalaxy`. `galaxyLayers.ts` (new): ring (rotated 90 degrees, breathing core, two orbit streaks), cluster (web pulse, breathing core, 4 staggered galaxy fades, 3 meteors), prism (beam, fan, glass, 3 floating shard layers); intros snap to the final state under reduced motion. `GalaxyArtwork.ts`: `preloadGalaxyArtwork(scene, themeIds)` loads only the listed themes (default unchanged) and `addGalaxyArtwork` has a layered branch plus a per-frame animator list. `tests/galaxyArt.test.ts` (new).

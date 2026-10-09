@@ -22,7 +22,7 @@ import { applySteps, orderByDistance } from './transitions/choreography.ts';
 import type { Parts, Poseable } from './transitions/choreography.ts';
 import { MAP_OUT_TO_MENU, MAP_OUT_TO_PLAY, MAP_SPECIAL, mapIn } from './transitions/routes.ts';
 import { playUiCue } from './audio/uiCues.ts';
-import { resolveGalaxyTheme, getChapterProgress, nodeAccent } from './galaxyTheme.ts';
+import { GALAXY_THEMES, resolveGalaxyTheme, getChapterProgress, nodeAccent, teaserChapters } from './galaxyTheme.ts';
 import { chapterRoman } from '../content/chapters.ts';
 import { ChapterEndlessGate } from './chapterEndlessGate.ts';
 import { createGalaxyNodeBody, NODE_LABEL_Y, NODE_SCALE } from './galaxyNode.ts';
@@ -93,7 +93,7 @@ export class LevelSelectScene extends Phaser.Scene implements Choreographed {
   }
 
   preload(): void {
-    preloadGalaxyArtwork(this);
+    preloadGalaxyArtwork(this, Object.values(GALAXY_THEMES).map((theme) => theme.id));
   }
 
   init(data: { mode?: LevelAccessMode; previewCompletedThrough?: string; focusLevelId?: string } = {}): void {
@@ -286,7 +286,7 @@ export class LevelSelectScene extends Phaser.Scene implements Choreographed {
     this.backdropParts = [];
 
     // 1. Toạ độ nút và dải chương suy ra từ manifest (constellationLayout.ts)
-    const layout = layoutCampaignMap(campaignManifest);
+    const layout = layoutCampaignMap(campaignManifest, teaserChapters(campaignManifest));
     const nodes: NodeInfo[] = layout.nodes.map((mapNode) => {
       const access = levelAccess(campaignManifest, completedLevels, mapNode.id, this.mode);
       let state: NodeInfo['state'] = 'locked';
@@ -318,7 +318,7 @@ export class LevelSelectScene extends Phaser.Scene implements Choreographed {
     this.backdropParts.push(sky);
     for (const band of layout.chapters) {
       const gTheme = resolveGalaxyTheme(band.chapter);
-      if (band.chapter <= 2) {
+      if (gTheme.id !== 'tapestry') {
         const y = (band.top + band.bottom) / 2;
         const art = addGalaxyArtwork(this, gTheme, 360, y, 1050);
         this.mapContainer.add(art);
@@ -398,6 +398,8 @@ export class LevelSelectScene extends Phaser.Scene implements Choreographed {
       pillBg.strokeRoundedRect(-pillWidth / 2, -pillHeight / 2, pillWidth, pillHeight, pillRadius);
 
       const romanNumeral = chapterRoman(band.chapter);
+      const isTeaser = band.nodeCount === 0;
+      const showType = band.chapter !== 3;
       const mainTitle = this.add
         .text(0, -13, band.chapter <= 2 ? `Chương ${romanNumeral} · ${gTheme.name}` : getChapterLabel(band.chapter), {
           fontFamily: TYPO_TOKENS.fontFamily.display,
@@ -408,7 +410,9 @@ export class LevelSelectScene extends Phaser.Scene implements Choreographed {
         .setOrigin(0.5);
 
       const subTitle = this.add
-        .text(0, 17, `${band.chapter <= 2 ? gTheme.galaxyType + ' · ' : ''}${chProgress.completed}/${chProgress.total}`, {
+        .text(0, 17, isTeaser
+          ? `${gTheme.galaxyType} · ${t('map_coming_soon')}`
+          : `${showType ? gTheme.galaxyType + ' · ' : ''}${chProgress.completed}/${chProgress.total}`, {
           fontFamily: TYPO_TOKENS.fontFamily.sans,
           fontSize: '16px',
           color: gTheme.colors.accentHex,
