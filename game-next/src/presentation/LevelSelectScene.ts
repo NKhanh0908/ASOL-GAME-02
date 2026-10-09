@@ -45,10 +45,9 @@ type NodeInfo = {
 const CHAPTER_TINTS: Readonly<Record<Chapter, { color: number; alpha: number }>> = {
   1: { color: 0x7fb8ff, alpha: 0.04 }, // Khởi Nguyên: xanh trời
   2: { color: 0xb48cff, alpha: 0.06 }, // Giao Thoa: tím giao thoa
-  3: { color: 0x7ee0c8, alpha: 0.05 }, // Họa Phẩm: ngọc bích
-  4: { color: 0xffb86b, alpha: 0.06 }, // Luân Chuyển: hổ phách hoàng hôn
-  5: { color: 0xffe9a8, alpha: 0.04 }, // Hội Tụ: ánh vàng nhạt
-  6: { color: 0x7fe3ff, alpha: 0.04 }, // Lăng Kính: xanh lăng kính
+  3: { color: 0xffb86b, alpha: 0.06 }, // Luân Chuyển: hổ phách hoàng hôn
+  4: { color: 0xffe9a8, alpha: 0.04 }, // Hội Tụ: ánh vàng nhạt
+  5: { color: 0x7fe3ff, alpha: 0.04 }, // Lăng Kính: xanh lăng kính
 };
 
 export class LevelSelectScene extends Phaser.Scene implements Choreographed {
@@ -321,13 +320,11 @@ export class LevelSelectScene extends Phaser.Scene implements Choreographed {
     this.backdropParts.push(sky);
     for (const band of layout.chapters) {
       const gTheme = resolveGalaxyTheme(band.chapter);
-      if (gTheme.id !== 'tapestry') {
-        const y = (band.top + band.bottom) / 2;
-        const art = addGalaxyArtwork(this, gTheme, 360, y, 1050, { rx: 295, ry: 375 });
-        this.mapContainer.add(art);
-        this.galaxyLayers.push({ art, y });
-        this.backdropParts.push(art);
-      }
+      const y = (band.top + band.bottom) / 2;
+      const art = addGalaxyArtwork(this, gTheme, 360, y, 1050, { rx: 295, ry: 375 });
+      this.mapContainer.add(art);
+      this.galaxyLayers.push({ art, y });
+      this.backdropParts.push(art);
     }
 
     // 3. Vẽ các đường cong Bezier mềm mại kết nối chòm sao (B3)
@@ -402,7 +399,6 @@ export class LevelSelectScene extends Phaser.Scene implements Choreographed {
 
       const romanNumeral = chapterRoman(band.chapter);
       const isTeaser = band.nodeCount === 0;
-      const showType = band.chapter !== 3;
       const mainTitle = this.add
         .text(0, -13, band.chapter <= 2 ? `Chương ${romanNumeral} · ${gTheme.name}` : getChapterLabel(band.chapter), {
           fontFamily: TYPO_TOKENS.fontFamily.display,
@@ -415,7 +411,7 @@ export class LevelSelectScene extends Phaser.Scene implements Choreographed {
       const subTitle = this.add
         .text(0, 17, isTeaser
           ? `${gTheme.galaxyType} · ${t('map_coming_soon')}`
-          : `${showType ? gTheme.galaxyType + ' · ' : ''}${chProgress.completed}/${chProgress.total}`, {
+          : `${gTheme.galaxyType} · ${chProgress.completed}/${chProgress.total}`, {
           fontFamily: TYPO_TOKENS.fontFamily.sans,
           fontSize: '16px',
           color: gTheme.colors.accentHex,

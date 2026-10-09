@@ -125,17 +125,17 @@ describe('Bốn chương và luật xoay (CH-01, CH-04)', () => {
   test('bảng chương: tên, số La Mã, chỉ chương 4 xoay', () => {
     expect(CHAPTERS.map((c) => [c.chapter, c.roman, c.name, c.rotationEnabled])).toEqual([
       [1, 'I', 'Khởi Nguyên', false], [2, 'II', 'Giao Thoa', false],
-      [3, 'III', 'Họa Phẩm', false], [4, 'IV', 'Luân Chuyển', true],
-      [5, 'V', 'Hội Tụ', false], [6, 'VI', 'Lăng Kính', false],
+      [3, 'III', 'Luân Chuyển', false], [4, 'IV', 'Hội Tụ', true],
+      [5, 'V', 'Lăng Kính', false],
     ]);
-    expect(chapterInfo(7)).toBeUndefined();
+    expect(chapterInfo(6)).toBeUndefined();
     expect(chapterOfLevelId('3-10')).toBe(3);
     expect(chapterOfLevelId('4-1')).toBe(4);
-    expect(chapterOfLevelId('6-2')).toBe(6);
+    expect(chapterOfLevelId('5-2')).toBe(5);
     expect(chapterOfLevelId('dev-shapes-v2')).toBeUndefined();
-    expect(chapterLabel(3)).toBe('Chương III · Họa Phẩm');
-    expect(chapterLabel(5)).toBe('Chương V · Hội Tụ');
-    expect(chapterRoman(6)).toBe('VI');
+    expect(chapterLabel(3)).toBe('Chương III · Luân Chuyển');
+    expect(chapterLabel(5)).toBe('Chương V · Lăng Kính');
+    expect(chapterRoman(5)).toBe('V');
     expect(chapterRoman(9)).toBe('9');
   });
 
@@ -164,9 +164,9 @@ describe('Bốn chương và luật xoay (CH-01, CH-04)', () => {
     expect(codes(validateLevel(doc))).toContain('chapter-rotation-required');
   });
 
-  test('chương ngoài 1–6 báo invalid-chapter; turns ≠ 0 ở chương 2–3 bị cấm', () => {
+  test('chương ngoài 1–5 báo invalid-chapter; turns ≠ 0 ở chương 2–3 bị cấm', () => {
     const bad = makeAdjacentFixture() as unknown as { chapter: number };
-    bad.chapter = 7;
+    bad.chapter = 6;
     expect(codes(validateLevel(bad))).toContain('invalid-chapter');
     const turned = makeAdjacentFixture();
     turned.chapter = 3;

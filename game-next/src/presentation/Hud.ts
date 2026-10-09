@@ -136,7 +136,7 @@ export class Hud {
     this.targetButton.add([targetBtnBase, this.targetIcon]);
 
     // 4. Hàng nút dưới cùng: Đặt lại ở góc trái, Xoay ở góc phải (chỉ Chương
-    // 4 — Luân Chuyển), thanh đếm mảnh ở giữa — theo mockup. Trước đây nút Đặt lại nằm
+    // 4 — chương xoay), thanh đếm mảnh ở giữa — theo mockup. Trước đây nút Đặt lại nằm
     // giữa màn, ngay chỗ khay và thanh đếm, nên bị cả hai che.
     const rotationChapter = chapter.rotationEnabled;
     const bottomRowY = this.layout.bottomBarBounds.y + 44;

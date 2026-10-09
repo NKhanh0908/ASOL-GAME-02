@@ -23,7 +23,7 @@ const BOTTOM_PADDING = 240;
 const TEASER_SPAN_Y = 1000;
 
 /**
- * Chòm sao 10 nút (Họa Phẩm): chuỗi đèn lồng — một nút giữa, một cặp hai
+ * Chòm sao 10 nút (chương 3): chuỗi đèn lồng — một nút giữa, một cặp hai
  * bên, lặp lại. [x tuyệt đối, dy so với nút đầu chương]. Cặp cùng hàng cách
  * nhau 320px (> huy hiệu 260px); các hàng cách nhau 140px.
  */

@@ -15,6 +15,6 @@ describe('galaxy art registry', () => {
   });
 
   it('only ring, cluster and prism use the layered builder', () => {
-    expect(['dwarf', 'spiral', 'tapestry', 'ring', 'cluster', 'prism'].filter(isLayeredGalaxy)).toEqual(['ring', 'cluster', 'prism']);
+    expect(['dwarf', 'spiral', 'ring', 'cluster', 'prism'].filter(isLayeredGalaxy)).toEqual(['ring', 'cluster', 'prism']);
   });
 });

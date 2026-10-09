@@ -1,8 +1,6 @@
-/** SVG file stems per theme id (public/assets/galaxies/<stem>.svg). Chapter 3 reuses the dwarf art. */
-const dwarfFiles = ['dwarf', 'dwarf-cloudA', 'dwarf-cloudB'] as const;
+/** SVG file stems per theme id (public/assets/galaxies/<stem>.svg). */
 export const GALAXY_ART_FILES: Readonly<Record<string, readonly string[]>> = {
-  dwarf: dwarfFiles,
-  tapestry: dwarfFiles,
+  dwarf: ['dwarf', 'dwarf-cloudA', 'dwarf-cloudB'],
   spiral: ['spiral'],
   ring: ['ring', 'ring-core'],
   cluster: [

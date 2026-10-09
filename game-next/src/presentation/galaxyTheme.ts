@@ -5,8 +5,8 @@
  * - docs/gdd/assets/Bộ nhận diện năm thiên hà-html/GalaxyKit.dc.html
  * - docs/gdd/assets/Menu · Chương I Khởi Nguyên-html/Menu1.dc.html
  * - docs/gdd/assets/Menu · Chương II Giao Thoa-html/Menu2.dc.html
- * - docs/gdd/assets/Menu · Chương III Luân Chuyển-html/Menu3.dc.html (ring galaxy, campaign chapter 4)
- * - docs/gdd/assets/Menu · Chương IV Hội Tụ-html/Menu4.dc.html (cluster galaxy, campaign chapter 5)
+ * - docs/gdd/assets/Menu · Chương III Luân Chuyển-html/Menu3.dc.html (ring galaxy, campaign chapter 3)
+ * - docs/gdd/assets/Menu · Chương IV Hội Tụ-html/Menu4.dc.html (cluster galaxy, campaign chapter 4)
  * - docs/gdd/assets/Chọn màn · bản đồ 5 thiên hà (cuộn dọc)-html/GalaxyMap.dc.html
  */
 
@@ -118,39 +118,10 @@ export const GALAXY_THEMES: Readonly<Record<number, GalaxyTheme>> = {
   },
   3: {
     chapter: 3,
-    id: 'tapestry',
-    name: 'Họa Phẩm',
-    galaxyType: 'Chòm sao Họa Phẩm',
-    totalLevels: campaignManifest.filter(entry => entry.chapter === 3).length,
-    tagline: 'Kết nối những mảnh sáng để vẽ nên câu chuyện giữa các vì sao',
-    colors: {
-      bgTop: 0x3a1a4e,
-      bgBottom: 0x4a2440,
-      bgTopHex: '#3A1A4E',
-      bgBottomHex: '#4A2440',
-      accent: 0xffb45a,
-      accentHex: '#FFB45A',
-      accentGlow: 0xffb45a,
-      accentDark: 0x1a0f28,
-      clouds: {
-        primary: 0xffb45a,
-        secondary: 0xff8c42,
-        tertiary: 0xffd23f,
-        highlight: 0xffebb3,
-      },
-      youngStars: 0xffd23f,
-    },
-    portal: {
-      color: 0xffb45a,
-      ringColor: 0xffffff,
-    },
-  },
-  4: {
-    chapter: 4,
     id: 'ring',
     name: 'Luân Chuyển',
     galaxyType: 'Thiên hà vòng',
-    totalLevels: campaignManifest.filter(entry => entry.chapter === 4).length,
+    totalLevels: campaignManifest.filter(entry => entry.chapter === 3).length,
     tagline: 'Vật thể Hoag là thiên hà vòng gần như tròn hoàn hảo',
     colors: {
       bgTop: 0x3a1a4e,
@@ -174,12 +145,12 @@ export const GALAXY_THEMES: Readonly<Record<number, GalaxyTheme>> = {
       ringColor: 0xffffff,
     },
   },
-  5: {
-    chapter: 5,
+  4: {
+    chapter: 4,
     id: 'cluster',
     name: 'Hội Tụ',
     galaxyType: 'Cụm thiên hà',
-    totalLevels: campaignManifest.filter(entry => entry.chapter === 5).length,
+    totalLevels: campaignManifest.filter(entry => entry.chapter === 4).length,
     tagline: 'Cụm thiên hà Xử Nữ chứa hơn một nghìn thiên hà',
     colors: {
       bgTop: 0x140f3a,
@@ -203,12 +174,12 @@ export const GALAXY_THEMES: Readonly<Record<number, GalaxyTheme>> = {
       ringColor: 0xffffff,
     },
   },
-  6: {
-    chapter: 6,
+  5: {
+    chapter: 5,
     id: 'prism',
     name: 'Lăng Kính',
     galaxyType: 'Vũ trụ lăng kính',
-    totalLevels: campaignManifest.filter(entry => entry.chapter === 6).length,
+    totalLevels: campaignManifest.filter(entry => entry.chapter === 5).length,
     tagline: 'Lăng kính tách tia sáng trắng thành dải màu',
     colors: {
       bgTop: 0x0a0824,

@@ -188,7 +188,7 @@ describe('Manifest 28 màn trong catalog (CH-02)', () => {
     }
   });
 
-  test('mã 3-x giờ là Họa Phẩm; chương xoay đổi sang 4-1 → 4-6, giữ tên', () => {
+  test('mã 3-x là chương 3 (10 màn); chương xoay là 4-1 → 4-6', () => {
     expect(campaignManifest.find((e) => e.id === '3-1')).toMatchObject({ title: 'Nhật Nguyệt Song Huyền', chapter: 3, order: 13 });
     expect(campaignManifest.find((e) => e.id === '3-10')).toMatchObject({ title: 'Mandala Thiên Cầu', chapter: 3, order: 22 });
     expect(campaignManifest.find((e) => e.id === '4-1')).toMatchObject({ title: 'La Bàn Gió', chapter: 4, order: 23 });

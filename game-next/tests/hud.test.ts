@@ -13,7 +13,7 @@ import { setLocale } from '../src/presentation/i18n.ts';
 import { chapterInfo, chapterOfLevelId } from '../src/content/chapters.ts';
 
 describe('Hud Behavioral Logic and Visual Standards', () => {
-  test('nút Xoay chỉ hiển thị ở Chương 4 (Luân Chuyển)', () => {
+  test('nút Xoay chỉ hiển thị ở Chương 4 (chương xoay)', () => {
     const rotates = (levelId: string) => chapterInfo(chapterOfLevelId(levelId) ?? 1)?.rotationEnabled;
     expect(rotates('1-1')).toBe(false);
     expect(rotates('2-3')).toBe(false);

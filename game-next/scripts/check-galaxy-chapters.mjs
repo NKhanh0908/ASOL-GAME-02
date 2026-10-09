@@ -1,4 +1,4 @@
-// Visual and motion check for chapters 4-6 (menu heroes, galaxy layers, map bands).
+// Visual and motion check for chapters 3-5 (ring, cluster, prism: menu heroes, galaxy layers, map bands).
 import { mkdirSync } from 'node:fs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import assert from 'node:assert/strict';
@@ -30,11 +30,11 @@ const layerValue = (page, stem, prop) => page.evaluate(async ({ stem, prop }) =>
   return layer ? layer[prop] : null;
 }, { stem, prop });
 
-const PULSE = { 4: ['ring-core', 'scaleX'], 5: ['cluster-web', 'alpha'], 6: ['prism-shards-0', 'y'] };
-const EXPECTED_LAYERS = { 4: ['ring', 'ring-core'], 5: ['cluster', 'cluster-web', 'cluster-core', 'cluster-galaxies-0', 'cluster-galaxies-3', 'cluster-meteor-2'], 6: ['prism', 'prism-beam', 'prism-fan', 'prism-glass', 'prism-shards-2'] };
+const PULSE = { 3: ['ring-core', 'scaleX'], 4: ['cluster-web', 'alpha'], 5: ['prism-shards-0', 'y'] };
+const EXPECTED_LAYERS = { 3: ['ring', 'ring-core'], 4: ['cluster', 'cluster-web', 'cluster-core', 'cluster-galaxies-0', 'cluster-galaxies-3', 'cluster-meteor-2'], 5: ['prism', 'prism-beam', 'prism-fan', 'prism-glass', 'prism-shards-2'] };
 
 try {
-  for (const chapter of [4, 5, 6]) {
+  for (const chapter of [3, 4, 5]) {
     const context = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2 });
     const page = await context.newPage();
     page.on('pageerror', error => errors.push(error.message));
@@ -61,7 +61,7 @@ try {
     }
     await page.evaluate(async () => (await import('/src/presentation/transitions/motion.ts')).setMotionScale(1));
 
-    if (chapter === 5) { // a meteor must cross within one 8 s cycle
+    if (chapter === 4) { // a meteor must cross within one 8 s cycle
       let seen = false;
       for (let i = 0; i < 90 && !seen; i++) {
         for (const n of [0, 1, 2]) seen ||= (await layerValue(page, `cluster-meteor-${n}`, 'alpha')) > 0.5;
@@ -84,7 +84,7 @@ try {
     const { campaignManifest } = await import('/src/content/manifest.ts');
     return layoutCampaignMap(campaignManifest, teaserChapters(campaignManifest)).chapters;
   });
-  assert.deepEqual(bands.map(b => [b.chapter, b.nodeCount]), [[1, 6], [2, 6], [3, 10], [4, 6], [5, 0], [6, 0]]);
+  assert.deepEqual(bands.map(b => [b.chapter, b.nodeCount]), [[1, 6], [2, 6], [3, 10], [4, 6], [5, 0]]);
   for (const band of bands) {
     await page.evaluate(async ({ top, bottom }) => {
       const { director } = await import('/src/presentation/transitions/SceneDirector.ts');
@@ -100,4 +100,4 @@ try {
   await browser.close();
 }
 assert.deepEqual(errors, [], `browser errors: ${errors.join(' | ')}`);
-console.log('galaxy chapter 4-6 checks passed');
+console.log('galaxy chapter 3-5 checks passed');

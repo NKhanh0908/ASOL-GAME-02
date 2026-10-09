@@ -4,6 +4,12 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-09 - Re-number chapter styles to the mockup: 3 ring, 4 cluster, 5 prism (GX2 follow-up)
+
+- Reviewer correction: the styles built for chapters 4-6 move up to chapters 3-5 and the names follow the mockup (III Luân Chuyển, IV Hội Tụ, V Lăng Kính). `game-next/src/domain/model.ts`, `src/content/chapters.ts`, `src/presentation/i18n.ts`: `Chapter` is 1-5 and the chapter table/names changed; `rotationEnabled` still follows the level content (chapter 4). `src/presentation/galaxyTheme.ts`: ring/cluster/prism themes are now chapters 3/4/5, the interim Họa Phẩm theme (`tapestry`) is removed. `galaxyArtFiles.ts`, `GalaxyArtwork.ts`, `LevelSelectScene.ts` (tints, artwork and galaxy-type subtitle for every band), `launchParams.ts` (`chapter` 1-5), comments in `manifest.ts`, `validate.ts`, `constellationLayout.ts`, `Hud.ts`. Tests and `scripts/check-galaxy-chapters.mjs` updated; specs/plan/STATUS/ARCHITECTURE carry the new numbering.
+- Open point recorded in STATUS: the rotation levels (4-x) now live in chapter Hội Tụ while chapter Luân Chuyển has none.
+- Verification: `npm test -- --maxWorkers=2 --minWorkers=1 --pool=forks` 97 files / 1,180 tests pass; `npx tsc --noEmit` clean; `npm run build` succeeds; `node scripts/check-galaxy-chapters.mjs` passes for chapters 3-5 (menu heroes, layers, motion/reduced motion, all five map bands) and the chapter 3 menu and map band were inspected. GitNexus MCP unavailable all session.
+
 ### 2026-10-09 - Docs and handoff for GX2 chapters 4-6 (task 11)
 
 - `docs/ai/STATUS.md` rewritten (GX2 implemented, follow-ups, gotchas); `docs/ai/ARCHITECTURE.md`: layered galaxy art, teaser bands and dev launch parameters invariants, rotation rule now covers chapters 5-6; `docs/superpowers/specs/2026-10-09-galaxy-themes-chapters-4-6-design.md`: §4 and §6 aligned with what was built; `docs/ai/DOCS-INDEX.md`: GX2 row marked done (the unrelated LOC row stays uncommitted).

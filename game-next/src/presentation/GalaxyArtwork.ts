@@ -34,7 +34,7 @@ export function galaxyMapGradient(scene: Phaser.Scene, bands: readonly ChapterBa
 }
 
 /** SVG filters are rasterized once by the loader, never redrawn each frame. */
-export function preloadGalaxyArtwork(scene: Phaser.Scene, themeIds: readonly string[] = ['dwarf', 'spiral', 'tapestry']): void {
+export function preloadGalaxyArtwork(scene: Phaser.Scene, themeIds: readonly string[] = ['dwarf', 'spiral']): void {
   for (const id of themeIds) {
     for (const stem of GALAXY_ART_FILES[id] ?? []) {
       const key = `galaxy-${stem}`;

@@ -16,7 +16,7 @@ export const campaignManifest: readonly ManifestEntry[] = [
   { id: '2-5', title: 'Đồng Hồ Cát', chapter: 2, order: 11, contentRevision: 'dong-ho-cat-v1', status: 'approved', dataPath: 'src/content/levels/2-5.json' },
   { id: '2-6', title: 'Hộ Mệnh', chapter: 2, order: 12, contentRevision: 'dai-an-v1', status: 'approved', dataPath: 'src/content/levels/2-6.json' },
 
-  // Chương 3 — Họa Phẩm (tranh ghép nghệ thuật, không xoay)
+  // Chương 3 — Luân Chuyển (10 màn tranh ghép nghệ thuật, không xoay)
   { id: '3-1', title: 'Nhật Nguyệt Song Huyền', chapter: 3, order: 13, contentRevision: 'nhat-nguyet-v1', status: 'approved', dataPath: 'src/content/levels/3-1.json' },
   { id: '3-2', title: 'Đền Tiên Tri', chapter: 3, order: 14, contentRevision: 'den-tien-tri-v1', status: 'approved', dataPath: 'src/content/levels/3-2.json' },
   { id: '3-3', title: 'Cá Chép Sao', chapter: 3, order: 15, contentRevision: 'ca-chep-v1', status: 'approved', dataPath: 'src/content/levels/3-3.json' },
@@ -28,7 +28,7 @@ export const campaignManifest: readonly ManifestEntry[] = [
   { id: '3-9', title: 'Sao Bát Phương', chapter: 3, order: 21, contentRevision: 'sao-bat-phuong-v1', status: 'approved', dataPath: 'src/content/levels/3-9.json' },
   { id: '3-10', title: 'Mandala Thiên Cầu', chapter: 3, order: 22, contentRevision: 'mandala-v1', status: 'approved', dataPath: 'src/content/levels/3-10.json' },
 
-  // Chương 4 — Luân Chuyển (xoay chuyển định hướng; đổi mã từ 3-1 → 3-6 cũ, giữ tên)
+  // Chương 4 — Hội Tụ (chương xoay: xoay chuyển định hướng; đổi mã từ 3-1 → 3-6 cũ, giữ tên màn)
   { id: '4-1', title: 'La Bàn Gió', chapter: 4, order: 23, contentRevision: 'v0.1', status: 'planned' },
   { id: '4-2', title: 'Lưỡi Kiếm Thiên Thể', chapter: 4, order: 24, contentRevision: 'v0.1', status: 'planned' },
   { id: '4-3', title: 'Cánh Cung Chiêm Tinh', chapter: 4, order: 25, contentRevision: 'v0.1', status: 'planned' },

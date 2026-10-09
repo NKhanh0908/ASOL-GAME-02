@@ -1,5 +1,7 @@
 # Galaxy Themes for Chapters 4–6 Implementation Plan
 
+> **Revision (2026-10-09, after implementation):** the reviewer asked for the mockup numbering, so the styles shifted up by one: **3 Luân Chuyển = ring, 4 Hội Tụ = cluster, 5 Lăng Kính = prism**; there is no chapter 6 and the interim Họa Phẩm theme was removed. Wherever this document says chapter 4/5/6 or `tapestry`, read 3/4/5 and nothing. `rotationEnabled` still follows the level content (chapter 4). Only the banner-only teaser band for chapter 5 remains. See `docs/ai/ARCHITECTURE.md` for the as-built description.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Add the ring (Luân Chuyển), cluster (Hội Tụ) and prism (Lăng Kính) galaxy identities to the menu and the scrolling campaign map, matching the supplied mockups, with banner-only bands for chapters that have no levels yet.

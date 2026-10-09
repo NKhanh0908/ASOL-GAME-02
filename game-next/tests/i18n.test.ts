@@ -41,18 +41,16 @@ describe('i18n translation system', () => {
     setLocale('vi');
     expect(getChapterLabel(1)).toBe('Chương I · Khởi Nguyên');
     expect(getChapterLabel(2)).toBe('Chương II · Giao Thoa');
-    expect(getChapterLabel(3)).toBe('Chương III · Họa Phẩm');
-    expect(getChapterLabel(4)).toBe('Chương IV · Luân Chuyển');
-    expect(getChapterLabel(5)).toBe('Chương V · Hội Tụ');
-    expect(getChapterLabel(6)).toBe('Chương VI · Lăng Kính');
+    expect(getChapterLabel(3)).toBe('Chương III · Luân Chuyển');
+    expect(getChapterLabel(4)).toBe('Chương IV · Hội Tụ');
+    expect(getChapterLabel(5)).toBe('Chương V · Lăng Kính');
 
     setLocale('en');
     expect(getChapterLabel(1)).toBe('Chapter I · Genesis');
     expect(getChapterLabel(2)).toBe('Chapter II · Intersections');
-    expect(getChapterLabel(3)).toBe('Chapter III · Pictures');
-    expect(getChapterLabel(4)).toBe('Chapter IV · Rotations');
-    expect(getChapterLabel(5)).toBe('Chapter V · Convergence');
-    expect(getChapterLabel(6)).toBe('Chapter VI · Prism');
+    expect(getChapterLabel(3)).toBe('Chapter III · Rotations');
+    expect(getChapterLabel(4)).toBe('Chapter IV · Convergence');
+    expect(getChapterLabel(5)).toBe('Chapter V · Prism');
   });
 
   test('dịch các nút HUD và thông báo toast', () => {

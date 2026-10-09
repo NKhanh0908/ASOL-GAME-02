@@ -25,17 +25,17 @@ describe('Constellation Map Layout Generator', () => {
 
   test('teaser chapters become node-less bands that extend the map', () => {
     const plain = layoutCampaignMap(campaignManifest);
-    const layout = layoutCampaignMap(campaignManifest, [5, 6]);
-    expect(layout.chapters.map((c) => [c.chapter, c.nodeCount])).toEqual([[1, 6], [2, 6], [3, 10], [4, 6], [5, 0], [6, 0]]);
+    const layout = layoutCampaignMap(campaignManifest, [5]);
+    expect(layout.chapters.map((c) => [c.chapter, c.nodeCount])).toEqual([[1, 6], [2, 6], [3, 10], [4, 6], [5, 0]]);
     expect(layout.nodes).toEqual(plain.nodes);
     layout.chapters.forEach((band, i) => {
       if (i > 0) expect(band.top).toBe(layout.chapters[i - 1].bottom);
     });
     expect(layout.chapters.at(-1)!.bottom).toBe(layout.totalHeight);
-    for (const band of layout.chapters.slice(-2)) expect(band.bottom - band.top).toBeGreaterThanOrEqual(1000);
+    for (const band of layout.chapters.slice(-1)) expect(band.bottom - band.top).toBeGreaterThanOrEqual(1000);
     const lastNodeY = Math.max(...layout.nodes.map((n) => n.y));
     expect(layout.chapters[4].bannerY - lastNodeY).toBeGreaterThanOrEqual(60);
-    expect(layout.totalHeight).toBeGreaterThan(plain.totalHeight + 2000);
+    expect(layout.totalHeight).toBeGreaterThan(plain.totalHeight + 1000);
   });
 
   test('without teasers the layout is unchanged', () => {
@@ -192,7 +192,7 @@ describe('Màn chọn màn theo mockup improve-v1', () => {
   test('nhãn node hiện tại: tên dẫn trước, định vị theo sau, không ký tự trang trí', () => {
     const label = formatNodeLabel('3-4', 'Ngọn Nến', 3);
     expect(label.name).toBe('Ngọn Nến');
-    expect(label.locator).toBe('3-4 · Họa Phẩm');
+    expect(label.locator).toBe('3-4 · Luân Chuyển');
     expect(label.name).not.toContain('✦');
     expect(label.locator).not.toContain('✦');
   });

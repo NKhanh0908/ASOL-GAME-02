@@ -269,18 +269,16 @@ export const CHAPTER_NAMES: Record<Locale, Record<number, string>> = {
   vi: {
     1: 'Khởi Nguyên',
     2: 'Giao Thoa',
-    3: 'Họa Phẩm',
-    4: 'Luân Chuyển',
-    5: 'Hội Tụ',
-    6: 'Lăng Kính',
+    3: 'Luân Chuyển',
+    4: 'Hội Tụ',
+    5: 'Lăng Kính',
   },
   en: {
     1: 'Genesis',
     2: 'Intersections',
-    3: 'Pictures',
-    4: 'Rotations',
-    5: 'Convergence',
-    6: 'Prism',
+    3: 'Rotations',
+    4: 'Convergence',
+    5: 'Prism',
   },
 };
 

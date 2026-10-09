@@ -40,7 +40,7 @@ export function validateLevel(input: unknown): ValidationResult {
     issues.push({ levelId, field: 'victoryVerse', code: 'invalid-victory-verse' });
   }
 
-  // Xoay chỉ mở ở chương xoay (Chương 4 — Luân Chuyển): chương 1–3 cấm bật, chương 4 bắt buộc bật
+  // Xoay chỉ mở ở chương xoay (Chương 4 — Hội Tụ): chương 1–3 cấm bật, chương 4 bắt buộc bật
   if (chapterRule && !chapterRule.rotationEnabled && doc.rotationEnabled === true) {
     issues.push({ levelId, field: 'rotationEnabled', code: 'chapter-rotation-disabled' });
   }

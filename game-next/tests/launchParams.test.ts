@@ -29,10 +29,10 @@ describe('resolveLaunch', () => {
     expect(resolveLaunch('?scene=levelSelect&focus=3-4', false)).toEqual({ scene: 'LevelSelectScene' });
     expect(resolveLaunch('?scene=levelSelect', true)).toEqual({ scene: 'LevelSelectScene' });
   });
-  test('chapter previews the menu theme, dev only, 1-6 only', () => {
+  test('chapter previews the menu theme, dev only, 1-5 only', () => {
     expect(resolveLaunch('?scene=menu&chapter=4', true)).toEqual({ scene: 'MenuScene', skipSplash: true, chapter: 4 });
     expect(resolveLaunch('?scene=menu&chapter=4', false)).toEqual({ scene: 'MenuScene', skipSplash: true });
-    expect(resolveLaunch('?scene=menu&chapter=7', true)).toEqual({ scene: 'MenuScene', skipSplash: true });
+    expect(resolveLaunch('?scene=menu&chapter=6', true)).toEqual({ scene: 'MenuScene', skipSplash: true });
     expect(resolveLaunch('?scene=menu&chapter=x', true)).toEqual({ scene: 'MenuScene', skipSplash: true });
   });
 

@@ -30,7 +30,7 @@ describe('chapterHeroGeometry', () => {
   });
 
   it('maps theme ids to hero kinds', () => {
-    expect(['dwarf', 'spiral', 'tapestry', 'ring', 'cluster', 'prism'].map(heroKindFor))
-      .toEqual([undefined, undefined, undefined, 'ring', 'cluster', 'prism']);
+    expect(['dwarf', 'spiral', 'ring', 'cluster', 'prism'].map(heroKindFor))
+      .toEqual([undefined, undefined, 'ring', 'cluster', 'prism']);
   });
 });

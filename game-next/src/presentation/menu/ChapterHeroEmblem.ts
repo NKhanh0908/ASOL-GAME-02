@@ -9,7 +9,7 @@ import {
 const toPoints = (pts: readonly Pt[], dx = 0, dy = 0) => pts.map(([x, y]) => new Phaser.Geom.Point(x + dx, y + dy));
 
 /**
- * Hero emblem for the Menu3 (ring) and Menu4 (cluster) mockups, plus a placeholder prism glyph for chapter VI.
+ * Hero emblem for the Menu3 (ring) and Menu4 (cluster) mockups, plus a placeholder prism glyph for chapter V.
  * Drawn once in mockup units; the caller scales it by 720/390 like the chapter I hero.
  */
 export class ChapterHeroEmblem {
@@ -99,7 +99,7 @@ export class ChapterHeroEmblem {
     this.drawPinwheel(0, 0, CLUSTER_CENTER_HALF);
   }
 
-  /** Placeholder for chapter VI (no Menu mockup yet): the kit's prism triangle with a seven-colour fan. */
+  /** Placeholder for chapter V (no Menu mockup yet): the kit's prism triangle with a seven-colour fan. */
   private drawPrism(): void {
     const g = this.body;
     PRISM_COLORS.forEach((color, i) => {

@@ -28,6 +28,6 @@ export function resolveLaunch(search: string, isDev: boolean): LaunchTarget {
   const skipSplash = params.get('skipSplash') === '1' || params.get('scene') === 'menu';
   // chapter forces the menu's galaxy theme so chapters without levels can be previewed (dev only)
   const chapter = Number(params.get('chapter'));
-  const preview = isDev && Number.isInteger(chapter) && chapter >= 1 && chapter <= 6 ? { chapter } : {};
+  const preview = isDev && Number.isInteger(chapter) && chapter >= 1 && chapter <= 5 ? { chapter } : {};
   return skipSplash ? { scene: 'MenuScene', skipSplash: true, ...preview } : { scene: 'MenuScene' };
 }

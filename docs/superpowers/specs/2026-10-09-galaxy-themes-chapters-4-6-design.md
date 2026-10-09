@@ -1,5 +1,7 @@
 # Galaxy Themes for Chapters 4–6 (Luân Chuyển, Hội Tụ, Lăng Kính) — Design Spec
 
+> **Revision (2026-10-09, after implementation):** the reviewer asked for the mockup numbering, so the styles shifted up by one: **3 Luân Chuyển = ring, 4 Hội Tụ = cluster, 5 Lăng Kính = prism**; there is no chapter 6 and the interim Họa Phẩm theme was removed. Wherever this document says chapter 4/5/6 or `tapestry`, read 3/4/5 and nothing. `rotationEnabled` still follows the level content (chapter 4). Only the banner-only teaser band for chapter 5 remains. See `docs/ai/ARCHITECTURE.md` for the as-built description.
+
 Date: 2026-10-09. Branch: `feat/journey-map-visuals`. Follows GX (`2026-10-08-galaxy-themes-and-spatial-zoom-design.md`), which delivered chapters I–II.
 
 ## 1. Goal
