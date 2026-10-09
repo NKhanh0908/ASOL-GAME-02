@@ -5,6 +5,8 @@ import { mulberry32 } from './starField.ts';
 import type { ChapterBand } from './constellationLayout.ts';
 import { resolveGalaxyTheme } from './galaxyTheme.ts';
 import { createGalaxyStars, galaxyStarPose } from './galaxyStars.ts';
+import { GALAXY_ART_FILES, isLayeredGalaxy } from './galaxyArtFiles.ts';
+import { buildGalaxyLayers } from './galaxyLayers.ts';
 
 /** One continuous texture avoids opaque strips cutting across galaxy artwork. */
 export function galaxyMapGradient(scene: Phaser.Scene, bands: readonly ChapterBand[], height: number): string {
@@ -32,10 +34,12 @@ export function galaxyMapGradient(scene: Phaser.Scene, bands: readonly ChapterBa
 }
 
 /** SVG filters are rasterized once by the loader, never redrawn each frame. */
-export function preloadGalaxyArtwork(scene: Phaser.Scene): void {
-  for (const id of ['dwarf', 'dwarf-cloudA', 'dwarf-cloudB', 'spiral']) {
-    const key = `galaxy-${id}`;
-    if (!scene.textures.exists(key)) scene.load.svg(key, `assets/galaxies/${id}.svg`);
+export function preloadGalaxyArtwork(scene: Phaser.Scene, themeIds: readonly string[] = ['dwarf', 'spiral', 'tapestry']): void {
+  for (const id of themeIds) {
+    for (const stem of GALAXY_ART_FILES[id] ?? []) {
+      const key = `galaxy-${stem}`;
+      if (!scene.textures.exists(key)) scene.load.svg(key, `assets/galaxies/${stem}.svg`);
+    }
   }
 }
 
@@ -65,19 +69,24 @@ export function addGalaxyArtwork(
   scene: Phaser.Scene, theme: GalaxyTheme, x: number, y: number, size: number,
 ): Phaser.GameObjects.Container {
   const root = scene.add.container(x, y);
-  const key = `galaxy-${theme.id === 'spiral' ? 'spiral' : 'dwarf'}`;
-  const art = scene.add.image(0, 0, key).setDisplaySize(size, size);
   const motion: Phaser.Tweens.Tween[] = [];
-  if (theme.id !== 'spiral') {
-    for (const [i, layer] of ['A', 'B'].entries()) {
-      const cloud = scene.add.image(0, 0, `galaxy-dwarf-cloud${layer}`).setDisplaySize(size, size);
-      root.add(cloud);
-      motion.push(scene.tweens.add({ targets: cloud, x: i === 0 ? 20 : -20, y: i === 0 ? -8 : 8, duration: 12000 + i * 4000, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' }));
+  const frame: Array<(elapsedMs: number) => void> = [];
+  if (isLayeredGalaxy(theme.id)) {
+    buildGalaxyLayers({ scene, root, size, motion, frame }, theme.id);
+  } else {
+    const key = `galaxy-${theme.id === 'spiral' ? 'spiral' : 'dwarf'}`;
+    const art = scene.add.image(0, 0, key).setDisplaySize(size, size);
+    if (theme.id !== 'spiral') {
+      for (const [i, layer] of ['A', 'B'].entries()) {
+        const cloud = scene.add.image(0, 0, `galaxy-dwarf-cloud${layer}`).setDisplaySize(size, size);
+        root.add(cloud);
+        motion.push(scene.tweens.add({ targets: cloud, x: i === 0 ? 20 : -20, y: i === 0 ? -8 : 8, duration: 12000 + i * 4000, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' }));
+      }
     }
-  }
-  root.add(art);
-  if (theme.id === 'spiral') {
-    motion.push(scene.tweens.add({ targets: art, angle: 360, duration: 240000, repeat: -1, ease: 'Linear' }));
+    root.add(art);
+    if (theme.id === 'spiral') {
+      motion.push(scene.tweens.add({ targets: art, angle: 360, duration: 240000, repeat: -1, ease: 'Linear' }));
+    }
   }
   const stars = theme.chapter === 1 ? createGalaxyStars(173) : [];
   const starKey = 'galaxy-white-star';
@@ -109,6 +118,7 @@ export function addGalaxyArtwork(
       const pose = galaxyStarPose(stars[i], elapsedMs, size);
       image.setPosition(pose.x, pose.y).setAlpha(pose.alpha);
     });
+    frame.forEach((animate) => animate(elapsedMs));
   };
   updateMotion();
   scene.events.on(Phaser.Scenes.Events.UPDATE, updateMotion);

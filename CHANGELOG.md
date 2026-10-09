@@ -4,6 +4,11 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-09 - Layered ring, cluster and prism galaxy artwork (GX2 task 6)
+
+- `game-next/src/presentation/galaxyArtFiles.ts` (new, pure): theme id -> SVG stems, `isLayeredGalaxy`. `galaxyLayers.ts` (new): ring (rotated 90 degrees, breathing core, two orbit streaks), cluster (web pulse, breathing core, 4 staggered galaxy fades, 3 meteors), prism (beam, fan, glass, 3 floating shard layers); intros snap to the final state under reduced motion. `GalaxyArtwork.ts`: `preloadGalaxyArtwork(scene, themeIds)` loads only the listed themes (default unchanged) and `addGalaxyArtwork` has a layered branch plus a per-frame animator list. `tests/galaxyArt.test.ts` (new).
+- Verification: `npx vitest run tests/galaxyArt.test.ts tests/galaxyStars.test.ts tests/galaxyMotion.test.ts --pool=forks` (11 tests) and `npx tsc --noEmit` pass. The Phaser layers are verified visually in task 10. GitNexus MCP unavailable; no impact analysis run for `addGalaxyArtwork`/`preloadGalaxyArtwork` (callers: MenuScene, LevelSelectScene).
+
 ### 2026-10-09 - Pure motion poses for ring streaks and meteors (GX2 task 5)
 
 - `game-next/src/presentation/galaxyMotion.ts` (new): `orbitDotPose` (kit `orbit`, 6 s clockwise lap) and `meteorPose` (kit `meteor`, 8 s cycle, 3%/13% fade, (240,160) travel). `tests/galaxyMotion.test.ts` (new).
