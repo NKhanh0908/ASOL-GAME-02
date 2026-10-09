@@ -57,5 +57,49 @@
     "Bintik Merah Raksasa Jupiter lebih lebar dari Bumi",
     "Satu tahun Neptunus setara 165 tahun Bumi",
     "Atom di tubuh Anda tercipta di dalam bintang"
-  ]
+  ],
+  "victoryVerses": {
+    "1-1": "Dua bintang bertemu di puncak; keseimbangan kosmos kembali.",
+    "1-2": "Menara menjulang tinggi; nubuat menemukan tempatnya berlabuh.",
+    "1-3": "Sayap terbentang; pertanda baik terbang menuju utara.",
+    "1-4": "Di mana mercusuar berpendar, bahtera yang tersesat menemukan jalan.",
+    "1-5": "Kapal bintang membentangkan layar, membelah samudra galaksi.",
+    "1-6": "Tiga puncak fajar bersinar terang; prasasti kuno terbangun.",
+    "2-1": "Panah mengarah ke langit; ruang hampa memandu jalan.",
+    "2-2": "Sayap saling bersentuhan, meninggalkan keheningan di antaranya.",
+    "2-3": "Di dalam kehampaan, jantung kristal bersinar terang.",
+    "2-4": "Mata ramalan terbuka, memandang masa depan yang belum tiba.",
+    "2-5": "Pasir berjatuhan dalam lingkaran, waktu menjelma menjadi wujud.",
+    "2-6": "Empat segel terkunci rapat; berkah perlindungan telah tercipta.",
+    "3-1": "Matahari dan bulan bersatu, melahirkan bintang baru.",
+    "3-2": "Pintu kuil terbuka, cahaya menembus jendela bundar.",
+    "3-3": "Ikan koi berenang melawan arus sungai bintang.",
+    "3-4": "Api yang tak membakar, hanya meninggalkan bayangan murni.",
+    "3-5": "Matahari tenggelam di balik layar; pelayaran tetap berlanjut.",
+    "3-6": "Kucing suci menjaga gerbang di antara dua alam.",
+    "3-7": "Teratai mekar di atas air, suci tanpa cela lumpur.",
+    "3-8": "Saat matahari terhalang gerhana, piramida terbangun.",
+    "3-9": "Delapan penjuru mata angin menyatu pada satu mentari.",
+    "3-10": "Bintang mengelilingi permata; lukisan kosmik telah sempurna.",
+    "4-1": "Kompas menunjuk arah, angin langit memandu haluan.",
+    "4-2": "Pedang membelah malam, membuka jalan cahaya bintang.",
+    "4-3": "Busur terentang kencang, melesatkan bintang ke angkasa hampa.",
+    "4-4": "Roda berputar, takdir selaras dengan alam semesta.",
+    "4-5": "Salib memancarkan cahaya, menyatukan empat cakrawala.",
+    "4-6": "Segel agung terbuka, kebenaran ramalan terungkap."
+  },
+  "chapterTaglines": {
+    "1": "Awan Magellan Besar adalah galaksi katai yang mengorbit Bima Sakti",
+    "2": "Bima Sakti kita adalah galaksi spiral berbatang di pusatnya",
+    "3": "Objek Hoag adalah galaksi cincin yang hampir bulat sempurna",
+    "4": "Gugus Virgo menampung lebih dari seribu galaksi",
+    "5": "Prisma membiaskan cahaya putih menjadi spektrum warna"
+  },
+  "galaxyTypes": {
+    "1": "Galaksi katai",
+    "2": "Galaksi spiral",
+    "3": "Galaksi cincin",
+    "4": "Gugus galaksi",
+    "5": "Alam semesta prisma"
+  }
 }

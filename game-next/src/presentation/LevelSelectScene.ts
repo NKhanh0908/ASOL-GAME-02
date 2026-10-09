@@ -14,7 +14,7 @@ import { layoutCampaignMap } from './constellationLayout.ts';
 import { walkedLinkAlpha } from './constellationMotion.ts';
 import { isReducedMotion } from './transitions/motion.ts';
 import { NODE_SILHOUETTE_FIT, drawTargetSilhouette } from './targetSilhouette.ts';
-import { t, getChapterLabel } from './i18n.ts';
+import { t, getChapterLabel, getGalaxyType } from './i18n.ts';
 import { director } from './transitions/SceneDirector.ts';
 import type { Choreographed, TransitionContext } from './transitions/SceneDirector.ts';
 import type { TransitionTimeline } from './transitions/TransitionTimeline.ts';
@@ -401,7 +401,7 @@ export class LevelSelectScene extends Phaser.Scene implements Choreographed {
       const romanNumeral = chapterRoman(band.chapter);
       const isTeaser = band.nodeCount === 0;
       const mainTitle = this.add
-        .text(0, -13, band.chapter <= 2 ? `Chương ${romanNumeral} · ${gTheme.name}` : getChapterLabel(band.chapter), {
+        .text(0, -13, getChapterLabel(band.chapter, gTheme.name), {
           fontFamily: TYPO_TOKENS.fontFamily.display,
           fontSize: '22px',
           color: '#FFFFFF',
@@ -409,10 +409,11 @@ export class LevelSelectScene extends Phaser.Scene implements Choreographed {
         })
         .setOrigin(0.5);
 
+      const gType = getGalaxyType(band.chapter, gTheme.galaxyType);
       const subTitle = this.add
         .text(0, 17, isTeaser
-          ? `${gTheme.galaxyType} · ${t('map_coming_soon')}`
-          : `${gTheme.galaxyType} · ${chProgress.completed}/${chProgress.total}`, {
+          ? `${gType} · ${t('map_coming_soon')}`
+          : `${gType} · ${chProgress.completed}/${chProgress.total}`, {
           fontFamily: TYPO_TOKENS.fontFamily.sans,
           fontSize: '16px',
           color: gTheme.colors.accentHex,

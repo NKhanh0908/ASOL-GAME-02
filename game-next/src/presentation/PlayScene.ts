@@ -23,7 +23,7 @@ import { TextureFactory } from './TextureFactory.ts';
 
 import { PauseDialog } from './PauseDialog.ts';
 import { TargetBadge } from './TargetBadge.ts';
-import { t, getLevelTitle } from './i18n.ts';
+import { t, getLevelTitle, getVictoryVerse } from './i18n.ts';
 import { director } from './transitions/SceneDirector.ts';
 import type { Choreographed, TransitionContext } from './transitions/SceneDirector.ts';
 import type { TransitionTimeline } from './transitions/TransitionTimeline.ts';
@@ -243,7 +243,7 @@ export class PlayScene extends Phaser.Scene implements Choreographed {
       // timeline, so it jumps straight to the same end state. Without it the
       // two routes into the won state leave different screens.
       (this.scene.get('BackgroundScene') as BackgroundScene | null)?.deepen(VICTORY_TOKENS.skyDimExtra, 0);
-      this.hud.showWinModal(this.level.victoryVerse);
+      this.hud.showWinModal(getVictoryVerse(this.level.id, this.level.victoryVerse));
     } else {
       // Thông báo banner chào đón đầu màn chơi
       this.showLevelStartToast(layout);

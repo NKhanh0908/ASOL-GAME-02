@@ -53,6 +53,9 @@ export interface GameTranslations {
   readonly chapters: Record<string, string>;
   readonly levelTitles: Record<string, string>;
   readonly taglines: readonly string[];
+  readonly victoryVerses?: Record<string, string>;
+  readonly chapterTaglines?: Record<string, string>;
+  readonly galaxyTypes?: Record<string, string>;
 }
 
 export interface TranslationBundle {

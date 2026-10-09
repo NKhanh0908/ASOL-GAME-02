@@ -1,12 +1,12 @@
-# Status — updated 2026-10-09 (multi-language localization complete)
+# Status — updated 2026-10-09 (globalized chapter names, menu taglines & victory verses)
 
 Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; keep this file ≤ 60 lines.
 
 ## Now
 
-- Branch: `feat/multi-language-localization` complete (Tasks 1–8). Ready to merge to `main`.
-- Next: Switch to `feat/endless-ch2` and execute Endless Chapter 2 generator (XOR / HSR style, max 3 layers).
-- Verification: 102 test files (1,209 tests) pass, typecheck and Vite build clean.
+- Branch: `feat/multi-language-localization` complete (Tasks 1–8 + full content globalization).
+- Completed: Globalized chapter names (Menu badge, map headers), Menu knowledge taglines (chapter galaxy facts & trivia), and level victory verses (win modal/card) across all 5 locales (`en-US`, `vi`, `id`, `pt-BR`, `ja`).
+- Verification: 17 localization tests pass, 153 UI/font tests pass, typecheck and Vite build clean.
 
 ## Streams
 

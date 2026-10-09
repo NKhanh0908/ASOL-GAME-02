@@ -110,4 +110,40 @@ export class LocalizationManager {
     const list = this.bundles[this.currentLocale]?.game?.taglines || this.bundles['en-US'].game.taglines;
     return list[Math.floor(Math.random() * list.length)];
   }
+
+  public getVictoryVerse(levelId: string, fallbackVerse = ''): string {
+    const verses = this.bundles[this.currentLocale]?.game?.victoryVerses || this.bundles['en-US'].game?.victoryVerses;
+    return (
+      verses?.[levelId] ||
+      (fallbackVerse ? fallbackVerse : this.bundles['en-US'].game?.victoryVerses?.[levelId] || '')
+    );
+  }
+
+  public getChapterTagline(chapter: number, fallbackTagline?: string): string {
+    const taglines = this.bundles[this.currentLocale]?.game?.chapterTaglines || this.bundles['en-US'].game?.chapterTaglines;
+    return (
+      taglines?.[String(chapter)] ||
+      fallbackTagline ||
+      this.bundles['en-US'].game?.chapterTaglines?.[String(chapter)] ||
+      ''
+    );
+  }
+
+  public getGalaxyType(chapter: number, fallbackType?: string): string {
+    const types = this.bundles[this.currentLocale]?.game?.galaxyTypes || this.bundles['en-US'].game?.galaxyTypes;
+    return (
+      types?.[String(chapter)] ||
+      fallbackType ||
+      this.bundles['en-US'].game?.galaxyTypes?.[String(chapter)] ||
+      ''
+    );
+  }
+
+  public getMenuTagline(chapter?: number, fallbackTagline?: string): string {
+    if (chapter !== undefined) {
+      const chTag = this.getChapterTagline(chapter);
+      if (chTag) return chTag;
+    }
+    return fallbackTagline || this.getRandomMenuTagline();
+  }
 }

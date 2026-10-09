@@ -57,5 +57,49 @@
     "A Grande Mancha Vermelha é maior que a Terra",
     "Um ano em Netuno equivale a 165 anos terrestres",
     "Os átomos do seu corpo foram forjados nas estrelas"
-  ]
+  ],
+  "victoryVerses": {
+    "1-1": "Duas estrelas tocam o zênite; o cosmo reencontra o equilíbrio.",
+    "1-2": "A torre ergue-se ao céu; a profecia encontra seu santuário.",
+    "1-3": "As asas se desdobram; bons presságios voam para o norte.",
+    "1-4": "Onde o farol brilha, embarcações perdidas acham o porto seguro.",
+    "1-5": "A nave estelar desfralda velas, desbravando o fluxo galáctico.",
+    "1-6": "Três pontas da coroa radiantes; o amanhecer arcaico despertou.",
+    "2-1": "A flecha aponta aos céus; o vazio ilumina o caminho.",
+    "2-2": "As asas se tocam levemente, deixando o silêncio entre si.",
+    "2-3": "No centro do vazio, um coração de cristal resplandece.",
+    "2-4": "O olho se abre, contemplando o que ainda virá.",
+    "2-5": "A areia cai no círculo, esculpindo a forma do tempo.",
+    "2-6": "Quatro selos se fecham; a prece de proteção está cumprida.",
+    "3-1": "Sol e lua se encontram, concebendo uma nova estrela.",
+    "3-2": "As portas do templo se abrem, revelando a luz pelo portal.",
+    "3-3": "A carpa celestial nada contra a torrente estelar.",
+    "3-4": "Uma chama que não queima, deixando apenas sua sombra pura.",
+    "3-5": "O sol se põe além das velas; a jornada continua firme.",
+    "3-6": "O felino sagrado vigia o limiar entre os dois mundos.",
+    "3-7": "A lótus floresce sobre as águas, intocada pela lama.",
+    "3-8": "Sob o eclipse solar, a pirâmide desperta de seu sono.",
+    "3-9": "Oito direções convergem para um único sol central.",
+    "3-10": "Esferas orbitam a joia; a pintura estelar está completa.",
+    "4-1": "A bússola indica o rumo, guiada pelo sopro celeste.",
+    "4-2": "A lâmina fende a noite, abrindo uma trilha de estrelas.",
+    "4-3": "O arco é retesado, disparando estrelas no vazio sem fim.",
+    "4-4": "A roda gira, e o destino se alinha ao cosmo.",
+    "4-5": "A cruz resplandece, unindo os quatro horizontes.",
+    "4-6": "O grande selo se quebra, revelando a verdade profética."
+  },
+  "chapterTaglines": {
+    "1": "A Grande Nuvem de Magalhães é uma galáxia anã orbitando a Via Láctea",
+    "2": "Nossa Via Láctea é uma galáxia espiral barrada",
+    "3": "O Objeto de Hoag é uma galáxia em anel quase perfeitamente circular",
+    "4": "O Aglomerado de Virgem contém mais de mil galáxias",
+    "5": "Um prisma decompõe a luz branca em um espectro de cores"
+  },
+  "galaxyTypes": {
+    "1": "Galáxia anã",
+    "2": "Galáxia espiral",
+    "3": "Galáxia em anel",
+    "4": "Aglomerado de galáxias",
+    "5": "Universo prisma"
+  }
 }

@@ -21,6 +21,7 @@ import { perimeterSegment } from './parityDiff.ts';
 import { victoryPlan, type VictoryPlan } from './victorySequence.ts';
 import type { AudioServices } from '../audio/audioServices.ts';
 import { playFeedbackAudio, playVictoryAudio } from './audioCues.ts';
+import { getVictoryVerse } from '../i18n.ts';
 
 export type FeedbackDeps = {
   scene: Phaser.Scene;
@@ -308,7 +309,7 @@ export class FeedbackDirector {
     for (const part of board.getTrayParts()) tl.at(plan.frameAtMs, part, { alpha: 0 }, plan.trayFadeMs, 'linear');
     tl.call(plan.frameAtMs + Math.max(plan.frameMs, plan.trayFadeMs), () => board.setVictoryMode(true));
 
-    hud.playWinCard(tl, plan, level.victoryVerse);
+    hud.playWinCard(tl, plan, getVictoryVerse(level.id, level.victoryVerse));
     tl.advance(0);
   }
 

@@ -70,4 +70,34 @@ describe('Localization Coverage & Symmetry', () => {
       }
     }
   });
+
+  it('all locales provide all 28 campaign victory verses (1-1 to 4-6)', () => {
+    const levelIds = [
+      '1-1', '1-2', '1-3', '1-4', '1-5', '1-6',
+      '2-1', '2-2', '2-3', '2-4', '2-5', '2-6',
+      '3-1', '3-2', '3-3', '3-4', '3-5', '3-6', '3-7', '3-8', '3-9', '3-10',
+      '4-1', '4-2', '4-3', '4-4', '4-5', '4-6',
+    ];
+    for (const locale of localizationConfig.supportedLocales) {
+      const verses = BUNDLES[locale].game.victoryVerses as Record<string, string>;
+      expect(verses, `missing victoryVerses dictionary in ${locale}`).toBeDefined();
+      for (const id of levelIds) {
+        expect(verses[id], `missing victory verse for ${id} in ${locale}`).toBeTruthy();
+        expect(verses[id].trim().length).toBeGreaterThan(5);
+      }
+    }
+  });
+
+  it('all locales provide chapter taglines and galaxy types for chapters 1-5', () => {
+    for (const locale of localizationConfig.supportedLocales) {
+      const taglines = BUNDLES[locale].game.chapterTaglines as Record<string, string>;
+      const types = BUNDLES[locale].game.galaxyTypes as Record<string, string>;
+      expect(taglines, `missing chapterTaglines dictionary in ${locale}`).toBeDefined();
+      expect(types, `missing galaxyTypes dictionary in ${locale}`).toBeDefined();
+      for (let ch = 1; ch <= 5; ch++) {
+        expect(taglines[String(ch)], `missing chapterTagline for ${ch} in ${locale}`).toBeTruthy();
+        expect(types[String(ch)], `missing galaxyType for ${ch} in ${locale}`).toBeTruthy();
+      }
+    }
+  });
 });

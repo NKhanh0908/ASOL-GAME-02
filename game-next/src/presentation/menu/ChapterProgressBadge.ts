@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
-import { chapterRoman } from '../../content/chapters.ts';
 import type { GalaxyTheme } from '../galaxyTheme.ts';
 import { TYPO_TOKENS } from '../designTokens.ts';
+import { getChapterLabel } from '../i18n.ts';
 
 export interface ChapterProgressBadgeConfig {
   x: number;
@@ -23,9 +23,8 @@ export class ChapterProgressBadge extends Phaser.GameObjects.Container {
     super(scene, config.x, config.y);
 
     // Drawn in mockup units (390 px wide); the caller scales the badge by 720/390.
-    const romanNumeral = chapterRoman(config.theme.chapter);
     this.titleText = scene.add
-      .text(0, 0, `Chương ${romanNumeral} · ${config.theme.name}`, {
+      .text(0, 0, getChapterLabel(config.theme.chapter, config.theme.name), {
         fontFamily: TYPO_TOKENS.fontFamily.display,
         fontSize: '15px',
         color: '#FFFFFF',

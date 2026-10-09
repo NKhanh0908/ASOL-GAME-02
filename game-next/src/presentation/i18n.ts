@@ -23,6 +23,10 @@ export const getLevelTitle = (id: string, fallback: string): string => manager.g
 export const getChapterName = (chapter: number, fallback?: string): string => manager.getChapterName(chapter, fallback);
 export const getChapterLabel = (chapter: number, fallback?: string): string => manager.getChapterLabel(chapter, fallback);
 export const getRandomMenuTagline = (): string => manager.getRandomMenuTagline();
+export const getVictoryVerse = (levelId: string, fallbackVerse?: string): string => manager.getVictoryVerse(levelId, fallbackVerse);
+export const getChapterTagline = (chapter: number, fallbackTagline?: string): string => manager.getChapterTagline(chapter, fallbackTagline);
+export const getGalaxyType = (chapter: number, fallbackType?: string): string => manager.getGalaxyType(chapter, fallbackType);
+export const getMenuTagline = (chapter?: number, fallbackTagline?: string): string => manager.getMenuTagline(chapter, fallbackTagline);
 
 /** Bản dịch tương thích ngược */
 export const TRANSLATIONS: Record<string, Record<string, string>> = {
@@ -63,5 +67,26 @@ export const CHAPTER_NAMES: Record<string, Record<number, string>> = {
     3: 'Rotations',
     4: 'Convergence',
     5: 'Prism',
+  },
+  id: {
+    1: 'Permulaan',
+    2: 'Persimpangan',
+    3: 'Rotasi',
+    4: 'Konvergensi',
+    5: 'Prisma',
+  },
+  'pt-BR': {
+    1: 'Gênesis',
+    2: 'Interseções',
+    3: 'Rotações',
+    4: 'Convergência',
+    5: 'Prisma',
+  },
+  ja: {
+    1: '始まり',
+    2: '交差',
+    3: '回転',
+    4: '収束',
+    5: 'プリズム',
   },
 };

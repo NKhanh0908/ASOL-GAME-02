@@ -9,7 +9,7 @@ import { applyDesignViewport, designSafeArea, designViewBounds } from './designV
 import { SettingsDialog } from './SettingsDialog.ts';
 import { LanguageSelectDialog } from './LanguageSelectDialog.ts';
 import { LOCALE_REGISTRY } from '../localization/localizationConfig.ts';
-import { t, getLocale, setLocale, getLevelTitle, getRandomMenuTagline } from './i18n.ts';
+import { t, getLocale, setLocale, getLevelTitle, getRandomMenuTagline, getChapterTagline } from './i18n.ts';
 import { director } from './transitions/SceneDirector.ts';
 import type { Choreographed, TransitionContext } from './transitions/SceneDirector.ts';
 import type { TransitionTimeline } from './transitions/TransitionTimeline.ts';
@@ -214,8 +214,9 @@ export class MenuScene extends Phaser.Scene implements Choreographed {
     const factW = 720 - factX * 2;
     // Chữ canh giữa; mũi thoi accent nằm ở mép trái, căn giữa theo chiều dọc
     const factInset = factPadX + factDiamond + 8 * K;
+    const factText = getChapterTagline(currentTheme.chapter, currentTheme.tagline);
     const factCaption = this.add
-      .text(360, 0, currentTheme.tagline, {
+      .text(360, 0, factText, {
         fontFamily: TYPO_TOKENS.fontFamily.sans,
         fontSize: `${Math.round(13 * K)}px`,
         color: '#E4E8FF',

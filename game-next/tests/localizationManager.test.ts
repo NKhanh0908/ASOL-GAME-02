@@ -67,4 +67,23 @@ describe('LocalizationManager', () => {
     expect(mgr.getLevelTitle('1-1')).toBe('Estrelas Gêmeas');
     expect(mgr.getChapterLabel(2)).toBe('Capítulo II · Interseções');
   });
+
+  it('resolves localized victory verses, chapter taglines, and galaxy types', () => {
+    const mgr = LocalizationManager.getInstance();
+    mgr.setLocale('ja');
+    expect(mgr.getVictoryVerse('1-1')).toBe('二つの星が天頂で交わり、宇宙は調和を取り戻す。');
+    expect(mgr.getChapterTagline(1)).toBe('大マゼラン雲は天の川銀河を周回する矮小銀河です');
+    expect(mgr.getGalaxyType(1)).toBe('矮小銀河');
+    expect(mgr.getMenuTagline(1)).toBe('大マゼラン雲は天の川銀河を周回する矮小銀河です');
+
+    mgr.setLocale('en-US');
+    expect(mgr.getVictoryVerse('1-1')).toBe('Two stars meet at the zenith; balance returns to the cosmos.');
+    expect(mgr.getChapterTagline(2)).toBe('Our Milky Way is a barred spiral galaxy');
+    expect(mgr.getGalaxyType(2)).toBe('Spiral galaxy');
+
+    // fallback when key missing
+    expect(mgr.getVictoryVerse('custom-99', 'Fallback verse')).toBe('Fallback verse');
+    expect(mgr.getChapterTagline(99, 'Fallback tag')).toBe('Fallback tag');
+    expect(mgr.getGalaxyType(99, 'Fallback type')).toBe('Fallback type');
+  });
 });

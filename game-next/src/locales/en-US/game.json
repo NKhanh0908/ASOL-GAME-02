@@ -57,5 +57,49 @@
     "Jupiter Great Red Spot is wider than Earth",
     "One year on Neptune lasts 165 Earth years",
     "The atoms in your body were forged in stars"
-  ]
+  ],
+  "victoryVerses": {
+    "1-1": "Two stars meet at the zenith; balance returns to the cosmos.",
+    "1-2": "A spire ascends; the prophecy finds its sanctuary.",
+    "1-3": "Wings unfold; fair omens take flight toward the north.",
+    "1-4": "Where the beacon gleams, lost vessels find their haven.",
+    "1-5": "Starship unfurls its sails, parting the galactic tide.",
+    "1-6": "Three peaks radiant with dawn; ancient glyphs awake.",
+    "2-1": "Arrow aimed at heaven; empty space guides the way.",
+    "2-2": "Wings brush gently, leaving silence in between.",
+    "2-3": "Within the hollow void, a crystal heart ignites.",
+    "2-4": "The eye unseals, foreseeing what is yet to come.",
+    "2-5": "Sands fall in the sphere, weaving the shape of time.",
+    "2-6": "Four seals interlock; the blessing of warding is sealed.",
+    "3-1": "Sun and moon align, birthing a new star.",
+    "3-2": "Sanctuary doors open, spilling dawn through the portal.",
+    "3-3": "A celestial koi swims against the starry stream.",
+    "3-4": "A flame that does not burn, casting only pure shadows.",
+    "3-5": "The sun sets behind sails; the voyage presses onward.",
+    "3-6": "The sacred feline guards the threshold between worlds.",
+    "3-7": "A lotus blooms on clear waters, untainted by the mire.",
+    "3-8": "As the sun is shadowed, the pyramid awakens.",
+    "3-9": "Eight cardinal rays converge upon a single sun.",
+    "3-10": "Spheres orbit the gem; the cosmic canvas is complete.",
+    "4-1": "The compass points true, guided by celestial wind.",
+    "4-2": "The blade cleaves the night, charting a starlight path.",
+    "4-3": "The bow is drawn, releasing stars into the void.",
+    "4-4": "The wheel turns, fate aligns with the cosmos.",
+    "4-5": "The cross radiates light, uniting the four horizons.",
+    "4-6": "The grand seal breaks, unveiling prophetic truth."
+  },
+  "chapterTaglines": {
+    "1": "The Large Magellanic Cloud is a dwarf galaxy orbiting the Milky Way",
+    "2": "Our Milky Way is a barred spiral galaxy",
+    "3": "Hoag's Object is a nearly perfect ring galaxy",
+    "4": "The Virgo Cluster contains over a thousand galaxies",
+    "5": "A prism disperses white light into a spectrum of colors"
+  },
+  "galaxyTypes": {
+    "1": "Dwarf galaxy",
+    "2": "Spiral galaxy",
+    "3": "Ring galaxy",
+    "4": "Galaxy cluster",
+    "5": "Prism universe"
+  }
 }

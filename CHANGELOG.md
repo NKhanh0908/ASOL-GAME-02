@@ -4,6 +4,19 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-09 - Globalize chapter names, menu knowledge taglines, and victory verses across all locales
+
+- `game-next/src/locales/{en-US, vi, id, pt-BR, ja}/game.json`: added 28 campaign level `victoryVerses`, 5 `chapterTaglines`, and 5 `galaxyTypes` to translation dictionaries across all 5 supported locales.
+- `game-next/src/localization/types.ts`: added optional `victoryVerses`, `chapterTaglines`, and `galaxyTypes` to `GameTranslations` interface.
+- `game-next/src/localization/LocalizationManager.ts`: added `getVictoryVerse(levelId, fallbackVerse)`, `getChapterTagline(chapter, fallbackTagline)`, `getGalaxyType(chapter, fallbackType)`, and `getMenuTagline(chapter, fallbackTagline)`.
+- `game-next/src/presentation/i18n.ts`: exported zero-breaking facade functions `getVictoryVerse`, `getChapterTagline`, `getGalaxyType`, `getMenuTagline`, and expanded `CHAPTER_NAMES` to all 5 locales.
+- `game-next/src/presentation/menu/ChapterProgressBadge.ts`: replaced hardcoded Vietnamese chapter title with dynamic `getChapterLabel(config.theme.chapter, config.theme.name)`.
+- `game-next/src/presentation/MenuScene.ts`: updated astronomical fact caption to use localized `getChapterTagline(currentTheme.chapter, currentTheme.tagline)`.
+- `game-next/src/presentation/LevelSelectScene.ts`: unified chapter header labels using `getChapterLabel(band.chapter, gTheme.name)` and localized galaxy type subheading via `getGalaxyType(band.chapter, gTheme.galaxyType)`.
+- `game-next/src/presentation/PlayScene.ts` & `game-next/src/presentation/feedback/FeedbackDirector.ts`: passed localized victory verse `getVictoryVerse(level.id, level.victoryVerse)` to `hud.showWinModal()` and `hud.playWinCard()`.
+- `game-next/tests/localizationManager.test.ts` & `game-next/tests/localizationCoverage.test.ts`: added test coverage for victory verses, chapter taglines, and galaxy types across all 5 locales.
+- Verification: `npx vitest run tests/localizationManager.test.ts tests/localizationCoverage.test.ts tests/i18n.test.ts --pool=forks` (17 tests pass), `tests/displayFontCoverage.test.ts tests/dialogs.test.ts tests/menu.test.ts tests/levelSelect.test.ts` (153 tests pass); `npm run typecheck` clean; `npm run build` succeeds (325 modules transformed); GitNexus `detect_changes` passed with low risk.
+
 ### 2026-10-09 - Multi-language localization engine full verification and plan completion (LOC task 8)
 
 - `game-next/tests/levelSelect.test.ts`: pinned `formatNodeLabel` test to Vietnamese locale explicitly to eliminate dependency on host environment OS language.

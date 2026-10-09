@@ -57,5 +57,49 @@
     "Vết Đỏ Lớn của sao Mộc rộng hơn Trái Đất",
     "Một năm sao Hải Vương bằng 165 năm Trái Đất",
     "Nguyên tố trong cơ thể bạn sinh ra từ các vì sao"
-  ]
+  ],
+  "victoryVerses": {
+    "1-1": "Hai vì sao chạm đỉnh, vũ trụ tìm thấy thế cân bằng.",
+    "1-2": "Tháp vươn lên trời, lời tiên tri có chỗ đứng.",
+    "1-3": "Đôi cánh mở ra, điềm lành bay về phương bắc.",
+    "1-4": "Nơi Hải đăng thắp sáng, thuyền lạc tìm thấy lối về.",
+    "1-5": "Thuyền sao giương buồm, dải ngân hà mở lối.",
+    "1-6": "Ba đỉnh vương miện bừng sáng, bình minh Cổ Ngữ đã đến.",
+    "2-1": "Mũi tên chỉ trời, khoảng trống dẫn lối.",
+    "2-2": "Đôi cánh chạm nhau, để lại một khoảng lặng.",
+    "2-3": "Trong khoảng rỗng, một trái tim tinh thể bừng sáng.",
+    "2-4": "Con mắt mở ra, thấy trước điều chưa tới.",
+    "2-5": "Cát rơi trong vòng tròn, thời gian thành hình.",
+    "2-6": "Bốn tầng ấn khép lại, lời hộ mệnh đã thành.",
+    "3-1": "Mặt trời và mặt trăng gặp nhau, sinh ra một vì sao.",
+    "3-2": "Cửa đền mở, ánh sáng lọt qua ô cửa tròn.",
+    "3-3": "Cá chép bơi ngược dòng ngân hà.",
+    "3-4": "Ngọn lửa không cháy, chỉ để lại hình bóng.",
+    "3-5": "Mặt trời lặn sau cánh buồm, thuyền vẫn đi.",
+    "3-6": "Mèo thần ngồi canh cửa giữa hai thế giới.",
+    "3-7": "Sen nở trên mặt nước, không vướng bùn.",
+    "3-8": "Khi mặt trời bị che, kim tự tháp thức giấc.",
+    "3-9": "Tám hướng hội tụ về một mặt trời.",
+    "3-10": "Thiên cầu xoay quanh một viên ngọc, bức họa hoàn tất.",
+    "4-1": "La bàn chỉ hướng, ngọn gió dẫn đường.",
+    "4-2": "Lưỡi đao xé màn đêm, ánh sao rẽ lối.",
+    "4-3": "Cánh cung kéo căng, mũi tên sao bay vào vô tận.",
+    "4-4": "Bánh xe xoay vần, định mệnh an bài.",
+    "4-5": "Thập tự tỏa sáng, bốn phương quy tụ.",
+    "4-6": "Đại ấn khai mở, chân lý tiên tri hiển lộ."
+  },
+  "chapterTaglines": {
+    "1": "Đám Mây Magellan Lớn là một thiên hà lùn quay quanh Ngân Hà",
+    "2": "Ngân Hà của chúng ta là một thiên hà xoắn ốc có thanh ở giữa",
+    "3": "Vật thể Hoag là thiên hà vòng gần như tròn hoàn hảo",
+    "4": "Cụm thiên hà Xử Nữ chứa hơn một nghìn thiên hà",
+    "5": "Lăng kính tách tia sáng trắng thành dải màu"
+  },
+  "galaxyTypes": {
+    "1": "Thiên hà lùn",
+    "2": "Thiên hà xoắn ốc",
+    "3": "Thiên hà vòng",
+    "4": "Cụm thiên hà",
+    "5": "Vũ trụ lăng kính"
+  }
 }
