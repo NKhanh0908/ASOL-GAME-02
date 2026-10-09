@@ -190,6 +190,7 @@ describe('Màn chọn màn theo mockup improve-v1', () => {
   });
 
   test('nhãn node hiện tại: tên dẫn trước, định vị theo sau, không ký tự trang trí', () => {
+    setLocale('vi');
     const label = formatNodeLabel('3-4', 'Ngọn Nến', 3);
     expect(label.name).toBe('Ngọn Nến');
     expect(label.locator).toBe('3-4 · Luân Chuyển');

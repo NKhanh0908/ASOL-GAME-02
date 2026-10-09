@@ -4,6 +4,13 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-09 - Multi-language localization engine full verification and plan completion (LOC task 8)
+
+- `game-next/tests/levelSelect.test.ts`: pinned `formatNodeLabel` test to Vietnamese locale explicitly to eliminate dependency on host environment OS language.
+- `docs/ai/DOCS-INDEX.md`: marked `LOC` (multi-language localization engine) state as `done`.
+- `docs/ai/STATUS.md`: updated status to reflect multi-language localization completion across all 5 locales (`en-US`, `vi`, `id`, `pt-BR`, `ja`).
+- Verification: Full Vitest suite passing across all 102 test files (1,209 tests pass), `npm run typecheck` passes, `npm run build` succeeds clean (325 modules transformed, production dist built). GitNexus `detect_changes` passed with low risk.
+
 ### 2026-10-09 - Replace 2-way language toggle with 5-segment control in SettingsDialog (LOC task 7)
 
 - `game-next/src/presentation/SettingsDialog.ts`: replaced the 2-way toggle in `createLanguageRow` with an interactive 5-segment segmented control `[ VI | EN | ID | PT | JA ]` equipped with active amber indicator pill, dark indigo contrast labels, tactile tap SFX, and immediate menu re-render.
