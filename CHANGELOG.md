@@ -4,6 +4,11 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-09 - Extract ring, cluster and prism galaxy layers (GX2 task 4)
+
+- `game-next/scripts/extract-galaxy-art.mjs`: splits GalaxyKit III/IV/V into a static body plus animated layers; `game-next/public/assets/galaxies/`: 19 new SVGs (`ring`, `ring-core`, `cluster`, `cluster-web`, `cluster-core`, `cluster-galaxies-0..3`, `cluster-meteor-0..2`, `prism`, `prism-beam`, `prism-fan`, `prism-glass`, `prism-shards-0..2`). The existing dwarf/spiral files regenerate unchanged. Deliberate deviations from the kit: per-galaxy self-spin dropped, 32 shards grouped into 3 float layers, orbit streaks drawn in code.
+- Verification: `node scripts/extract-galaxy-art.mjs` exits 0; all SVGs parse as XML; stacking the layers in Chromium was compared with the GalaxyKit cards for ring, cluster and prism (body, core, web, galaxies, beam, fan, glass and shards match).
+
 ### 2026-10-09 - Banner-only teaser bands in the campaign map layout (GX2 task 3)
 
 - `game-next/src/presentation/constellationLayout.ts`: `layoutCampaignMap(entries, teaserChapters = [])` appends node-less bands (`nodeCount: 0`, 1000 world px of room) for themed chapters without levels; layout without teasers is unchanged. `tests/levelSelect.test.ts`, `tests/mapReveal.test.ts`: band geometry and fog behaviour with teasers (`computeMapReveal` needed no change).
