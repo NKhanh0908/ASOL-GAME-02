@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import type { GalaxyTheme } from './galaxyTheme.ts';
 import { TYPO_TOKENS } from './designTokens.ts';
 import { isReducedMotion } from './transitions/motion.ts';
+import { t } from './i18n.ts';
 
 export interface ChapterEndlessGateConfig {
   x: number;
@@ -118,7 +119,7 @@ export class ChapterEndlessGate extends Phaser.GameObjects.Container {
 
     // 6. Tiêu đề "Ải Vô Tận" (y = 52)
     this.labelText = scene.add
-      .text(0, 52, 'Ải Vô Tận', {
+      .text(0, 52, t('gate_endless'), {
         fontFamily: TYPO_TOKENS.fontFamily.display,
         fontSize: '14px',
         color: '#FFFFFF',
@@ -131,20 +132,21 @@ export class ChapterEndlessGate extends Phaser.GameObjects.Container {
 
     // 7. Nhãn viên thuốc "Sắp mở" (y = 70)
     this.badgeContainer = scene.add.container(0, 70);
-    const tagBg = scene.add.graphics();
-    tagBg.fillStyle(accentColor, 0.25);
-    tagBg.fillRoundedRect(-28, -9, 56, 18, 9);
-    tagBg.lineStyle(1, accentColor, 0.9);
-    tagBg.strokeRoundedRect(-28, -9, 56, 18, 9);
-
     const tagText = scene.add
-      .text(0, 0, 'Sắp mở', {
+      .text(0, 0, t('gate_coming_soon'), {
         fontFamily: TYPO_TOKENS.fontFamily.sans,
         fontSize: '10px',
         color: '#FFFFFF',
         fontStyle: 'bold',
       })
       .setOrigin(0.5);
+
+    const badgeW = Math.max(56, Math.round(tagText.width + 16));
+    const tagBg = scene.add.graphics();
+    tagBg.fillStyle(accentColor, 0.25);
+    tagBg.fillRoundedRect(-badgeW / 2, -9, badgeW, 18, 9);
+    tagBg.lineStyle(1, accentColor, 0.9);
+    tagBg.strokeRoundedRect(-badgeW / 2, -9, badgeW, 18, 9);
 
     this.badgeContainer.add([tagBg, tagText]);
     this.add(this.badgeContainer);

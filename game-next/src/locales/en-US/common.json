@@ -36,5 +36,7 @@
   "btn_reset": "Reset",
   "btn_rotate": "Rotate",
   "studio_brand": "Alpaca Solutions",
-  "lang_modal_title": "Select Language"
+  "lang_modal_title": "Select Language",
+  "gate_endless": "Endless Gate",
+  "gate_coming_soon": "Coming Soon"
 }

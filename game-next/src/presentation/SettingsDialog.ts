@@ -113,13 +113,13 @@ export class SettingsDialog {
     const audioSettings = this.progressRepo.read().progress.settings;
 
     // Background music: fades out and pauses when off (spec G §5.1)
-    this.createToggleRow(-modalH / 2 + 268, 'Nhạc nền', audioSettings.music, (on) => {
+    this.createToggleRow(-modalH / 2 + 268, t('setting_music'), audioSettings.music, (on) => {
       this.progressRepo.setMusic(on);
       audio.music.setEnabled(on);
     });
 
     // Sound effects
-    this.createToggleRow(-modalH / 2 + 324, 'Hiệu ứng âm thanh', audioSettings.sfx, (on) => {
+    this.createToggleRow(-modalH / 2 + 324, t('setting_sfx'), audioSettings.sfx, (on) => {
       this.progressRepo.setSfx(on);
       audio.sfx.setEnabled(on);
     });

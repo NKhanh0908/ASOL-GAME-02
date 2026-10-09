@@ -1,12 +1,12 @@
-# Status — updated 2026-10-09 (globalized chapter names, menu taglines & victory verses)
+# Status — updated 2026-10-09 (full text localization & audio/gate labels completed)
 
 Overwrite this file at the end of every task. History lives in `CHANGELOG.md`; keep this file ≤ 60 lines.
 
 ## Now
 
-- Branch: `feat/multi-language-localization` complete (Tasks 1–8 + full content globalization).
-- Completed: Globalized chapter names (Menu badge, map headers), Menu knowledge taglines (chapter galaxy facts & trivia), and level victory verses (win modal/card) across all 5 locales (`en-US`, `vi`, `id`, `pt-BR`, `ja`).
-- Verification: 17 localization tests pass, 153 UI/font tests pass, typecheck and Vite build clean.
+- Branch: `feat/multi-language-localization` complete (Tasks 1–8 + 100% full text localization).
+- Completed: Globalized chapter names, Menu knowledge taglines, victory verses, audio settings labels (`t('setting_music')`, `t('setting_sfx')`), and endless gate badges across all 5 locales (`en-US`, `vi`, `id`, `pt-BR`, `ja`).
+- Verification: 36 localization/UI tests pass, typecheck and Vite build clean.
 
 ## Streams
 

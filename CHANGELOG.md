@@ -4,6 +4,14 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-09 - Localize audio settings labels and endless gate badge text
+
+- `game-next/src/locales/{en-US, vi, id, pt-BR, ja}/common.json`: added `gate_endless` and `gate_coming_soon` keys across all 5 locales.
+- `game-next/src/localization/types.ts`: registered `gate_endless` and `gate_coming_soon` in `CommonTranslationKey`.
+- `game-next/src/presentation/SettingsDialog.ts`: replaced hardcoded Vietnamese audio labels (`'Nhạc nền'`, `'Hiệu ứng âm thanh'`) with localized `t('setting_music')` and `t('setting_sfx')`.
+- `game-next/src/presentation/chapterEndlessGate.ts`: replaced hardcoded `'Ải Vô Tận'` and `'Sắp mở'` with `t('gate_endless')` and `t('gate_coming_soon')` with dynamic pill background width sizing to accommodate localized text length.
+- Verification: Vitest `tests/localizationCoverage.test.ts`, `tests/localizationManager.test.ts`, `tests/dialogs.test.ts`, `tests/levelSelect.test.ts` pass (36 tests pass); `npm run typecheck` clean; `npm run build` succeeds (325 modules transformed); GitNexus `detect_changes` passed with low risk.
+
 ### 2026-10-09 - Globalize chapter names, menu knowledge taglines, and victory verses across all locales
 
 - `game-next/src/locales/{en-US, vi, id, pt-BR, ja}/game.json`: added 28 campaign level `victoryVerses`, 5 `chapterTaglines`, and 5 `galaxyTypes` to translation dictionaries across all 5 supported locales.

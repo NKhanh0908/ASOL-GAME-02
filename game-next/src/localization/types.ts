@@ -45,7 +45,9 @@ export type CommonTranslationKey =
   | 'btn_reset'
   | 'btn_rotate'
   | 'studio_brand'
-  | 'lang_modal_title';
+  | 'lang_modal_title'
+  | 'gate_endless'
+  | 'gate_coming_soon';
 
 export type CommonTranslations = Record<CommonTranslationKey, string>;
 
