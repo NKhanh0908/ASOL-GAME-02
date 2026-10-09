@@ -4,6 +4,13 @@ Nhật ký này là nguồn đọc nhanh cho người phát triển và AI. Mỗ
 
 ## Unreleased
 
+### 2026-10-09 - LanguageSelectDialog modal and MenuScene language picker pill (LOC task 6)
+
+- `game-next/src/presentation/LanguageSelectDialog.ts`: astrological glass modal dialogue presenting all 5 supported languages (`vi`, `en-US`, `id`, `pt-BR`, `ja`) with flag emojis, native names, active selection indicators, hover effects, and audio cues.
+- `game-next/src/presentation/MenuScene.ts`: updated top bar language control from legacy 2-way toggle to a dedicated `[ 🌐 CODE ]` pill that opens `LanguageSelectDialog` and refreshes menu layout immediately upon selection.
+- `game-next/tests/languageSelectDialog.test.ts`: test suite verifying metadata registry and locale transition state.
+- Verification: `npx vitest run tests/languageSelectDialog.test.ts tests/menu.test.ts --pool=forks` (8 tests pass); `npm run typecheck` clean; GitNexus `detect_changes` passed with medium risk (`MenuScene.buildMainMenu` affected flows expected).
+
 ### 2026-10-09 - Native CJK system font stack for Japanese typography (LOC task 5)
 
 - `game-next/src/presentation/designTokens.ts`: extended `TYPO_TOKENS.fontFamily` (`display`, `serif`, `sans`, `levelTitle`) with native OS CJK fonts ('Hiragino Sans', 'Noto Sans CJK JP', 'Yu Gothic', 'Meiryo') while preserving primary 'Baloo 2' and 'Be Vietnam Pro' fonts.

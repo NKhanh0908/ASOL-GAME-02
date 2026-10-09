@@ -7,6 +7,8 @@ import { COLOR_NUMBERS, COLOR_TOKENS, DEPTH_TOKENS, LAYOUT_TOKENS, TYPO_TOKENS, 
 import { TEXTURE_KEYS, TextureFactory } from './TextureFactory.ts';
 import { applyDesignViewport, designSafeArea, designViewBounds } from './designViewport.ts';
 import { SettingsDialog } from './SettingsDialog.ts';
+import { LanguageSelectDialog } from './LanguageSelectDialog.ts';
+import { LOCALE_REGISTRY } from '../localization/localizationConfig.ts';
 import { t, getLocale, setLocale, getLevelTitle, getRandomMenuTagline } from './i18n.ts';
 import { director } from './transitions/SceneDirector.ts';
 import type { Choreographed, TransitionContext } from './transitions/SceneDirector.ts';
@@ -135,45 +137,41 @@ export class MenuScene extends Phaser.Scene implements Choreographed {
     // Mockup: language pill at top 22 / left 16, settings at top 20 / right 16 (44 px circle)
     const topY = this.safe.top + 74 - this.blockOffsetY;
 
-    // Nút chọn Ngôn ngữ: 3 px đệm, mỗi nút cao 28, viền 1.5 màu accent của chương
+    // Nút chọn Ngôn ngữ (Language Pill) hiển thị mã ngôn ngữ hiện tại, mở modal LanguageSelectDialog
     const currentLoc = getLocale();
-    const pad = 4.5 * K;
-    const viW = 36 * K;
-    const enW = 40 * K;
-    const segH = 28 * K;
-    const pillW = pad * 2 + viW + enW;
-    const pillH = 35 * K;
+    const meta = (LOCALE_REGISTRY as Record<string, any>)[currentLoc] ?? LOCALE_REGISTRY['en-US'];
+    const pillW = 76 * K;
+    const pillH = 36 * K;
     const pillX = 16 * K + pillW / 2;
 
     const langPillBg = this.add.graphics();
     drawGlassPanel(langPillBg, -pillW / 2, -pillH / 2, pillW, pillH, 18 * K, accent, 1.5 * K);
 
-    const activeBg = this.add.graphics();
-    activeBg.fillStyle(COLOR_NUMBERS.amberSolid, 1.0);
-    const activeX = currentLoc === 'vi' ? -pillW / 2 + pad : -pillW / 2 + pad + viW;
-    activeBg.fillRoundedRect(activeX, -segH / 2, currentLoc === 'vi' ? viW : enW, segH, 14 * K);
-
-    const langText = (x: number, label: string, active: boolean): Phaser.GameObjects.Text => this.add
-      .text(x, 0, label, {
-        fontFamily: TYPO_TOKENS.fontFamily.sans,
-        fontSize: `${Math.round(12 * K)}px`,
-        color: active ? '#1A1446' : '#FFFFFF',
-        fontStyle: active ? '800' : 'bold',
+    const globeIcon = this.add
+      .text(-14 * K, 0, '🌐', {
+        fontSize: `${Math.round(15 * K)}px`,
       })
       .setOrigin(0.5);
-    const viText = langText(-pillW / 2 + pad + viW / 2, 'VI', currentLoc === 'vi');
-    const enText = langText(-pillW / 2 + pad + viW + enW / 2, 'EN', currentLoc === 'en');
+
+    const langCodeText = this.add
+      .text(12 * K, 0, meta.shortLabel, {
+        fontFamily: TYPO_TOKENS.fontFamily.display,
+        fontSize: `${Math.round(13 * K)}px`,
+        color: '#FFFFFF',
+        fontStyle: 'bold',
+      })
+      .setOrigin(0.5);
 
     const langHitZone = this.add
       .zone(0, 0, pillW, pillH)
       .setInteractive({ useHandCursor: true });
     langHitZone.on('pointerdown', () => {
-      const nextLoc = currentLoc === 'vi' ? 'en' : 'vi';
-      setLocale(nextLoc);
-      this.buildMainMenu(completedLevels);
+      new LanguageSelectDialog(this, () => {
+        this.buildMainMenu(completedLevels);
+      }).open();
     });
 
-    this.langPillContainer = this.add.container(pillX, topY, [langPillBg, activeBg, viText, enText, langHitZone]);
+    this.langPillContainer = this.add.container(pillX, topY, [langPillBg, globeIcon, langCodeText, langHitZone]);
 
     // Nút Cài đặt: vòng tròn 44 px, viền accent, bánh răng trắng 22 px
     const gearD = 44 * K;
